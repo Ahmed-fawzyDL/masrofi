@@ -55,15 +55,7 @@ h3{font-size:14px;margin:14px 4px 6px;display:flex;justify-content:space-between
 .tile small{display:block;color:var(--mu);font-size:11px;margin:2px 0;white-space:normal}
 .tile b{font-size:15px;display:block}
 .prog{height:5px;background:var(--soft);border-radius:3px;margin-top:6px;overflow:hidden}.prog i{display:block;height:100%;background:var(--inc)}
-.ccard{background:var(--card);border-radius:12px;padding:10px;margin-bottom:8px}
-.chead{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-.sseg{display:flex;flex-wrap:wrap;background:var(--soft);border-radius:8px;padding:2px}
-.sseg button{border:0;background:none;padding:4px 10px;border-radius:6px;font:inherit;font-size:12px;color:var(--mu)}
-.sseg button.on{background:var(--card);color:var(--tx);font-weight:700;box-shadow:0 1px 2px #0002}
 .svgc{width:100%;height:auto;display:block}.svgc text{font-family:inherit}
-.ctot{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:6px}
-.ctot span{display:flex;align-items:center;gap:6px;font-size:12px;background:var(--soft2);border:1px solid var(--bd);border-radius:20px;padding:3px 10px}
-.ctot i{width:10px;height:10px;border-radius:3px;display:inline-block}
 .donut{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
 .dleg{flex:1;min-width:150px;font-size:12px}.dleg div{display:flex;align-items:center;gap:6px;margin:4px 0}
 .dleg i{width:10px;height:10px;border-radius:3px;flex:0 0 10px}.dleg span{flex:1}
@@ -78,12 +70,15 @@ a.row{color:inherit;text-decoration:none}
 .nrow b,.nrow small{white-space:normal!important}
 .dot{width:11px;height:11px;border-radius:50%;flex:0 0 11px;display:inline-block;margin-inline-end:6px;vertical-align:middle}
 .ic{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:0 0 32px;font-weight:700}
-.amt{text-align:left;font-weight:700;white-space:nowrap}.amt.inc{color:var(--inc)}
-.amt small{display:block;text-align:left;font-weight:400;font-size:11px}
+.amt{text-align:left;font-weight:700;white-space:nowrap;display:flex;flex-direction:column;align-items:flex-end}.amt.inc{color:var(--inc)}
+.amt small{text-align:left;font-weight:400;font-size:11px}
 .empty{text-align:center;color:var(--mu);padding:20px 8px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .tabs button{border:1px solid var(--bd);background:var(--card);border-radius:18px;padding:6px 12px;font:inherit;font-size:13px;color:var(--tx)}
 .tabs button.on{background:var(--p);color:#fff;border-color:var(--p)}
+.sseg{display:flex;flex-wrap:wrap;background:var(--soft);border-radius:8px;padding:2px}
+.sseg button{border:0;background:none;padding:4px 10px;border-radius:6px;font:inherit;font-size:12px;color:var(--mu)}
+.sseg button.on{background:var(--card);color:var(--tx);font-weight:700;box-shadow:0 1px 2px #0002}
 .seg{display:flex;flex-wrap:wrap;background:var(--soft);border-radius:10px;padding:3px;margin:8px 0}
 .seg button{flex:1;border:0;background:none;padding:7px;border-radius:8px;font:inherit;color:var(--tx)}
 .seg button.on{background:var(--card);font-weight:700;box-shadow:0 1px 3px #0002}
@@ -132,13 +127,13 @@ details.gen summary{cursor:pointer;font-weight:700;font-size:13px}
 .brand{text-align:center;color:var(--mu);font-size:11px;margin-top:22px;line-height:1.7;display:flex;flex-direction:column;align-items:center}
 .brand b{color:var(--tx);font-size:12px}.brand a{color:var(--p);text-decoration:none}
 /* --- قايمة التحصيلات --- */
-.sech{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:14px 4px 6px;font-weight:700;font-size:14px}
 .ck{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--soft)}
 .ck:last-child{border-bottom:0}
 .ck input[type=checkbox]{width:24px;height:24px;flex:0 0 24px;accent-color:#16a34a;margin:0}
+.cki{width:24px;height:24px;flex:0 0 24px;border-radius:6px;background:#16a34a;color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700}
 .ck .grow{cursor:pointer}.ck .grow b{display:inline}.ck .grow small{display:block;color:var(--mu);font-size:11px;margin-top:2px}
 .ck.done .grow>b{color:var(--inc)}
-/* --- الكروت والجداول (في التطبيق والتقارير) --- */
+/* --- الكروت والجداول --- */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:0 0 8px}
 .kpi{border-radius:12px;padding:9px 10px;background:#f1f5f9;border-top:4px solid #94a3b8;min-width:0}
 .kpi small{display:block;font-size:11px;color:#6b7280}.kpi b{font-size:15px;color:#1f2937;word-break:break-word}
@@ -221,8 +216,8 @@ details.gen summary{cursor:pointer;font-weight:700;font-size:13px}
 
 <script>
 /* ========== الإصدار والمطور ========== */
-const APP_VERSION='1.7.0';
-const APP_BUILD='11/10/2026 - 06:30 م';
+const APP_VERSION='1.8.0';
+const APP_BUILD='11/10/2026 - 07:30 م';
 const DEF_NAME='Fawzy Folio';
 const DEV={name:'Eng.Ahmed Fawzy',company:'DETech Solutions',phones:['01285258400','01060008747']};
 
@@ -233,8 +228,8 @@ const TYPES={cash:'كاش',instapay:'إنستاباي',card:'فيزا / كارت
 const COLORS=['#16a34a','#0f766e','#0891b2','#2563eb','#7c3aed','#db2777','#dc2626','#ea580c','#ca8a04','#475569'];
 const PAL=['#0f766e','#2563eb','#db2777','#ea580c','#7c3aed','#ca8a04','#0891b2','#64748b'];
 const THEMES={teal:{n:'أخضر',p:'#0f766e'},blue:{n:'أزرق',p:'#1d4ed8'},purple:{n:'بنفسجي',p:'#6d28d9'},rose:{n:'وردي',p:'#be185d'},orange:{n:'برتقالي',p:'#c2410c'},slate:{n:'رمادي',p:'#334155'},dark:{n:'داكن',p:'#14b8a6',dark:true}};
-const LDEF={home:'الرئيسية',col:'التحصيلات',exps:'المصروفات',reports:'التقارير',more:'المزيد',settings:'الإعدادات',exp:'المصروفات',inc:'التحصيلات',expOne:'مصروف',incOne:'تحصيل',net:'الناتج',cur:'الشهر الحالي',prev:'الشهر الماضي',fixed:'التحصيلات الثابتة',contracts:'العقود',variable:'تحصيلات متغيرة',inst:'الأقساط',docs:'المرفقات',items:'تكويد البنود',pm:'طرق الدفع'};
-const HDEF={cur:1,chart:1,prev:1,fixed:1,contracts:1,inst:1,alerts:1,recent:0};
+const LDEF={home:'الرئيسية',col:'التحصيلات',exps:'المصروفات',reports:'التقارير',more:'المزيد',settings:'الإعدادات',exp:'المصروفات',inc:'التحصيلات',expOne:'مصروف',incOne:'تحصيل',net:'الناتج',cur:'الشهر الحالي',prev:'الشهر الماضي',fixed:'البنود الثابتة',contracts:'التحصيلات السنوية',inst:'الأقساط',docs:'المرفقات',items:'تكويد البنود',pm:'طرق الدفع'};
+const HDEF={cur:1,prev:1,fixed:1,contracts:1,inst:1,alerts:1,recent:0};
 const EVERY=[[1,'شهري'],[2,'كل شهرين'],[3,'كل 3 شهور'],[4,'كل 4 شهور'],[6,'كل 6 شهور'],[12,'سنوي'],[18,'كل سنة ونص'],[24,'كل سنتين']];
 const PERIODS=[['m','الشهر الحالي'],['pm','الشهر اللي فات'],['y','السنة الحالية'],['py','السنة اللي فاتت'],['all','كل الفترات'],['custom','فترة مخصصة']];
 const $=s=>document.querySelector(s);
@@ -273,8 +268,7 @@ function defaults(){
   const c=(name,kind)=>({id:uid(),name,kind,active:true});
   return {version:4,
     methods:[m('كاش','cash','#16a34a'),m('إنستاباي','instapay','#7c3aed'),m('فيزا / كارت','card','#2563eb'),m('حساب بنكي','bank','#0891b2'),m('محفظة موبايل','wallet','#dc2626')],
-    cats:[...['أكل وشرب','مواصلات وبنزين','فواتير ومرافق','إيجار','صحة وعلاج','تعليم','ملابس','بيت ومستلزمات','ترفيه وخروجات','هدايا ومناسبات','أخرى'].map(n=>c(n,'exp')),
-      c('شغل إضافي','inc'),c('تحصيلات أخرى','inc')],
+    cats:[...['أكل وشرب','مواصلات وبنزين','فواتير ومرافق','إيجار','صحة وعلاج','تعليم','ملابس','بيت ومستلزمات','ترفيه وخروجات','هدايا ومناسبات','أخرى'].map(n=>c(n,'exp'))],
     txs:[],closed:{},recur:[],docs:[],plans:[],fmeta:{},settings:{}};
 }
 function migrate(d){
@@ -316,7 +310,7 @@ function normalize(d){
   migrate(d);
   d.recur=(d.recur||[]).map(r=>({amt:{},st:{},every:1,pct:0,...r}));
   d.docs=(d.docs||[]).map(x=>({files:[],...x}));d.plans=(d.plans||[]).map(p=>({files:[],items:[],...p}));d.fmeta=d.fmeta||{};
-  d.settings=Object.assign({lead:10,appName:DEF_NAME,theme:'teal',labels:{},home:{},chart:{}},d.settings||{});
+  d.settings=Object.assign({lead:10,appName:DEF_NAME,theme:'teal',labels:{},home:{}},d.settings||{});
   if(!d.settings.appName||d.settings.appName==='مصروفي')d.settings.appName=DEF_NAME;
   return d;
 }
@@ -340,7 +334,7 @@ function ensureCat(name,kind){let c=S.cats.find(x=>x.kind===kind&&x.name===name)
 const defMethod=()=>(S.methods.find(m=>m.active&&m.type==='cash')||S.methods.find(m=>m.active)||{}).id;
 function stOf(rec){if(!rec)return{st:'wait'};if(rec.st==='done'){const t=S.txs.find(x=>x.id===rec.txId);return t?{st:'done',t}:{st:'wait'}}return rec}
 
-/* --- التحصيلات الثابتة والعقود --- */
+/* --- البنود الثابتة والتحصيلات السنوية --- */
 function occK(r,key){if(!r.start)return -1;const d=mdiff(r.start.slice(0,7),key);if(d<0||d%(+r.every||1))return -1;return d/(+r.every||1)}
 const occDate=(r,k)=>addMonths(r.start,k*(+r.every||1));
 const occRec=(r,k)=>(r.st||{})[k];
@@ -350,14 +344,15 @@ function occAmt(r,k){
   if(r.kind!=='contract'||!+r.pct||k===0)return +r.amount||0;
   const prev=occActual(r,k-1);return Math.round((prev!=null?prev:occAmt(r,k-1))*(1+r.pct/100));
 }
-function dueList(key){
-  return S.recur.map(r=>{const k=occK(r,key);if(k<0)return null;if(r.active===false&&!occRec(r,k))return null;const date=occDate(r,k);return{r,k,date,amt:occAmt(r,k),s:stOf(occRec(r,k))}})
+function dueList(key,kind){
+  return S.recur.filter(r=>!kind||(kind==='contract'?r.kind==='contract':r.kind!=='contract')).map(r=>{const k=occK(r,key);if(k<0)return null;if(r.active===false&&!occRec(r,k))return null;const date=occDate(r,k);return{r,k,date,amt:occAmt(r,k),s:stOf(occRec(r,k))}})
     .filter(Boolean).sort((a,b)=>a.date.localeCompare(b.date));
 }
 function nextOcc(r){for(let k=0;k<1000;k++){if(stOf(occRec(r,k)).st==='wait')return k}return 0}
 function lastDone(r){let b=null;Object.values(r.st||{}).forEach(rec=>{const s=stOf(rec);if(s.st==='done'&&(!b||s.t.date>b.date))b=s.t});return b}
 const recurTxIds=()=>new Set(S.recur.flatMap(r=>Object.values(r.st||{}).map(x=>x&&x.txId).filter(Boolean)));
-const defCollectDate=due=>due.slice(0,7)===NKM?today():due;
+const defCollectDate=due=>due>today()?due:today();
+const isAnnualTx=t=>t.src&&t.src.k==='r'&&R(t.src.id)?.kind==='contract';
 
 /* --- الأقساط --- */
 const plan=id=>S.plans.find(x=>x.id===id);
@@ -453,7 +448,7 @@ async function gcFiles(){
 load();
 const NOW=new Date(),NY=NOW.getFullYear(),NM=NOW.getMonth()+1,NKM=ym(NY,NM);
 let cur={y:NY,m:NM};
-let view='home',rtab='',stab='gen',colTab='month',itab='exp',dtab='my',evw='cats',F=null,PF=null,PAY=null,curDoc=null,instPlan=null,RVCSV=null,RVST=[],HKS=[];
+let view='home',rtab='',stab='gen',itab='exp',dtab='my',evw='cats',F=null,PF=null,PAY=null,curDoc=null,instPlan=null,RVCSV=null,RVST=[];
 let RF={type:'all',cat:'',method:'',period:'m',from:'',to:'',month:NKM,year:NY,ccat:'ALL_EXP',crange:'6',plan:''};
 let LK={};try{LK=JSON.parse(localStorage.getItem(LKEY)||'{}')||{}}catch(e){LK={}}
 const saveLK=()=>localStorage.setItem(LKEY,JSON.stringify(LK));
@@ -471,33 +466,23 @@ function brand(){
   return `<div class="brand"><b dir="ltr">${DEV.name}</b><span dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${APP_VERSION} · ${APP_BUILD}</small></div>`;
 }
 
-/* ========== الرسوم البيانية ========== */
+/* ========== رسوم التقارير ========== */
 function niceMax(m){const p=Math.pow(10,Math.floor(Math.log10(m)));return Math.ceil(m/p*2)/2*p}
 function svgChart(labels,series,type,o={}){
   const W=640,H=280,pl=52,pr=12,pt=30,pb=38,n=labels.length,id=o.id||'c';
   const max=Math.max(1,...series.flatMap(s=>s.values)),top=niceMax(max),cw=(W-pl-pr)/n,ih=H-pt-pb,base=H-pb;
   const y=v=>pt+ih*(1-v/top),xc=i=>pl+cw*(n-1-i)+cw/2,showV=n*series.length<=14;
   let defs='',g='';
-  series.forEach((s,si)=>defs+=`<linearGradient id="${id}g${si}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity="${type==='line'?.35:1}"/><stop offset="1" stop-color="${s.color}" stop-opacity="${type==='line'?0:.6}"/></linearGradient>`);
+  series.forEach((s,si)=>defs+=`<linearGradient id="${id}g${si}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity="1"/><stop offset="1" stop-color="${s.color}" stop-opacity=".6"/></linearGradient>`);
   if(o.hi!=null&&o.hi>=0)g+=`<rect x="${xc(o.hi)-cw/2+3}" y="${pt-22}" width="${cw-6}" height="${ih+22}" rx="10" fill="#94a3b8" fill-opacity=".13"/>`;
   for(let i=0;i<=4;i++){const v=top*i/4,yy=y(v);g+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="#94a3b8" stroke-opacity="${i?.25:.55}" ${i?'stroke-dasharray="4 5"':''}/><text x="${pl-8}" y="${yy+4}" font-size="12" text-anchor="end" fill="#94a3b8">${short(v)}</text>`}
-  if(type==='line'){
-    series.forEach((s,si)=>{
-      const pts=s.values.map((v,i)=>[xc(i),y(v)]);
-      g+=`<path d="M${pts.map(p=>p.join(',')).join(' L')} L${pts[pts.length-1][0]},${base} L${pts[0][0]},${base} Z" fill="url(#${id}g${si})"/>`;
-      g+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${s.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
-      pts.forEach((p,i)=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="#fff" stroke="${s.color}" stroke-width="3"/>`;if(showV&&s.values[i])g+=`<text x="${p[0]}" y="${p[1]-12-si*13}" font-size="12" font-weight="700" text-anchor="middle" fill="${s.color}">${short(s.values[i])}</text>`});
-    });
-  }else{
-    const gap=Math.min(6,cw*.06),bw=Math.min(34,(cw*.76-gap*(series.length-1))/series.length),tw=bw*series.length+gap*(series.length-1);
-    series.forEach((s,si)=>s.values.forEach((v,i)=>{
-      const bx=xc(i)-tw/2+si*(bw+gap),hh=v?Math.max(3,base-y(v)):0;
-      if(hh)g+=`<rect x="${bx}" y="${base-hh}" width="${bw}" height="${hh}" rx="${Math.min(7,bw/2)}" fill="url(#${id}g${si})"/>`;
-      if(showV&&v)g+=`<text x="${bx+bw/2}" y="${base-hh-6}" font-size="${series.length>1?11:12}" font-weight="700" text-anchor="middle" fill="${s.color}">${short(v)}</text>`;
-    }));
-  }
+  const gap=Math.min(6,cw*.06),bw=Math.min(34,(cw*.76-gap*(series.length-1))/series.length),tw=bw*series.length+gap*(series.length-1);
+  series.forEach((s,si)=>s.values.forEach((v,i)=>{
+    const bx=xc(i)-tw/2+si*(bw+gap),hh=v?Math.max(3,base-y(v)):0;
+    if(hh)g+=`<rect x="${bx}" y="${base-hh}" width="${bw}" height="${hh}" rx="${Math.min(7,bw/2)}" fill="url(#${id}g${si})"/>`;
+    if(showV&&v)g+=`<text x="${bx+bw/2}" y="${base-hh-6}" font-size="${series.length>1?11:12}" font-weight="700" text-anchor="middle" fill="${s.color}">${short(v)}</text>`;
+  }));
   labels.forEach((l,i)=>g+=`<text x="${xc(i)}" y="${H-12}" font-size="12" text-anchor="middle" fill="${i===o.hi?'currentColor':'#94a3b8'}" font-weight="${i===o.hi?700:400}">${esc(l)}</text>`);
-  if(o.click)labels.forEach((l,i)=>g+=`<rect x="${xc(i)-cw/2}" y="0" width="${cw}" height="${H}" fill="transparent" style="cursor:pointer" onclick="${o.click}(${i})"/>`);
   return `<svg viewBox="0 0 ${W} ${H}" class="svgc"><defs>${defs}</defs>${g}</svg>`;
 }
 function catItems(list,kind){
@@ -513,28 +498,6 @@ function donut(items){
   const segs=items.map(it=>{const len=it.value/tot*Cc;const s=`<circle r="${Rr}" cx="80" cy="80" fill="none" stroke="${it.color}" stroke-width="26" stroke-dasharray="${len} ${Cc-len}" stroke-dashoffset="${-off}" transform="rotate(-90 80 80)"/>`;off+=len;return s}).join('');
   return `<div class="donut"><svg viewBox="0 0 160 160" width="160" height="160">${segs}<text x="80" y="76" text-anchor="middle" font-size="11" fill="#94a3b8">الإجمالي</text><text x="80" y="96" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">${short(tot)}</text></svg><div class="dleg">${items.map(it=>`<div><i style="background:${it.color}"></i><span>${esc(it.label)}</span><b>${num(it.value)}</b><small class="muted">${Math.round(it.value/tot*100)}%</small></div>`).join('')}</div></div>`;
 }
-function homeChart(){
-  const c=Object.assign({mode:'bars',show:'both',n:6},S.settings.chart||{});
-  const ctl=(k,arr)=>`<div class="sseg">${arr.map(([v,l])=>`<button class="${String(c[k])===String(v)?'on':''}" onclick="setChart('${k}','${v}')">${esc(l)}</button>`).join('')}</div>`;
-  let body,ctl2;
-  if(c.mode==='donut'){
-    const kind=c.show==='inc'?'inc':'exp';
-    body=donut(catItems(monthTx(NY,NM),kind));
-    ctl2=ctl('show',[['exp',L('exp')],['inc',L('inc')]])+`<span class="badge soon">${MONTHS[NM-1]}</span>`;
-  }else{
-    HKS=[];for(let i=c.n-1;i>=0;i--){const d=new Date(NY,NM-1-i,1);HKS.push(ym(d.getFullYear(),d.getMonth()+1))}
-    const sm=HKS.map(k=>sums(keyTx(k))),series=[];
-    if(c.show!=='exp')series.push({name:L('inc'),color:'#16a34a',values:sm.map(x=>x.inc)});
-    if(c.show!=='inc')series.push({name:L('exp'),color:'#dc2626',values:sm.map(x=>x.exp)});
-    const labels=HKS.map(k=>c.n<=6?MONTHS[+k.slice(5)-1]:mShort(k));
-    body=svgChart(labels,series,c.mode==='line'?'line':'bars',{id:'h',hi:HKS.length-1,click:'homeBar'})
-      +`<div class="ctot">${series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.name)}: <b>${num(s.values.reduce((a,b)=>a+b,0))}</b></span>`).join('')}</div>`;
-    ctl2=ctl('show',[['both','الكل'],['inc',L('inc')],['exp',L('exp')]])+ctl('n',[['3','3 شهور'],['6','6 شهور'],['12','سنة']]);
-  }
-  return `<div class="ccard"><div class="chead"><b>📊 حركة الفلوس</b>${ctl('mode',[['bars','أعمدة'],['line','خط'],['donut','توزيع']])}</div><div class="chead">${ctl2}</div>${body}</div>`;
-}
-function homeBar(i){const k=HKS[i];if(!k)return;RF.month=k;rtab='month';go('reports');openRV()}
-function setChart(k,v){S.settings.chart=Object.assign({},S.settings.chart,{[k]:k==='n'?+v:v});save();render()}
 
 /* ========== التنبيهات ========== */
 function alerts(){
@@ -548,8 +511,8 @@ function alerts(){
       const amt=occAmt(r,k);
       if(r.kind==='contract'){
         const last=lastDone(r);
-        const title=left<0?`⚠️ تجديد ${r.name} متأخر ${-left} يوم`:left===0?`📅 النهارده ميعاد تجديد ${r.name}`:`⏰ تجديد ${r.name} ميعاده قرب، باقي ${left} يوم`;
-        out.push({id:`c-${r.id}-${k}`,title,body:`الميعاد ${fdate(d)} · المبلغ المتوقع ${fmt(amt)}${r.pct?` (زيادة ${r.pct}%)`:''}${last?` · آخر تحصيل ${fmt(last.amount)} في ${fdate(last.date)}`:''}${r.note?' · '+r.note:''}`,go:`colTab='contracts';go('col')`});
+        const title=left<0?`⚠️ تحصيل ${r.name} متأخر ${-left} يوم`:left===0?`📅 النهارده ميعاد تحصيل ${r.name}`:`⏰ تحصيل ${r.name} ميعاده قرب، باقي ${left} يوم`;
+        out.push({id:`c-${r.id}-${k}`,title,body:`الميعاد ${fdate(d)} · المبلغ ${fmt(amt)}${r.pct?` (زيادة ${r.pct}%)`:''}${last?` · المرة اللي فاتت ${fmt(last.amount)} في ${fdate(last.date)}`:''}${r.note?' · '+r.note:''}`,go:`cur.y=${+d.slice(0,4)};go('annual')`});
       }else if(left<=0){
         out.push({id:`f-${r.id}-${k}`,title:`💼 ${r.name}: لم يتم تحصيله إلى الآن`,body:`${mName(d.slice(0,7))} · المتوقع ${fmt(amt)}${r.note?' · '+r.note:''}`,go:`gocol('${d.slice(0,7)}')`});
       }
@@ -657,21 +620,21 @@ function pinOffForm(){sheet(`<h2>إلغاء الرقم السري</h2><label>ا�
 async function pinOff(){if(await hash($('#p0').value)!==LK.pin)return toast('الرقم السري غلط');LK={};saveLK();closeSheet();render();toast('اتلغى الرقم السري')}
 
 /* ========== العرض العام ========== */
-const NAVOF={home:'home',col:'col',exps:'exps',inst:'inst',plan:'inst',reports:'reports'};
+const NAVOF={home:'home',col:'col',annual:'col',exps:'exps',inst:'inst',plan:'inst',reports:'reports'};
 function navHTML(){
   const on=NAVOF[view]||'more';
   const b=(v,ic,l,click)=>`<button class="${on===v?'on':''}" onclick="${click||`go('${v}')`}"><span>${ic}</span>${esc(l)}</button>`;
   return b('home','🏠',L('home'))+b('col','💰',L('col'))+b('exps','💸',L('exps'))
-    +`<button class="fab" onclick="newTx(view==='col'?'inc':'exp')" aria-label="+">+</button>`
+    +`<button class="fab" onclick="newTx(view==='col'||view==='annual'?'inc':'exp')" aria-label="+">+</button>`
     +b('inst','🏦',L('inst'))+b('reports','📊',L('reports'),"rtab='';go('reports')")+b('more','☰',L('more'));
 }
 function render(){
   $('nav').innerHTML=navHTML();
-  $('#view').innerHTML=({home:vHome,col:vCol,exps:vExps,items:vItems,reports:vReports,settings:vSettings,more:vMore,inst:vInst,plan:vPlan,docs:vDocs,pmv:vPmv,months:vMonths})[view]()+brand();
+  $('#view').innerHTML=({home:vHome,col:vCol,annual:vAnnual,exps:vExps,items:vItems,reports:vReports,settings:vSettings,more:vMore,inst:vInst,plan:vPlan,docs:vDocs,pmv:vPmv,months:vMonths})[view]()+brand();
   updateBell();hydrate();
 }
 function go(v){view=v;render();scrollTo(0,0)}
-function gocol(k){colTab='month';if(k){const[y,m]=k.split('-').map(Number);cur.y=y;cur.m=m}go('col')}
+function gocol(k){if(k){const[y,m]=k.split('-').map(Number);cur.y=y;cur.m=m}go('col')}
 function shiftM(d){cur.m+=d;if(cur.m<1){cur.m=12;cur.y--}if(cur.m>12){cur.m=1;cur.y++}render()}
 const stTag2=k=>S.closed[k]?'<span class="lock">🔒 اتقفل</span>':'<span class="lock op">🔓 مفتوح</span>';
 function monthBar(){const k=ym(cur.y,cur.m);return `<div class="mbar"><button onclick="shiftM(-1)">›</button><b>${MONTHS[cur.m-1]} ${cur.y} ${stTag2(k)}</b><button onclick="shiftM(1)">‹</button></div>`}
@@ -717,19 +680,18 @@ function vHome(){
   if(hs('cur'))h+=`<div class="hero"><div class="hero-t"><span>${esc(L('cur'))}</span><span class="hm">${mn}</span>${S.closed[NKM]?'<em class="cl">🔒 الشهر ده اتقفل</em>':'<em class="op">🔓 مفتوح</em>'}</div>
     <div class="hbtns"><button onclick="openFlow('inc')"><small>${esc(L('inc'))}</small><b>${num(s.inc)}</b><i>التفاصيل ‹</i></button><button onclick="openFlow('exp')"><small>${esc(L('exp'))}</small><b>${num(s.exp)}</b><i>التفاصيل ‹</i></button></div>
     <div class="hnet"><span>${esc(L('net'))}</span>${s.net<0?`<b class="hneg">${num(-s.net)} ج.م · سالب</b>`:`<b>${num(s.net)} ج.م</b>`}</div></div>`;
-  if(hs('chart'))h+=homeChart();
   if(hs('prev')){
     const pk=prevKey(NKM),pcl=S.closed[pk],ps=pcl?{inc:+pcl.inc||0,exp:+pcl.exp||0}:sums(keyTx(pk)),pn=ps.inc-ps.exp;
     tiles+=`<div class="tile wide" onclick="RF.month='${pk}';rtab='month';go('reports');openRV()"><small>${esc(L('prev'))} · ${mName(pk)} · ${pcl?'🔒 اتقفل':'🔓 مفتوح'}</small>
       <div class="trio"><span>${esc(L('inc'))}<b class="pos">${num(ps.inc)}</b></span><span>${esc(L('exp'))}<b class="neg">${num(ps.exp)}</b></span><span>${esc(L('net'))}<b class="${pn<0?'neg':'pos'}">${pn<0?num(-pn)+' سالب':num(pn)}</b></span></div></div>`;
   }
   if(hs('fixed')){
-    const dl=dueList(NKM);let te=0,tg=0;dl.forEach(o=>{te+=o.amt;if(o.s.st==='done')tg+=o.s.t.amount});
-    tiles+=`<div class="tile" onclick="gocol('${NKM}')"><small>${esc(L('fixed'))}</small><b>${num(tg)} / ${num(te)}</b><div class="prog"><i style="width:${te?Math.min(100,tg/te*100):0}%"></i></div><small>${dl.filter(o=>o.s.st==='wait').length} بند لسه</small></div>`;
+    const dl=dueList(NKM,'fixed');let te=0,tg=0;dl.forEach(o=>{te+=o.amt;if(o.s.st==='done')tg+=o.s.t.amount});
+    tiles+=`<div class="tile" onclick="gocol('${NKM}')"><small>${esc(L('fixed'))} · ${mn}</small><b>${num(tg)} / ${num(te)}</b><div class="prog"><i style="width:${te?Math.min(100,tg/te*100):0}%"></i></div><small>${dl.filter(o=>o.s.st==='wait').length} بند لسه</small></div>`;
   }
   if(hs('contracts')){
     let nx=null;S.recur.filter(r=>r.kind==='contract'&&r.active!==false).forEach(r=>{const k=nextOcc(r),d=occDate(r,k);if(!nx||d<nx.d)nx={r,d,a:occAmt(r,k)}});
-    tiles+=`<div class="tile" onclick="colTab='contracts';go('col')"><small>${esc(L('contracts'))} · التجديد الجاي</small>${nx?`<b>${fmt(nx.a)}</b><small>${esc(nx.r.name)} · ${fdate(nx.d)}</small>`:'<b>—</b>'}</div>`;
+    tiles+=`<div class="tile" onclick="cur.y=NY;go('annual')"><small>${esc(L('contracts'))} · الجاي</small>${nx?`<b>${fmt(nx.a)}</b><small>${esc(nx.r.name)} · ${fdate(nx.d)}</small>`:'<b>—</b>'}</div>`;
   }
   if(hs('inst')){
     const nx=nextInst();
@@ -753,49 +715,52 @@ function vExps(){
 }
 
 /* ========== التحصيلات ========== */
+function ckRow(o){
+  const done=o.s.st==='done',old=o.s.st==='old',late=!done&&!old&&o.date<today();
+  const sub=done?`اتحصّل ${dmy(o.s.t.date)} · ${esc(M(o.s.t.method)?.name||'')}`:old?'مسجّل سابقاً':`ميعاده ${fdate(o.date)}${o.r.every>1&&o.r.kind!=='contract'?' · '+everyTxt(o.r.every):''}`;
+  return `<div class="ck ${done?'done':''}"><input type="checkbox" ${done||old?'checked':''} ${old?'disabled':''} onchange="recToggle('${o.r.id}',${o.k},this)">
+    <div class="grow" onclick="occSheet('${o.r.id}',${o.k})"><b>${esc(o.r.name)}</b><small>${sub}${o.r.note?' · '+esc(o.r.note):''}</small></div>
+    <div class="amt ${done?'inc':''}">${num(done?o.s.t.amount:o.amt)}<small class="${late?'neg':'muted'}">${done?'✓ اتحصّل':late?'متأخر':old?'':'منتظر'}</small></div></div>`;
+}
 function vCol(){
-  const h=`<div class="phead"><h3>💰 ${esc(L('inc'))}</h3><button class="mini" onclick="itab='fixed';go('items')">⚙️ تكويد البنود</button></div>`+tabsHTML([['month','📅 الشهر'],['contracts','📄 '+L('contracts')]],colTab,'colTab');
-  return h+(colTab==='contracts'?cContracts():cMonth());
+  const key=ym(cur.y,cur.m),dl=dueList(key,'fixed'),linked=new Set(dl.filter(o=>o.s.st==='done').map(o=>o.s.t.id));
+  const others=keyTx(key).filter(t=>t.type==='inc'&&!linked.has(t.id)).sort(byDesc);
+  let exp=0,rem=0;dl.forEach(o=>{exp+=o.amt;if(o.s.st==='wait')rem+=o.amt});
+  let h=`<div class="phead"><h3>💰 ${esc(L('inc'))}</h3><button class="mini" onclick="cur.y=${cur.y};go('annual')">📆 السنوية</button><button class="mini" onclick="itab='fixed';go('items')">⚙️ ${esc(L('fixed'))}</button></div>`
+    +monthBar()+kpis([['اتحصّل الشهر ده',fmt(sums(keyTx(key)).inc),'inc'],['متوقع من البنود الثابتة',fmt(exp),'net'],['باقي',fmt(rem),'exp']])
+    +`<div class="etbar"><button class="mini pri" onclick="newTx('inc')">+ تحصيل جديد</button><button class="mini" onclick="openFlow('inc',cur.y,cur.m)">🧾 كشف حساب</button><button class="mini" onclick="RF.ccat='ALL_INC';rtab='cmp';go('reports')">📈 مقارنة</button></div>`;
+  const rows=dl.map(ckRow).concat(others.map(t=>`<div class="ck done"><span class="cki">✓</span><div class="grow" onclick="editTx('${t.id}')"><b>${esc(C(t.cat)?.name||'—')}</b>${isAnnualTx(t)?' <span class="tag ctr">سنوي</span>':''}<small>${dmy(t.date)} · ${esc(M(t.method)?.name||'')}${t.note?' · '+esc(t.note):''}</small></div><div class="amt inc">${num(t.amount)}<small class="muted">${(t.files||[]).length?'📎 ':''}✓ اتحصّل</small></div></div>`));
+  return h+(rows.length?`<div class="list">${rows.join('')}</div>`:'<p class="empty">لا يوجد تحصيلات الشهر ده</p>');
 }
-function cMonth(){
-  const key=ym(cur.y,cur.m),dl=dueList(key),ids=recurTxIds();
-  let exp=0,got=0,rem=0;dl.forEach(o=>{exp+=o.amt;if(o.s.st==='done')got+=o.s.t.amount;else if(o.s.st==='wait')rem+=o.amt});
-  const vars=keyTx(key).filter(t=>t.type==='inc'&&!ids.has(t.id)),vt=vars.reduce((a,t)=>a+t.amount,0),all=sums(keyTx(key)).inc;
-  let h=monthBar()+kpis([['المتوقع الثابت',fmt(exp),'net'],['اتحصّل منه',fmt(got),'inc'],['باقي',fmt(rem),'exp'],['متغيرة',fmt(vt),'warn'],['إجمالي الشهر',fmt(all),'inc']]);
-  h+=`<div class="sech"><span>📌 ${esc(L('fixed'))} و${esc(L('contracts'))}</span><button class="mini" onclick="recForm(null,'fixed')">+ بند ثابت</button></div>`;
-  h+=dl.length?`<div class="list">${dl.map(o=>{
-    const done=o.s.st==='done',old=o.s.st==='old',late=!done&&!old&&o.date<today();
-    const sub=done?`اتحصّل ${dmy(o.s.t.date)} · ${esc(M(o.s.t.method)?.name||'')}`:old?'مسجّل سابقاً':`ميعاده ${fdate(o.date)}`;
-    return `<div class="ck ${done?'done':''}"><input type="checkbox" ${done||old?'checked':''} ${old?'disabled':''} onchange="recToggle('${o.r.id}',${o.k},this)">
-      <div class="grow" onclick="occSheet('${o.r.id}',${o.k})"><b>${esc(o.r.name)}</b> ${o.r.kind==='contract'?'<span class="tag ctr">عقد</span>':o.r.every>1?`<span class="tag rej">${everyTxt(o.r.every)}</span>`:''}<small>${sub}${o.r.note?' · '+esc(o.r.note):''}</small></div>
-      <div class="amt ${done?'inc':''}">${num(done?o.s.t.amount:o.amt)}<small class="${late?'neg':''}">${done?'✓':late?'متأخر':old?'':'منتظر'}</small></div></div>`}).join('')}</div>`:'<p class="empty">مفيش بنود ثابتة ميعادها الشهر ده</p>';
-  h+=`<div class="sech"><span>🔀 ${esc(L('variable'))}</span><button class="mini pri" onclick="newTx('inc')">+ تحصيل متغير</button></div>`+opsTable(vars);
-  return h;
-}
-function cContracts(){
-  const cs=S.recur.filter(r=>r.kind==='contract');
-  let h=`<div class="etbar"><button class="mini pri" onclick="recForm(null,'contract')">+ عقد جديد</button><button class="mini" onclick="rtab='contracts';go('reports');openRV()">📄 تقرير العقود</button></div>`;
-  if(!cs.length)return h+'<p class="empty">لا يوجد عقود</p>';
-  let tot=0;
-  const rows=cs.map(r=>{
-    const k=nextOcc(r),d=occDate(r,k),a=occAmt(r,k),last=lastDone(r),left=daysBetween(d,today());if(r.active!==false)tot+=a;
-    return `<tr class="clk ${r.active===false?'off':''}" onclick="contractSheet('${r.id}')"><td class="wrap"><b>${esc(r.name)}</b></td><td>${everyTxt(r.every)}</td><td>${dmy(d)}<br><small class="${left<0?'neg':'muted'}">${left<0?'متأخر '+(-left)+' يوم':left===0?'النهارده':'باقي '+left+' يوم'}</small></td><td><b>${num(a)}</b></td><td>${r.pct?'+'+r.pct+'%':'—'}</td><td>${last?num(last.amount)+'<br><small class="muted">'+dmy(last.date)+'</small>':'—'}</td></tr>`;
+function vAnnual(){
+  const y=cur.y,occ=[];
+  S.recur.filter(r=>r.kind==='contract'&&r.start).forEach(r=>{
+    for(let k=0;k<300;k++){const d=occDate(r,k),yy=+d.slice(0,4);if(yy>y)break;if(yy<y)continue;const s=stOf(occRec(r,k));if(r.active===false&&s.st==='wait')continue;occ.push({r,k,date:d,amt:occAmt(r,k),s})}
   });
-  return h+kpis([['عدد العقود',cs.length,'net'],['قيمة التجديدات الجاية',fmt(tot),'inc']])+tbl(['العقد','التجديد','الميعاد الجاي','المبلغ الجاي','الزيادة','آخر تحصيل'],rows);
+  occ.sort((a,b)=>a.date.localeCompare(b.date));
+  let exp=0,got=0,rem=0;occ.forEach(o=>{exp+=o.amt;if(o.s.st==='done')got+=o.s.t.amount;else if(o.s.st==='wait')rem+=o.amt});
+  let h=`<div class="phead"><button class="mini" onclick="go('col')">→</button><h3>📆 ${esc(L('contracts'))}</h3><button class="mini" onclick="rtab='contracts';go('reports');openRV()">📄 تقرير</button><button class="mini pri" onclick="recForm(null,'contract')">+ إضافة</button></div>`
+    +yearBar()+kpis([['المتوقع',fmt(exp),'net'],['اتحصّل',fmt(got),'inc'],['باقي',fmt(rem),'exp']]);
+  if(!occ.length)return h+'<p class="empty">لا يوجد تحصيلات سنوية في السنة دي</p>';
+  return h+`<div class="list">${occ.map(o=>{
+    const done=o.s.st==='done',old=o.s.st==='old',late=!done&&!old&&o.date<today();
+    return `<div class="ck ${done?'done':''}"><input type="checkbox" ${done||old?'checked':''} ${old?'disabled':''} onchange="recToggle('${o.r.id}',${o.k},this)">
+      <div class="grow" onclick="occSheet('${o.r.id}',${o.k})"><b>${esc(o.r.name)}</b><small>${MONTHS[+o.date.slice(5,7)-1]} · ${dmy(o.date)} · ${everyTxt(o.r.every)}${o.r.pct?' · زيادة '+o.r.pct+'%':''}${done?' · اتحصّل '+dmy(o.s.t.date):''}</small>${o.r.note?`<small>📝 ${esc(o.r.note)}</small>`:''}</div>
+      <div class="amt ${done?'inc':''}">${num(done?o.s.t.amount:o.amt)}<small class="${late?'neg':'muted'}">${done?'✓ اتحصّل':late?'متأخر':old?'سابق':'منتظر'}</small><button class="mini" style="margin-top:4px" onclick="contractSheet('${o.r.id}')">⚙️</button></div></div>`}).join('')}</div>`;
 }
 function contractSheet(id){
   const r=R(id),nk=nextOcc(r);let rows=[];
   for(let k=0;k<=nk+1;k++){const s=stOf(occRec(r,k)),d=occDate(r,k);rows.push(`<tr class="${s.st==='done'?'clk':''}" ${s.st==='done'?`onclick="editTx('${s.t.id}')"`:''}><td>${k+1}</td><td>${dmy(d)}</td><td>${num(occAmt(r,k))}</td><td>${s.st==='done'?`<b class="inc">${num(s.t.amount)}</b>`:'—'}</td><td>${stTag(s,d)}</td></tr>`)}
   sheet(`<div class="phead"><h2>📄 ${esc(r.name)}</h2><button class="mini" onclick="recForm('${id}')">✏️ تعديل</button></div>
-  <p class="muted">${everyTxt(r.every)}${r.pct?' · زيادة '+r.pct+'% كل تجديد':''}${r.note?' · '+esc(r.note):''}</p>
+  <p class="muted">${everyTxt(r.every)}${r.pct?' · زيادة '+r.pct+'% كل مرة':''}${r.note?' · '+esc(r.note):''}</p>
   ${tbl(['#','الميعاد','المتوقع','اتحصّل','الحالة'],rows)}
-  <div class="two"><button class="btn" onclick="occSheet('${id}',${nk})">✓ تحصيل التجديد الجاي</button><button class="btn ghost" onclick="occSetAmt('${id}',${nk})">✏️ مبلغ التجديد الجاي</button></div>`);
+  <div class="two"><button class="btn" onclick="occSheet('${id}',${nk})">✓ تحصيل المرة الجاية</button><button class="btn ghost" onclick="occSetAmt('${id}',${nk})">✏️ مبلغ المرة الجاية</button></div>`);
 }
 function occSheet(id,k){
   const r=R(id),s=stOf(occRec(r,k));if(s.st==='done')return editTx(s.t.id);if(s.st==='old')return;
   const date=occDate(r,k),prev=k>0?occActual(r,k-1):null,meths=S.methods.filter(m=>m.active);
-  sheet(`<h2>${esc(r.name)}</h2><p class="muted">${r.kind==='contract'?'تجديد':'تحصيل'} ميعاده ${fdate(date)} · ${everyTxt(r.every)}${r.kind==='contract'&&r.pct?` · زيادة ${r.pct}%`:''}${prev!=null?` · المرة اللي فاتت ${fmt(prev)}`:''}</p>
-  <input id="k-amt" class="amt-in" type="text" inputmode="decimal" value="${occAmt(r,k)||''}" placeholder="0">
+  sheet(`<h2>${esc(r.name)}</h2><p class="muted">ميعاده ${fdate(date)} · ${everyTxt(r.every)}${r.kind==='contract'&&r.pct?` · زيادة ${r.pct}%`:''}${prev!=null?` · المرة اللي فاتت ${fmt(prev)}`:''}</p>
+  <label>المبلغ اللي اتحصّل<input id="k-amt" class="amt-in" type="text" inputmode="decimal" value="${occAmt(r,k)||''}" placeholder="0"></label>
   <label>استلمت على<select id="k-m">${opt(meths,defMethod())}</select></label>
   <div class="two"><label>تاريخ التحصيل<input id="k-d" type="date" value="${defCollectDate(date)}"></label><label>ملاحظة<input id="k-n" type="text"></label></div>
   <button class="btn" onclick="occCollect('${id}',${k})">✓ تم التحصيل</button>
@@ -815,7 +780,7 @@ function occCollect(id,k,quick){
   if(!date){toast('اختار التاريخ');return false}
   if(isClosed(date)){toast(`شهر ${mName(date.slice(0,7))} مقفول`);return false}
   const cat=ensureCat(r.name,'inc');
-  const t={id:uid(),type:'inc',amount,cat:cat.id,method,date,note:note||(r.kind==='contract'?`تجديد ${fdate(occDate(r,k))}`:''),files:[],created:Date.now(),src:{k:'r',id,p:k}};
+  const t={id:uid(),type:'inc',amount,cat:cat.id,method,date,note,files:[],created:Date.now(),src:{k:'r',id,p:k}};
   S.txs.push(t);r.st=r.st||{};r.st[k]={st:'done',txId:t.id,at:Date.now()};
   save();closeSheet();render();toast('اتسجّل التحصيل ✓');return true;
 }
@@ -824,7 +789,7 @@ function recToggle(id,k,el){
   if(s.st==='done'){
     el.checked=true;
     if(isClosed(s.t.date))return toast('الشهر مقفول');
-    if(!confirm('تلغي التحصيل ده؟ هيتمسح من العمليات'))return;
+    if(!confirm('تلغي التحصيل ده؟ هيتمسح من التحصيلات'))return;
     S.txs=S.txs.filter(t=>t.id!==s.t.id);delete r.st[k];save();render();toast('اتلغى');return;
   }
   if(occCollect(id,k,true)!==true)el.checked=false;
@@ -836,25 +801,28 @@ function occSetAmt(id,k){
 function recForm(id,kind){
   const r=id?R(id):{name:'',kind:kind||'fixed',amount:'',every:kind==='contract'?12:1,start:today(),pct:'',note:'',active:true};
   const locked=id&&Object.keys(r.st||{}).length>0,isC=r.kind==='contract';
-  sheet(`<h2>${id?'تعديل':'إضافة'} بند</h2>
+  sheet(`<h2>${id?'تعديل':'إضافة'} ${isC?'تحصيل سنوي':'بند ثابت'}</h2>
   <input type="hidden" id="r-kind" value="${r.kind}">
-  <div class="seg">${[['fixed','بند ثابت'],['contract','عقد / تجديد']].map(([k,l])=>`<button type="button" class="${r.kind===k?'on':''}" onclick="recKind(this,'${k}')">${l}</button>`).join('')}</div>
-  <label>الاسم<input id="r-name" value="${esc(r.name)}"></label>
-  <div class="two"><label><span id="r-amtl">${isC?'قيمة العقد الحالية':'المبلغ'}</span><input id="r-amt" type="text" inputmode="decimal" value="${r.amount||''}"></label>
+  <div class="seg">${[['fixed','بند ثابت (شهري)'],['contract','تحصيل سنوي / تجديد']].map(([k,l])=>`<button type="button" class="${r.kind===k?'on':''}" onclick="recKind(this,'${k}')">${l}</button>`).join('')}</div>
+  <label><span id="r-namel">${isC?'العميل / الخدمة':'اسم البند'}</span><input id="r-name" value="${esc(r.name)}" placeholder="${isC?'مثلاً: فلان - تجديد VPN':'مثلاً: الراتب'}"></label>
+  <div class="two"><label><span id="r-amtl">${isC?'المبلغ':'القيمة المتوقعة'}</span><input id="r-amt" type="text" inputmode="decimal" value="${r.amount||''}"></label>
   <label>التكرار<select id="r-every" ${locked?'disabled':''}>${EVERY.map(([v,l])=>`<option value="${v}" ${+r.every===v?'selected':''}>${l}</option>`).join('')}${EVERY.some(x=>x[0]===+r.every)?'':`<option value="${r.every}" selected>كل ${r.every} شهر</option>`}</select></label></div>
-  <label><span id="r-startl">${isC?'ميعاد التجديد (أول تحصيل)':'تاريخ أول تحصيل'}</span><input id="r-start" type="date" value="${r.start||today()}" ${locked?'disabled':''}></label>
-  <div id="r-pctb" style="${isC?'':'display:none'}"><label>نسبة الزيادة عند كل تجديد %<input id="r-pct" type="text" inputmode="decimal" value="${r.pct||''}"></label></div>
+  <label><span id="r-startl">${isC?'ميعاد الدفع':'تاريخ أول تحصيل'}</span><input id="r-start" type="date" value="${r.start||today()}" ${locked?'disabled':''}></label>
+  <div id="r-pctb" style="${isC?'':'display:none'}"><label>نسبة الزيادة كل مرة %<input id="r-pct" type="text" inputmode="decimal" value="${r.pct||''}"></label></div>
   <label>ملاحظات<input id="r-note" value="${esc(r.note||'')}"></label>
   <label class="chk"><input type="checkbox" id="r-act" ${r.active!==false?'checked':''}> مفعّل</label>
-  ${locked?'<p class="muted" style="font-size:12px">التكرار وتاريخ البداية مقفولين لأن البند عليه تحصيلات.</p>':''}
+  ${locked?'<p class="muted" style="font-size:12px">التكرار والتاريخ مقفولين لأن البند عليه تحصيلات.</p>':''}
   <button class="btn" onclick="recSave('${id||''}')">حفظ</button>`);
 }
 function recKind(btn,k){
+  const c=k==='contract';
   $('#r-kind').value=k;btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn));
-  $('#r-pctb').style.display=k==='contract'?'':'none';
-  $('#r-amtl').textContent=k==='contract'?'قيمة العقد الحالية':'المبلغ';
-  $('#r-startl').textContent=k==='contract'?'ميعاد التجديد (أول تحصيل)':'تاريخ أول تحصيل';
-  if(k==='contract'&&!$('#r-every').disabled&&+$('#r-every').value<12)$('#r-every').value='12';
+  $('#r-pctb').style.display=c?'':'none';
+  $('#r-amtl').textContent=c?'المبلغ':'القيمة المتوقعة';
+  $('#r-namel').textContent=c?'العميل / الخدمة':'اسم البند';
+  $('#r-startl').textContent=c?'ميعاد الدفع':'تاريخ أول تحصيل';
+  $('#r-name').placeholder=c?'مثلاً: فلان - تجديد VPN':'مثلاً: الراتب';
+  if(!$('#r-every').disabled)$('#r-every').value=c?'12':'1';
 }
 function recSave(id){
   const name=$('#r-name').value.trim();if(!name)return toast('اكتب الاسم');
@@ -868,7 +836,7 @@ function recSave(id){
 
 /* ========== المزيد ========== */
 function vMore(){
-  const B=[['pmv','💳',L('pm')],['docs','📎',L('docs')],['items','📋',L('items')],['months','🔒','قفل الشهور'],['settings','⚙️',L('settings')]];
+  const B=[['annual','📆',L('contracts')],['pmv','💳',L('pm')],['docs','📎',L('docs')],['items','📋',L('items')],['months','🔒','قفل الشهور'],['settings','⚙️',L('settings')]];
   return `<h3>☰ ${esc(L('more'))}</h3><div class="rgrid">${B.map(([v,ic,l])=>`<button class="rbtn" onclick="go('${v}')"><span>${ic}</span>${esc(l)}</button>`).join('')}</div>`;
 }
 function vPmv(){
@@ -1074,11 +1042,11 @@ function delSel(key){
 function vItems(){
   const k=itab,act=r=>actBadge(r.active),nm={l:'البند',v:r=>`<b>${esc(r.name)}</b>`},nt={l:'ملاحظات',v:r=>esc(r.note||'')};
   let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📋 ${esc(L('items'))}</h3></div>`
-    +tabsHTML([['exp','بنود '+L('exp')],['inc','بنود '+L('variable')],['fixed',L('fixed')],['contracts',L('contracts')]],k,'itab');
+    +tabsHTML([['exp','بنود '+L('exp')],['inc','بنود '+L('inc')],['fixed',L('fixed')],['contracts',L('contracts')]],k,'itab');
   let cols,rows,add;
   if(k==='exp'||k==='inc'){rows=S.cats.filter(c=>c.kind===k);cols=[nm,{l:'الحالة',v:act}];add=`catForm(null,'${k}')`}
-  else if(k==='fixed'){rows=S.recur.filter(r=>r.kind!=='contract');cols=[nm,{l:'المبلغ',v:r=>num(+r.amount||0)},{l:'التكرار',v:r=>everyTxt(r.every)},{l:'أول تحصيل',v:r=>dmy(r.start)},nt,{l:'الحالة',v:act}];add=`recForm(null,'fixed')`}
-  else{rows=S.recur.filter(r=>r.kind==='contract');cols=[nm,{l:'التجديد',v:r=>everyTxt(r.every)},{l:'الميعاد الجاي',v:r=>dmy(occDate(r,nextOcc(r)))},{l:'المبلغ الجاي',v:r=>`<b>${num(occAmt(r,nextOcc(r)))}</b>`},{l:'الزيادة',v:r=>r.pct?'+'+r.pct+'%':'—'},nt,{l:'الحالة',v:act}];add=`recForm(null,'contract')`}
+  else if(k==='fixed'){rows=S.recur.filter(r=>r.kind!=='contract');cols=[nm,{l:'القيمة',v:r=>num(+r.amount||0)},{l:'التكرار',v:r=>everyTxt(r.every)},{l:'أول تحصيل',v:r=>dmy(r.start)},nt,{l:'الحالة',v:act}];add=`recForm(null,'fixed')`}
+  else{rows=S.recur.filter(r=>r.kind==='contract');cols=[{l:'العميل / الخدمة',v:r=>`<b>${esc(r.name)}</b>`},{l:'التكرار',v:r=>everyTxt(r.every)},{l:'الميعاد الجاي',v:r=>dmy(occDate(r,nextOcc(r)))},{l:'المبلغ الجاي',v:r=>`<b>${num(occAmt(r,nextOcc(r)))}</b>`},{l:'الزيادة',v:r=>r.pct?'+'+r.pct+'%':'—'},nt,{l:'الحالة',v:act}];add=`recForm(null,'contract')`}
   h+=`<div class="etbar"><button class="mini pri" onclick="${add}">+ إضافة بند</button><button class="mini danger" onclick="delSel('${k}')">🗑 حذف المحدد</button></div>`;
   return h+itable(k,cols,rows);
 }
@@ -1147,7 +1115,7 @@ function bStmt(){
   const ent=Object.entries(g).sort((a,b)=>b[1].v-a[1].v);
   if(ent.length>1)b+=sec('ملخص حسب البند')+tbl(['البند','النوع','العدد','الإجمالي','النسبة'],ent.map(([id,x])=>{const tot=x.type==='exp'?s.exp:s.inc;return `<tr class="clk" onclick="${dS(from,to,id)}"><td class="wrap"><b>${esc(C(id)?.name||'—')}</b></td><td>${tag(x.type)}</td><td>${x.n}</td><td class="${x.type}"><b>${num(x.v)}</b></td><td>${pbar(tot?x.v/tot*100:0,x.type==='exp'?'#dc2626':'#16a34a')}</td></tr>`}));
   b+=sec('تفاصيل العمليات')+(rows.length?tbl(['#','التاريخ','النوع','البند','طريقة الدفع','المبلغ','ملاحظات','مرفق'],
-    rows.map((t,i)=>`<tr class="clk" onclick="editTx('${t.id}')"><td>${i+1}</td><td>${dmy(t.date)}</td><td>${tag(t.type)}</td><td class="wrap"><b>${esc(C(t.cat)?.name||'—')}</b></td><td>${esc(M(t.method)?.name||'—')}</td><td class="${t.type}"><b>${num(t.amount)}</b></td><td class="wrap">${esc(t.note||'')}</td><td>${(t.files||[]).length?'📎 '+t.files.length:'—'}</td></tr>`),
+    rows.map((t,i)=>`<tr class="clk" onclick="editTx('${t.id}')"><td>${i+1}</td><td>${dmy(t.date)}</td><td>${tag(t.type)}</td><td class="wrap"><b>${esc(C(t.cat)?.name||'—')}</b>${isAnnualTx(t)?' <span class="tag ctr">سنوي</span>':''}</td><td>${esc(M(t.method)?.name||'—')}</td><td class="${t.type}"><b>${num(t.amount)}</b></td><td class="wrap">${esc(t.note||'')}</td><td>${(t.files||[]).length?'📎 '+t.files.length:'—'}</td></tr>`),
     `<tr><td colspan="5">الإجمالي</td><td colspan="3"><span class="inc">+${num(s.inc)}</span> · <span class="exp">-${num(s.exp)}</span> · ${L('net')}: <span class="${s.net<0?'exp':''}">${netTxt(s.net)}</span></td></tr>`):'<p class="pnote">لا يوجد عمليات في الفترة دي</p>');
   return{title:'كشف حساب تفصيلي',sub,body:b,csv:{head:['التاريخ','النوع','البند','طريقة الدفع','المبلغ','ملاحظات','عدد المرفقات'],rows:rows.map(t=>[dmy(t.date),t.type==='exp'?L('expOne'):L('incOne'),C(t.cat)?.name||'',M(t.method)?.name||'',t.type==='exp'?-t.amount:t.amount,t.note||'',(t.files||[]).length])}};
 }
@@ -1199,26 +1167,25 @@ function bCmp(){
     csv:{head:['الشهر','المبلغ','الفرق','التغيير %'],rows:ks.map((k,i)=>{const pv=i?vals[i-1]:null;return[mName(k),vals[i],pv==null?'':vals[i]-pv,pv?Math.round((vals[i]-pv)/pv*100):'']})}};
 }
 function bCols(){
-  const k=RF.month,dl=dueList(k),ids=recurTxIds(),vars=keyTx(k).filter(t=>t.type==='inc'&&!ids.has(t.id)),[f,t]=mRange(k);
+  const k=RF.month,dl=dueList(k,'fixed'),linked=new Set(dl.filter(o=>o.s.st==='done').map(o=>o.s.t.id)),others=keyTx(k).filter(t=>t.type==='inc'&&!linked.has(t.id));
   let exp=0,got=0,rem=0;dl.forEach(o=>{exp+=o.amt;if(o.s.st==='done')got+=o.s.t.amount;else if(o.s.st==='wait')rem+=o.amt});
-  const vt=vars.reduce((a,x)=>a+x.amount,0);
-  let b=kpis([['المتوقع الثابت',fmt(exp),'net'],['اتحصّل منه',fmt(got),'inc'],['باقي',fmt(rem),'exp'],[L('variable'),fmt(vt),'warn'],['إجمالي الشهر',fmt(sums(keyTx(k)).inc),'inc']]);
-  b+=sec(`${L('fixed')} و${L('contracts')}`)+(dl.length?tbl(['البند','النوع','الميعاد','المتوقع','اتحصّل','تاريخ التحصيل','الحالة'],dl.map(o=>`<tr class="${o.s.st==='done'?'clk':''}" ${o.s.st==='done'?`onclick="editTx('${o.s.t.id}')"`:''}><td class="wrap"><b>${esc(o.r.name)}</b></td><td>${o.r.kind==='contract'?'<span class="tag ctr">عقد</span>':everyTxt(o.r.every)}</td><td>${dmy(o.date)}</td><td>${num(o.amt)}</td><td class="inc">${o.s.st==='done'?num(o.s.t.amount):'—'}</td><td>${o.s.st==='done'?dmy(o.s.t.date):'—'}</td><td>${stTag(o.s,o.date)}</td></tr>`)):'<p class="pnote">لا يوجد</p>');
-  b+=sec(L('variable'))+(vars.length?tbl(['التاريخ','البند','المبلغ','الطريقة','ملاحظات'],vars.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')"><td>${dmy(x.date)}</td><td class="wrap"><b>${esc(C(x.cat)?.name||'—')}</b></td><td class="inc"><b>${num(x.amount)}</b></td><td>${esc(M(x.method)?.name||'—')}</td><td class="wrap">${esc(x.note||'')}</td></tr>`)):'<p class="pnote">لا يوجد</p>');
+  let b=kpis([['إجمالي التحصيلات',fmt(sums(keyTx(k)).inc),'inc'],['المتوقع من البنود الثابتة',fmt(exp),'net'],['اتحصّل منه',fmt(got),'inc'],['باقي',fmt(rem),'exp']]);
+  b+=sec(L('fixed'))+(dl.length?tbl(['البند','التكرار','الميعاد','المتوقع','اتحصّل','تاريخ التحصيل','الحالة'],dl.map(o=>`<tr class="${o.s.st==='done'?'clk':''}" ${o.s.st==='done'?`onclick="editTx('${o.s.t.id}')"`:''}><td class="wrap"><b>${esc(o.r.name)}</b></td><td>${everyTxt(o.r.every)}</td><td>${dmy(o.date)}</td><td>${num(o.amt)}</td><td class="inc">${o.s.st==='done'?num(o.s.t.amount):'—'}</td><td>${o.s.st==='done'?dmy(o.s.t.date):'—'}</td><td>${stTag(o.s,o.date)}</td></tr>`)):'<p class="pnote">لا يوجد</p>');
+  b+=sec('باقي تحصيلات الشهر')+(others.length?tbl(['التاريخ','البند','المبلغ','الطريقة','ملاحظات'],others.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')"><td>${dmy(x.date)}</td><td class="wrap"><b>${esc(C(x.cat)?.name||'—')}</b>${isAnnualTx(x)?' <span class="tag ctr">سنوي</span>':''}</td><td class="inc"><b>${num(x.amount)}</b></td><td>${esc(M(x.method)?.name||'—')}</td><td class="wrap">${esc(x.note||'')}</td></tr>`)):'<p class="pnote">لا يوجد</p>');
   return{title:'تقرير التحصيلات',sub:mName(k),body:b};
 }
 function bContracts(){
   const cs=S.recur.filter(r=>r.kind==='contract');
-  if(!cs.length)return{title:'تقرير العقود',sub:'',body:'<p class="pnote">لا يوجد عقود</p>'};
+  if(!cs.length)return{title:'تقرير '+L('contracts'),sub:'',body:'<p class="pnote">لا يوجد</p>'};
   let tot=0,col=0;cs.forEach(r=>{if(r.active!==false)tot+=occAmt(r,nextOcc(r));Object.values(r.st||{}).forEach(rec=>{const s=stOf(rec);if(s.st==='done')col+=s.t.amount})});
-  let b=kpis([['عدد العقود',cs.length,'net'],['قيمة التجديدات الجاية',fmt(tot),'warn'],['إجمالي اللي اتحصّل',fmt(col),'inc']]);
-  b+=sec('ملخص العقود')+tbl(['العقد','التجديد','الزيادة','الميعاد الجاي','المبلغ الجاي','آخر تحصيل'],cs.map(r=>{const k=nextOcc(r),last=lastDone(r);return `<tr><td class="wrap"><b>${esc(r.name)}</b></td><td>${everyTxt(r.every)}</td><td>${r.pct?'+'+r.pct+'%':'—'}</td><td>${dmy(occDate(r,k))}</td><td><b>${num(occAmt(r,k))}</b></td><td>${last?num(last.amount)+' · '+dmy(last.date):'—'}</td></tr>`}));
+  let b=kpis([['عدد البنود',cs.length,'net'],['قيمة المرات الجاية',fmt(tot),'warn'],['إجمالي اللي اتحصّل',fmt(col),'inc']]);
+  b+=sec('الملخص')+tbl(['العميل / الخدمة','التكرار','الزيادة','الميعاد الجاي','المبلغ الجاي','آخر تحصيل'],cs.map(r=>{const k=nextOcc(r),last=lastDone(r);return `<tr><td class="wrap"><b>${esc(r.name)}</b></td><td>${everyTxt(r.every)}</td><td>${r.pct?'+'+r.pct+'%':'—'}</td><td>${dmy(occDate(r,k))}</td><td><b>${num(occAmt(r,k))}</b></td><td>${last?num(last.amount)+' · '+dmy(last.date):'—'}</td></tr>`}));
   cs.forEach(r=>{
     const nk=nextOcc(r),rows=[];
     for(let k=0;k<=nk;k++){const s=stOf(occRec(r,k)),d=occDate(r,k);rows.push(`<tr class="${s.st==='done'?'clk':''}" ${s.st==='done'?`onclick="editTx('${s.t.id}')"`:''}><td>${k+1}</td><td>${dmy(d)}</td><td>${num(occAmt(r,k))}</td><td class="inc">${s.st==='done'?num(s.t.amount):'—'}</td><td>${s.st==='done'?dmy(s.t.date):'—'}</td><td>${stTag(s,d)}</td></tr>`)}
     b+=sec('📄 '+esc(r.name))+tbl(['#','الميعاد','المتوقع','اتحصّل','تاريخ التحصيل','الحالة'],rows);
   });
-  return{title:'تقرير العقود',sub:'كل العقود والتجديدات',body:b};
+  return{title:'تقرير '+L('contracts'),sub:'كل العملاء والتجديدات',body:b};
 }
 function bInst(){
   const plans=RF.plan?S.plans.filter(p=>p.id===RF.plan):S.plans;
@@ -1243,7 +1210,7 @@ const REPS={
   year:{ic:'📆',t:'تقرير سنوي',f:yearSel,b:bYear},
   cmp:{ic:'📈',t:'مقارنة البنود',f:fCmp,b:bCmp},
   cols:{ic:'💰',t:'تقرير التحصيلات',f:monthSel,b:bCols},
-  contracts:{ic:'📄',t:'تقرير العقود',f:()=>'',b:bContracts},
+  contracts:{ic:'📄',t:'تقرير التحصيلات السنوية',f:()=>'',b:bContracts},
   inst:{ic:'🏦',t:'تقرير الأقساط',f:fInst,b:bInst},
   pmr:{ic:'💳',t:'طرق الدفع',f:monthSel,b:bPm}
 };
@@ -1290,7 +1257,7 @@ function genTab(){
   <h3>الإشعارات</h3><div class="box"><label>التنبيه قبل الميعاد بـ (يوم)<input type="text" inputmode="numeric" value="${+S.settings.lead||10}" onchange="S.settings.lead=Math.max(1,parseNum(this.value)||10);save();render();toast('اتحفظ ✓')"></label>${notifBtn()}${testBtns()}</div>`;
 }
 function lookTab(){
-  const HP=[['cur',L('cur')],['chart','الرسم البياني'],['prev',L('prev')],['fixed',L('fixed')],['contracts',L('contracts')],['inst',L('inst')],['alerts','التنبيهات'],['recent','آخر العمليات']];
+  const HP=[['cur',L('cur')],['prev',L('prev')],['fixed',L('fixed')],['contracts',L('contracts')],['inst',L('inst')],['alerts','التنبيهات'],['recent','آخر العمليات']];
   let h=`<h3>الثيم</h3><div class="themes">${Object.entries(THEMES).map(([k,t])=>`<button class="th ${(S.settings.theme||'teal')===k?'on':''}" style="--c:${t.p}" onclick="setTheme('${k}')"><i></i>${t.n}</button>`).join('')}</div>`;
   h+=`<h3>الشاشة الرئيسية</h3><div class="list">${HP.map(([k,l])=>`<label class="row chk" style="margin:0"><input type="checkbox" ${hs(k)?'checked':''} onchange="setHome('${k}',this.checked)"> ${esc(l)}</label>`).join('')}</div>`;
   h+=`<h3>المسميات</h3><div class="list">${Object.keys(LDEF).map(k=>`<div class="row"><div class="grow"><small>${LDEF[k]}</small><input data-lk="${k}" value="${esc(L(k))}"></div></div>`).join('')}</div>
@@ -1332,40 +1299,37 @@ function closeSheet(){$('#sheet').classList.remove('open')}
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2300)}
 function opt(arr,sel){return arr.map(o=>`<option value="${o.id}" ${o.id===sel?'selected':''}>${esc(o.name)}</option>`).join('')}
 
-/* --- عملية --- */
+/* --- عملية (مصروف / تحصيل) --- */
 function newTx(type){
   const dm=defMethod();if(!dm)return toast('ضيف طريقة دفع الأول');
-  F={id:null,type:type||'exp',amount:'',cat:'',method:dm,to:'',date:today(),note:'',files:[],created:0};
+  F={id:null,type:type||'exp',amount:'',catName:'',method:dm,to:'',date:today(),note:'',files:[],created:0};
   txForm();
 }
-function editTx(id){const t=S.txs.find(x=>x.id===id);if(!t)return;F={...t,amount:String(t.amount),cat:t.cat||'',to:t.to||'',note:t.note||'',files:[...(t.files||[])]};txForm()}
+function editTx(id){const t=S.txs.find(x=>x.id===id);if(!t)return;F={...t,amount:String(t.amount),catName:C(t.cat)?.name||'',to:t.to||'',note:t.note||'',files:[...(t.files||[])]};txForm()}
 function grab(){
   const v=s=>$(s)?$(s).value:null;
   if(v('#f-amt')!==null)F.amount=v('#f-amt');if(v('#f-d')!==null)F.date=v('#f-d');if(v('#f-n')!==null)F.note=v('#f-n');
-  if(v('#f-m')!==null)F.method=v('#f-m');if(v('#f-to')!==null)F.to=v('#f-to');if(v('#f-cat')!==null)F.cat=v('#f-cat');
+  if(v('#f-m')!==null)F.method=v('#f-m');if(v('#f-to')!==null)F.to=v('#f-to');if(v('#f-cat')!==null)F.catName=v('#f-cat');
 }
 function txForm(){
   const orig=F.id&&S.txs.find(t=>t.id===F.id),locked=orig&&isClosed(orig.date);
-  const cats=S.cats.filter(c=>c.kind===F.type&&(c.active!==false||c.id===F.cat));
+  const cats=S.cats.filter(c=>c.kind===F.type&&c.active!==false);
   const meths=S.methods.filter(m=>m.active||m.id===F.method||m.id===F.to);
-  if(F.type!=='tr'&&!cats.some(c=>c.id===F.cat))F.cat=cats[0]?.id||'';
   const types=[['exp',L('expOne')],['inc',L('incOne')]].concat(F.type==='tr'?[['tr','تحويل']]:[]);
-  sheet(`<h2>${F.id?'تفاصيل العملية':'عملية جديدة'}</h2>
+  sheet(`<h2>${F.id?'تفاصيل العملية':(F.type==='inc'?'تحصيل جديد':'مصروف جديد')}</h2>
   ${locked?'<p class="warn">🔒 الشهر ده مقفول</p>':''}
+  ${orig&&isAnnualTx(orig)?'<p class="warn">📆 ده تحصيل سنوي، ولو مسحته هيرجع "منتظر" في جدول التحصيلات السنوية</p>':''}
   <div class="seg">${types.map(([k,l])=>`<button class="${F.type===k?'on '+k:''}" onclick="grab();F.type='${k}';txForm()">${esc(l)}</button>`).join('')}</div>
   <input id="f-amt" class="amt-in" type="text" inputmode="decimal" placeholder="0" value="${esc(F.amount)}">
   ${F.type==='tr'
     ?`<label>من<select id="f-m">${opt(meths,F.method)}</select></label><label>إلى<select id="f-to">${opt(meths,F.to)}</select></label>`
-    :`<div class="fl">البند<div class="inl"><select id="f-cat">${opt(cats,F.cat)}</select><button type="button" class="mini" onclick="quickCat()">+ جديد</button></div></div>
+    :`<label>البند<input id="f-cat" list="catdl" autocomplete="off" value="${esc(F.catName||'')}" placeholder="${F.type==='exp'?'اكتب أو اختار، مثلاً: طازة':'اكتب أو اختار، مثلاً: مشروع كذا'}"></label>
+      <datalist id="catdl">${cats.map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist>
       <label>${F.type==='exp'?'دفعت بـ':'استلمت على'}<select id="f-m">${opt(meths,F.method)}</select></label>`}
   <div class="two"><label>التاريخ<input id="f-d" type="date" value="${F.date}"></label><label>ملاحظة<input id="f-n" type="text" value="${esc(F.note)}"></label></div>
   <div class="fl">المرفقات</div>${filesBox(F.files,'tx')}
   <button class="btn" onclick="saveTx()" ${locked?'disabled':''}>سجّل</button>
   ${F.id&&!locked?'<button class="btn ghost danger" onclick="delTx()">حذف العملية</button>':''}`);
-}
-function quickCat(){
-  grab();const n=(prompt('اسم البند الجديد')||'').trim();if(!n)return;
-  const c=ensureCat(n,F.type);c.active=true;save();F.cat=c.id;txForm();toast('اتضاف البند ✓');
 }
 function saveTx(){
   grab();const amount=parseNum(F.amount);
@@ -1373,11 +1337,10 @@ function saveTx(){
   if(!F.date)return toast('اختار التاريخ');
   if(isClosed(F.date))return toast(`شهر ${mName(F.date.slice(0,7))} مقفول`);
   if(!F.method)return toast('اختار طريقة الدفع');
-  if(F.type==='tr'){if(!F.to||F.to===F.method)return toast('اختار طريقتين مختلفتين')}
-  else if(!F.cat)return toast('اختار البند');
   const t={id:F.id||uid(),type:F.type,amount,method:F.method,date:F.date,note:(F.note||'').trim(),files:F.files||[],created:F.created||Date.now()};
+  if(F.type==='tr'){if(!F.to||F.to===F.method)return toast('اختار طريقتين مختلفتين');t.to=F.to}
+  else{const n=(F.catName||'').trim();if(!n)return toast('اكتب اسم البند');const c=ensureCat(n,F.type);c.active=true;t.cat=c.id}
   if(F.src)t.src=F.src;
-  if(F.type==='tr')t.to=F.to;else t.cat=F.cat;
   const i=S.txs.findIndex(x=>x.id===t.id);if(i>=0)S.txs[i]=t;else S.txs.push(t);
   save();closeSheet();render();refreshRV();toast('اتسجّلت ✓');
 }
