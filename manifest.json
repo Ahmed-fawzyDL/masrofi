@@ -1,7 +1,7 @@
 {
-  "name": "مصروفي",
-  "short_name": "مصروفي",
-  "description": "متابعة المصاريف والتحصيلات اليومية",
+  "name": "Fawzy Folio",
+  "short_name": "Fawzy Folio",
+  "description": "متابعة المصاريف والتحصيلات",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
