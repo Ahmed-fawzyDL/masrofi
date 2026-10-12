@@ -1,5 +1,7 @@
 /* ========== Centric · more.js ========== */
-(()=>{const s=document.createElement('style');s.textContent=`#scan .sframe:not(.card){top:8%!important;bottom:15%!important;left:3%!important;right:3%!important;width:auto!important;height:auto!important;transform:none!important;margin:0!important}
+(()=>{const s=document.createElement('style');s.textContent=`#scan .frz{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:none}
+#scan .frz[style*="block"]~.sframe{display:none}
+#scan .sframe:not(.card){top:8%!important;bottom:15%!important;left:3%!important;right:3%!important;width:auto!important;height:auto!important;transform:none!important;margin:0!important}
 .phw{position:relative;display:inline-block}.phw .phx{position:absolute;top:4px;left:4px;padding:2px 8px}`;document.head.appendChild(s)})();
 
 /* ========== الرسوم ========== */
@@ -390,7 +392,7 @@ function demoData(){
   d.cards=[{id:uid(),name:'البنك الأهلي VISA',kind:'debit',net:'visa',last4:'4821',acct:ahly,color:'#0f766e',docId:''}];
   d.renew=[{id:uid(),name:'رخصة العربية',type:'car',num:'أ ب ج 1234',exp:isoD(new Date(Date.now()+20*864e5)),lead:30,note:'',files:[]}];
   const ft=tx('exp',fish,349.7,td,cash,{via:'cash',note:'🧾'});
-  if(ft)d.buys=[{id:uid(),date:td,time:'20:12',txId:ft.id,catId:fish.id,store:'أسماك النحاس',items:[{n:'بلطي',q:1.37,p:160,t:219.2},{n:'بوري',q:.45,p:290,t:130.5}],total:349.7,method:cash,via:'cash',card:'',deliv:false,fid:''}];
+  if(ft)d.buys=[{id:uid(),date:td,time:'20:12',txId:ft.id,catId:fish.id,store:'أسماك النحاس',items:[],total:349.7,method:cash,via:'cash',card:'',deliv:false,fid:''}];
   d.contacts=[{id:uid(),name:'أسماك النحاس',kind:'shop',spec:'سمك',phones:['01030292676'],address:'24 علي أمين بجوار الأحمدي للسيارات',loc:'',catId:fish.id,at:Date.now()},{id:uid(),name:'مطعم الشبراوي',kind:'rest',spec:'',phones:['01000000001'],address:'',loc:'',catId:'',at:Date.now()}];
   return d;
 }
@@ -490,6 +492,40 @@ document.addEventListener('pointerdown',()=>{
   driveUpload(false).then(()=>toast('☁️ اتعملت نسخة ✓')).catch(()=>{});
 },true);
 
+/* ========== القراءة (OCR) ========== */
+const OCRW={};let OCRP=null;
+function getOcr(lang){
+  if(!OCRW[lang])OCRW[lang]=(async()=>{await loadJS(TESS);return await Tesseract.createWorker(lang,1,{logger:m=>{if(m.status==='recognizing text'&&OCRP)OCRP(m.progress)}})})().catch(e=>{delete OCRW[lang];throw e});
+  return OCRW[lang];
+}
+async function ocr(lang,src,params,onP){
+  const w=await getOcr(lang);
+  await w.setParameters({tessedit_pageseg_mode:'3',tessedit_char_whitelist:'',preserve_interword_spaces:'0',...(params||{})});
+  OCRP=onP||null;
+  try{return((await w.recognize(src)).data.text)||''}finally{OCRP=null}
+}
+/* رمادي + تباين، ولو bin بيحوّل الصورة أبيض وأسود حسب الإضاءة في كل حتة */
+function prepCanvas(c,o){
+  o=o||{};
+  const W=c.width,H=c.height,n=W*H,x=c.getContext('2d',{willReadFrequently:true}),im=x.getImageData(0,0,W,H),d=im.data,g=new Uint8ClampedArray(n);
+  for(let i=0,j=0;j<n;i+=4,j++)g[j]=(d[i]*.299+d[i+1]*.587+d[i+2]*.114)|0;
+  if(o.bin){
+    const W1=W+1,I=new Uint32Array(W1*(H+1));
+    for(let y=0;y<H;y++){let rs=0;for(let xx=0;xx<W;xx++){rs+=g[y*W+xx];I[(y+1)*W1+xx+1]=I[y*W1+xx+1]+rs}}
+    const r=Math.max(10,Math.round(Math.min(W,H)/20));
+    for(let y=0;y<H;y++){const y0=Math.max(0,y-r),y1=Math.min(H,y+r+1);for(let xx=0;xx<W;xx++){const x0=Math.max(0,xx-r),x1=Math.min(W,xx+r+1),s=I[y1*W1+x1]-I[y0*W1+x1]-I[y1*W1+x0]+I[y0*W1+x0],m=s/((x1-x0)*(y1-y0)),j=y*W+xx;g[j]=g[j]<m*.86?0:255}}
+  }else{
+    const h2=new Uint32Array(256);for(let j=0;j<n;j++)h2[g[j]]++;
+    let lo=0,hi=255,acc=0;
+    for(let t=0;t<256;t++){acc+=h2[t];if(acc>=n*.02){lo=t;break}}acc=0;
+    for(let t=255;t>=0;t--){acc+=h2[t];if(acc>=n*.02){hi=t;break}}
+    const k=255/Math.max(1,hi-lo);for(let j=0;j<n;j++)g[j]=(g[j]-lo)*k;
+  }
+  for(let i=0,j=0;j<n;i+=4,j++)d[i]=d[i+1]=d[i+2]=g[j];
+  x.putImageData(im,0,0);return c;
+}
+const cloneCanvas=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
+
 /* ========== الكاميرا: بتصوّر لوحدها أول ما الموبايل يثبت ========== */
 async function fileToCanvas(f){
   const u=URL.createObjectURL(f);
@@ -501,29 +537,35 @@ let SCAN=null;
 async function openScanner(o){
   closeSheet();if(SCAN)SCAN.close();
   const ov=document.createElement('div');ov.id='scan';
-  ov.innerHTML=`<video playsinline muted autoplay></video><div class="sframe ${o.card?'card':''}"></div>
+  ov.innerHTML=`<video playsinline muted autoplay></video><img class="frz" alt=""><div class="sframe ${o.card?'card':''}"></div>
   <div class="stop"><button class="mini" data-a="x">✕</button><b>${esc(o.title)}</b><button class="mini" data-a="t" style="visibility:hidden">🔦</button></div>
   <div class="sbot"><div class="sst">⏳ بيفتح الكاميرا...</div><div class="sbtns"><button class="mini" data-a="g">🖼️ من الصور</button><button class="mini pri" data-a="c">📸 صوّر</button></div></div>`;
   document.body.appendChild(ov);
-  const btn=a=>ov.querySelector(`[data-a="${a}"]`),stEl=ov.querySelector('.sst'),v=ov.querySelector('video'),fr=ov.querySelector('.sframe');
+  const btn=a=>ov.querySelector(`[data-a="${a}"]`),stEl=ov.querySelector('.sst'),v=ov.querySelector('video'),fr=ov.querySelector('.sframe'),img=ov.querySelector('.frz');
   let stream=null,alive=true,taken=false,prev=null,still=0,maxSh=0,torch=false;const t0=Date.now();
   const st=t=>{stEl.textContent=t};
   const stopCam=()=>{try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null};
   const close=()=>{if(!alive)return;alive=false;SCAN=null;stopCam();ov.remove();if(o.onCancel&&!taken)o.onCancel()};
   SCAN={close};btn('x').onclick=close;
+  if(o.read)getOcr(o.lang||'ara+eng').catch(()=>{});
   /* بيقص بالظبط اللي جوه الإطار على الشاشة */
   const grabFrame=()=>{
     const vw=v.videoWidth,vh=v.videoHeight,r=v.getBoundingClientRect(),f=fr.getBoundingClientRect();
     const sc=Math.max(r.width/vw,r.height/vh),ox=(r.width-vw*sc)/2,oy=(r.height-vh*sc)/2;
     let sx=(f.left-r.left-ox)/sc,sy=(f.top-r.top-oy)/sc,sw=f.width/sc,sh=f.height/sc;
     const mx=sw*.04,my=sh*.04;sx=Math.max(0,sx-mx);sy=Math.max(0,sy-my);sw=Math.min(vw-sx,sw+2*mx);sh=Math.min(vh-sy,sh+2*my);
-    const c=document.createElement('canvas');c.width=Math.round(sw);c.height=Math.round(sh);
+    const k=o.read?Math.min(2,(o.maxW||1600)/sw):1,c=document.createElement('canvas');c.width=Math.round(sw*k);c.height=Math.round(sh*k);
     const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(v,sx,sy,sw,sh,0,0,c.width,c.height);return c;
   };
   const run=async(c,file)=>{
-    if(taken)return;taken=true;stopCam();st('✓ اتصوّرت');
+    if(taken)return;taken=true;stopCam();
+    if(!c&&file)c=await fileToCanvas(file);
     const blob=file||await new Promise(r=>c.toBlob(r,'image/jpeg',.9));
-    close();o.onDone(blob);
+    if(!o.read){close();o.onDone(blob);return}
+    img.src=c.toDataURL('image/jpeg',.8);img.style.display='block';ov.querySelector('.sbtns').style.display='none';st('⏳ بيقرا...');
+    let res=null;
+    try{res=await o.read(c,p=>{if(alive)st(`⏳ بيقرا ${Math.round(p*100)}%`)})}catch(e){res=null}
+    if(!alive)return;close();o.onDone(blob,res);
   };
   btn('g').onclick=()=>{const i=document.createElement('input');i.type='file';i.accept='image/*';document.body.appendChild(i);i.onchange=()=>{const f=i.files[0];i.remove();if(f)run(null,f)};i.click()};
   btn('c').onclick=()=>{if(v.videoWidth&&!taken)run(grabFrame())};
@@ -561,7 +603,7 @@ function snapPhoto(o,cb){
 }
 const photosBox=(files,rm)=>(files||[]).length?`<div class="files">${files.map((f,i)=>`<div class="phw">${fileThumb(f,'view')}<button type="button" class="mini danger phx" onclick="${rm}(${i})">✕</button></div>`).join('')}</div>`:'';
 
-/* ========== الريسيت: صورة + بيانات بإيدك ========== */
+/* ========== الريسيت: بيقرا المكان والمبلغ والأرقام والعنوان ========== */
 function normPhone(x){
   let p=latD(x).replace(/\D/g,'');
   if(p.startsWith('0020'))p='0'+p.slice(4);
@@ -569,39 +611,120 @@ function normPhone(x){
   if(p.length===10&&p.startsWith('1'))p='0'+p;
   return p.length>=5?p:'';
 }
-let RCF=null;
-function scanReceipt(){
-  snapPhoto({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',name:'receipt'},fid=>{
-    RCF={fid,store:'',amount:'',date:today(),time:nowTime(),method:defMethod(),deliv:false};rcSheet();
+const fixDec=s=>s.replace(/(\d),(\d{2})(?!\d)/g,'$1.$2');
+function parseReceipt(text){
+  const T=fixDec(latD(text)),lines=T.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const nums=s=>(s.match(/\d[\d,]*(?:\.\d{1,2})?/g)||[]).map(x=>parseFloat(x.replace(/,/g,''))).filter(x=>x>0&&x<1e6);
+  const TOT=/(grand\s*total|total|net\s*amount|amount\s*due|to\s*pay|الاجمالي|اجمالي|المجموع|الصافي|صافي|المطلوب|المستحق|مدفوع|paid)/i;
+  const NOT=/(sub\s*-?\s*total|قبل|vat|tax|ضريب|خصم|discount|qty|عدد|change|الباقي|المتبقي|units|items)/i;
+  /* الإجمالي: الرقم اللي بيتكرر في سطور الإجمالي والمطلوب والمدفوع */
+  const TC=[];
+  lines.forEach((l,i)=>{const L=l.replace(/ى/g,'ي').replace(/[أإآ]/g,'ا');if(!TOT.test(L)||NOT.test(L))return;let n=nums(l);if(!n.length&&lines[i+1])n=nums(lines[i+1]);if(n.length)TC.push(Math.round(Math.max(...n)*100)/100)});
+  let total=0,rep=0;
+  if(TC.length){const cnt={};TC.forEach(v=>cnt[v]=(cnt[v]||0)+1);const k=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||b-a)[0];total=+k;rep=cnt[k]}
+  else{const m=lines.flatMap(l=>/\d\.\d{2}\b/.test(l)?nums(l):[]).filter(x=>x<100000);if(m.length)total=Math.max(...m)}
+  let date=null;
+  for(const l of lines){
+    let m=l.match(/(20\d{2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{1,2})/),d=null;
+    if(m)d=`${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
+    else if((m=l.match(/\b(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{2,4})\b/))){let y=+m[3];if(y<100)y+=2000;d=`${y}-${pad(+m[2])}-${pad(+m[1])}`}
+    if(d){const[,mo,dd]=d.split('-').map(Number);if(mo>=1&&mo<=12&&dd>=1&&dd<=31&&d<=today()&&daysBetween(today(),d)<=90){date=d;break}}
+  }
+  /* الوقت: جنب كلمة "الوقت" الأول، وبيقبل : أو . */
+  let time='';
+  const tl=lines.find(l=>/(الوقت|time)/i.test(l));
+  let tm=tl&&tl.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*[:.;،]\s*([0-5]\d)(?![\d\/])/);
+  if(!tm)for(const l of lines){const m=l.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*:\s*([0-5]\d)(?![\d\/])/);if(m){tm=m;break}}
+  if(tm){const src=tl&&tl.includes(tm[0])?tl:T;let h=+tm[1];if(/(pm|مساء)/i.test(src)&&h<12)h+=12;if(/(am|صباح)/i.test(src)&&h===12)h=0;time=pad(h)+':'+tm[2]}
+  /* اسم المحل: سطر فوق فيه كلام حقيقي مش حروف متفرقة */
+  const SKIP=/(tel|phone|mob|fax|www|http|@|vat|tax|invoice|receipt|cashier|date|time|welcome|cash|sales|فاتور|ايصال|إيصال|تليفون|هاتف|موبايل|ضريب|سجل|تاريخ|الوقت|كاشير|رقم|عنوان|شارع|اهلا|أهلا|مرحبا|مبيعات|كاش|نقد|البون|الوردي|المستند|العميل|البائع|صنف|كمية|سعر|قيمة)/i;
+  let merchant='',bestS=0;
+  lines.slice(0,10).forEach((l,i)=>{
+    if(SKIP.test(l)||/\d/.test(l))return;
+    const ws=l.replace(/[^A-Za-z\u0621-\u064A\s&']/g,' ').split(/\s+/).filter(Boolean);
+    const gd=ws.filter(w=>w.length>=3&&!/^(.)\1/.test(w)),bad=ws.length-gd.length,letters=gd.join('').length;
+    if(!gd.length||letters<6||bad*2>gd.length)return;
+    const sc=letters*2-bad*4-i*2;
+    if(sc>bestS){bestS=sc;merchant=gd.join(' ').slice(0,40)}
   });
+  const nt=' '+normAr(text)+' ';let match=null,best=0;
+  S.cats.filter(c=>c.kind==='exp'&&c.active!==false).forEach(c=>[c.name,...(c.alias||[])].forEach(n=>{const k=normAr(n);if(k.length>=3&&nt.includes(k)&&k.length>best){best=k.length;match=c}}));
+  const l4=new Set([...T.matchAll(/[*xX•#]{2,}[\s*xX•#-]*(\d{4})(?!\d)/g)].map(m=>m[1]).concat([...T.matchAll(/(?:card|visa|master|meeza|ending|بطاق|كارت|فيزا)[^\n]{0,30}?(\d{4})(?!\d)/gi)].map(m=>m[1])));
+  const card=S.cards.find(c=>l4.has(c.last4))||null;
+  const cash=!card&&/(cash|كاش|نقد)/i.test(T);
+  const VEND=/(برمج|powered|software|developed|تصميم|نظام|system)/i,phones=[];
+  lines.forEach(l=>{if(VEND.test(l))return;(l.match(/(?<![\d.])(?:\+?20|0020)?0?1[0125]\d{8}(?![\d.])|(?<![\d.])0[2-9]\d{7,8}(?![\d.])|(?<![\d.])1[69]\d{3}(?![\d.])/g)||[]).forEach(x=>{const p=normPhone(x);if(p&&!phones.includes(p))phones.push(p)})});
+  const ADR=/(شارع|ش\.|عمار|برج|بجوار|امام|أمام|خلف|ميدان|طريق|مدينه|مدينة|الدور|مول|street|st\.|road|mall)/i;
+  const al=lines.find(l=>ADR.test(l)&&!VEND.test(l));
+  let address='';
+  if(al)address=al.replace(/(?:\+?20|0020)?0?1[0125]\d{8}/g,'').replace(/\s+/g,' ').trim().replace(/^(?:[^\s\d]\s+)+/,'').replace(/(?:\s+[^\s\d])+$/,'').slice(0,90);
+  const deliv=/(delivery|دليفري|ديليفري|توصيل)/i.test(T);
+  const rest=/(restaurant|cafe|café|مطعم|كافيه|كافيتريا|مشويات|بيتزا|pizza|burger|برجر)/i.test(T);
+  return{total,TC,rep,date,time,merchant,match,card,cash,phones,address,deliv,rest};
 }
-function rcSheet(){
-  const r=RCF,meths=S.methods.filter(m=>m.active||m.id===r.method);
-  sheet(`<h2>🧾 ريسيت جديد</h2>
-  <div class="files">${fileThumb(r.fid,'view')}</div>
-  <label>المكان<input id="rc-s" list="rc-l" value="${esc(r.store)}" placeholder="اسم المحل" oninput="rcPick(this.value)"><datalist id="rc-l">${S.cats.filter(c=>c.kind==='exp'&&c.active!==false).map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist></label>
-  <label>المبلغ<input id="rc-a" inputmode="decimal" value="${esc(r.amount)}" placeholder="0.00"></label>
-  <div class="two"><label>التاريخ<input id="rc-d" type="date" value="${r.date}"></label><label>الوقت<input id="rc-h" type="time" value="${r.time||''}"></label></div>
-  <label>اتدفعت من<select id="rc-m">${opt(meths,r.method)}</select></label>
-  <div class="seg">${[[0,'🛍️ من المكان'],[1,'🛵 دليفري']].map(([v,l])=>`<button type="button" class="${+!!r.deliv===v?'on':''}" onclick="rcGrab();RCF.deliv=${!!v};rcSheet()">${l}</button>`).join('')}</div>
-  <button class="btn" onclick="rcSave()">حفظ</button>`);
+/* بيجمع قرايتين ويختار الأحسن من كل واحدة */
+function mergeRc(a,b){
+  const sc=r=>(r.TC.length?3:0)+(r.merchant?2:0)+(r.time?1:0)+(r.date?1:0)+Math.min(2,r.phones.length);
+  const[A,B]=sc(b)>sc(a)?[b,a]:[a,b];
+  ['merchant','time','date','address','match','card'].forEach(k=>{if(!A[k])A[k]=B[k]});
+  B.phones.forEach(p=>{if(!A.phones.includes(p))A.phones.push(p)});
+  A.cash=A.cash||B.cash;A.deliv=A.deliv||B.deliv;A.rest=A.rest||B.rest;
+  const cnt={};[...a.TC,...b.TC].forEach(v=>cnt[v]=(cnt[v]||0)+1);
+  const ks=Object.keys(cnt);if(ks.length)A.total=+ks.sort((x,y)=>cnt[y]-cnt[x]||y-x)[0];
+  else if(!A.total)A.total=B.total;
+  return A;
 }
-/* لو اخترت مكان متسجل قبل كده، بيختار الحساب بتاعه لوحده */
-function rcPick(v){const c=S.cats.find(x=>x.kind==='exp'&&normAr(x.name)===normAr(v));if(c&&c.acct&&M(c.acct)){const s=$('#rc-m');if(s)s.value=c.acct}}
-function rcGrab(){if(!$('#rc-s'))return;RCF.store=$('#rc-s').value;RCF.amount=$('#rc-a').value;RCF.date=$('#rc-d').value;RCF.time=$('#rc-h').value;RCF.method=$('#rc-m').value}
-function rcSave(){
-  rcGrab();const n=RCF.store.trim(),a=parseNum(RCF.amount);
-  if(!n)return toast('اكتب اسم المكان');
-  if(!(a>0))return toast('اكتب المبلغ');
-  if(!RCF.date)return toast('اختار التاريخ');
-  if(isClosed(RCF.date))return toast('الشهر ده مقفول');
-  if(!RCF.method)return toast('ضيف حساب الأول');
-  const cat=S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(n))||ensureCat(n,'exp');cat.active=true;
-  const m=M(RCF.method),via=m&&m.type==='cash'?'cash':(cat.via||'');
-  const t={id:uid(),type:'exp',amount:a,cat:cat.id,method:RCF.method,via,date:RCF.date,note:'🧾'+(RCF.deliv?' 🛵':''),files:[RCF.fid],created:Date.now()};
+function scanReceipt(){
+  openScanner({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',maxW:1800,
+    read:async(c,onP)=>{
+      const base=cloneCanvas(c);prepCanvas(c);
+      const a=parseReceipt(await ocr('ara+eng',c,{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'},p=>onP(p*.5)));
+      if(a.merchant&&a.rep>=2)return a;
+      prepCanvas(base,{bin:true});
+      const b=parseReceipt(await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.5+p*.5)));
+      return mergeRc(a,b);
+    },
+    onDone:async(blob,rc)=>{const ids=await addFiles([new File([blob],'receipt-'+today()+'.jpg',{type:'image/jpeg'})]);receiptFlow(rc,ids[0])}});
+}
+async function receiptFlow(rc,fid){
+  rc=rc||{total:0,merchant:'',match:null,card:null,cash:false,phones:[],address:'',date:null,time:'',deliv:false,rest:false};
+  const guess=rc.match?rc.match.name:rc.merchant;let cat=null;
+  if(guess&&await ask(`${guess}؟`,'',{icon:'🧾',ok:'أيوه',cancel:'لأ'}))cat=rc.match||ensureCat(rc.merchant,'exp');
+  if(!cat){
+    const n=((await askInput('اسم المكان','',''))||'').trim();
+    if(!n)return toast('اتلغى');
+    cat=S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(n))||ensureCat(n,'exp');
+    if(rc.merchant&&normAr(rc.merchant)!==normAr(cat.name))cat.alias=[...new Set([...(cat.alias||[]),rc.merchant])];
+  }
+  cat.active=true;
+  const card=rc.card,cashM=S.methods.find(m=>m.active&&m.type==='cash');
+  let method,via,payTxt;
+  if(card&&M(card.acct)){method=card.acct;via='card';payTxt=`💳 ${card.name} •••• ${card.last4}`}
+  else if(rc.cash&&cashM){method=cashM.id;via='cash';payTxt='💵 كاش'}
+  else{method=cat.acct&&M(cat.acct)?cat.acct:defMethod();via=cat.via||'';payTxt=M(method)?.name||''}
+  const a=parseNum(await askInput('المبلغ',`${cat.name}${payTxt?'\n'+payTxt:''}`,rc.total?amtStr(rc.total):'',true));
+  if(!(a>0))return toast('اتلغى');
+  const deliv=!(await ask('الاستلام',rc.deliv?'🛵 الريسيت فيه توصيل':'',{icon:'🛍️',ok:'🛍️ من المكان',cancel:'🛵 دليفري'}));
+  let date=rc.date||today();if(isClosed(date))date=today();
+  if(isClosed(date))return toast('الشهر الحالي مقفول');
+  if(!method)return toast('ضيف حساب الأول');
+  const t={id:uid(),type:'exp',amount:a,cat:cat.id,method,via,date,note:'🧾'+(deliv?' 🛵':'')+(card?' •••• '+card.last4:''),files:fid?[fid]:[],created:Date.now()};
   S.txs.push(t);
-  S.buys.push({id:uid(),date:RCF.date,time:RCF.time||'',txId:t.id,catId:cat.id,store:cat.name,items:[],total:a,method:RCF.method,via,card:'',deliv:RCF.deliv,fid:RCF.fid});
-  RCF=null;save();closeSheet();render();toast('اتسجّل ✓');
+  const b={id:uid(),date,time:rc.time||(date===today()?nowTime():''),txId:t.id,catId:cat.id,store:cat.name,items:[],total:a,method,via,card:card?card.last4:'',deliv,fid};
+  S.buys.push(b);save();render();
+  contactFromReceipt(rc,cat);
+  banner('🧾',`اتسجّل ${fmt(a)}`,cat.name,()=>buySheet(b.id),'ok');
+}
+function contactFromReceipt(rc,cat){
+  if(!rc.phones.length)return;
+  const ex=findPhone(rc.phones);
+  if(ex){
+    const c=ex.c;
+    if(!c.address&&rc.address){c.address=rc.address;save()}
+    setTimeout(()=>say('الأرقام متسجلة قبل كده',`${ex.p} · ${c.name}${c.catId&&C(c.catId)?'\n'+C(c.catId).name:''}`,'📇'),400);return;
+  }
+  S.contacts.push({id:uid(),name:cat.name,kind:rc.rest?'rest':'shop',spec:'',phones:rc.phones,address:rc.address||'',loc:'',catId:cat.id,at:Date.now()});save();
+  setTimeout(()=>toast(`📇 اتسجّل ${cat.name} في Contacts`),1200);
 }
 
 /* ========== Contacts ========== */
@@ -673,22 +796,15 @@ async function ctDel(id){if(!await ask('حذف؟','',{danger:true,icon:'🗑',ok
 /* ========== المشتروات ========== */
 const payLabel=b=>b.card?`💳 •••• ${b.card}`:[M(b.method)?.name,viaTxt(b.via)].filter((x,i,a)=>x&&a.indexOf(x)===i).join(' · ');
 const whenTxt=b=>fdate(b.date)+(b.time?' · '+fmtTime(b.time):'');
-const buyRow=b=>`<div class="row" onclick="buySheet('${b.id}')"><span class="ic" style="background:var(--soft)">${b.deliv?'🛵':'🛍️'}</span><div class="grow"><b>${esc(b.store)}</b><small>${whenTxt(b)}${b.items.length?' · '+b.items.length+' صنف':''} · ${esc(payLabel(b))}</small></div><div class="amt exp">${num(b.total)}</div></div>`;
+const buyRow=b=>`<div class="row" onclick="buySheet('${b.id}')"><span class="ic" style="background:var(--soft)">${b.deliv?'🛵':'🛍️'}</span><div class="grow"><b>${esc(b.store)}</b><small>${whenTxt(b)} · ${esc(payLabel(b))}</small></div><div class="amt exp">${num(b.total)}</div></div>`;
 function vBuy(){
   setTimeout(bRender);
   return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🛒 ${esc(L('buy'))}</h3><button class="mini pri" onclick="scanReceipt()">📷 Receipt Scan</button></div>
-  <div class="inl"><input id="b-q" placeholder="🔍 صنف أو محل..." value="${esc(bq)}" oninput="bq=this.value;bRender()">${bq?`<button class="mini" onclick="bq='';render()">✕</button>`:''}</div><div id="b-l" style="margin-top:8px"></div>`;
+  <div class="inl"><input id="b-q" placeholder="🔍 اسم المحل..." value="${esc(bq)}" oninput="bq=this.value;bRender()">${bq?`<button class="mini" onclick="bq='';render()">✕</button>`:''}</div><div id="b-l" style="margin-top:8px"></div>`;
 }
 function bRender(){
   const el=$('#b-l');if(!el)return;const q=normAr(bq),list=[...S.buys].sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
-  if(q){
-    const inv=list.filter(b=>normAr(b.store).includes(q)),hits=[];
-    list.forEach(b=>b.items.forEach(it=>{if(normAr(it.n).includes(q))hits.push({b,it})}));
-    let h='';
-    if(inv.length)h+=`<div class="list">${inv.map(buyRow).join('')}</div>`;
-    if(hits.length)h+=`<h3>الأصناف</h3>`+tbl(['الصنف','التاريخ','الكمية','السعر','الإجمالي'],hits.map(({b,it})=>`<tr class="clk" onclick="buySheet('${b.id}')"><td class="wrap"><b>${esc(it.n)}</b>${sm(esc(b.store))}</td><td>${dmy2(b.date)}</td><td>${num(it.q)}</td><td>${num(it.p)}</td><td><b>${num(it.t)}</b></td></tr>`));
-    el.innerHTML=h||'<p class="empty">لا يوجد</p>';return;
-  }
+  if(q){const inv=list.filter(b=>normAr(b.store).includes(q));el.innerHTML=inv.length?`<div class="list">${inv.map(buyRow).join('')}</div>`:'<p class="empty">لا يوجد</p>';return}
   if(!list.length){el.innerHTML='<div class="nempty"><div>🛒</div><b>لا يوجد مشتروات</b></div>';return}
   const mt=list.filter(b=>b.date.startsWith(NKM)).reduce((a,b)=>a+b.total,0);
   el.innerHTML=kpis([['مشتروات '+MONTHS[NM-1],fmt(mt),'exp'],['عدد الفواتير',list.length,'net']])+`<div class="list">${list.map(buyRow).join('')}</div>`;
@@ -701,7 +817,6 @@ function buySheet(id){
   <div class="kv"><span>المبلغ</span><b class="neg">${fmt(b.total)}</b></div>
   <div class="kv"><span>اتدفعت بـ</span><b>${esc(payLabel(b))||'—'}</b></div>
   <div class="kv"><span>الاستلام</span><b>${b.deliv?'🛵 دليفري':'🛍️ من المكان'}</b></div>
-  ${b.items.length?`<h3>الأصناف (${b.items.length})</h3>`+tbl(['الصنف','الكمية','السعر','الإجمالي'],b.items.map(i=>`<tr><td class="wrap"><b>${esc(i.n)}</b></td><td>${num(i.q)}</td><td>${num(i.p)}</td><td><b>${num(i.t)}</b></td></tr>`)):''}
   ${t?`<button class="btn ghost" onclick="editTx('${t.id}')">🧾 المصروف</button>`:''}
   <button class="btn ghost danger" onclick="buyDel('${id}')">🗑 حذف الفاتورة</button>`);
 }
@@ -711,30 +826,15 @@ function bfSheet(){
   sheet(`<h2>🛒 تعديل الفاتورة</h2>
   ${b.fid?`<div class="files">${fileThumb(b.fid,'view')}</div>`:''}
   <div class="two"><label>المحل<input id="bf-s" value="${esc(b.store)}"></label><label>التاريخ<input id="bf-d" type="date" value="${b.date}"></label></div>
-  <div class="two"><label>الوقت<input id="bf-h" type="time" value="${b.time||''}"></label><label>المبلغ<input id="bf-t" inputmode="decimal" value="${amtStr(b.total)}" oninput="bfSum()"></label></div>
+  <div class="two"><label>الوقت<input id="bf-h" type="time" value="${b.time||''}"></label><label>المبلغ<input id="bf-t" inputmode="decimal" value="${amtStr(b.total)}"></label></div>
   <div class="seg">${[[0,'🛍️ من المكان'],[1,'🛵 دليفري']].map(([v,l])=>`<button type="button" class="${+!!b.deliv===v?'on':''}" onclick="bfGrab();BF.deliv=${!!v};bfSheet()">${l}</button>`).join('')}</div>
-  ${b.items.length?`<div class="bi hd"><span>الصنف</span><span>الكمية</span><span>السعر</span><span>الإجمالي</span><span></span></div>
-  ${b.items.map((i,k)=>`<div class="bi" data-bi="${k}"><input data-f="n" value="${esc(i.n)}"><input data-f="q" inputmode="decimal" value="${i.q}" oninput="bfCalc(this)"><input data-f="p" inputmode="decimal" value="${amtStr(i.p)}" oninput="bfCalc(this)"><input data-f="t" inputmode="decimal" value="${amtStr(i.t)}" oninput="bfSum()"><button type="button" class="mini danger" onclick="bfGrab();BF.items.splice(${k},1);bfSheet()">✕</button></div>`).join('')}
-  <div class="bsum" id="bf-sum"></div>`:''}
-  <button type="button" class="mini" onclick="bfGrab();BF.items.push({n:'',q:1,p:0,t:0});bfSheet()">+ صنف</button>
   <button class="btn" onclick="bfSave()">حفظ</button>`);
-  bfSum();
 }
-function bfCalc(el){const r=el.closest('.bi'),q=parseNum(r.querySelector('[data-f=q]').value),p=parseNum(r.querySelector('[data-f=p]').value);if(q>0&&p>=0)r.querySelector('[data-f=t]').value=amtStr(r2(q*p));bfSum()}
-function bfSum(){
-  const e=$('#bf-sum');if(!e)return;
-  const s=r2([...document.querySelectorAll('#sheet .bi[data-bi]')].reduce((a,r)=>a+(parseNum(r.querySelector('[data-f=t]').value)||0),0)),tot=parseNum($('#bf-t').value)||0;
-  e.className='bsum '+(Math.abs(s-tot)<=.05?'ok':'bad');e.innerHTML=`<span>مجموع الأصناف</span><b>${num(s)} / ${num(tot)}</b>`;
-}
-function bfGrab(){
-  if(!$('#bf-s'))return;BF.store=$('#bf-s').value;BF.date=$('#bf-d').value;BF.time=$('#bf-h').value;BF.total=parseNum($('#bf-t').value)||0;
-  BF.items=[...document.querySelectorAll('#sheet .bi[data-bi]')].map(r=>({n:r.querySelector('[data-f=n]').value.trim(),q:parseNum(r.querySelector('[data-f=q]').value)||1,p:parseNum(r.querySelector('[data-f=p]').value)||0,t:parseNum(r.querySelector('[data-f=t]').value)||0}));
-}
+function bfGrab(){if(!$('#bf-s'))return;BF.store=$('#bf-s').value;BF.date=$('#bf-d').value;BF.time=$('#bf-h').value;BF.total=parseNum($('#bf-t').value)||0}
 function bfSave(){
   bfGrab();if(!BF.store.trim())return toast('اكتب اسم المحل');if(!BF.date)return toast('اختار التاريخ');
   if(!(BF.total>0))return toast('اكتب المبلغ');
-  BF.items=BF.items.filter(i=>i.n);
-  const b=S.buys.find(x=>x.id===BF.id);if(!b)return;Object.assign(b,BF,{store:BF.store.trim()});
+  const b=S.buys.find(x=>x.id===BF.id);if(!b)return;Object.assign(b,BF,{store:BF.store.trim(),items:[]});
   const t=S.txs.find(x=>x.id===b.txId);
   if(t&&!isClosed(t.date)&&!isClosed(b.date)){t.amount=b.total;t.date=b.date}
   save();render();buySheet(b.id);toast('اتحفظ ✓');
@@ -867,6 +967,7 @@ async function docDel(id){if(!await ask('حذف؟','',{danger:true,icon:'🗑',o
 
 /* ========== تشغيل ========== */
 S.contacts.forEach(c=>{if(c.note)c.note=''});
+S.buys.forEach(b=>{b.items=[]});
 applyTheme();applyFont();applyName();autoPostFixed();save();render();gcFiles();
 if(LK.pin)showLock();else inAppAlerts();
 if(!DEMO&&GD.linked)loadJS('https://accounts.google.com/gsi/client').catch(()=>{});
