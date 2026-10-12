@@ -3,7 +3,14 @@
 #scan .frz[style*="block"]~.sframe{display:none}
 #scan .sframe:not(.card){top:8%!important;bottom:15%!important;left:3%!important;right:3%!important;width:auto!important;height:auto!important;transform:none!important;margin:0!important}
 .phw{position:relative;display:inline-block}.phw .phx{position:absolute;top:4px;left:4px;padding:2px 8px}
-.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.three .btn{margin:0;padding-left:4px;padding-right:4px}`;document.head.appendChild(s)})();
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.three .btn{margin:0;padding-left:4px;padding-right:4px}
+input[dir=auto],textarea[dir=auto]{unicode-bidi:plaintext;text-align:start}
+b,strong,small,h2,h3,.muted,.kv b,td{unicode-bidi:plaintext}`;document.head.appendChild(s)})();
+/* اتجاه الكتابة: العربي من اليمين والإنجليزي من الشمال */
+(()=>{
+  const fix=()=>document.querySelectorAll('input:not([dir]),textarea:not([dir])').forEach(el=>{const t=(el.getAttribute('type')||'text').toLowerCase();if(el.tagName==='TEXTAREA'||['text','search','email','url'].includes(t))el.setAttribute('dir','auto')});
+  let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;fix()})}).observe(document.documentElement,{childList:true,subtree:true});fix();
+})();
 
 /* ========== الرسوم ========== */
 function niceMax(m){const p=Math.pow(10,Math.floor(Math.log10(m)));return Math.ceil(m/p*2)/2*p}
@@ -505,7 +512,6 @@ async function ocr(lang,src,params,onP){
   OCRP=onP||null;
   try{return((await w.recognize(src)).data.text)||''}finally{OCRP=null}
 }
-/* رمادي + تباين، ولو bin بيحوّل الصورة أبيض وأسود حسب الإضاءة في كل حتة */
 function prepCanvas(c,o){
   o=o||{};
   const W=c.width,H=c.height,n=W*H,x=c.getContext('2d',{willReadFrequently:true}),im=x.getImageData(0,0,W,H),d=im.data,g=new Uint8ClampedArray(n);
@@ -526,10 +532,9 @@ function prepCanvas(c,o){
   x.putImageData(im,0,0);return c;
 }
 const cloneCanvas=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
-/* الجزء اللي فوق من الصورة (فيه اسم المحل) */
 const cropTop=(c,f)=>{const n=document.createElement('canvas');n.width=c.width;n.height=Math.round(c.height*f);n.getContext('2d').drawImage(c,0,0);return n};
 
-/* ========== الكاميرا: بتصوّر لوحدها أول ما الموبايل يثبت ========== */
+/* ========== الكاميرا والصور والملفات ========== */
 async function fileToCanvas(f){
   const u=URL.createObjectURL(f);
   try{const img=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u});
@@ -551,7 +556,6 @@ async function openScanner(o){
   const close=()=>{if(!alive)return;alive=false;SCAN=null;stopCam();ov.remove();if(o.onCancel&&!taken)o.onCancel()};
   SCAN={close};btn('x').onclick=close;
   if(o.read)getOcr(o.lang||'ara+eng').catch(()=>{});
-  /* بيقص بالظبط اللي جوه الإطار على الشاشة */
   const grabFrame=()=>{
     const vw=v.videoWidth,vh=v.videoHeight,r=v.getBoundingClientRect(),f=fr.getBoundingClientRect();
     const sc=Math.max(r.width/vw,r.height/vh),ox=(r.width-vw*sc)/2,oy=(r.height-vh*sc)/2;
@@ -599,17 +603,17 @@ async function openScanner(o){
   };
   loop();
 }
-/* بيصوّر وبيحفظ الصورة ويرجّع رقمها */
 function snapPhoto(o,cb){
   openScanner({title:o.title,hint:o.hint,card:!!o.card,onCancel:o.onCancel,
     onDone:async blob=>{const ids=await addFiles([new File([blob],(o.name||'photo')+'-'+today()+'.jpg',{type:'image/jpeg'})]);cb(ids[0])}});
 }
-/* اختيار صورة أو أكتر من الجاليري */
-function pickGallery(cb){
-  const i=document.createElement('input');i.type='file';i.accept='image/*';i.multiple=true;i.style.display='none';document.body.appendChild(i);
+/* اختيار صور أو ملفات من الموبايل */
+function pickFiles(accept,cb){
+  const i=document.createElement('input');i.type='file';i.accept=accept;i.multiple=true;i.style.display='none';document.body.appendChild(i);
   i.onchange=async()=>{const fs=[...i.files];i.remove();if(!fs.length)return;const ids=await addFiles(fs);cb(ids)};
   i.click();
 }
+const pickGallery=cb=>pickFiles('image/*',cb);
 const photosBox=(files,rm)=>(files||[]).length?`<div class="files">${files.map((f,i)=>`<div class="phw">${fileThumb(f,'view')}<button type="button" class="mini danger phx" onclick="${rm}(${i})">✕</button></div>`).join('')}</div>`:'';
 const photoBtns=(snap,gal,files,share)=>`<div class="${files.length?'three':'two'}"><button type="button" class="btn ghost" onclick="${snap}()">📷 صوّر</button><button type="button" class="btn ghost" onclick="${gal}()">🖼️ من الصور</button>${files.length?`<button type="button" class="btn ghost" onclick="${share}">📤 إرسال</button>`:''}</div>`;
 
@@ -623,7 +627,6 @@ function normPhone(x){
 }
 const fixDec=s=>s.replace(/(\d),(\d{2})(?!\d)/g,'$1.$2');
 const splitLines=t=>fixDec(latD(t||'')).split(/\n+/).map(s=>s.trim()).filter(Boolean);
-/* درجة الشبه بين كلمتين (من 0 لـ 1) — بتستحمل الحروف الغلط */
 function sim(a,b){
   const n=s=>normAr(String(s)).toLowerCase().replace(/[\s\u0640]+/g,'');a=n(a);b=n(b);
   if(!a||!b)return 0;if(a===b)return 1;if(a.length<2||b.length<2)return 0;
@@ -935,13 +938,13 @@ function bfSave(){
 async function buyDel(id){if(!await ask('حذف الفاتورة؟','المصروف هيفضل متسجل',{danger:true,icon:'🗑',ok:'حذف'}))return;S.buys=S.buys.filter(x=>x.id!==id);save();closeSheet();render()}
 
 /* ========== زراير المرفقات ========== */
-const SYSF=[{id:'bank',name:'💳 كروت بنكية'},{id:'personal',name:'🪪 كروت شخصية'}],GENF={id:'gen',name:'📂 عام'};
+const SYSF=[{id:'bank',name:'💳 كروت بنكية'},{id:'personal',name:'🪪 كروت شخصية'}],GENF={id:'gen',name:'📂 عام'},ALLF={id:'all',name:'🗂️ الكل'};
 const folders=()=>SYSF.concat(S.settings.dfold||[],[GENF]);
-const isSysF=id=>id==='gen'||SYSF.some(f=>f.id===id);
+const isSysF=id=>id==='gen'||id==='all'||SYSF.some(f=>f.id===id);
 const foldOf=d=>{const f=(S.settings.dmap||{})[d.id];return f&&folders().some(x=>x.id===f)?f:'gen'};
+const foldName=id=>(folders().find(f=>f.id===id)||GENF).name;
 function setFold(docId,f){S.settings.dmap=Object.assign({},S.settings.dmap,{[docId]:f})}
 function foldAdd(n){const id=uid();S.settings.dfold=[...(S.settings.dfold||[]),{id,name:'📁 '+n.replace(/^📁\s*/,'')}];return id}
-/* ربط الكروت بالمرفقات */
 const LNK=()=>S.settings.links||(S.settings.links={});
 const linkedDoc=k=>{const id=LNK()[k];return id?doc(id):null};
 const linkOf=docId=>Object.keys(LNK()).find(k=>LNK()[k]===docId);
@@ -1055,18 +1058,21 @@ async function renDel(id){if(!await ask('حذف؟','صوره هتتمسح كما
 
 /* ========== المرفقات ========== */
 const doc=id=>S.docs.find(x=>x.id===id);
-var DFOLD='bank';
+var DFOLD='all';
 function vDocs(){
   let h=`<div class="phead"><h3>📎 ${esc(L('docs'))}</h3></div>`+tabsHTML([['my','مستنداتي'],['tx','مرفقات العمليات']],dtab,'dtab');
   if(dtab!=='my')return h+opsTable(S.txs.filter(t=>(t.files||[]).length));
-  const fs=folders();if(!fs.some(f=>f.id===DFOLD))DFOLD='bank';
-  const cnt=id=>S.docs.filter(d=>foldOf(d)===id).length;
+  const fs=[ALLF].concat(folders());if(!fs.some(f=>f.id===DFOLD))DFOLD='all';
+  const cnt=id=>id==='all'?S.docs.length:S.docs.filter(d=>foldOf(d)===id).length;
   h+=`<div class="tabs ctabs">${fs.map(f=>`<button class="${DFOLD===f.id?'on':''}" onclick="DFOLD='${f.id}';render()">${esc(f.name)}${cnt(f.id)?' ('+cnt(f.id)+')':''}</button>`).join('')}<button onclick="foldNew()">➕ زرار جديد</button></div>`;
-  h+=`<div class="etbar"><button class="mini pri" onclick="docForm()">+ إضافة</button>${isSysF(DFOLD)?'':`<button class="mini" onclick="foldRen('${DFOLD}')">✏️ اسم الزرار</button><button class="mini danger" onclick="foldDel('${DFOLD}')">🗑 الزرار</button>`}</div>`;
-  const list=S.docs.filter(d=>foldOf(d)===DFOLD).sort((a,b)=>(b.upd||0)-(a.upd||0));
-  h+=list.length?`<div class="list">${list.map(d=>`<div class="row" onclick="docSheet('${d.id}')"><span class="ic" style="background:var(--soft)">📁</span><div class="grow"><b>${esc(d.name)}</b><small>${d.files.length} ملف${d.upd?' · '+new Date(d.upd).toLocaleDateString('ar-EG'):''}${d.note?' · '+esc(d.note):''}</small></div></div>`).join('')}</div>`:'<p class="empty">لا يوجد</p>';
+  const addLbl=DFOLD==='bank'?'+ كارت بنكي':DFOLD==='personal'?'+ كارت شخصي':'+ مستند';
+  h+=`<div class="etbar"><button class="mini pri" onclick="addInFold()">${addLbl}</button>${isSysF(DFOLD)?'':`<button class="mini" onclick="foldRen('${DFOLD}')">✏️ اسم الزرار</button><button class="mini danger" onclick="foldDel('${DFOLD}')">🗑 الزرار</button>`}</div>`;
+  const list=S.docs.filter(d=>DFOLD==='all'||foldOf(d)===DFOLD).sort((a,b)=>(b.upd||0)-(a.upd||0));
+  h+=list.length?`<div class="list">${list.map(d=>`<div class="row" onclick="docSheet('${d.id}')"><span class="ic" style="background:var(--soft)">📁</span><div class="grow"><b>${esc(d.name)}</b><small>${[DFOLD==='all'?foldName(foldOf(d)):'',d.files.length+' ملف',d.upd?new Date(d.upd).toLocaleDateString('ar-EG'):'',d.note].filter(Boolean).map(esc).join(' · ')}</small></div></div>`).join('')}</div>`:'<p class="empty">لا يوجد</p>';
   return h;
 }
+/* الإضافة حسب الزرار: الكروت بتفتح شاشتها، والباقي بيفتح إضافة مستند */
+function addInFold(){if(DFOLD==='bank')return cardForm();if(DFOLD==='personal')return renForm();docForm()}
 async function foldNew(){const n=((await askInput('اسم الزرار الجديد','مثلاً: الشقة، العربية',''))||'').trim();if(!n)return;DFOLD=foldAdd(n);save();render();toast('اتعمل ✓')}
 async function foldRen(id){const f=(S.settings.dfold||[]).find(x=>x.id===id);if(!f)return;const n=((await askInput('اسم الزرار','',f.name.replace(/^📁\s*/,'')))||'').trim();if(!n)return;f.name='📁 '+n;save();render()}
 async function foldDel(id){
@@ -1075,26 +1081,47 @@ async function foldDel(id){
   S.docs.forEach(d=>{if(foldOf(d)===id)setFold(d.id,'gen')});
   S.settings.dfold=(S.settings.dfold||[]).filter(x=>x.id!==id);DFOLD='gen';save();render();
 }
-const foldSel=cur=>`<label>الزرار<select id="d3" onchange="$('#d4w').style.display=this.value==='__new'?'':'none'">${folders().map(f=>`<option value="${f.id}" ${f.id===cur?'selected':''}>${esc(f.name)}</option>`).join('')}<option value="__new">➕ زرار جديد</option></select></label>
-  <label id="d4w" style="display:none">اسم الزرار الجديد<input id="d4" placeholder="مثلاً: الشقة"></label>`;
-function docForm(id){
-  const d=id?doc(id):{name:'',note:''},cur=id?foldOf(d):DFOLD;
-  sheet(`<h2>${id?'تعديل':'إضافة مستند'}</h2><label>الاسم<input id="d1" value="${esc(d.name)}"></label><label>ملاحظات<input id="d2" value="${esc(d.note||'')}"></label>
-  ${foldSel(cur)}
-  <button class="btn" onclick="docSave('${id||''}')">حفظ</button>`);
+const foldSel=(cur,nf)=>`<label>الزرار<select id="d3" onchange="$('#d4w').style.display=this.value==='__new'?'':'none'">${folders().map(f=>`<option value="${f.id}" ${f.id===cur?'selected':''}>${esc(f.name)}</option>`).join('')}<option value="__new" ${cur==='__new'?'selected':''}>➕ زرار جديد</option></select></label>
+  <label id="d4w" style="display:${cur==='__new'?'':'none'}">اسم الزرار الجديد<input id="d4" value="${esc(nf||'')}" placeholder="مثلاً: الشقة"></label>`;
+/* إضافة / تعديل مستند بالصور والملفات */
+let DOCF=null;
+function docForm(id,pre){
+  const d=id?doc(id):{name:'',note:'',files:[]};
+  DOCF={id:id||'',name:d.name||'',note:d.note||'',files:[...(d.files||[])],fold:id?foldOf(d):(DFOLD==='all'?'gen':DFOLD),nf:'',...(pre||{})};dfSheet();
 }
-function docSave(id){
-  const name=$('#d1').value.trim();if(!name)return toast('اكتب الاسم');
-  let f=$('#d3').value;
-  if(f==='__new'){const n=$('#d4').value.trim();if(!n)return toast('اكتب اسم الزرار');f=foldAdd(n)}
-  let d=id?doc(id):null;if(!d){d={id:uid(),files:[]};S.docs.push(d)}
-  d.name=name;d.note=$('#d2').value.trim();d.upd=Date.now();setFold(d.id,f);DFOLD=f;save();render();docSheet(d.id);
+function dfSheet(){
+  const d=DOCF;NEXTF='doc';
+  sheet(`<h2>📄 ${d.id?'تعديل مستند':'إضافة مستند'}</h2>
+  ${photosBox(d.files,'dfRm')}
+  <div class="three"><button type="button" class="btn ghost" onclick="dfSnap()">📷 صوّر</button><button type="button" class="btn ghost" onclick="dfGal()">🖼️ من الصور</button><button type="button" class="btn ghost" onclick="dfFile()">📄 ملف</button></div>
+  <label>الاسم<input id="d1" value="${esc(d.name)}" placeholder="مثلاً: عقد الشقة، شهادة الميلاد"></label>
+  <label>ملاحظات<input id="d2" value="${esc(d.note)}"></label>
+  ${foldSel(d.fold,d.nf)}
+  ${d.files.length?`<button type="button" class="btn ghost" onclick="shareFiles(DOCF.files)">📤 إرسال</button>`:''}
+  <button class="btn" onclick="dfSave()">حفظ</button>`);
+}
+function dfGrab(){if(!$('#d1'))return;DOCF.name=$('#d1').value;DOCF.note=$('#d2').value;DOCF.fold=$('#d3').value;DOCF.nf=$('#d4')?$('#d4').value:''}
+function dfRm(i){dfGrab();DOCF.files.splice(i,1);dfSheet()}
+function dfSnap(){dfGrab();snapPhoto({title:'صوّر المستند',hint:'📄 حط الورقة كلها جوه الإطار وثبّت',name:'doc',onCancel:dfSheet},fid=>{DOCF.files.push(fid);dfSheet()})}
+function dfGal(){dfGrab();pickGallery(ids=>{DOCF.files.push(...ids);dfSheet()})}
+function dfFile(){dfGrab();pickFiles('*/*',ids=>{DOCF.files.push(...ids);dfSheet()})}
+function dfSave(){
+  dfGrab();
+  if(!DOCF.files.length&&!DOCF.name.trim())return toast('ضيف صورة أو ملف');
+  let f=DOCF.fold;
+  if(f==='__new'){const n=(DOCF.nf||'').trim();if(!n)return toast('اكتب اسم الزرار');f=foldAdd(n)}
+  let d=DOCF.id?doc(DOCF.id):null;if(!d){d={id:uid(),files:[]};S.docs.push(d)}
+  d.name=DOCF.name.trim()||('مستند · '+dmy(today()));d.note=DOCF.note.trim();d.files=[...DOCF.files];d.upd=Date.now();
+  setFold(d.id,f);DFOLD=f;
+  /* لو المستند مربوط بكارت شخصي، صوره بتتحدث هناك كمان */
+  const lk=linkOf(d.id);if(lk&&lk.startsWith('r:')){const r=S.renew.find(x=>x.id===lk.slice(2));if(r)r.files=[...d.files]}
+  save();render();docSheet(d.id);toast('اتحفظ ✓');
 }
 function docSheet(id){
   curDoc=id;const d=doc(id);if(!d)return closeSheet();
   const lk=linkOf(id);
   sheet(`<div class="phead"><h2>📁 ${esc(d.name)}</h2><button class="mini" onclick="docForm('${id}')">✏️</button></div>${d.note?`<p class="muted">${esc(d.note)}</p>`:''}
-  <p class="muted">${esc(folders().find(f=>f.id===foldOf(d))?.name||'')}</p>
+  <p class="muted">${esc(foldName(foldOf(d)))}</p>
   ${filesBox(d.files,'doc')}
   ${d.files.length?`<button class="btn ghost" onclick="shareFiles(doc('${id}').files)">📤 مشاركة الكل</button>`:''}
   ${lk?`<button class="btn ghost" onclick="${lk.startsWith('c:')?`cardForm('${lk.slice(2)}')`:`renForm('${lk.slice(2)}')`}">🔗 افتح الكارت</button>`:''}
@@ -1147,7 +1174,8 @@ const FORMS={
   ren:{g:()=>{rnGrab();return RNF},o:d=>{RNF=d;renSheet()}},
   card:{g:()=>{crGrab();return CRF},o:d=>{CRF=d;crSheet()}},
   ct:{g:()=>{ctGrab();return CTF},o:d=>{CTF=d;ctSheet()}},
-  bf:{g:()=>{bfGrab();return BF},o:d=>{BF=d;bfSheet()}}
+  bf:{g:()=>{bfGrab();return BF},o:d=>{BF=d;bfSheet()}},
+  doc:{g:()=>{dfGrab();return DOCF},o:d=>{DOCF=d;dfSheet()}}
 };
 function draftSave(){if(!FORM||!FORMS[FORM])return;try{localStorage.setItem(DRK,JSON.stringify({k:FORM,d:FORMS[FORM].g(),t:Date.now()}))}catch(e){}}
 function draftClear(){localStorage.removeItem(DRK)}
@@ -1173,7 +1201,6 @@ try{const _l=showLock;showLock=function(){draftSave();LOCKING=true;const r=_l.ap
 /* ========== تشغيل ========== */
 S.contacts.forEach(c=>{if(c.note)c.note=''});
 S.buys.forEach(b=>{b.items=[]});
-/* نقل الكروت القديمة لزراير المرفقات */
 S.cards.forEach(c=>{if(c.docId&&doc(c.docId)&&!LNK()['c:'+c.id]){LNK()['c:'+c.id]=c.docId;setFold(c.docId,'bank')}});
 S.renew.forEach(r=>{if((r.files||[]).length&&!linkedDoc('r:'+r.id))syncDoc('r:'+r.id,'personal',renDocName(r),r.files,'كارت شخصي')});
 applyTheme();applyFont();applyName();autoPostFixed();save();render();
