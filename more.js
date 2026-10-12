@@ -392,7 +392,7 @@ function demoData(){
   d.cards=[{id:uid(),name:'البنك الأهلي VISA',kind:'debit',net:'visa',last4:'4821',acct:ahly,color:'#0f766e',docId:''}];
   d.renew=[{id:uid(),name:'رخصة العربية',type:'car',num:'أ ب ج 1234',exp:isoD(new Date(Date.now()+20*864e5)),lead:30,note:'',files:[]}];
   const ft=tx('exp',fish,349.7,td,cash,{via:'cash',note:'🧾'});
-  if(ft)d.buys=[{id:uid(),date:td,time:'20:12',txId:ft.id,catId:fish.id,store:'أسماك النحاس',items:[],total:349.7,method:cash,via:'cash',card:'',deliv:false,fid:''}];
+  if(ft)d.buys=[{id:uid(),date:td,time:'20:12',rt:'20:12',no:'',txId:ft.id,catId:fish.id,store:'أسماك النحاس',items:[],total:349.7,method:cash,via:'cash',card:'',deliv:false,fid:''}];
   d.contacts=[{id:uid(),name:'أسماك النحاس',kind:'shop',spec:'سمك',phones:['01030292676'],address:'24 علي أمين بجوار الأحمدي للسيارات',loc:'',catId:fish.id,at:Date.now()},{id:uid(),name:'مطعم الشبراوي',kind:'rest',spec:'',phones:['01000000001'],address:'',loc:'',catId:'',at:Date.now()}];
   return d;
 }
@@ -525,6 +525,8 @@ function prepCanvas(c,o){
   x.putImageData(im,0,0);return c;
 }
 const cloneCanvas=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
+/* الجزء اللي فوق من الصورة (فيه اسم المحل) */
+const cropTop=(c,f)=>{const n=document.createElement('canvas');n.width=c.width;n.height=Math.round(c.height*f);n.getContext('2d').drawImage(c,0,0);return n};
 
 /* ========== الكاميرا: بتصوّر لوحدها أول ما الموبايل يثبت ========== */
 async function fileToCanvas(f){
@@ -535,7 +537,7 @@ async function fileToCanvas(f){
 }
 let SCAN=null;
 async function openScanner(o){
-  closeSheet();if(SCAN)SCAN.close();
+  KEEPF=true;closeSheet();KEEPF=false;if(SCAN)SCAN.close();
   const ov=document.createElement('div');ov.id='scan';
   ov.innerHTML=`<video playsinline muted autoplay></video><img class="frz" alt=""><div class="sframe ${o.card?'card':''}"></div>
   <div class="stop"><button class="mini" data-a="x">✕</button><b>${esc(o.title)}</b><button class="mini" data-a="t" style="visibility:hidden">🔦</button></div>
@@ -612,8 +614,60 @@ function normPhone(x){
   return p.length>=5?p:'';
 }
 const fixDec=s=>s.replace(/(\d),(\d{2})(?!\d)/g,'$1.$2');
+const splitLines=t=>fixDec(latD(t||'')).split(/\n+/).map(s=>s.trim()).filter(Boolean);
+/* درجة الشبه بين كلمتين (من 0 لـ 1) — بتستحمل الحروف الغلط */
+function sim(a,b){
+  const n=s=>normAr(String(s)).toLowerCase().replace(/[\s\u0640]+/g,'');a=n(a);b=n(b);
+  if(!a||!b)return 0;if(a===b)return 1;if(a.length<2||b.length<2)return 0;
+  const bg=s=>{const m=new Map();for(let i=0;i<s.length-1;i++){const k=s.slice(i,i+2);m.set(k,(m.get(k)||0)+1)}return m};
+  const A=bg(a),B=bg(b);let c=0;A.forEach((v,k)=>{c+=Math.min(v,B.get(k)||0)});
+  return 2*c/((a.length-1)+(b.length-1));
+}
+const SKIPM=/(tel|phone|mob|fax|www|http|@|vat|tax|invoice|receipt|cashier|date|time|welcome|cash|sales|فاتور|ايصال|إيصال|تليفون|هاتف|موبايل|ضريب|سجل|تاريخ|الوقت|كاشير|رقم|عنوان|شارع|اهلا|أهلا|مرحبا|مبيعات|كاش|نقد|البون|الوردي|المستند|العميل|البائع|صنف|كمية|سعر|قيمة|الاجمال|المطلوب|مدفوع|المتبقي|بجوار)/i;
+/* السطور اللي ممكن تكون اسم المحل */
+function merchantCands(lines){
+  const out=[];
+  lines.slice(0,12).forEach((l,i)=>{
+    if(SKIPM.test(l)||/\d/.test(l))return;
+    const ws=l.replace(/[^A-Za-z\u0621-\u064A\s&']/g,' ').split(/\s+/).filter(Boolean);
+    const gd=ws.filter(w=>w.length>=3&&!/^(.)\1/.test(w)),bad=ws.length-gd.length,letters=gd.join('').length;
+    if(!gd.length||letters<6||bad*2>gd.length)return;
+    const s=gd.join(' ').slice(0,40),ar=/[\u0621-\u064A]/.test(s);
+    if(!ar&&gd.some(w=>/[a-z]/.test(w)&&/[A-Z]/.test(w.slice(1))))return;
+    out.push({s,sc:letters*2-bad*4-i*2+(ar?12:0)});
+  });
+  return out;
+}
+/* بيختار الاسم اللي اتكرر أكتر في القرايات */
+function pickMerchant(cs){
+  const cl=[];
+  cs.forEach(c=>{const g=cl.find(g=>sim(g.top.s,c.s)>=.7);if(g){g.n++;g.sum+=c.sc;if(c.sc>g.top.sc)g.top=c}else cl.push({top:c,n:1,sum:c.sc})});
+  cl.forEach(g=>g.v=g.sum+g.n*25);cl.sort((a,b)=>b.v-a.v);
+  return cl.length?cl[0].top.s:'';
+}
+/* لو المحل متسجل قبل كده، بيعرفه حتى لو القراءة فيها حروف غلط */
+function fuzzyKnown(lines){
+  const known=[];
+  S.cats.filter(c=>c.kind==='exp'&&c.active!==false).forEach(c=>[c.name,...(c.alias||[])].forEach(n=>known.push({n,c})));
+  S.contacts.forEach(ct=>{const c=ct.catId&&C(ct.catId);if(c&&c.kind==='exp')known.push({n:ct.name,c})});
+  let best=null,bs=0;
+  for(const l of lines){
+    if(/\d{3,}/.test(l)||l.length<4)continue;
+    for(const k of known){if(normAr(k.n).replace(/\s/g,'').length<4)continue;const s=sim(l,k.n);if(s>bs){bs=s;best=k.c}}
+  }
+  return bs>=.6?best:null;
+}
+/* تصليح العنوان: حرف ي لازق في الكلمة اللي بعده، أو كلمتين لازقين */
+function fixAddr(s){
+  let w=s.split(/\s+/).filter(Boolean);
+  for(let i=1;i<w.length;i++){const m=w[i].match(/^([يى])((?:ال|لل)[\u0621-\u064A]{2,})$/);if(m&&/[\u0621-\u064A]{2,}$/.test(w[i-1])){w[i-1]+=m[1];w[i]=m[2]}}
+  w=w.reduce((o,x)=>{if(/^[يى]$/.test(x)&&o.length&&/[\u0621-\u064A]$/.test(o[o.length-1]))o[o.length-1]+=x;else o.push(x);return o},[]);
+  w=w.flatMap(x=>{const m=x.match(/^([\u0621-\u064A]{3,})(ال[\u0621-\u064A]{3,})$/);return m?[m[1],m[2]]:[x]});
+  return w.join(' ');
+}
+const VEND=/(برم|الحلول|حلول|متطور|powered|software|developed|تصميم|نظام|system)/i;
 function parseReceipt(text){
-  const T=fixDec(latD(text)),lines=T.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const lines=splitLines(text),T=lines.join('\n');
   const nums=s=>(s.match(/\d[\d,]*(?:\.\d{1,2})?/g)||[]).map(x=>parseFloat(x.replace(/,/g,''))).filter(x=>x>0&&x<1e6);
   const TOT=/(grand\s*total|total|net\s*amount|amount\s*due|to\s*pay|الاجمالي|اجمالي|المجموع|الصافي|صافي|المطلوب|المستحق|مدفوع|paid)/i;
   const NOT=/(sub\s*-?\s*total|قبل|vat|tax|ضريب|خصم|discount|qty|عدد|change|الباقي|المتبقي|units|items)/i;
@@ -636,39 +690,40 @@ function parseReceipt(text){
   let tm=tl&&tl.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*[:.;،]\s*([0-5]\d)(?![\d\/])/);
   if(!tm)for(const l of lines){const m=l.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*:\s*([0-5]\d)(?![\d\/])/);if(m){tm=m;break}}
   if(tm){const src=tl&&tl.includes(tm[0])?tl:T;let h=+tm[1];if(/(pm|مساء)/i.test(src)&&h<12)h+=12;if(/(am|صباح)/i.test(src)&&h===12)h=0;time=pad(h)+':'+tm[2]}
-  /* اسم المحل: سطر فوق فيه كلام حقيقي مش حروف متفرقة */
-  const SKIP=/(tel|phone|mob|fax|www|http|@|vat|tax|invoice|receipt|cashier|date|time|welcome|cash|sales|فاتور|ايصال|إيصال|تليفون|هاتف|موبايل|ضريب|سجل|تاريخ|الوقت|كاشير|رقم|عنوان|شارع|اهلا|أهلا|مرحبا|مبيعات|كاش|نقد|البون|الوردي|المستند|العميل|البائع|صنف|كمية|سعر|قيمة)/i;
-  let merchant='',bestS=0;
-  lines.slice(0,10).forEach((l,i)=>{
-    if(SKIP.test(l)||/\d/.test(l))return;
-    const ws=l.replace(/[^A-Za-z\u0621-\u064A\s&']/g,' ').split(/\s+/).filter(Boolean);
-    const gd=ws.filter(w=>w.length>=3&&!/^(.)\1/.test(w)),bad=ws.length-gd.length,letters=gd.join('').length;
-    if(!gd.length||letters<6||bad*2>gd.length)return;
-    const sc=letters*2-bad*4-i*2;
-    if(sc>bestS){bestS=sc;merchant=gd.join(' ').slice(0,40)}
-  });
+  /* رقم الفاتورة لو موجود */
+  let no='';const nm=T.match(/(?:رقم\s*الفاتور[ةه]|فاتور[ةه]\s*رقم|invoice\s*(?:no|#)|receipt\s*(?:no|#)|bill\s*(?:no|#)|order\s*(?:no|#)|المستند|البون)\s*[:#.\-]?\s*([A-Za-z]{0,3}\d{2,10})/i);if(nm)no=nm[1].toUpperCase();
+  const cands=merchantCands(lines),merchant=pickMerchant(cands);
   const nt=' '+normAr(text)+' ';let match=null,best=0;
   S.cats.filter(c=>c.kind==='exp'&&c.active!==false).forEach(c=>[c.name,...(c.alias||[])].forEach(n=>{const k=normAr(n);if(k.length>=3&&nt.includes(k)&&k.length>best){best=k.length;match=c}}));
   const l4=new Set([...T.matchAll(/[*xX•#]{2,}[\s*xX•#-]*(\d{4})(?!\d)/g)].map(m=>m[1]).concat([...T.matchAll(/(?:card|visa|master|meeza|ending|بطاق|كارت|فيزا)[^\n]{0,30}?(\d{4})(?!\d)/gi)].map(m=>m[1])));
   const card=S.cards.find(c=>l4.has(c.last4))||null;
   const cash=!card&&/(cash|كاش|نقد)/i.test(T);
-  const VEND=/(برمج|powered|software|developed|تصميم|نظام|system)/i,phones=[];
-  lines.forEach(l=>{if(VEND.test(l))return;(l.match(/(?<![\d.])(?:\+?20|0020)?0?1[0125]\d{8}(?![\d.])|(?<![\d.])0[2-9]\d{7,8}(?![\d.])|(?<![\d.])1[69]\d{3}(?![\d.])/g)||[]).forEach(x=>{const p=normPhone(x);if(p&&!phones.includes(p))phones.push(p)})});
+  /* الأرقام: من غير رقم شركة البرمجة اللي في آخر سطر */
+  const PH=/(?<![\d.])(?:\+?20|0020)?0?1[0125]\d{8}(?![\d.])|(?<![\d.])0[2-9]\d{7,8}(?![\d.])|(?<![\d.])1[69]\d{3}(?![\d.])/g;
+  const per=lines.map(l=>VEND.test(l)?[]:(l.match(PH)||[]).map(normPhone).filter(Boolean));
+  const lastI=per.reduce((a,p,i)=>p.length?i:a,-1);
+  if(lastI>=0&&lastI===lines.length-1&&per[lastI].length===1&&per.slice(0,lastI).some(p=>p.length))per[lastI]=[];
+  const phones=[];per.flat().forEach(p=>{if(!phones.includes(p))phones.push(p)});
   const ADR=/(شارع|ش\.|عمار|برج|بجوار|امام|أمام|خلف|ميدان|طريق|مدينه|مدينة|الدور|مول|street|st\.|road|mall)/i;
   const al=lines.find(l=>ADR.test(l)&&!VEND.test(l));
   let address='';
-  if(al)address=al.replace(/(?:\+?20|0020)?0?1[0125]\d{8}/g,'').replace(/\s+/g,' ').trim().replace(/^(?:[^\s\d]\s+)+/,'').replace(/(?:\s+[^\s\d])+$/,'').slice(0,90);
+  if(al)address=fixAddr(al.replace(/(?:\+?20|0020)?0?1[0125]\d{8}/g,'').replace(/\s+/g,' ').trim().replace(/^(?:[^\s\d]\s+)+/,'').replace(/(?:\s+[^\s\d])+$/,'')).slice(0,90);
   const deliv=/(delivery|دليفري|ديليفري|توصيل)/i.test(T);
   const rest=/(restaurant|cafe|café|مطعم|كافيه|كافيتريا|مشويات|بيتزا|pizza|burger|برجر)/i.test(T);
-  return{total,TC,rep,date,time,merchant,match,card,cash,phones,address,deliv,rest};
+  return{total,TC,rep,date,time,no,merchant,cands,match,card,cash,phones,address,deliv,rest};
 }
 /* بيجمع قرايتين ويختار الأحسن من كل واحدة */
 function mergeRc(a,b){
   const sc=r=>(r.TC.length?3:0)+(r.merchant?2:0)+(r.time?1:0)+(r.date?1:0)+Math.min(2,r.phones.length);
   const[A,B]=sc(b)>sc(a)?[b,a]:[a,b];
-  ['merchant','time','date','address','match','card'].forEach(k=>{if(!A[k])A[k]=B[k]});
-  B.phones.forEach(p=>{if(!A.phones.includes(p))A.phones.push(p)});
+  ['time','date','address','match','card','no'].forEach(k=>{if(!A[k])A[k]=B[k]});
+  A.cands=a.cands.concat(b.cands);
   A.cash=A.cash||B.cash;A.deliv=A.deliv||B.deliv;A.rest=A.rest||B.rest;
+  /* الأرقام: لو رقم اتقرا بشكلين قريبين، بياخد اللي اتكرر أكتر */
+  const near=(x,y)=>x.length===y.length&&[...x].filter((ch,i)=>ch!==y[i]).length<=1;
+  const cl=[];
+  [...A.phones.map(p=>[p,1.1]),...B.phones.map(p=>[p,1])].forEach(([p,w])=>{const g=cl.find(g=>g.ps.some(q=>near(q.p,p)));if(g){const q=g.ps.find(q=>q.p===p);if(q)q.w+=w;else g.ps.push({p,w})}else cl.push({ps:[{p,w}]})});
+  A.phones=cl.map(g=>g.ps.sort((x,y)=>y.w-x.w)[0].p);
   const cnt={};[...a.TC,...b.TC].forEach(v=>cnt[v]=(cnt[v]||0)+1);
   const ks=Object.keys(cnt);if(ks.length)A.total=+ks.sort((x,y)=>cnt[y]-cnt[x]||y-x)[0];
   else if(!A.total)A.total=B.total;
@@ -677,17 +732,27 @@ function mergeRc(a,b){
 function scanReceipt(){
   openScanner({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',maxW:1800,
     read:async(c,onP)=>{
-      const base=cloneCanvas(c);prepCanvas(c);
-      const a=parseReceipt(await ocr('ara+eng',c,{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'},p=>onP(p*.5)));
-      if(a.merchant&&a.rep>=2)return a;
-      prepCanvas(base,{bin:true});
-      const b=parseReceipt(await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.5+p*.5)));
-      return mergeRc(a,b);
+      const base=cloneCanvas(c),head=cropTop(c,.5);prepCanvas(c);
+      const P={tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'};
+      const t1=await ocr('ara+eng',c,P,p=>onP(p*.45));
+      prepCanvas(head);
+      const tH=await ocr('ara+eng',head,P,p=>onP(.45+p*.15));
+      let r=parseReceipt(t1);const texts=[t1,tH];
+      if(r.rep<2){
+        prepCanvas(base,{bin:true});
+        const t2=await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.6+p*.4));
+        texts.push(t2);r=mergeRc(r,parseReceipt(t2));
+      }
+      r.merchant=pickMerchant(r.cands.concat(merchantCands(splitLines(tH)).map(x=>({...x,sc:x.sc+8}))));
+      if(!r.match)r.match=fuzzyKnown(texts.flatMap(t=>splitLines(t).slice(0,15)));
+      return r;
     },
     onDone:async(blob,rc)=>{const ids=await addFiles([new File([blob],'receipt-'+today()+'.jpg',{type:'image/jpeg'})]);receiptFlow(rc,ids[0])}});
 }
+const toMin=t=>{const m=(t||'').match(/^(\d{1,2}):(\d{2})/);return m?+m[1]*60+ +m[2]:null};
+let DUPX=null;
 async function receiptFlow(rc,fid){
-  rc=rc||{total:0,merchant:'',match:null,card:null,cash:false,phones:[],address:'',date:null,time:'',deliv:false,rest:false};
+  rc=rc||{total:0,merchant:'',match:null,card:null,cash:false,phones:[],address:'',date:null,time:'',no:'',deliv:false,rest:false};
   const guess=rc.match?rc.match.name:rc.merchant;let cat=null;
   if(guess&&await ask(`${guess}؟`,'',{icon:'🧾',ok:'أيوه',cancel:'لأ'}))cat=rc.match||ensureCat(rc.merchant,'exp');
   if(!cat){
@@ -704,13 +769,43 @@ async function receiptFlow(rc,fid){
   else{method=cat.acct&&M(cat.acct)?cat.acct:defMethod();via=cat.via||'';payTxt=M(method)?.name||''}
   const a=parseNum(await askInput('المبلغ',`${cat.name}${payTxt?'\n'+payTxt:''}`,rc.total?amtStr(rc.total):'',true));
   if(!(a>0))return toast('اتلغى');
-  const deliv=!(await ask('الاستلام',rc.deliv?'🛵 الريسيت فيه توصيل':'',{icon:'🛍️',ok:'🛍️ من المكان',cancel:'🛵 دليفري'}));
   let date=rc.date||today();if(isClosed(date))date=today();
   if(isClosed(date))return toast('الشهر الحالي مقفول');
   if(!method)return toast('ضيف حساب الأول');
+  const x={rc,fid,cat,method,via,card,a,date};
+  /* لو نفس الريسيت متسجل قبل كده */
+  const old=S.buys.find(b=>{
+    if(b.catId!==cat.id||b.date!==date)return false;
+    const tA=toMin(b.rt),tB=toMin(rc.time);if(tA!=null&&tB!=null&&Math.abs(tA-tB)>5)return false;
+    return Math.abs(b.total-a)<.01||(rc.no&&b.no===rc.no);
+  });
+  if(old){DUPX={old,go:()=>finishReceipt(x)};dupSheet(old);return}
+  finishReceipt(x);
+}
+function dupSheet(b){
+  sheet(`<h2>🧾 الريسيت ده متسجل قبل كده</h2>
+  ${b.fid?`<div class="files">${fileThumb(b.fid,'view')}</div>`:''}
+  <div class="kv"><span>المحل</span><b>${esc(b.store)}</b></div>
+  <div class="kv"><span>التاريخ</span><b>${whenTxt(b)}</b></div>
+  <div class="kv"><span>المبلغ</span><b class="neg">${fmt(b.total)}</b></div>
+  <button class="btn" onclick="dupEdit()">✏️ عدّل الموجود</button>
+  <button class="btn ghost" onclick="dupReplace()">🔄 احذف القديم وسجّل الجديد</button>
+  <button class="btn ghost" onclick="DUPX=null;closeSheet()">إلغاء</button>`);
+}
+function dupEdit(){if(!DUPX)return;const id=DUPX.old.id;DUPX=null;buyEdit(id)}
+function dupReplace(){
+  if(!DUPX)return;const b=DUPX.old,t=S.txs.find(x=>x.id===b.txId);
+  if(t&&isClosed(t.date))return toast('شهر الريسيت القديم مقفول');
+  if(t)S.txs=S.txs.filter(x=>x.id!==t.id);
+  S.buys=S.buys.filter(x=>x.id!==b.id);
+  const go=DUPX.go;DUPX=null;closeSheet();save();go();
+}
+async function finishReceipt(x){
+  const{rc,fid,cat,method,via,card,a,date}=x;
+  const deliv=!(await ask('الاستلام',rc.deliv?'🛵 الريسيت فيه توصيل':'',{icon:'🛍️',ok:'🛍️ من المكان',cancel:'🛵 دليفري'}));
   const t={id:uid(),type:'exp',amount:a,cat:cat.id,method,via,date,note:'🧾'+(deliv?' 🛵':'')+(card?' •••• '+card.last4:''),files:fid?[fid]:[],created:Date.now()};
   S.txs.push(t);
-  const b={id:uid(),date,time:rc.time||(date===today()?nowTime():''),txId:t.id,catId:cat.id,store:cat.name,items:[],total:a,method,via,card:card?card.last4:'',deliv,fid};
+  const b={id:uid(),date,time:rc.time||(date===today()?nowTime():''),rt:rc.time||'',no:rc.no||'',txId:t.id,catId:cat.id,store:cat.name,items:[],total:a,method,via,card:card?card.last4:'',deliv,fid};
   S.buys.push(b);save();render();
   contactFromReceipt(rc,cat);
   banner('🧾',`اتسجّل ${fmt(a)}`,cat.name,()=>buySheet(b.id),'ok');
@@ -758,7 +853,7 @@ function ctForm(id,pre){
   CTF={...c,phones:[...(c.phones&&c.phones.length?c.phones:[''])],...(pre||{})};ctSheet();
 }
 function ctSheet(){
-  const c=CTF;
+  const c=CTF;NEXTF='ct';
   sheet(`<h2>📇 ${c.id?'تعديل':'إضافة'}</h2>
   <label>الاسم<input id="ct-n" value="${esc(c.name)}"></label>
   <div class="two"><label>النوع<select id="ct-k">${Object.entries(CTK).map(([k,v])=>`<option value="${k}" ${c.kind===k?'selected':''}>${v[0]} ${v[1]}</option>`).join('')}</select></label><label>الوصف<input id="ct-s" value="${esc(c.spec||'')}" placeholder="سباك، سوبر ماركت..."></label></div>
@@ -820,9 +915,9 @@ function buySheet(id){
   ${t?`<button class="btn ghost" onclick="editTx('${t.id}')">🧾 المصروف</button>`:''}
   <button class="btn ghost danger" onclick="buyDel('${id}')">🗑 حذف الفاتورة</button>`);
 }
-function buyEdit(id){const b=S.buys.find(x=>x.id===id);BF=JSON.parse(JSON.stringify(b));bfSheet()}
+function buyEdit(id){const b=S.buys.find(x=>x.id===id);if(!b)return;BF=JSON.parse(JSON.stringify(b));bfSheet()}
 function bfSheet(){
-  const b=BF;
+  const b=BF;NEXTF='bf';
   sheet(`<h2>🛒 تعديل الفاتورة</h2>
   ${b.fid?`<div class="files">${fileThumb(b.fid,'view')}</div>`:''}
   <div class="two"><label>المحل<input id="bf-s" value="${esc(b.store)}"></label><label>التاريخ<input id="bf-d" type="date" value="${b.date}"></label></div>
@@ -859,7 +954,7 @@ function cardForm(id,pre){
   CRF={...c,files:cardFiles(c),...(pre||{})};crSheet();
 }
 function crSheet(){
-  const c=CRF,meths=S.methods.filter(m=>m.active||m.id===c.acct);
+  const c=CRF,meths=S.methods.filter(m=>m.active||m.id===c.acct);NEXTF='card';
   sheet(`<h2>💳 ${c.id?'تعديل كارت':'كارت جديد'}</h2>
   ${photosBox(c.files,'crRm')}
   <div class="two"><button type="button" class="btn ghost" onclick="crSnap()">📷 ${c.files.length?'صورة كمان':'صوّر الكارت'}</button>${c.files.length?`<button type="button" class="btn ghost" onclick="shareFiles(CRF.files)">📤 إرسال</button>`:''}</div>
@@ -912,7 +1007,7 @@ function renForm(id,pre){
   RNF={...r,files:[...(r.files||[])],...(pre||{})};renSheet();
 }
 function renSheet(){
-  const r=RNF;
+  const r=RNF;NEXTF='ren';
   sheet(`<h2>🪪 ${r.id?'كارت شخصي':'إضافة كارت'}</h2>
   ${photosBox(r.files,'rnRm')}
   <div class="two"><button type="button" class="btn ghost" onclick="rnSnap()">📷 ${r.files.length?'صورة كمان':'صوّر الكارت'}</button>${r.files.length?`<button type="button" class="btn ghost" onclick="shareFiles(RNF.files)">📤 إرسال</button>`:''}</div>
@@ -965,17 +1060,49 @@ function docSheet(id){
 }
 async function docDel(id){if(!await ask('حذف؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;S.docs=S.docs.filter(x=>x.id!==id);S.cards.forEach(c=>{if(c.docId===id)c.docId=''});save();closeSheet();render()}
 
+/* ========== حفظ الشغل اللي مكملتوش (مكالمة / قفل / التطبيق اتقفل) ========== */
+const DRK='centric-draft';
+var FORM=null,NEXTF=null,KEEPF=false,LOCKING=false;
+const FORMS={
+  ren:{g:()=>{rnGrab();return RNF},o:d=>{RNF=d;renSheet()}},
+  card:{g:()=>{crGrab();return CRF},o:d=>{CRF=d;crSheet()}},
+  ct:{g:()=>{ctGrab();return CTF},o:d=>{CTF=d;ctSheet()}},
+  bf:{g:()=>{bfGrab();return BF},o:d=>{BF=d;bfSheet()}}
+};
+function draftSave(){if(!FORM||!FORMS[FORM])return;try{localStorage.setItem(DRK,JSON.stringify({k:FORM,d:FORMS[FORM].g(),t:Date.now()}))}catch(e){}}
+function draftClear(){localStorage.removeItem(DRK)}
+function draftGet(){try{const x=JSON.parse(localStorage.getItem(DRK)||'null');if(x&&FORMS[x.k]&&Date.now()-x.t<6*3600e3)return x}catch(e){}return null}
+function draftOpen(msg){const x=draftGet();if(!x)return;try{FORMS[x.k].o(x.d);if(msg)toast('📝 كمّل اللي كنت بتعمله')}catch(e){draftClear()}}
+let drT=null;
+['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(FORM&&e.target.closest&&e.target.closest('#sheet')){clearTimeout(drT);drT=setTimeout(draftSave,400)}},true));
+try{const _s=sheet;sheet=function(){FORM=NEXTF;NEXTF=null;if(!FORM&&!KEEPF&&!LOCKING)draftClear();const r=_s.apply(this,arguments);if(FORM)setTimeout(draftSave,0);return r}}catch(e){}
+try{const _c=closeSheet;closeSheet=function(){if(!KEEPF&&!LOCKING){FORM=null;draftClear()}return _c.apply(this,arguments)}}catch(e){}
+/* بعد ما تفتح بالبصمة، بيرجّعك للشاشة اللي كنت فيها */
+function waitUnlock(){
+  const cx=innerWidth/2,cy=innerHeight/2;let root=document.elementFromPoint(cx,cy);
+  while(root&&root.parentElement&&root.parentElement!==document.body)root=root.parentElement;
+  const sh=document.getElementById('sheet'),sc=document.getElementById('scan');
+  const ok=root&&root!==document.body&&getComputedStyle(root).position==='fixed'&&!(sh&&(root===sh||root.contains(sh)||sh.contains(root)))&&root!==sc;
+  const done=()=>{LOCKING=false;draftOpen()};
+  if(!ok)return done();
+  const t0=Date.now();
+  const chk=()=>{const e=document.elementFromPoint(cx,cy);if(root.isConnected&&e&&root.contains(e)&&getComputedStyle(root).display!=='none'&&Date.now()-t0<36e5)return setTimeout(chk,400);done()};
+  chk();
+}
+try{const _l=showLock;showLock=function(){draftSave();LOCKING=true;const r=_l.apply(this,arguments);setTimeout(waitUnlock,350);return r}}catch(e){}
+
 /* ========== تشغيل ========== */
 S.contacts.forEach(c=>{if(c.note)c.note=''});
 S.buys.forEach(b=>{b.items=[]});
-applyTheme();applyFont();applyName();autoPostFixed();save();render();gcFiles();
-if(LK.pin)showLock();else inAppAlerts();
+applyTheme();applyFont();applyName();autoPostFixed();save();render();
+if(!draftGet())gcFiles();
+if(LK.pin)showLock();else{inAppAlerts();setTimeout(()=>draftOpen(true),300)}
 if(!DEMO&&GD.linked)loadJS('https://accounts.google.com/gsi/client').catch(()=>{});
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(()=>setTimeout(pushAlerts,1500)).catch(()=>{}));
 let hiddenAt=0;
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){hiddenAt=Date.now();if(SHOWAMT){SHOWAMT=false;clearTimeout(amtT);if(view==='home')render()}return}
+  if(document.visibilityState==='hidden'){draftSave();hiddenAt=Date.now();if(SHOWAMT){SHOWAMT=false;clearTimeout(amtT);if(view==='home')render()}return}
   if(LK.pin&&hiddenAt&&(Date.now()-hiddenAt)/60000>=(LK.after??1))showLock();
   if(autoPostFixed())render();
   updateBell();pushAlerts();inAppAlerts();
