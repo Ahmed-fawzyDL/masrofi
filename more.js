@@ -1,5 +1,7 @@
 /* ========== Centric · more.js ========== */
-(()=>{const s=document.createElement('style');s.textContent='#scan .frz{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;filter:brightness(.55)}';document.head.appendChild(s)})();
+(()=>{const s=document.createElement('style');s.textContent=`#scan .frz{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:none}
+#scan .frz[style*="block"]~.sframe{display:none}
+#scan .sframe:not(.card){top:8%!important;bottom:15%!important;left:3%!important;right:3%!important;width:auto!important;height:auto!important;transform:none!important;margin:0!important}`;document.head.appendChild(s)})();
 
 /* ========== الرسوم ========== */
 function niceMax(m){const p=Math.pow(10,Math.floor(Math.log10(m)));return Math.ceil(m/p*2)/2*p}
@@ -501,14 +503,31 @@ async function ocr(lang,src,params,onP){
   OCRP=onP||null;
   try{return((await w.recognize(src)).data.text)||''}finally{OCRP=null}
 }
-/* رمادي + تباين، ولو الصورة غامقة (كارت غامق بأرقام فاتحة) بتتعكس */
-function prepCanvas(c,inv){
-  const x=c.getContext('2d',{willReadFrequently:true}),im=x.getImageData(0,0,c.width,c.height),d=im.data;let sum=0;
-  for(let i=0;i<d.length;i+=4){const g=d[i]*.299+d[i+1]*.587+d[i+2]*.114;d[i]=g;sum+=g}
-  const flip=inv??(sum/(d.length/4)<105);let mn=255,mx=0;
-  for(let i=0;i<d.length;i+=4){let g=d[i];if(flip)g=255-g;d[i]=g;if(g<mn)mn=g;if(g>mx)mx=g}
-  const r=255/Math.max(1,mx-mn);
-  for(let i=0;i<d.length;i+=4){let g=(d[i]-mn)*r;g=g<128?g*.85:Math.min(255,g*1.12);d[i]=d[i+1]=d[i+2]=g}
+/* بيعرف لوحده الكلام غامق على فاتح ولا العكس، وبيظبط الإضاءة الضعيفة والضل */
+function prepCanvas(c,o){
+  o=o||{};
+  const W=c.width,H=c.height,n=W*H,x=c.getContext('2d',{willReadFrequently:true}),im=x.getImageData(0,0,W,H),d=im.data,g=new Uint8ClampedArray(n),hist=new Uint32Array(256);
+  for(let i=0,j=0;j<n;i+=4,j++){const v=(d[i]*.299+d[i+1]*.587+d[i+2]*.114)|0;g[j]=v;hist[v]++}
+  let tot=0;for(let i=0;i<256;i++)tot+=i*hist[i];
+  let sB=0,wB=0,bv=0,th=127;
+  for(let t=0;t<256;t++){wB+=hist[t];if(!wB)continue;const wF=n-wB;if(!wF)break;sB+=t*hist[t];const mB=sB/wB,mF=(tot-sB)/wF,v=wB*wF*(mB-mF)*(mB-mF);if(v>bv){bv=v;th=t}}
+  let below=0;for(let t=0;t<=th;t++)below+=hist[t];
+  /* الخلفية هي الأغلبية: لو الأغلبية غامقة يبقى كارت غامق بكلام فاتح */
+  const flip=o.inv!=null?o.inv:below>n*.55;
+  if(flip)for(let j=0;j<n;j++)g[j]=255-g[j];
+  if(o.bin){
+    const W1=W+1,I=new Uint32Array(W1*(H+1));
+    for(let y=0;y<H;y++){let rs=0;for(let xx=0;xx<W;xx++){rs+=g[y*W+xx];I[(y+1)*W1+xx+1]=I[y*W1+xx+1]+rs}}
+    const r=Math.max(10,Math.round(Math.min(W,H)/20));
+    for(let y=0;y<H;y++){const y0=Math.max(0,y-r),y1=Math.min(H,y+r+1);for(let xx=0;xx<W;xx++){const x0=Math.max(0,xx-r),x1=Math.min(W,xx+r+1),s=I[y1*W1+x1]-I[y0*W1+x1]-I[y1*W1+x0]+I[y0*W1+x0],m=s/((x1-x0)*(y1-y0)),j=y*W+xx;g[j]=g[j]<m*.86?0:255}}
+  }else{
+    const h2=new Uint32Array(256);for(let j=0;j<n;j++)h2[g[j]]++;
+    let lo=0,hi=255,acc=0;
+    for(let t=0;t<256;t++){acc+=h2[t];if(acc>=n*.02){lo=t;break}}acc=0;
+    for(let t=255;t>=0;t--){acc+=h2[t];if(acc>=n*.02){hi=t;break}}
+    const k=255/Math.max(1,hi-lo);for(let j=0;j<n;j++)g[j]=(g[j]-lo)*k;
+  }
+  for(let i=0,j=0;j<n;i+=4,j++)d[i]=d[i+1]=d[i+2]=g[j];
   x.putImageData(im,0,0);c._flip=flip;return c;
 }
 const cloneCanvas=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
@@ -556,7 +575,7 @@ async function openScanner(o){
   };
   btn('g').onclick=()=>{const i=document.createElement('input');i.type='file';i.accept='image/*';document.body.appendChild(i);i.onchange=async()=>{const f=i.files[0];i.remove();if(f)run(await fileToCanvas(f),f)};i.click()};
   btn('c').onclick=()=>{if(v.videoWidth&&!taken)run(grabFrame())};
-  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false})}
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}},audio:false})}
   catch(e){st('📷 اسمح بالكاميرا، أو اختار صورة');return}
   if(!alive){stopCam();return}
   v.srcObject=stream;try{await v.play()}catch(e){}
@@ -664,7 +683,7 @@ function parseReceipt(text){
   }
   /* الوقت: جنب كلمة "الوقت" الأول، وبيقبل : أو . */
   let time='';
-  const tl=lines.find(l=>/(الوقت|time)/i.test(l)),mk2=m=>{let h=+m[1];return pad(h)+':'+m[2]};
+  const tl=lines.find(l=>/(الوقت|time)/i.test(l));
   let tm=tl&&tl.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*[:.;،]\s*([0-5]\d)(?![\d\/])/);
   if(!tm)for(const l of lines){const m=l.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*:\s*([0-5]\d)(?![\d\/])/);if(m){tm=m;break}}
   if(tm){const src=tl&&tl.includes(tm[0])?tl:T;let h=+tm[1];if(/(pm|مساء)/i.test(src)&&h<12)h+=12;if(/(am|صباح)/i.test(src)&&h===12)h=0;time=pad(h)+':'+tm[2]}
@@ -698,8 +717,20 @@ function parseReceipt(text){
   return{total:r2(total),hasTot:TC.length>0,date,time,merchant,match,card,cash,items,lines,phones,address,deliv,rest};
 }
 function scanReceipt(){
-  openScanner({title:'Receipt Scan',hint:'📄 حط الريسيت جوه الإطار وثبّت الموبايل',maxW:1700,minB:40,
-    read:async(c,onP)=>{prepCanvas(c);return parseReceipt(await ocr('ara+eng',c,{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'},onP))},
+  openScanner({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',maxW:1800,minB:25,
+    read:async(c,onP)=>{
+      const base=cloneCanvas(c);prepCanvas(c,{bin:true});
+      const a1=parseReceipt(await ocr('ara+eng',c,{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'},p=>onP(p*.6)));
+      if(a1.hasTot&&a1.merchant)return a1;
+      /* قراءة تانية بطريقة مختلفة، وبياخد الأحسن من الاتنين */
+      prepCanvas(base);
+      const a2=parseReceipt(await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.6+p*.4)));
+      const sc=r=>(r.hasTot?3:0)+(r.merchant?2:0)+(r.items.length?2:0)+(r.time?1:0)+(r.date?1:0)+(r.phones.length?1:0);
+      const[A,B]=sc(a2)>sc(a1)?[a2,a1]:[a1,a2];
+      ['merchant','time','date','address','match','card'].forEach(k=>{if(!A[k])A[k]=B[k]});
+      if(!A.phones.length)A.phones=B.phones;
+      return A;
+    },
     onDone:async(rc,blob)=>{let fid=null;if(blob){const ids=await addFiles([new File([blob],'receipt-'+today()+'.jpg',{type:'image/jpeg'})]);fid=ids[0]}receiptFlow(rc,fid)}});
 }
 async function receiptFlow(rc,fid){
@@ -903,7 +934,11 @@ function scanCard(){
       const base=cloneCanvas(c);prepCanvas(c);const f=c._flip;
       const t1=await ocr('eng',c,{tessedit_pageseg_mode:'11'},p=>onP(p*.5));
       let cn=cardFromText(t1);const info=cardInfo(t1);
-      if(!cn){prepCanvas(base,!f);cn=cardFromText(await ocr('eng',base,{tessedit_pageseg_mode:'11',tessedit_char_whitelist:'0123456789 '},p=>onP(.5+p*.5)))}
+      if(!cn){
+        prepCanvas(base,{inv:!f});
+        const t2=await ocr('eng',base,{tessedit_pageseg_mode:'11'},p=>onP(.5+p*.5));
+        cn=cardFromText(t2);const i2=cardInfo(t2);for(const k in i2)if(!info[k])info[k]=i2[k];
+      }
       return{...info,...(cn||{})};
     },
     onDone:r=>{
