@@ -151,12 +151,6 @@ details.grp[open]>summary{border-bottom:1px solid var(--bd)}
 details.grp>summary .gs{margin-inline-start:auto;font-size:14px}
 .icard{display:flex;gap:12px;padding:12px;border-bottom:1px solid var(--soft);align-items:flex-start}
 .icard:last-child{border-bottom:0}
-.icard .fx{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--mu);flex:0 0 34px;padding-top:2px}
-.icard .fx input{width:22px;height:22px;margin:0;accent-color:var(--p)}
-.icard .nm{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.icard .nm b{font-size:14px;overflow-wrap:anywhere}.icard .nm .v{font-weight:800;white-space:nowrap}
-.icard .meta{font-size:12px;color:var(--mu);margin-top:2px}
-.icard .acts{justify-content:flex-start;margin-top:8px}
 .chip{display:inline-block;font-size:11px;padding:0 8px;border-radius:10px;background:var(--soft);color:var(--mu);margin-inline-start:4px;font-weight:600}
 .chip.fx{background:#dbeafe;color:#1e40af}.chip.pd{background:#fef3c7;color:#92400e}
 .files{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 8px}
@@ -271,6 +265,44 @@ body.dark .ptbl tfoot td{background:#173328}
 #sheet.open .body{transform:none}#sheet h2{margin:2px 0 8px;font-size:17px}
 #toast{position:fixed;bottom:96px;left:50%;transform:translate(-50%,20px);background:#111827;color:#fff;padding:9px 16px;border-radius:20px;opacity:0;transition:.25s;z-index:60;pointer-events:none;font-size:13px;max-width:90vw;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+/* --- كروت البنود --- */
+.ilist{display:flex;flex-direction:column;gap:10px}
+.ic2{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;border-inline-start:4px solid var(--inc)}
+.ic2.exp{border-inline-start-color:var(--exp)}.ic2.off{opacity:.55}
+.ich{display:flex;align-items:center;gap:10px}
+.iav{width:42px;height:42px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:20px;flex:0 0 42px}
+.ich .grow b{display:block;font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.ich .grow small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
+.iam{text-align:left;white-space:nowrap;font-weight:800;font-size:17px}
+.iam small{display:block;font-size:10.5px;font-weight:400;color:var(--mu)}
+.itags{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px}
+.itags .chip{margin:0;padding:2px 10px}
+.swt{display:flex;align-items:center;gap:6px;margin:0;margin-inline-start:auto;font-size:12px;color:var(--mu);cursor:pointer;user-select:none}
+.swt input{position:absolute;opacity:0;width:0;height:0}
+.swt i{width:38px;height:22px;border-radius:11px;background:var(--bd);position:relative;transition:background .2s;flex:0 0 38px}
+.swt i::after{content:'';position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0003;transition:right .2s}
+.swt input:checked+i{background:var(--p)}.swt input:checked+i::after{right:19px}
+.ibar{display:grid;grid-template-columns:1fr 44px 54px 44px;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--bd)}
+.ibar .mini{padding:8px 0;font-size:13px;text-align:center}
+/* --- شريط الرجوع والإغلاق في النوافذ --- */
+#sheet .body{padding-top:0}
+.shbar{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;margin:0 -14px 10px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--bd)}
+.shbar .mini{font-size:15px;font-weight:700;padding:6px 14px;border-radius:10px}
+.shbar i{width:40px;height:4px;border-radius:2px;background:var(--bd)}
+.lkhint{color:var(--mu);font-size:12px;margin-top:10px}
+input[type=range]{padding:0;border:0;accent-color:var(--p)}
+/* --- التقارير على قد عرض الموبايل --- */
+@media (max-width:700px){
+  #rvdoc.paper{zoom:1}
+  #rvbody{padding:8px 4px}
+  .ptbl th,.ptbl td{white-space:normal;word-break:break-word;padding:6px 4px;font-size:11px}
+  .ptbl thead tr.cl th{padding:1px 2px;font-size:9px}
+  .ptbl .rn{width:20px;min-width:20px;font-size:9.5px}
+  .ptbl td.wrap{min-width:0}
+  .ptbl .pb{min-width:0;flex-direction:column;align-items:stretch;gap:2px}
+  .ptbl .tag{white-space:normal}
+  .paper>.kpis,.paper>.sec,.paper>.ptbl,.paper>.pchart,.paper>.pnote{margin-left:6px;margin-right:6px}
+}
 @media print{
   body.printing>*:not(#printArea){display:none!important}
   body.printing #printArea{display:block}
@@ -290,7 +322,7 @@ body.dark .ptbl tfoot td{background:#173328}
 <div id="lock"><div class="lk"><div class="lkic">🔒</div><h2 id="lkname"></h2>
 <input id="lkpin" type="password" inputmode="numeric" autocomplete="off" placeholder="الرقم السري" onkeydown="if(event.key==='Enter')tryPin()">
 <button class="btn" onclick="tryPin()">دخول</button>
-<button class="btn ghost" id="lkbio" onclick="bioUnlock()">👆 الدخول بالبصمة</button>
+<button class="btn ghost" id="lkbio" onclick="bioUnlock()">👆 افتح بالبصمة / Face ID</button><div class="lkhint" id="lkhint">لو البصمة ما ظهرتش لوحدها، دوس في أي حتة على الشاشة</div>
 <button class="lkf" onclick="forgotPin()">نسيت الرقم السري؟</button>
 <div id="lkbrand"></div></div></div>
 <div id="banner"></div>
@@ -301,8 +333,8 @@ body.dark .ptbl tfoot td{background:#173328}
 
 <script>
 /* ========== الإصدار والمطور ========== */
-const APP_VERSION='2.5.0';
-const APP_BUILD='11/10/2026 - 05:55 م';
+const APP_VERSION='2.6.0';
+const APP_BUILD='12/10/2026 - 12:45 م';
 const DEF_NAME='Fawzy Folio';
 const DEV={name:'Eng.Ahmed Fawzy',company:'DeTech Solutions',phones:['01285258400','01060008747']};
 
@@ -432,7 +464,7 @@ function inAppAlerts(force){
   const sig=today()+':'+al.map(a=>a.id).join(',');
   if(!force&&localStorage.getItem(BNKEY)===sig)return;
   localStorage.setItem(BNKEY,sig);
-  const late=al.some(a=>a.lv==='late');
+  const late=al.some(a=>a.lv==='late');setTimeout(alertSound,700);
   setTimeout(()=>banner('🔔',al.length>1?`عندك ${al.length} تنبيه`:al[0].title,al.length>1?al.slice(0,2).map(a=>a.title).join(' · '):al[0].body,()=>openNotifs(),late?'late':'soon'),700);
 }
 
@@ -494,7 +526,7 @@ function normalize(d){
   d.cats=d.cats.map(c=>({files:[],amt:{},st:{},every:1,pct:0,...c}));
   d.cash=(d.cash||[]).map(c=>({...c,amount:+c.amount||0}));
   d.docs=(d.docs||[]).map(x=>({files:[],...x}));d.plans=(d.plans||[]).map(p=>({files:[],items:[],...p}));d.fmeta=d.fmeta||{};
-  d.settings=Object.assign({lead:10,leadA:15,appName:DEF_NAME,theme:'teal',labels:{},hw:{},pins:[],sort:'amt',font:'cairo',fsz:1.07},d.settings||{});
+  d.settings=Object.assign({lead:10,leadA:15,appName:DEF_NAME,theme:'teal',labels:{},hw:{},pins:[],sort:'amt',font:'cairo',fsz:1.07,snd:'ding',svol:.7},d.settings||{});
   if(!d.settings.appName||d.settings.appName==='مصروفي')d.settings.appName=DEF_NAME;
   return d;
 }
@@ -618,7 +650,7 @@ const ATT={
 };
 async function viewFile(id,ctx){
   const m=S.fmeta[id]||{name:'ملف'},u=await fileURL(id),img=(m.type||'').startsWith('image/');
-  $('#viewer').innerHTML=`<div class="vtop"><button class="mini" onclick="closeViewer()">✕</button><b>${esc(m.name)}</b></div>
+  $('#viewer').innerHTML=`<div class="vtop"><button class="mini" onclick="closeViewer()">→ رجوع</button><b>${esc(m.name)}</b><button class="mini" onclick="closeViewer()">✕</button></div>
   <div class="vbody">${img&&u?`<img src="${u}">`:`<div class="vic">${fileIcon(m)}</div>`}</div>
   <div class="vbar"><button class="mini" onclick="openFile('${id}')">🔍 فتح</button><button class="mini" onclick="shareFiles(['${id}'])">📤 مشاركة</button><button class="mini" onclick="dlFile('${id}')">⬇️ تنزيل</button>
   ${ATT[ctx]&&ATT[ctx].rm?`<button class="mini danger" onclick="rmFile('${id}','${ctx}')">🗑 حذف</button>`:''}</div>`;
@@ -712,6 +744,59 @@ function donut(items){
   return `<div class="donut"><svg viewBox="0 0 160 160" width="160" height="160">${segs}<text x="80" y="76" text-anchor="middle" font-size="11" fill="#94a3b8">الإجمالي</text><text x="80" y="96" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">${short(tot)}</text></svg><div class="dleg">${items.map(it=>`<div><i style="background:${it.color}"></i><span>${esc(it.label)}</span><b>${num(it.value)}</b><small class="muted">${Math.round(it.value/tot*100)}%</small></div>`).join('')}</div></div>`;
 }
 
+/* ========== أصوات التنبيه ========== */
+const SOUNDS={
+  ding:{n:'دينج',s:[[880,.12],[1320,.35]]},
+  chime:{n:'جرس ناعم',s:[[1047,.15],[1319,.15],[1568,.4]],w:'triangle'},
+  bell:{n:'جرس كبير',s:[[660,1]],h:1},
+  marimba:{n:'ماريمبا',s:[[784,.12],[988,.12],[784,.12],[1175,.35]]},
+  rise:{n:'نغمة صاعدة',s:[[523,.1],[659,.1],[784,.1],[1047,.35]]},
+  cash:{n:'كاشير',s:[[2093,.08],[2637,.45]],w:'triangle'},
+  pop:{n:'بوب',s:[[600,.06],[900,.1]]},
+  alert:{n:'تنبيه قوي',s:[[880,.12],[0,.08],[880,.12],[0,.08],[880,.22]],w:'square'},
+  none:{n:'بدون صوت',s:[]}
+};
+let AC=null,sndQ=0;
+const newAC=()=>AC||(AC=new (window.AudioContext||window.webkitAudioContext)());
+function playSound(k){
+  const sd=SOUNDS[k||S.settings.snd||'ding'];if(!sd||!sd.s.length)return;
+  try{
+    newAC();if(AC.state!=='running')AC.resume();
+    const v=Math.max(.05,Math.min(1,+(S.settings.svol??.7)));let t=AC.currentTime+.03;
+    sd.s.forEach(([f,d])=>{
+      if(f)[[f,1]].concat(sd.h?[[f*2.76,.25]]:[]).forEach(([fr,gm])=>{
+        const o=AC.createOscillator(),g=AC.createGain();o.type=sd.w||'sine';o.frequency.value=fr;
+        g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.45*v*gm,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+        o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.03);
+      });
+      t+=d;
+    });
+  }catch(e){}
+}
+function alertSound(){
+  if((S.settings.snd||'ding')==='none')return;
+  try{newAC()}catch(e){}
+  if(AC&&AC.state==='running')return playSound();
+  sndQ=Date.now();
+}
+/* الموبايل مش بيسمح بالصوت قبل أول لمسة، فالصوت بيستنى أول لمسة */
+document.addEventListener('pointerdown',()=>{
+  try{newAC();const q=sndQ&&Date.now()-sndQ<20000;sndQ=0;
+    (AC.state==='running'?Promise.resolve():AC.resume()).then(()=>{if(q)playSound()}).catch(()=>{});
+  }catch(e){}
+},true);
+function setSnd(k){S.settings.snd=k;save();render();playSound(k)}
+function sndBox(){
+  const cur=S.settings.snd||'ding';
+  return `<h3>🔊 صوت التنبيه جوه البرنامج</h3><div class="list">${Object.entries(SOUNDS).map(([k,s])=>`<div class="row" onclick="setSnd('${k}')"><span class="ic" style="background:var(--soft)">${cur===k?'🔘':'⚪'}</span><div class="grow"><b>${s.n}</b></div>${s.s.length?`<button class="mini" onclick="event.stopPropagation();playSound('${k}')">▶️ اسمع</button>`:''}</div>`).join('')}</div>
+  <label>علو الصوت<input type="range" min="0.1" max="1" step="0.1" value="${S.settings.svol??.7}" onchange="S.settings.svol=+this.value;save();playSound()"></label>
+  <details class="gen"><summary>📱 عايز صوت من أصوات الموبايل لإشعارات النظام؟</summary><ol>
+  <li>اتأكد إن التطبيق متثبت على الشاشة الرئيسية.</li>
+  <li>افتح <b>إعدادات الموبايل ← التطبيقات ← Fawzy Folio ← الإشعارات</b>. لو مش لاقيه، هتلاقيه تحت <b>Chrome ← الإشعارات</b> باسم الموقع.</li>
+  <li>دوس على <b>الصوت</b> واختار أي نغمة من نغمات الموبايل.</li>
+  <li>على الآيفون الإشعارات بتاخد صوت الإشعارات الافتراضي، ومينفعش يتغير من التطبيق.</li></ol></details>`;
+}
+
 /* ========== التنبيهات والإشعارات ========== */
 function alerts(){
   const out=[],td=today();
@@ -733,7 +818,7 @@ function alerts(){
   });
   S.txs.filter(t=>t.pend&&t.date<=td).forEach(t=>{
     const inc=t.type==='inc';
-    out.push({id:`p-${t.id}-${t.date}`,ic:inc?'⏳':'🧾',lv:t.date<td?'late':'soon',title:`${C(t.cat)?.name||'—'}: ${inc?'لسه ما اتحصّلش':'لسه ما اتدفعش'}`,body:`ميعاده ${fdate(t.date)} · ${fmt(t.amount)}${t.post?` · اتأجّل ${t.post} مرة`:''}`,go:inc?`gocol('${NKM}')`:`goexp('${NKM}')`});
+    out.push({id:`p-${t.id}-${t.date}`,ic:inc?'⏳':'🧾',lv:t.date<td?'late':'soon',title:`${C(t.cat)?.name||'—'}: ${inc?'غير محصّل':'لسه ما اتدفعش'}`,body:`ميعاده ${fdate(t.date)} · ${fmt(t.amount)}${t.post?` · اتأجّل ${t.post} مرة`:''}`,go:inc?`gocol('${NKM}')`:`goexp('${NKM}')`});
   });
   S.plans.forEach(p=>{
     const un=p.items.filter(it=>!itTx(it)&&it.due).sort((a,b)=>a.due.localeCompare(b.due));if(!un.length)return;
@@ -752,7 +837,7 @@ function openNotifs(){
   const all=alerts(),un=all.filter(a=>!READ[a.id]),rd=all.filter(a=>READ[a.id]);
   const card=(a,dim)=>`<div class="ncard ${a.lv||'info'}" style="${dim?'opacity:.55':''}" onclick="readAlert('${a.id}');closeSheet();${a.go}"><div class="nic">${a.ic||'🔔'}</div><div class="grow"><b>${esc(a.title)}</b><small>${esc(a.body)}</small></div><span class="nchev">‹</span></div>`;
   sheet(`<div class="phead"><h2>🔔 التنبيهات</h2><span class="badge ${un.length?'late':'done'}">${un.length?un.length+' جديد':'✓'}</span></div>
-  ${un.length?un.map(a=>card(a)).join('')+`<button class="btn ghost" onclick="readAll()">✓ اعتبرها كلها مقروءة</button>`:'<div class="nempty"><div>✅</div><b>مفيش تنبيهات جديدة</b><small>كل حاجة تمام</small></div>'}
+  ${un.length?un.map(a=>card(a)).join('')+`<button class="btn ghost" onclick="readAll()">✓ اعتبرها كلها مقروءة</button>`:'<div class="nempty"><div>✅</div><b>لا يوجد تنبيهات جديدة</b></div>'}
   ${rd.length?`<details class="gen"><summary>📭 المقروءة (${rd.length})</summary><div style="margin-top:8px">${rd.map(a=>card(a,1)).join('')}</div></details>`:''}
   <button class="btn ghost" onclick="notifSheet()">⚙️ فحص وتجربة الإشعارات</button>`);
 }
@@ -776,7 +861,7 @@ async function enableNotif(){
   try{const p=await Notification.requestPermission();if(p==='granted'){toast('اتفعلت الإشعارات ✓');localStorage.removeItem(NKEY);pushAlerts()}else toast('الإشعارات اترفضت')}catch(e){toast('مش قادر أفعّل الإشعارات')}
   notifSheet();
 }
-const NOPT={icon:'icon-192.png',badge:'icon-192.png',lang:'ar',dir:'rtl',vibrate:[200,100,200]};
+const NOPT={icon:'icon-192.png',badge:'icon-192.png',lang:'ar',dir:'rtl',vibrate:[200,100,200],silent:false,renotify:true};
 async function showNotif(title,o){
   const opts={...NOPT,...o};let reg=null;
   try{if(navigator.serviceWorker)reg=await Promise.race([navigator.serviceWorker.ready,new Promise(r=>setTimeout(()=>r(null),2000))])}catch(e){}
@@ -784,7 +869,7 @@ async function showNotif(title,o){
   return new Notification(title,opts);
 }
 async function testNotif(delay){
-  if(!delay)banner('🔔','إشعار تجريبي','ده شكل التنبيه جوه البرنامج ✓',null,'ok');
+  if(!delay){alertSound();banner('🔔','إشعار تجريبي','ده شكل التنبيه جوه البرنامج ✓',null,'ok')}
   if(!('Notification' in window))return toast('الجهاز ده مش بيدعم إشعارات النظام');
   if(Notification.permission!=='granted'){const p=await Notification.requestPermission();if(p!=='granted'){notifSheet();return toast('لازم توافق على الإشعارات الأول')}}
   const fire=()=>showNotif(`🔔 ${appName()}`,{body:'ده إشعار تجريبي، الإشعارات شغالة ✓',tag:'test-'+Date.now(),requireInteraction:!isTouch()})
@@ -816,7 +901,7 @@ function showLock(){
   if(!LK.pin)return;closeSheet();closeViewer();hideBanner();$('#rv').classList.remove('on');
   $('#lkname').textContent=appName();$('#lkpin').value='';
   $('#lkbio').style.display=LK.bio?'':'none';$('#lkbrand').innerHTML=brand();
-  $('#lock').classList.add('on');
+  $('#lock').classList.add('on');autoBio();$('#lkhint').style.display=LK.bio?'':'none';
 }
 function unlock(){$('#lock').classList.remove('on');pushAlerts();inAppAlerts()}
 async function tryPin(){const v=$('#lkpin').value;if(!v)return;if(await hash(v)===LK.pin)unlock();else{$('#lkpin').value='';toast('الرقم السري غلط')}}
@@ -829,11 +914,26 @@ async function bioEnable(){
     LK.bio=b64(c.rawId);saveLK();render();toast('اتفعّلت البصمة ✓');
   }catch(e){toast('ما اتفعّلتش البصمة')}
 }
+let bioBusy=false;
 async function bioUnlock(silent){
-  if(!LK.bio)return;
-  try{await navigator.credentials.get({publicKey:{challenge:rnd(32),allowCredentials:[{type:'public-key',id:unb64(LK.bio)}],userVerification:'required',timeout:60000}});unlock()}
-  catch(e){if(silent!==true)toast('البصمة ما اتعرفتش')}
+  if(!LK.bio||bioBusy||!$('#lock').classList.contains('on'))return;
+  bioBusy=true;
+  try{
+    await navigator.credentials.get({publicKey:{challenge:rnd(32),allowCredentials:[{type:'public-key',id:unb64(LK.bio),transports:['internal']}],userVerification:'required',timeout:60000}});
+    unlock();
+  }catch(e){if(silent!==true)toast('البصمة ما اتعرفتش، جرّب تاني أو اكتب الرقم السري')}
+  finally{bioBusy=false}
 }
+/* البصمة تشتغل لوحدها أول ما شاشة القفل تبقى قدامك */
+function autoBio(){
+  if(!LK.bio)return;let n=0;
+  const t=()=>{if(!$('#lock').classList.contains('on'))return;
+    if(document.visibilityState==='visible'&&document.hasFocus())bioUnlock(true);
+    else if(++n<20)setTimeout(t,300)};
+  setTimeout(t,350);
+}
+/* لو الموبايل منع التشغيل التلقائي: أي لمسة على شاشة القفل تشغّل البصمة */
+$('#lock').addEventListener('click',e=>{if(!e.target.closest('input,button'))bioUnlock()});
 async function forgotPin(){
   if(!await ask('نسيت الرقم السري؟','هيتمسح كل البيانات من الجهاز ده ويتشال الرقم السري.\nلو عندك نسخة احتياطية تقدر ترجعها بعدين.',{danger:true,icon:'⚠️',ok:'مسح البيانات'}))return;
   if(!await ask('آخر تأكيد','المسح مش هيترجع.',{danger:true,icon:'🗑',ok:'امسح'}))return;
@@ -871,7 +971,37 @@ function render(){
     +({home:vHome,col:vCol,annual:vAnnual,exps:vExps,items:vItems,reports:vReports,settings:vSettings,more:vMore,inst:vInst,plan:vPlan,docs:vDocs,pmv:vPmv,months:vMonths,cash:vCash})[view]()+brand();
   updateBell();hydrate();
 }
-function go(v){view=v;render();scrollTo(0,0)}
+let VH=[];
+function go(v,noHist){
+  if(!noHist&&v!==view){VH.push({view,rtab,stab});if(VH.length>40)VH.shift()}
+  if(v!==view)GOPEN={};
+  view=v;render();scrollTo(0,0);
+}
+function goBack(){
+  if(view==='reports'&&rtab){rtab='';render();return true}
+  if(view==='settings'&&stab){stab='';render();return true}
+  const p=VH.pop();
+  if(p){rtab=p.rtab;stab=p.stab;go(p.view,true);return true}
+  if(view!=='home'){go('home',true);return true}
+  return false;
+}
+/* زرار الرجوع بتاع الموبايل */
+let backAt=0;
+function handleBack(){
+  if($('#dlg').classList.contains('on')){($('#dno').style.display!=='none'?$('#dno'):$('#dyes')).click();return true}
+  if($('#lock').classList.contains('on'))return false;
+  if($('#viewer').classList.contains('on')){closeViewer();return true}
+  if($('#sheet').classList.contains('open')){sheetBack();return true}
+  if($('#rv').classList.contains('on')){rvBack();return true}
+  return goBack();
+}
+history.replaceState({fb:0},'');history.pushState({fb:1},'');
+document.addEventListener('pointerdown',()=>{if(!history.state||history.state.fb!==1)history.pushState({fb:1},'')},true);
+addEventListener('popstate',()=>{
+  if(handleBack()){history.pushState({fb:1},'');return}
+  if(Date.now()-backAt<2000){history.back();return}
+  backAt=Date.now();history.pushState({fb:1},'');toast('دوس رجوع تاني للخروج');
+});
 function gocol(k){if(k){const[y,m]=k.split('-').map(Number);cur.y=y;cur.m=m}go('col')}
 function goexp(k){if(k){const[y,m]=k.split('-').map(Number);cur.y=y;cur.m=m}go('exps')}
 function shiftM(d){cur.m+=d;if(cur.m<1){cur.m=12;cur.y--}if(cur.m>12){cur.m=1;cur.y++}render()}
@@ -888,7 +1018,7 @@ const tbl=(head,rows,foot)=>`<div class="ptbl"><table><thead><tr class="cl"><th 
 const tag=t=>`<span class="tag ${t}">${esc(t==='exp'?L('expOne'):t==='tr'?'تحويل':L('incOne'))}</span>`;
 const pbar=(p,c)=>`<div class="pb"><div class="pbar"><i style="width:${Math.min(100,p)}%;background:${c}"></i></div><small>${Math.round(p)}%</small></div>`;
 function grp(key,title,n,sum,cls,inner,defOpen){
-  const op=GOPEN[key]??defOpen;
+  const op=!!GOPEN[key];
   return `<details class="grp" ${op?'open':''} ontoggle="GOPEN['${key}']=this.open"><summary><span>${title}</span><span class="badge ${n?'soon':'rej'}">${n}</span><b class="gs ${cls||''}">${num(sum)}</b></summary>${inner||'<p class="empty">لا يوجد</p>'}</details>`;
 }
 function stTag(s,due){
@@ -971,7 +1101,7 @@ function vHome(){
   const idue=instDue();
   if(wOn('inst',idue.length))tiles.push({ic:'🏦',label:'أقساط قريبة',val:idue.length?fmt(idue.reduce((a,o)=>a+(+o.it.amount||0),0)):'لا يوجد',sub:idue.length?`${esc(idue[0].p.name)} · ${leftTxt(idue[0].left)}`:`خلال ${leadI()} يوم`,cls:idue.some(o=>o.left<0)?'hot':idue.length?'soon':'',badge:idue.length,go:'instSheet()'});
   const al=unread();
-  if(wOn('alerts',al.length))tiles.push({ic:'🔔',label:'التنبيهات',val:al.length?al.length+' جديد':'✓ مفيش',sub:al.length?esc(al[0].title):'كل حاجة تمام',cls:al.length?'hot':'',go:'openNotifs()'});
+  if(wOn('alerts',al.length))tiles.push({ic:'🔔',label:'التنبيهات',val:al.length?al.length+' جديد':'لا يوجد',sub:al.length?esc(al[0].title):'',cls:al.length?'hot':'',go:'openNotifs()'});
   const cl=cashOf(NKM),ct=cl.reduce((a,c)=>a+c.amount,0);
   if(wOn('cash',cl.length))tiles.push({ic:'🏧',label:'سحب كاش · '+mn,val:fmt(ct),sub:`${cl.length} مرة`,go:'cashSheet()'});
   const ci=catItems(keyTx(NKM),'exp');
@@ -995,26 +1125,26 @@ function pendingSheet(){
 function annualSheet(){
   const list=annualDue();
   sheet(`<div class="phead"><h2>📆 تحصيلات سنوية قريبة</h2><span class="badge ${list.length?'soon':'done'}">${list.length||'✓'}</span></div>
-  ${list.length?`<div class="list">${list.map(o=>{const last=lastDone(o.r);return `<div class="ckx"><input type="checkbox" onchange="recToggle('${o.r.id}',${o.k},this)"><div class="row grow" style="border:0" onclick="occSheet('${o.r.id}',${o.k})"><div class="grow"><b>${esc(o.r.name)}</b><small class="${o.left<0?'neg':''}">${fdate(o.d)} · ${leftTxt(o.left)}</small>${last||o.r.pct?`<small>${last?'المرة اللي فاتت '+fmt(last.amount):''}${o.r.pct?' · زيادة '+o.r.pct+'%':''}</small>`:''}${o.r.note?`<small>📝 ${esc(o.r.note)}</small>`:''}</div><div class="amt">${num(o.amt)}</div></div></div>`}).join('')}</div>`:`<div class="nempty"><div>✅</div><b>مفيش تحصيلات سنوية خلال ${leadA()} يوم</b></div>`}
+  ${list.length?`<div class="list">${list.map(o=>{const last=lastDone(o.r);return `<div class="ckx"><input type="checkbox" onchange="recToggle('${o.r.id}',${o.k},this)"><div class="row grow" style="border:0" onclick="occSheet('${o.r.id}',${o.k})"><div class="grow"><b>${esc(o.r.name)}</b><small class="${o.left<0?'neg':''}">${fdate(o.d)} · ${leftTxt(o.left)}</small>${last||o.r.pct?`<small>${last?'المرة اللي فاتت '+fmt(last.amount):''}${o.r.pct?' · زيادة '+o.r.pct+'%':''}</small>`:''}${o.r.note?`<small>📝 ${esc(o.r.note)}</small>`:''}</div><div class="amt">${num(o.amt)}</div></div></div>`}).join('')}</div>`:`<div class="nempty"><div>✅</div><b>لا يوجد تحصيلات سنوية خلال ${leadA()} يوم</b></div>`}
   ${repBtn('تقرير التحصيلات السنوية',"openRep('contracts')")}`);
 }
 function instSheet(){
   const l=instDue();
   sheet(`<div class="phead"><h2>🏦 أقساط قريبة</h2><span class="badge ${l.length?'soon':'done'}">${l.length||'✓'}</span></div>
-  ${l.length?`<div class="list">${l.map(o=>`<div class="row"><div class="grow"><b>${esc(o.p.name)}</b><small class="${o.left<0?'neg':''}">${fdate(o.it.due)} · ${leftTxt(o.left)}</small></div><div class="amt">${num(+o.it.amount||0)}</div><button class="mini pri" onclick="payStart('${o.p.id}','${o.it.id}')">✓ دفع</button></div>`).join('')}</div>`:'<div class="nempty"><div>✅</div><b>مفيش أقساط قريبة</b></div>'}
+  ${l.length?`<div class="list">${l.map(o=>`<div class="row"><div class="grow"><b>${esc(o.p.name)}</b><small class="${o.left<0?'neg':''}">${fdate(o.it.due)} · ${leftTxt(o.left)}</small></div><div class="amt">${num(+o.it.amount||0)}</div><button class="mini pri" onclick="payStart('${o.p.id}','${o.it.id}')">✓ دفع</button></div>`).join('')}</div>`:'<div class="nempty"><div>✅</div><b>لا يوجد أقساط قريبة</b></div>'}
   ${repBtn('تقرير الأقساط',"openRep('inst')")}`);
 }
 function cashSheet(){
   const l=cashOf(NKM).sort((a,b)=>b.date.localeCompare(a.date)),t=l.reduce((a,c)=>a+c.amount,0);
   sheet(`<div class="phead"><h2>🏧 سحب كاش · ${MONTHS[NM-1]}</h2><button class="mini pri" onclick="cashForm()">+ سحب</button></div>
   ${kpis([['سحبت الشهر ده',fmt(t),'warn'],['عدد المرات',l.length,'net']])}
-  ${l.length?`<div class="list">${l.map(c=>`<div class="row" onclick="cashForm('${c.id}')"><span class="ic" style="background:var(--soft)">🏧</span><div class="grow"><b>${esc(M(c.method)?.name||'—')}</b><small>${fdate(c.date)}${c.note?' · '+esc(c.note):''}</small></div><div class="amt">${num(c.amount)}</div></div>`).join('')}</div>`:'<div class="nempty"><div>🏧</div><b>مفيش سحب كاش الشهر ده</b></div>'}
+  ${l.length?`<div class="list">${l.map(c=>`<div class="row" onclick="cashForm('${c.id}')"><span class="ic" style="background:var(--soft)">🏧</span><div class="grow"><b>${esc(M(c.method)?.name||'—')}</b><small>${fdate(c.date)}${c.note?' · '+esc(c.note):''}</small></div><div class="amt">${num(c.amount)}</div></div>`).join('')}</div>`:'<div class="nempty"><div>🏧</div><b>لا يوجد سحب كاش الشهر ده</b></div>'}
   ${repBtn('تقرير السحب الكاش',"openRep('cash',()=>RF.year=NY)")}`);
 }
 function topSheet(){
   const ci=catItems(keyTx(NKM),'exp'),mx=ci.length?ci[0].value:1,tot=sums(keyTx(NKM)).exp;
   sheet(`<div class="phead"><h2>💸 ${esc(L('exp'))} · ${MONTHS[NM-1]}</h2><span class="badge late">${num(tot)}</span></div>
-  ${ci.length?`<div class="list">${ci.map(c=>`<div class="row col" ${c.id?`onclick="cur.y=NY;cur.m=NM;openStmt('cat','${c.id}')"`:''}><div class="rowin"><span>${esc(c.label)}</span><b>${num(c.value)}</b></div><div class="bar"><i style="width:${c.value/mx*100}%;background:${c.color}"></i></div></div>`).join('')}</div>`:'<div class="nempty"><div>💸</div><b>مفيش مصروفات الشهر ده</b></div>'}
+  ${ci.length?`<div class="list">${ci.map(c=>`<div class="row col" ${c.id?`onclick="cur.y=NY;cur.m=NM;openStmt('cat','${c.id}')"`:''}><div class="rowin"><span>${esc(c.label)}</span><b>${num(c.value)}</b></div><div class="bar"><i style="width:${c.value/mx*100}%;background:${c.color}"></i></div></div>`).join('')}</div>`:'<div class="nempty"><div>💸</div><b>لا يوجد مصروفات الشهر ده</b></div>'}
   ${repBtn('التقرير الشهري',"openRep('month',()=>RF.month=NKM)")}`);
 }
 
@@ -1042,7 +1172,7 @@ async function txDone(id,el){
   }else{
     el.checked=true;
     if(isClosed(t.date))return toast('الشهر مقفول');
-    if(!await ask(inc?'ترجعه "لسه ما اتحصّلش"؟':'ترجعه "لسه ما اتدفعش"؟',`${C(t.cat)?.name||''} · ${fmt(t.amount)}`,{icon:'↩️',ok:'رجّعه',cancel:'رجوع'}))return;
+    if(!await ask(inc?'ترجعه "غير محصّل"؟':'ترجعه "لسه ما اتدفعش"؟',`${C(t.cat)?.name||''} · ${fmt(t.amount)}`,{icon:'↩️',ok:'رجّعه',cancel:'رجوع'}))return;
     t.pend=true;if(t.due){t.date=t.due;delete t.due}save();render();toast('رجع منتظر');
   }
 }
@@ -1061,12 +1191,12 @@ function vExps(){
   const g={};list.forEach(t=>(g[t.cat]=g[t.cat]||[]).push(t));
   const groups=sortList(Object.entries(g).map(([id,ts])=>({id,ts,a:ts.reduce((a,t)=>a+t.amount,0),d:ts.map(t=>t.date).sort().pop(),n:C(id)?.name||''})),true);
   const mx=Math.max(1,...groups.map(x=>x.a));
-  let h=`<div class="phead"><h3>💸 ${esc(L('exp'))}</h3><button class="mini pri" onclick="newTx('exp')">+ ${esc(L('expOne'))}</button></div>`+monthBar()
+  let h=`<div class="phead"><h3>💸 ${esc(L('exp'))}</h3><button class="mini" onclick="receiptSheet()">📷 ريسيت</button><button class="mini pri" onclick="newTx('exp')">+ ${esc(L('expOne'))}</button></div>`+monthBar()
     +kpis([['اتدفع',fmt(tot),'exp'],['لسه ما اتدفعش',fmt(rem),'warn'],['عدد العمليات',list.length,'net']])+sortBar();
   const pl=sortList(pendF.map(o=>({h:fixedRow(o),a:o.amt,d:o.date,n:o.r.name})).concat(ptx.map(t=>({h:txRow(t),a:t.amount,d:t.date,n:C(t.cat)?.name||''}))));
-  if(pl.length)h+=grp('ep','⏳ لسه ما اتدفعش',pl.length,rem,'neg',pl.map(x=>x.h).join(''),true);
+  if(pl.length)h+=grp('ep','⏳ لسه ما اتدفعش',pl.length,rem,'neg',pl.map(x=>x.h).join(''));
   h+=grp('eg','💸 اتدفع · حسب البند',groups.length,tot,'neg',groups.map(gr=>`<details class="xr"><summary><div class="grow"><b>${esc(gr.n||'—')}</b><small>${gr.ts.length} عملية · ${Math.round(gr.a/(tot||1)*100)}% من المصروف</small><div class="bar"><i style="width:${gr.a/mx*100}%;background:#dc2626"></i></div></div><div class="amt exp">${num(gr.a)}</div></summary>
-    <div class="xb">${sortList(gr.ts.map(t=>({t,a:t.amount,d:t.date,n:t.note||''})),true).map(({t})=>`<div class="xl" onclick="editTx('${t.id}')"><span>${fd(t.date)}</span><div class="grow">${esc(t.note||M(t.method)?.name||'')}${t.via?' · '+viaTxt(t.via):''}</div>${(t.files||[]).length?'📎':''}<b class="neg">${num(t.amount)}</b></div>`).join('')}</div></details>`).join(''),true);
+    <div class="xb">${sortList(gr.ts.map(t=>({t,a:t.amount,d:t.date,n:t.note||''})),true).map(({t})=>`<div class="xl" onclick="editTx('${t.id}')"><span>${fd(t.date)}</span><div class="grow">${esc(t.note||M(t.method)?.name||'')}${t.via?' · '+viaTxt(t.via):''}</div>${(t.files||[]).length?'📎':''}<b class="neg">${num(t.amount)}</b></div>`).join('')}</div></details>`).join(''));
   return h;
 }
 
@@ -1076,7 +1206,7 @@ function vCash(){
   const yl=S.cash.filter(c=>c.date.startsWith(cur.y+'-')),yt=yl.reduce((a,c)=>a+c.amount,0);
   let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏧 ${esc(L('cash'))}</h3><button class="mini pri" onclick="cashForm()">+ سحب</button></div>`+monthBar(true)
     +kpis([['سحبت الشهر ده',fmt(tot),'warn'],['عدد المرات',list.length,'net'],['إجمالي '+cur.y,fmt(yt),'net']])+sortBar();
-  h+=list.length?`<div class="list">${list.map(({c})=>`<div class="row" onclick="cashForm('${c.id}')"><span class="ic" style="background:var(--soft)">🏧</span><div class="grow"><b>${esc(M(c.method)?.name||'—')}</b><small>${fdate(c.date)}${c.note?' · '+esc(c.note):''}</small></div><div class="amt">${num(c.amount)}</div></div>`).join('')}</div>`:'<p class="empty">مفيش سحب كاش الشهر ده</p>';
+  h+=list.length?`<div class="list">${list.map(({c})=>`<div class="row" onclick="cashForm('${c.id}')"><span class="ic" style="background:var(--soft)">🏧</span><div class="grow"><b>${esc(M(c.method)?.name||'—')}</b><small>${fdate(c.date)}${c.note?' · '+esc(c.note):''}</small></div><div class="amt">${num(c.amount)}</div></div>`).join('')}</div>`:'<p class="empty">لا يوجد سحب كاش الشهر ده</p>';
   const ms=MONTHS.map((n,i)=>[n,cashOf(ym(cur.y,i+1)).reduce((a,c)=>a+c.amount,0)]).filter(x=>x[1]);
   if(ms.length)h+=`<h3>${cur.y} شهر بشهر</h3>`+tbl(['الشهر','المسحوب'],ms.map(([n,v])=>`<tr><td><b>${n}</b></td><td><b>${num(v)}</b></td></tr>`),`<tr><td>الإجمالي</td><td>${num(yt)}</td></tr>`);
   return h;
@@ -1113,8 +1243,8 @@ function vCol(){
   h+=sortBar();
   const pl=sortList(pendF.map(o=>({h:fixedRow(o),a:o.amt,d:o.date,n:o.r.name})).concat(ptx.map(t=>({h:txRow(t),a:t.amount,d:t.date,n:C(t.cat)?.name||''}))));
   const dn=sortList(doneF.map(o=>({h:fixedRow(o),a:o.s.t?o.s.t.amount:o.amt,d:o.s.t?o.s.t.date:o.date,n:o.r.name})).concat(others.map(t=>({h:txRow(t),a:t.amount,d:t.date,n:C(t.cat)?.name||''}))),true);
-  h+=grp('cp','⏳ لسه ما اتحصّلش',pl.length,rem,'neg',pl.map(x=>x.h).join(''),true);
-  h+=grp('cd','✅ اتحصّل',dn.length,got,'pos',dn.map(x=>x.h).join(''),false);
+  h+=grp('cp','⏳ غير محصّل',pl.length,rem,'neg',pl.map(x=>x.h).join(''));
+  h+=grp('cd','✅ اتحصّل',dn.length,got,'pos',dn.map(x=>x.h).join(''));
   return h;
 }
 function vAnnual(){
@@ -1135,7 +1265,7 @@ function vAnnual(){
   };
   const wrap=list=>sortList(list.map(o=>({o,a:o.s.t?o.s.t.amount:o.amt,d:o.date,n:o.r.name})));
   const wait=wrap(occ.filter(o=>o.s.st==='wait')),fin=wrap(occ.filter(o=>o.s.st!=='wait'));
-  return h+sortBar()+grp('ap','⏳ منتظر',wait.length,rem,'neg',wait.map(x=>row(x.o)).join(''),true)+grp('ad','✅ اتسجّل',fin.length,got,'pos',fin.map(x=>row(x.o)).join(''),false);
+  return h+sortBar()+grp('ap','⏳ منتظر',wait.length,rem,'neg',wait.map(x=>row(x.o)).join(''))+grp('ad','✅ اتسجّل',fin.length,got,'pos',fin.map(x=>row(x.o)).join(''));
 }
 function contractSheet(id){
   const r=C(id),nk=nextOcc(r);let rows=[];
@@ -1200,7 +1330,7 @@ function vPmv(){
   h+=`<div class="list">${S.methods.map(m=>{let i=0,o=0;ml.forEach(t=>{if(t.method!==m.id)return;if(t.type==='inc')i+=t.amount;else if(t.type==='exp')o+=t.amount});
     return `<div class="row ${m.active?'':'off'}" style="cursor:default"><span class="dot" style="background:${m.color}"></span><div class="grow"><b>${esc(m.name)}</b>${m.active?'':' <span class="badge rej">موقوف</span>'}<small>${TYPES[m.type]||''}${m.bank?' · '+esc(m.bank):''}</small><small>${MONTHS[NM-1]}: قبضت <b class="pos">${num(i)}</b> · صرفت <b class="neg">${num(o)}</b></small></div><div class="acts"><button class="mini" onclick="editMethod('${m.id}')">✏️</button><button class="mini danger" onclick="delMethod('${m.id}')">🗑</button></div></div>`}).join('')}</div>`;
   h+=`<h3>🔁 التحويلات بين الحسابات · ${MONTHS[NM-1]}<button class="mini pri" onclick="newTx('tr')">+ تحويل</button></h3>`;
-  h+=trs.length?`<div class="list">${trs.map(t=>`<div class="row" onclick="editTx('${t.id}')"><span class="ic" style="background:#dbeafe">🔁</span><div class="grow"><b>من ${esc(M(t.method)?.name||'—')} إلى ${esc(M(t.to)?.name||'—')}</b><small>${fdate(t.date)}${t.via?' · '+viaTxt(t.via):''}${t.note?' · '+esc(t.note):''}</small></div><div class="amt" style="color:var(--tr)">${num(t.amount)}</div></div>`).join('')}</div>`:'<p class="empty">مفيش تحويلات الشهر ده</p>';
+  h+=trs.length?`<div class="list">${trs.map(t=>`<div class="row" onclick="editTx('${t.id}')"><span class="ic" style="background:#dbeafe">🔁</span><div class="grow"><b>من ${esc(M(t.method)?.name||'—')} إلى ${esc(M(t.to)?.name||'—')}</b><small>${fdate(t.date)}${t.via?' · '+viaTxt(t.via):''}${t.note?' · '+esc(t.note):''}</small></div><div class="amt" style="color:var(--tr)">${num(t.amount)}</div></div>`).join('')}</div>`:'<p class="empty">لا يوجد تحويلات الشهر ده</p>';
   return h;
 }
 function editMethod(id){
@@ -1238,7 +1368,7 @@ function vMonths(){
   const nt=n=>`<span class="${n<0?'neg':''}">${n<0?num(-n)+' سالب':num(n)}</span>`;
   let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🔒 قفل الشهور</h3></div>`;
   h+=`<h3>🔓 الشهور المفتوحة</h3>`+(open.length?`<div class="list">${open.map(k=>{const s=sums(keyTx(k));return `<div class="row"><div class="grow"><b>${mName(k)}${k===NKM?' <span class="badge soon">الحالي</span>':''}</b><small>${esc(L('inc'))} ${num(s.inc)} · ${esc(L('exp'))} ${num(s.exp)} · ${esc(L('net'))} ${nt(s.net)}</small></div><button class="mini pri" onclick="closeMonth('${k}')">🔒 قفل</button></div>`}).join('')}</div>`:'<p class="empty">كل الشهور مقفولة</p>');
-  h+=`<h3>🔒 الشهور المقفولة</h3>`+(closed.length?`<div class="list">${closed.map(k=>{const c=S.closed[k],inc=+c.inc||0,exp=+c.exp||0;return `<div class="row"><div class="grow"><b>${mName(k)}</b><small>${esc(L('inc'))} ${num(inc)} · ${esc(L('exp'))} ${num(exp)} · ${esc(L('net'))} ${nt(inc-exp)}</small><small>اتقفل يوم ${new Date(c.at).toLocaleDateString('ar-EG')}</small></div><button class="mini" onclick="openMonth('${k}')">🔓 فتح</button></div>`}).join('')}</div>`:'<p class="empty">مفيش شهور مقفولة لسه</p>');
+  h+=`<h3>🔒 الشهور المقفولة</h3>`+(closed.length?`<div class="list">${closed.map(k=>{const c=S.closed[k],inc=+c.inc||0,exp=+c.exp||0;return `<div class="row"><div class="grow"><b>${mName(k)}</b><small>${esc(L('inc'))} ${num(inc)} · ${esc(L('exp'))} ${num(exp)} · ${esc(L('net'))} ${nt(inc-exp)}</small><small>اتقفل يوم ${new Date(c.at).toLocaleDateString('ar-EG')}</small></div><button class="mini" onclick="openMonth('${k}')">🔓 فتح</button></div>`}).join('')}</div>`:'<p class="empty">لا يوجد شهور مقفولة</p>');
   return h;
 }
 
@@ -1374,6 +1504,68 @@ async function unpay(pid,iid){
   it.txId=null;save();render();toast('اتلغى');
 }
 
+/* ========== سكان الريسيت ========== */
+const latD=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/٫/g,'.').replace(/٬/g,',');
+const normAr=s=>String(s||'').toLowerCase().replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[^a-z0-9\u0621-\u064A]+/g,' ').trim();
+function parseReceipt(text){
+  const lines=latD(text).split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const nums=s=>(s.match(/\d[\d,]*(?:\.\d{1,2})?/g)||[]).map(x=>parseFloat(x.replace(/,/g,''))).filter(x=>x>0&&x<1e6);
+  const TOT=/(grand\s*total|total|net\s*amount|amount\s*due|to\s*pay|الاجمالي|الإجمالي|اجمالي|إجمالي|المجموع|الصافي|صافي|المطلوب|المستحق)/i;
+  const NOT=/(sub\s*-?\s*total|قبل|vat|tax|ضريب|خصم|discount|qty|عدد|change|الباقي|paid|مدفوع)/i;
+  let total=0;
+  for(let i=lines.length-1;i>=0;i--){const l=lines[i];if(!TOT.test(l)||NOT.test(l))continue;let n=nums(l);if(!n.length&&lines[i+1])n=nums(lines[i+1]);if(n.length){total=Math.max(...n);break}}
+  if(!total){const m=lines.flatMap(l=>/\d\.\d{2}\b/.test(l)?nums(l):[]).filter(x=>x<100000);if(m.length)total=Math.max(...m)}
+  let date=null;
+  for(const l of lines){
+    let m=l.match(/(20\d{2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{1,2})/),d=null;
+    if(m)d=`${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
+    else if((m=l.match(/\b(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{2,4})\b/))){let y=+m[3];if(y<100)y+=2000;d=`${y}-${pad(+m[2])}-${pad(+m[1])}`}
+    if(d){const[,mo,dd]=d.split('-').map(Number);if(mo>=1&&mo<=12&&dd>=1&&dd<=31&&d<=today()&&daysBetween(today(),d)<=90){date=d;break}}
+  }
+  const SKIP=/(tel|phone|mob|fax|www|http|@|vat|tax|invoice|receipt|cashier|date|time|welcome|فاتور|ايصال|إيصال|تليفون|هاتف|موبايل|ضريب|سجل|تاريخ|الوقت|كاشير|رقم|عنوان|شارع|اهلا|أهلا|مرحبا)/i;
+  let merchant='';
+  for(const l of lines.slice(0,6)){const s=l.replace(/[^A-Za-z\u0621-\u064A\s&'-]/g,' ').replace(/\s+/g,' ').trim();if(s.replace(/\s/g,'').length>=3&&!SKIP.test(l)){merchant=s.slice(0,40);break}}
+  const nt=' '+normAr(text)+' ';let match=null,best=0;
+  S.cats.filter(c=>c.kind==='exp'&&c.active!==false).forEach(c=>[c.name,...(c.alias||[])].forEach(n=>{const k=normAr(n);if(k.length>=3&&nt.includes(k)&&k.length>best){best=k.length;match=c}}));
+  return{total:r2(total),date,merchant,match};
+}
+function receiptSheet(){
+  sheet(`<h2>🧾 سكان ريسيت</h2><p class="muted">صوّر الريسيت كله في نور كويس. البرنامج هيقرا اسم المكان والإجمالي، ويسجّل المصروف لوحده.</p>
+  <button class="btn" onclick="receiptGo('cam')">📷 صوّر الريسيت</button>
+  <button class="btn ghost" onclick="receiptGo('img')">🖼️ اختار صورة من الموبايل</button>`);
+}
+function receiptGo(mode){
+  pickFiles(mode,async ids=>{
+    if(!ids.length)return;const fid=ids[0];
+    sheet(`<h2>🧾 قراءة الريسيت</h2><p class="warn" id="rcst">⏳ جاري تجهيز القراءة... (أول مرة بتاخد وقت أطول)</p>`);
+    let text='';
+    try{
+      await loadJS('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+      const w=await Tesseract.createWorker('ara+eng',1,{logger:m=>{const e=$('#rcst');if(e&&m.status==='recognizing text')e.textContent=`⏳ جاري قراءة الريسيت ${Math.round(m.progress*100)}%`}});
+      const r=await FDB.get(fid);text=(await w.recognize(r.blob)).data.text||'';await w.terminate();
+    }catch(e){closeSheet();return say('القراءة ما نفعتش','اتأكد إن النت شغال، أول مرة البرنامج بيحمّل ملفات القراءة','⚠️')}
+    closeSheet();
+    const rc=parseReceipt(text),guess=rc.match?rc.match.name:rc.merchant;let cat=null;
+    if(guess&&await ask(`الريسيت ده يخص "${guess}"؟`,rc.total?`الإجمالي اللي اتقرا: ${fmt(rc.total)}`:'',{icon:'🧾',ok:'أيوه',cancel:'لأ'}))cat=rc.match||ensureCat(rc.merchant,'exp');
+    if(!cat){
+      const n=((await askInput('الريسيت ده يخص مين؟','اكتب اسم المكان أو البند، ولو مش موجود هيتعمل بند جديد',''))||'').trim();
+      if(!n)return toast('اتلغى');
+      cat=S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(n))||ensureCat(n,'exp');
+      if(rc.merchant&&normAr(rc.merchant)!==normAr(cat.name))cat.alias=[...new Set([...(cat.alias||[]),rc.merchant])];
+    }
+    cat.active=true;
+    const a=parseNum(await askInput('المبلغ',cat.name+(rc.total?' · ده اللي اتقرا من الريسيت، عدّله لو مش مظبوط':''),rc.total||'',true));
+    if(!(a>0))return toast('اتلغى');
+    let date=rc.date||today();if(isClosed(date))date=today();
+    if(isClosed(date))return toast('الشهر الحالي مقفول');
+    const method=cat.acct&&M(cat.acct)?cat.acct:defMethod();
+    if(!method)return toast('ضيف حساب الأول من 🏦 الحسابات');
+    const t={id:uid(),type:'exp',amount:a,cat:cat.id,method,via:cat.via||'',date,note:'🧾 ريسيت',files:[fid],created:Date.now()};
+    S.txs.push(t);save();render();
+    banner('🧾',`اتسجّل ${fmt(a)} على ${cat.name} ✓`,'دوس هنا لو عايز تعدّل',()=>editTx(t.id),'ok');
+  });
+}
+
 /* ========== المرفقات ========== */
 const doc=id=>S.docs.find(x=>x.id===id);
 function vDocs(){
@@ -1414,18 +1606,18 @@ function vItems(){
   }));
   let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📋 ${esc(L('items'))}</h3><button class="mini pri" onclick="catForm(null,'${k}')">+ بند جديد</button></div>`
     +tabsHTML([['inc','💰 بنود التحصيل'],['exp','💸 بنود المصروفات']],k,'itab');
-  if(!rows.length)return h+`<div class="nempty"><div>📋</div><b>مفيش بنود لسه</b><small>دوس "+ بند جديد" وضيف ${inc?'الراتب مثلاً':'الإيجار مثلاً'}</small></div>`;
+  if(!rows.length)return h+`<div class="nempty"><div>📋</div><b>لا يوجد بنود</b><small>دوس "+ بند جديد" وضيف ${inc?'الراتب مثلاً':'الإيجار مثلاً'}</small></div>`;
   h+=sortBar();
-  return h+`<div class="list">${rows.map(({c,mt,pd})=>{
-    const meta=c.fixed?[everyTxt(c.every),M(c.acct)?.name,isAnn(c)&&c.pct?'زيادة '+c.pct+'%':''].filter(Boolean).join(' · ')
-      :[mt?`${MONTHS[NM-1]}: ${num(mt)}`:'',c.note||''].filter(Boolean).join(' · ')||'بند متغير';
-    return `<div class="icard ${c.active===false?'off':''}">
-      <label class="fx" title="بند ثابت"><input type="checkbox" ${c.fixed?'checked':''} onchange="toggleFixed('${c.id}',this)">ثابت</label>
-      <div class="grow">
-        <div class="nm"><b>${esc(c.name)}${c.fixed?`<span class="chip fx">${isAnn(c)?'📆 سنوي':'📌 ثابت'}</span>`:''}${pd?`<span class="chip pd">⏳ ${inc?'ليك':'عليك'} ${num(pd)}</span>`:''}</b><span class="v ${inc?'pos':'neg'}">${c.fixed?num(c.amount):''}</span></div>
-        <div class="meta">${esc(meta)}</div>
-        <div class="acts"><button class="mini pri" onclick="quickTx('${c.id}')">➕ تسجيل</button><button class="mini" onclick="catForm('${c.id}')">✏️</button><button class="mini" onclick="catFiles('${c.id}')">📎${(c.files||[]).length?' '+c.files.length:''}</button><button class="mini danger" onclick="delCat('${c.id}')">🗑</button></div>
-      </div></div>`}).join('')}</div>`;
+  return h+`<div class="ilist">${rows.map(({c,mt,pd})=>{
+    const ann=c.fixed&&isAnn(c),ic=c.fixed?(ann?'📆':'📌'):(inc?'💵':'🏷️'),nf=(c.files||[]).length;
+    const meta=c.fixed?[everyTxt(c.every),M(c.acct)?.name,ann&&c.pct?'زيادة '+c.pct+'%':''].filter(Boolean).join(' · '):(c.note||'بند متغير');
+    const val=c.fixed?`${num(c.amount)}<small>${ann?'كل مرة':'القيمة الثابتة'}</small>`:mt?`${num(mt)}<small>${MONTHS[NM-1]}</small>`:'';
+    return `<div class="ic2 ${inc?'':'exp'} ${c.active===false?'off':''}">
+      <div class="ich"><span class="iav">${ic}</span><div class="grow"><b>${esc(c.name)}</b><small>${esc(meta)}</small></div>${val?`<div class="iam ${inc?'pos':'neg'}">${val}</div>`:''}</div>
+      <div class="itags">${c.fixed?`<span class="chip fx">${ann?'📆 سنوي':'📌 ثابت'}</span>`:'<span class="chip">متغير</span>'}${pd?`<span class="chip pd">⏳ ${inc?'ليك':'عليك'} ${num(pd)}</span>`:''}${c.active===false?'<span class="chip">موقوف</span>':''}
+        <label class="swt"><input type="checkbox" ${c.fixed?'checked':''} onchange="toggleFixed('${c.id}',this)"><i></i>ثابت</label></div>
+      <div class="ibar"><button class="mini pri" onclick="quickTx('${c.id}')">➕ تسجيل</button><button class="mini" onclick="catForm('${c.id}')">✏️</button><button class="mini" onclick="catFiles('${c.id}')">📎${nf?' '+nf:''}</button><button class="mini danger" onclick="delCat('${c.id}')">🗑</button></div>
+    </div>`}).join('')}</div>`;
 }
 function quickTx(id){
   const c=C(id);if(!c)return;
@@ -1445,7 +1637,7 @@ function catForm(id,kind,preset){
   if(CF.fixed&&!CF.acct)CF.acct=defMethod()||'';
   catSheet();
 }
-const stSeg=(pend,inc,onPick)=>`<div class="seg st">${[[1,inc?'⏳ لسه ما اتحصّلش':'⏳ لسه ما اتدفعش','wt'],[0,inc?'✅ اتحصّل':'✅ اتدفع','dn']].map(([v,l,c])=>`<button type="button" class="${+!!pend===v?'on '+c:''}" onclick="${onPick}(${v})">${l}</button>`).join('')}</div>`;
+const stSeg=(pend,inc,onPick)=>`<div class="seg st">${[[1,inc?'⏳ غير محصّل':'⏳ لسه ما اتدفعش','wt'],[0,inc?'✅ اتحصّل':'✅ اتدفع','dn']].map(([v,l,c])=>`<button type="button" class="${+!!pend===v?'on '+c:''}" onclick="${onPick}(${v})">${l}</button>`).join('')}</div>`;
 function cfSetP(v){grabCF();CF.qp=v;catSheet()}
 function catSheet(){
   const c=CF,inc=c.kind==='inc',orig=c.id?C(c.id):null,locked=orig&&Object.keys(orig.st||{}).length>0,ann=+c.every>=12;
@@ -1652,7 +1844,7 @@ function bCols(){
   let exp=0,rem=0;dl.forEach(o=>{exp+=o.amt;if(o.s.st==='wait')rem+=o.amt});
   let b=kpis([['المحصّل',fmt(sums(keyTx(k)).inc),'inc'],['المتوقع',fmt(exp+pt),'net'],['المتبقي',fmt(rem+pt),'exp']]);
   b+=sec('📌 البنود الثابتة')+(dl.length?tbl(['البند','التكرار','الميعاد','المتوقع','اتحصّل','الحساب','الحالة'],dl.map(o=>`<tr class="${o.s.st==='done'?'clk':''}" ${o.s.st==='done'?`onclick="editTx('${o.s.t.id}')"`:''}><td class="wrap"><b>${esc(o.r.name)}</b></td><td>${everyTxt(o.r.every)}</td><td>${dmy(o.date)}</td><td>${num(o.amt)}</td><td class="inc">${o.s.st==='done'?num(o.s.t.amount):'—'}</td><td>${o.s.st==='done'?esc(M(o.s.t.method)?.name||'—'):'—'}</td><td>${stTag(o.s,o.date)}</td></tr>`)):'<p class="pnote">لا يوجد</p>');
-  if(ptx.length)b+=sec('⏳ فلوس ليك لسه ما اتحصّلتش')+tbl(['الميعاد','البند','المبلغ','الحساب','اتأجّل','ملاحظات'],ptx.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')"><td>${dmy(x.date)}</td><td class="wrap"><b>${esc(C(x.cat)?.name||'—')}</b></td><td><b>${num(x.amount)}</b></td><td>${esc(M(x.method)?.name||'—')}</td><td>${x.post||0}</td><td class="wrap">${esc(x.note||'')}</td></tr>`),`<tr><td colspan="2">الإجمالي</td><td colspan="4">${num(pt)}</td></tr>`);
+  if(ptx.length)b+=sec('⏳ فلوس ليك غير محصّلة')+tbl(['الميعاد','البند','المبلغ','الحساب','اتأجّل','ملاحظات'],ptx.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')"><td>${dmy(x.date)}</td><td class="wrap"><b>${esc(C(x.cat)?.name||'—')}</b></td><td><b>${num(x.amount)}</b></td><td>${esc(M(x.method)?.name||'—')}</td><td>${x.post||0}</td><td class="wrap">${esc(x.note||'')}</td></tr>`),`<tr><td colspan="2">الإجمالي</td><td colspan="4">${num(pt)}</td></tr>`);
   b+=sec('✅ باقي التحصيلات')+(others.length?tbl(['التاريخ','البند','المبلغ','الحساب','الطريقة','ملاحظات'],others.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')"><td>${dmy(x.date)}</td><td class="wrap"><b>${esc(C(x.cat)?.name||'—')}</b>${isAnnualTx(x)?' <span class="tag ctr">سنوي</span>':''}</td><td class="inc"><b>${num(x.amount)}</b></td><td>${esc(M(x.method)?.name||'—')}</td><td>${viaTxt(x.via)||'—'}</td><td class="wrap">${esc(x.note||'')}</td></tr>`)):'<p class="pnote">لا يوجد</p>');
   return{title:'تقرير التحصيلات',sub:mName(k),body:b};
 }
@@ -1718,7 +1910,7 @@ function openRV(keep){
   if(!keep)RVST=[];
   const r=Rp.b();RVCSV=r.csv||null;
   $('#rvt').textContent=r.title;$('#rvdoc').innerHTML=paper(r.title,r.sub,r.body);
-  $('#rvcsv').style.display=RVCSV?'':'none';$('#rvback').style.display=RVST.length?'':'none';
+  $('#rvcsv').style.display=RVCSV?'':'none';
   $('#rv').classList.add('on');if(!keep||keep==='nav')$('#rvbody').scrollTop=0;
 }
 function drill(set){RVST.push({rtab,RF:JSON.parse(JSON.stringify(RF))});set();openRV('nav')}
@@ -1743,7 +1935,7 @@ function exportCSV(){
 }
 
 /* ========== الإعدادات (أزرار) ========== */
-const SETS=[['name','✏️','اسم التطبيق'],['theme','🎨','الثيم'],['font','🔠','الخط وحجمه'],['home','🏠','الشاشة الرئيسية'],['labels','🔤','المسميات'],['notif','🔔','الإشعارات'],['sec','🔒','الأمان'],['drive','☁️','نسخ تلقائي على Drive'],['data','💾','النسخ الاحتياطي'],['demo','🧪','نسخة تجريبية'],['about','ℹ️','عن التطبيق']];
+const SETS=[['name','✏️','اسم التطبيق'],['theme','🎨','الثيم'],['font','🔠','الخط وحجمه'],['home','🏠','الشاشة الرئيسية'],['labels','🔤','المسميات'],['notif','🔔','الإشعارات والصوت'],['sec','🔒','الأمان'],['drive','☁️','نسخ تلقائي على Drive'],['data','💾','النسخ الاحتياطي'],['demo','🧪','نسخة تجريبية'],['about','ℹ️','عن التطبيق']];
 function vSettings(){
   const sp=SETS.find(x=>x[0]===stab);
   if(!sp)return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>⚙️ ${esc(L('settings'))}</h3></div><div class="rgrid">${SETS.map(([k,ic,l])=>`<button class="rbtn" onclick="stab='${k}';render();scrollTo(0,0)"><span>${ic}</span>${l}</button>`).join('')}</div>`;
@@ -1764,7 +1956,7 @@ function spHome(){
   let h=`<p class="muted" style="font-size:12px;margin:0 4px 8px">تلقائي = يظهر لوحده لما يبقى ليه لازمة (ميعاد قرب، أو فيه مبلغ)</p>
   <div class="list">${HW.map(([k,l])=>`<div class="row" style="cursor:default;flex-wrap:wrap"><div class="grow"><b>${l}</b></div>${modeSeg(hmode(k),`setHW('${k}',`)}</div>`).join('')}</div>`;
   h+=`<h3>📌 بنود مثبتة على الرئيسية<button class="mini pri" onclick="homePinForm()">+ تثبيت</button></h3>`;
-  h+=pins.length?`<div class="list">${pins.map((p,i)=>`<div class="row" style="cursor:default;flex-wrap:wrap"><div class="grow"><b>${esc(pinName(p)||'(محذوف)')}</b><small>${pinType(p)}</small></div>${modeSeg(p.mode,`setPin(${i},`)}<button class="mini danger" onclick="delPin(${i})">🗑</button></div>`).join('')}</div>`:'<p class="empty">مفيش بنود مثبتة</p>';
+  h+=pins.length?`<div class="list">${pins.map((p,i)=>`<div class="row" style="cursor:default;flex-wrap:wrap"><div class="grow"><b>${esc(pinName(p)||'(محذوف)')}</b><small>${pinType(p)}</small></div>${modeSeg(p.mode,`setPin(${i},`)}<button class="mini danger" onclick="delPin(${i})">🗑</button></div>`).join('')}</div>`:'<p class="empty">لا يوجد بنود مثبتة</p>';
   return h;
 }
 function spLabels(){
@@ -1776,7 +1968,7 @@ function spNotif(){
   <label>تنبيه ${esc(L('inst'))} قبل الميعاد بـ (يوم)<input type="text" inputmode="numeric" value="${leadI()}" onchange="S.settings.lead=Math.max(1,parseNum(this.value)||10);save();toast('اتحفظ ✓')"></label></div>
   <button class="btn" onclick="notifSheet()">🔔 فحص وتجربة الإشعارات</button>
   <button class="btn ghost" onclick="inAppAlerts(true)">👀 اعرض تنبيه جوه البرنامج دلوقتي</button>
-  <button class="btn ghost" onclick="READ={};localStorage.removeItem(RKEY);render();toast('رجعت كل التنبيهات غير مقروءة')">↺ رجّع كل التنبيهات غير مقروءة</button>`;
+  <button class="btn ghost" onclick="READ={};localStorage.removeItem(RKEY);render();toast('رجعت كل التنبيهات غير مقروءة')">↺ رجّع كل التنبيهات غير مقروءة</button>`+sndBox();
 }
 function spSec(){
   if(DEMO)return '<div class="ncard soon" style="cursor:default"><div class="nic">🧪</div><div class="grow"><b>الأمان مقفول في النسخة التجريبية</b></div></div>';
@@ -1935,7 +2127,7 @@ async function driveRestore(){
   try{
     toast('⏳ بدوّر على آخر نسخة...');
     const tok=await driveToken(true),f=GD.fileId?{id:GD.fileId}:await driveFind(tok);
-    if(!f)return say('مفيش نسخة','مالقيتش نسخة احتياطية على Drive لسه','☁️');
+    if(!f)return say('لا يوجد نسخة','مالقيتش نسخة احتياطية على Drive لسه','☁️');
     const r=await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`,{headers:{Authorization:'Bearer '+tok}});
     if(!r.ok)throw new Error('مش قادر أنزّل النسخة');
     GD.fileId=f.id;saveGD();await applyBackup(await r.text());
@@ -1971,8 +2163,27 @@ document.addEventListener('pointerdown',()=>{
 },true);
 
 /* ========== الشيت والنماذج ========== */
-function sheet(html){$('#sheet .body').innerHTML=`<div class="sz">${html}</div>`;$('#sheet').classList.add('open');hydrate()}
-function closeSheet(){$('#sheet').classList.remove('open')}
+let SHST=[],SHKEEP=0;
+const shTitle=h=>((String(h).match(/<h2[^>]*>([\s\S]*?)<\/h2>/)||[])[1]||'').replace(/<[^>]+>/g,'').trim();
+function snapSheet(){
+  const b=$('#sheet .sz');if(!b)return '';
+  b.querySelectorAll('input,select,textarea').forEach(e=>{
+    if(e.type==='checkbox'||e.type==='radio')e.checked?e.setAttribute('checked',''):e.removeAttribute('checked');
+    else if(e.tagName==='SELECT')[...e.options].forEach(o=>o.selected?o.setAttribute('selected',''):o.removeAttribute('selected'));
+    else if(e.type!=='file')e.setAttribute('value',e.value);
+  });
+  return b.innerHTML;
+}
+function sheet(html,keep){
+  keep=keep||SHKEEP;SHKEEP=0;
+  const open=$('#sheet').classList.contains('open'),cur=open?shTitle(($('#sheet .sz')||{}).innerHTML||''):'',nt=shTitle(html);
+  if(!open)SHST=[];
+  else if(!keep&&cur&&cur!==nt){const i=SHST.findIndex(x=>x.t===nt);if(i>=0)SHST=SHST.slice(0,i);else SHST.push({t:cur,h:snapSheet()})}
+  $('#sheet .body').innerHTML=`<div class="shbar"><button class="mini" onclick="sheetBack()">→ رجوع</button><i></i><button class="mini" onclick="closeSheet()">✕</button></div><div class="sz">${html}</div>`;
+  $('#sheet').classList.add('open');hydrate();
+}
+function sheetBack(){const p=SHST.pop();if(!p)return closeSheet();sheet(p.h,true)}
+function closeSheet(){$('#sheet').classList.remove('open');SHST=[]}
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2800)}
 function opt(arr,sel){return arr.map(o=>`<option value="${o.id}" ${o.id===sel?'selected':''}>${esc(o.name)}</option>`).join('')}
 
@@ -1995,7 +2206,7 @@ function catPicked(v){
   if(c&&c.fixed){if(!parseNum(F.amount))F.amount=String(c.amount||'');if(c.acct&&M(c.acct))F.method=c.acct;if(c.via)F.via=c.via}
   txForm();if(v==='__new')setTimeout(()=>$('#f-new')&&$('#f-new').focus(),80);
 }
-function setTxType(k){grab();if(k!==F.type){F.type=k;F.cat='';F.newCat='';if(!F.id)F.pend=k==='inc'}txForm()}
+function setTxType(k){grab();if(k!==F.type){F.type=k;F.cat='';F.newCat='';if(!F.id)F.pend=k==='inc'}SHKEEP=1;txForm()}
 function txSetP(v){grab();F.pend=!!v;txForm()}
 function txForm(){
   const orig=F.id&&S.txs.find(t=>t.id===F.id),locked=orig&&!orig.pend&&isClosed(orig.date),inc=F.type==='inc',tr=F.type==='tr';
@@ -2006,6 +2217,7 @@ function txForm(){
   ${locked?'<p class="warn">🔒 الشهر ده مقفول</p>':''}
   ${orig&&isAnnualTx(orig)?'<p class="warn">📆 ده بند سنوي، ولو مسحته هيرجع "منتظر" في الجدول السنوي</p>':''}
   <div class="seg">${[['inc','💰 تحصيل'],['exp','💸 مصروف'],['tr','🔁 تحويل']].map(([k,l])=>`<button class="${F.type===k?'on '+k:''}" onclick="setTxType('${k}')">${l}</button>`).join('')}</div>
+  ${!F.id&&F.type==='exp'?'<button class="btn ghost" onclick="receiptSheet()">📷 سكان ريسيت وسجّله لوحده</button>':''}
   ${tr||(orig&&orig.src)?'':stSeg(F.pend,inc,'txSetP')}
   <input id="f-amt" class="amt-in" type="text" inputmode="decimal" placeholder="0" value="${esc(F.amount)}">
   ${tr?`<label>من حساب<div class="inl"><select id="f-m">${opt(meths,F.method)}</select>${addAcct}</div></label>
@@ -2096,7 +2308,7 @@ async function resetAll(){
 
 /* ========== تشغيل ========== */
 applyTheme();applyFont();applyName();save();render();gcFiles();
-if(LK.pin){showLock();if(LK.bio)setTimeout(()=>bioUnlock(true),400)}else inAppAlerts();
+if(LK.pin)showLock();else inAppAlerts();
 if(!DEMO&&GD.linked)loadJS('https://accounts.google.com/gsi/client').catch(()=>{});
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(()=>setTimeout(pushAlerts,1500)).catch(()=>{}));
