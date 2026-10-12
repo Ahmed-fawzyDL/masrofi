@@ -2,7 +2,8 @@
 (()=>{const s=document.createElement('style');s.textContent=`#scan .frz{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:none}
 #scan .frz[style*="block"]~.sframe{display:none}
 #scan .sframe:not(.card){top:8%!important;bottom:15%!important;left:3%!important;right:3%!important;width:auto!important;height:auto!important;transform:none!important;margin:0!important}
-.phw{position:relative;display:inline-block}.phw .phx{position:absolute;top:4px;left:4px;padding:2px 8px}`;document.head.appendChild(s)})();
+.phw{position:relative;display:inline-block}.phw .phx{position:absolute;top:4px;left:4px;padding:2px 8px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.three .btn{margin:0;padding-left:4px;padding-right:4px}`;document.head.appendChild(s)})();
 
 /* ========== الرسوم ========== */
 function niceMax(m){const p=Math.pow(10,Math.floor(Math.log10(m)));return Math.ceil(m/p*2)/2*p}
@@ -389,7 +390,7 @@ function demoData(){
     for(let i=0;i<3;i++)tx('exp',fuel,R(300,500,50),day(o,4+i*8),ahly,{via:'card'});
   }
   tx('inc',frl,3500,day(-1,22),cash,{via:'cash'});
-  d.cards=[{id:uid(),name:'البنك الأهلي VISA',kind:'debit',net:'visa',last4:'4821',acct:ahly,color:'#0f766e',docId:''}];
+  d.cards=[{id:uid(),name:'البنك الأهلي VISA',kind:'debit',net:'visa',last4:'4821',acct:ahly,color:'#0f766e'}];
   d.renew=[{id:uid(),name:'رخصة العربية',type:'car',num:'أ ب ج 1234',exp:isoD(new Date(Date.now()+20*864e5)),lead:30,note:'',files:[]}];
   const ft=tx('exp',fish,349.7,td,cash,{via:'cash',note:'🧾'});
   if(ft)d.buys=[{id:uid(),date:td,time:'20:12',rt:'20:12',no:'',txId:ft.id,catId:fish.id,store:'أسماك النحاس',items:[],total:349.7,method:cash,via:'cash',card:'',deliv:false,fid:''}];
@@ -603,7 +604,14 @@ function snapPhoto(o,cb){
   openScanner({title:o.title,hint:o.hint,card:!!o.card,onCancel:o.onCancel,
     onDone:async blob=>{const ids=await addFiles([new File([blob],(o.name||'photo')+'-'+today()+'.jpg',{type:'image/jpeg'})]);cb(ids[0])}});
 }
+/* اختيار صورة أو أكتر من الجاليري */
+function pickGallery(cb){
+  const i=document.createElement('input');i.type='file';i.accept='image/*';i.multiple=true;i.style.display='none';document.body.appendChild(i);
+  i.onchange=async()=>{const fs=[...i.files];i.remove();if(!fs.length)return;const ids=await addFiles(fs);cb(ids)};
+  i.click();
+}
 const photosBox=(files,rm)=>(files||[]).length?`<div class="files">${files.map((f,i)=>`<div class="phw">${fileThumb(f,'view')}<button type="button" class="mini danger phx" onclick="${rm}(${i})">✕</button></div>`).join('')}</div>`:'';
+const photoBtns=(snap,gal,files,share)=>`<div class="${files.length?'three':'two'}"><button type="button" class="btn ghost" onclick="${snap}()">📷 صوّر</button><button type="button" class="btn ghost" onclick="${gal}()">🖼️ من الصور</button>${files.length?`<button type="button" class="btn ghost" onclick="${share}">📤 إرسال</button>`:''}</div>`;
 
 /* ========== الريسيت: بيقرا المكان والمبلغ والأرقام والعنوان ========== */
 function normPhone(x){
@@ -624,7 +632,6 @@ function sim(a,b){
   return 2*c/((a.length-1)+(b.length-1));
 }
 const SKIPM=/(tel|phone|mob|fax|www|http|@|vat|tax|invoice|receipt|cashier|date|time|welcome|cash|sales|فاتور|ايصال|إيصال|تليفون|هاتف|موبايل|ضريب|سجل|تاريخ|الوقت|كاشير|رقم|عنوان|شارع|اهلا|أهلا|مرحبا|مبيعات|كاش|نقد|البون|الوردي|المستند|العميل|البائع|صنف|كمية|سعر|قيمة|الاجمال|المطلوب|مدفوع|المتبقي|بجوار)/i;
-/* السطور اللي ممكن تكون اسم المحل */
 function merchantCands(lines){
   const out=[];
   lines.slice(0,12).forEach((l,i)=>{
@@ -638,14 +645,12 @@ function merchantCands(lines){
   });
   return out;
 }
-/* بيختار الاسم اللي اتكرر أكتر في القرايات */
 function pickMerchant(cs){
   const cl=[];
   cs.forEach(c=>{const g=cl.find(g=>sim(g.top.s,c.s)>=.7);if(g){g.n++;g.sum+=c.sc;if(c.sc>g.top.sc)g.top=c}else cl.push({top:c,n:1,sum:c.sc})});
   cl.forEach(g=>g.v=g.sum+g.n*25);cl.sort((a,b)=>b.v-a.v);
   return cl.length?cl[0].top.s:'';
 }
-/* لو المحل متسجل قبل كده، بيعرفه حتى لو القراءة فيها حروف غلط */
 function fuzzyKnown(lines){
   const known=[];
   S.cats.filter(c=>c.kind==='exp'&&c.active!==false).forEach(c=>[c.name,...(c.alias||[])].forEach(n=>known.push({n,c})));
@@ -657,7 +662,6 @@ function fuzzyKnown(lines){
   }
   return bs>=.6?best:null;
 }
-/* تصليح العنوان: حرف ي لازق في الكلمة اللي بعده، أو كلمتين لازقين */
 function fixAddr(s){
   let w=s.split(/\s+/).filter(Boolean);
   for(let i=1;i<w.length;i++){const m=w[i].match(/^([يى])((?:ال|لل)[\u0621-\u064A]{2,})$/);if(m&&/[\u0621-\u064A]{2,}$/.test(w[i-1])){w[i-1]+=m[1];w[i]=m[2]}}
@@ -671,7 +675,6 @@ function parseReceipt(text){
   const nums=s=>(s.match(/\d[\d,]*(?:\.\d{1,2})?/g)||[]).map(x=>parseFloat(x.replace(/,/g,''))).filter(x=>x>0&&x<1e6);
   const TOT=/(grand\s*total|total|net\s*amount|amount\s*due|to\s*pay|الاجمالي|اجمالي|المجموع|الصافي|صافي|المطلوب|المستحق|مدفوع|paid)/i;
   const NOT=/(sub\s*-?\s*total|قبل|vat|tax|ضريب|خصم|discount|qty|عدد|change|الباقي|المتبقي|units|items)/i;
-  /* الإجمالي: الرقم اللي بيتكرر في سطور الإجمالي والمطلوب والمدفوع */
   const TC=[];
   lines.forEach((l,i)=>{const L=l.replace(/ى/g,'ي').replace(/[أإآ]/g,'ا');if(!TOT.test(L)||NOT.test(L))return;let n=nums(l);if(!n.length&&lines[i+1])n=nums(lines[i+1]);if(n.length)TC.push(Math.round(Math.max(...n)*100)/100)});
   let total=0,rep=0;
@@ -684,13 +687,11 @@ function parseReceipt(text){
     else if((m=l.match(/\b(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{2,4})\b/))){let y=+m[3];if(y<100)y+=2000;d=`${y}-${pad(+m[2])}-${pad(+m[1])}`}
     if(d){const[,mo,dd]=d.split('-').map(Number);if(mo>=1&&mo<=12&&dd>=1&&dd<=31&&d<=today()&&daysBetween(today(),d)<=90){date=d;break}}
   }
-  /* الوقت: جنب كلمة "الوقت" الأول، وبيقبل : أو . */
   let time='';
   const tl=lines.find(l=>/(الوقت|time)/i.test(l));
   let tm=tl&&tl.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*[:.;،]\s*([0-5]\d)(?![\d\/])/);
   if(!tm)for(const l of lines){const m=l.match(/(?<![\d.\/])([01]?\d|2[0-3])\s*:\s*([0-5]\d)(?![\d\/])/);if(m){tm=m;break}}
   if(tm){const src=tl&&tl.includes(tm[0])?tl:T;let h=+tm[1];if(/(pm|مساء)/i.test(src)&&h<12)h+=12;if(/(am|صباح)/i.test(src)&&h===12)h=0;time=pad(h)+':'+tm[2]}
-  /* رقم الفاتورة لو موجود */
   let no='';const nm=T.match(/(?:رقم\s*الفاتور[ةه]|فاتور[ةه]\s*رقم|invoice\s*(?:no|#)|receipt\s*(?:no|#)|bill\s*(?:no|#)|order\s*(?:no|#)|المستند|البون)\s*[:#.\-]?\s*([A-Za-z]{0,3}\d{2,10})/i);if(nm)no=nm[1].toUpperCase();
   const cands=merchantCands(lines),merchant=pickMerchant(cands);
   const nt=' '+normAr(text)+' ';let match=null,best=0;
@@ -698,7 +699,6 @@ function parseReceipt(text){
   const l4=new Set([...T.matchAll(/[*xX•#]{2,}[\s*xX•#-]*(\d{4})(?!\d)/g)].map(m=>m[1]).concat([...T.matchAll(/(?:card|visa|master|meeza|ending|بطاق|كارت|فيزا)[^\n]{0,30}?(\d{4})(?!\d)/gi)].map(m=>m[1])));
   const card=S.cards.find(c=>l4.has(c.last4))||null;
   const cash=!card&&/(cash|كاش|نقد)/i.test(T);
-  /* الأرقام: من غير رقم شركة البرمجة اللي في آخر سطر */
   const PH=/(?<![\d.])(?:\+?20|0020)?0?1[0125]\d{8}(?![\d.])|(?<![\d.])0[2-9]\d{7,8}(?![\d.])|(?<![\d.])1[69]\d{3}(?![\d.])/g;
   const per=lines.map(l=>VEND.test(l)?[]:(l.match(PH)||[]).map(normPhone).filter(Boolean));
   const lastI=per.reduce((a,p,i)=>p.length?i:a,-1);
@@ -712,14 +712,12 @@ function parseReceipt(text){
   const rest=/(restaurant|cafe|café|مطعم|كافيه|كافيتريا|مشويات|بيتزا|pizza|burger|برجر)/i.test(T);
   return{total,TC,rep,date,time,no,merchant,cands,match,card,cash,phones,address,deliv,rest};
 }
-/* بيجمع قرايتين ويختار الأحسن من كل واحدة */
 function mergeRc(a,b){
   const sc=r=>(r.TC.length?3:0)+(r.merchant?2:0)+(r.time?1:0)+(r.date?1:0)+Math.min(2,r.phones.length);
   const[A,B]=sc(b)>sc(a)?[b,a]:[a,b];
   ['time','date','address','match','card','no'].forEach(k=>{if(!A[k])A[k]=B[k]});
   A.cands=a.cands.concat(b.cands);
   A.cash=A.cash||B.cash;A.deliv=A.deliv||B.deliv;A.rest=A.rest||B.rest;
-  /* الأرقام: لو رقم اتقرا بشكلين قريبين، بياخد اللي اتكرر أكتر */
   const near=(x,y)=>x.length===y.length&&[...x].filter((ch,i)=>ch!==y[i]).length<=1;
   const cl=[];
   [...A.phones.map(p=>[p,1.1]),...B.phones.map(p=>[p,1])].forEach(([p,w])=>{const g=cl.find(g=>g.ps.some(q=>near(q.p,p)));if(g){const q=g.ps.find(q=>q.p===p);if(q)q.w+=w;else g.ps.push({p,w})}else cl.push({ps:[{p,w}]})});
@@ -773,7 +771,6 @@ async function receiptFlow(rc,fid){
   if(isClosed(date))return toast('الشهر الحالي مقفول');
   if(!method)return toast('ضيف حساب الأول');
   const x={rc,fid,cat,method,via,card,a,date};
-  /* لو نفس الريسيت متسجل قبل كده */
   const old=S.buys.find(b=>{
     if(b.catId!==cat.id||b.date!==date)return false;
     const tA=toMin(b.rt),tB=toMin(rc.time);if(tA!=null&&tB!=null&&Math.abs(tA-tB)>5)return false;
@@ -796,6 +793,7 @@ function dupEdit(){if(!DUPX)return;const id=DUPX.old.id;DUPX=null;buyEdit(id)}
 function dupReplace(){
   if(!DUPX)return;const b=DUPX.old,t=S.txs.find(x=>x.id===b.txId);
   if(t&&isClosed(t.date))return toast('شهر الريسيت القديم مقفول');
+  SKIPDEL=true;
   if(t)S.txs=S.txs.filter(x=>x.id!==t.id);
   S.buys=S.buys.filter(x=>x.id!==b.id);
   const go=DUPX.go;DUPX=null;closeSheet();save();go();
@@ -936,16 +934,36 @@ function bfSave(){
 }
 async function buyDel(id){if(!await ask('حذف الفاتورة؟','المصروف هيفضل متسجل',{danger:true,icon:'🗑',ok:'حذف'}))return;S.buys=S.buys.filter(x=>x.id!==id);save();closeSheet();render()}
 
+/* ========== زراير المرفقات ========== */
+const SYSF=[{id:'bank',name:'💳 كروت بنكية'},{id:'personal',name:'🪪 كروت شخصية'}],GENF={id:'gen',name:'📂 عام'};
+const folders=()=>SYSF.concat(S.settings.dfold||[],[GENF]);
+const isSysF=id=>id==='gen'||SYSF.some(f=>f.id===id);
+const foldOf=d=>{const f=(S.settings.dmap||{})[d.id];return f&&folders().some(x=>x.id===f)?f:'gen'};
+function setFold(docId,f){S.settings.dmap=Object.assign({},S.settings.dmap,{[docId]:f})}
+function foldAdd(n){const id=uid();S.settings.dfold=[...(S.settings.dfold||[]),{id,name:'📁 '+n.replace(/^📁\s*/,'')}];return id}
+/* ربط الكروت بالمرفقات */
+const LNK=()=>S.settings.links||(S.settings.links={});
+const linkedDoc=k=>{const id=LNK()[k];return id?doc(id):null};
+const linkOf=docId=>Object.keys(LNK()).find(k=>LNK()[k]===docId);
+function syncDoc(k,fold,name,files,note){
+  let d=linkedDoc(k);
+  if(!files.length){if(d)S.docs=S.docs.filter(x=>x.id!==d.id);delete LNK()[k];return}
+  if(!d){d={id:uid(),files:[]};S.docs.push(d);LNK()[k]=d.id;setFold(d.id,fold)}
+  d.name=name;d.note=note;d.files=[...files];d.upd=Date.now();
+}
+function unlinkDoc(k){const d=linkedDoc(k);if(d)S.docs=S.docs.filter(x=>x.id!==d.id);delete LNK()[k]}
+const renDocName=r=>'🪪 '+r.name+(r.num?' · '+r.num:'');
+
 /* ========== الكروت البنكية ========== */
-/* صور الكارت بتتحفظ كمان في المرفقات، في ملف باسم الكارت */
-const cardFiles=c=>{const d=c&&c.docId&&doc(c.docId);return d?[...d.files]:[]};
+const cardFiles=c=>{if(!c||!c.id)return[];const d=linkedDoc('c:'+c.id)||(c.docId&&doc(c.docId));return d?[...d.files]:[]};
 function scanCard(){snapPhoto({title:'صوّر الكارت',hint:'💳 حط الكارت جوه الإطار وثبّت',card:true,name:'card'},fid=>{cardForm(null,{files:[fid]});toast('اكتب بيانات الكارت')})}
+function cardGal(){pickGallery(ids=>{cardForm(null,{files:ids});toast('اكتب بيانات الكارت')})}
 function vWallet(){
   const h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>💳 ${esc(L('wallet'))}</h3></div>`+tabsHTML([['cards','💳 الكروت البنكية'],['ren','🪪 كروت شخصية']],wtab,'wtab');
   return h+(wtab==='ren'?wRen():wCards());
 }
 function wCards(){
-  const h=`<div class="etbar"><button class="mini pri" onclick="scanCard()">📷 صوّر كارت</button><button class="mini" onclick="cardForm()">+ إضافة</button></div>`;
+  const h=`<div class="etbar"><button class="mini pri" onclick="scanCard()">📷 صوّر</button><button class="mini" onclick="cardGal()">🖼️ من الصور</button><button class="mini" onclick="cardForm()">+ إضافة</button></div>`;
   if(!S.cards.length)return h+`<div class="nempty"><div>💳</div><b>لا يوجد كروت</b></div>`;
   return h+S.cards.map(c=>{const n=cardFiles(c).length;return `<div class="ccard" style="--cc:${c.color||'#1e3a8a'}" onclick="cardForm('${c.id}')"><div class="cc-t"><b>${esc(c.name)}</b><span>${c.kind==='credit'?'Credit':'Debit'}${n?' · 📷'+n:''}</span></div><div class="cc-n" dir="ltr">•••• •••• •••• ${esc(c.last4)}</div><div class="cc-b"><span>${esc(M(c.acct)?.name||'—')}</span><b dir="ltr">${NETS[c.net]||''}</b></div></div>`}).join('');
 }
@@ -957,7 +975,7 @@ function crSheet(){
   const c=CRF,meths=S.methods.filter(m=>m.active||m.id===c.acct);NEXTF='card';
   sheet(`<h2>💳 ${c.id?'تعديل كارت':'كارت جديد'}</h2>
   ${photosBox(c.files,'crRm')}
-  <div class="two"><button type="button" class="btn ghost" onclick="crSnap()">📷 ${c.files.length?'صورة كمان':'صوّر الكارت'}</button>${c.files.length?`<button type="button" class="btn ghost" onclick="shareFiles(CRF.files)">📤 إرسال</button>`:''}</div>
+  ${photoBtns('crSnap','crGal',c.files,'shareFiles(CRF.files)')}
   <label>اسم الكارت<input id="cr-n" value="${esc(c.name)}" placeholder="البنك الأهلي VISA"></label>
   <div class="seg">${[['debit','Debit'],['credit','Credit']].map(([k,l])=>`<button type="button" class="${c.kind===k?'on':''}" onclick="crGrab();CRF.kind='${k}';crSheet()">${l}</button>`).join('')}</div>
   <div class="two"><label>آخر 4 أرقام<input id="cr-l" inputmode="numeric" maxlength="4" dir="ltr" value="${esc(c.last4)}" placeholder="1234"></label><label>النوع<select id="cr-t">${Object.entries(NETS).map(([k,l])=>`<option value="${k}" ${c.net===k?'selected':''}>${l}</option>`).join('')}</select></label></div>
@@ -968,6 +986,7 @@ function crSheet(){
 }
 function crRm(i){crGrab();CRF.files.splice(i,1);crSheet()}
 function crSnap(){crGrab();snapPhoto({title:'صوّر الكارت',hint:'💳 حط الكارت جوه الإطار وثبّت',card:true,name:'card',onCancel:crSheet},fid=>{CRF.files.push(fid);crSheet()})}
+function crGal(){crGrab();pickGallery(ids=>{CRF.files.push(...ids);crSheet()})}
 function crGrab(){if(!$('#cr-n'))return;CRF.name=$('#cr-n').value;CRF.last4=$('#cr-l').value;CRF.net=$('#cr-t').value;CRF.acct=$('#cr-a').value}
 function crSave(){
   crGrab();const name=CRF.name.trim(),l4=latD(CRF.last4).replace(/\D/g,'');
@@ -978,23 +997,22 @@ function crSave(){
   if(!acct||!M(acct)){const m={id:uid(),name,type:'card',bank:'•••• '+l4,color:CRF.color,active:true};S.methods.push(m);acct=m.id}
   let c=CRF.id?S.cards.find(x=>x.id===CRF.id):null;if(!c){c={id:uid()};S.cards.push(c)}
   Object.assign(c,{name,kind:CRF.kind,net:CRF.net,last4:l4,acct,color:CRF.color});
-  let d=c.docId&&doc(c.docId);
-  if(CRF.files.length&&!d){d={id:uid(),files:[]};S.docs.push(d);c.docId=d.id}
-  if(d){d.name='💳 '+name+' •••• '+l4;d.note='كارت بنكي';d.files=[...CRF.files];d.upd=Date.now()}
+  syncDoc('c:'+c.id,'bank','💳 '+name+' •••• '+l4,CRF.files,'كارت بنكي');
   save();closeSheet();render();toast('اتحفظ ✓');
 }
 async function crDel(id){
   if(!await ask('حذف الكارت؟','صوره هتتمسح كمان',{danger:true,icon:'🗑',ok:'حذف'}))return;
-  const c=S.cards.find(x=>x.id===id);if(c&&c.docId)S.docs=S.docs.filter(d=>d.id!==c.docId);
+  unlinkDoc('c:'+id);
   S.cards=S.cards.filter(x=>x.id!==id);save();closeSheet();render();
 }
 
 /* ========== الكروت الشخصية ========== */
 function scanId(){snapPhoto({title:'صوّر الكارت',hint:'🪪 حط الكارت جوه الإطار وثبّت',card:true,name:'card'},fid=>{renForm(null,{files:[fid]});toast('اختار النوع واكتب تاريخ الانتهاء')})}
+function idGal(){pickGallery(ids=>{renForm(null,{files:ids});toast('اختار النوع واكتب تاريخ الانتهاء')})}
 function wRen(){
   const list=[...S.renew].sort((a,b)=>(a.exp||'9').localeCompare(b.exp||'9')),td=today();
   const h=`<div class="box" style="margin-bottom:10px"><label>التنبيه قبل الانتهاء بـ (يوم)<div class="inl"><input id="rl-all" type="text" inputmode="numeric" value="${leadR()}"><button class="mini pri" onclick="renLeadAll()">طبّق على الكل</button></div></label></div>
-  <div class="etbar"><button class="mini pri" onclick="scanId()">📷 صوّر كارت</button><button class="mini" onclick="renForm()">+ إضافة</button></div>`;
+  <div class="etbar"><button class="mini pri" onclick="scanId()">📷 صوّر</button><button class="mini" onclick="idGal()">🖼️ من الصور</button><button class="mini" onclick="renForm()">+ إضافة</button></div>`;
   if(!list.length)return h+`<div class="nempty"><div>🪪</div><b>لا يوجد</b></div>`;
   return h+`<div class="list">${list.map(r=>{
     const t=REN[r.type]||REN.other,left=r.exp?daysBetween(r.exp,td):null,ld=+r.lead||leadR(),f0=(r.files||[])[0],isImg=f0&&((S.fmeta[f0]||{}).type||'').startsWith('image/');
@@ -1004,13 +1022,14 @@ function wRen(){
 function renLeadAll(){const n=Math.max(1,parseNum($('#rl-all').value)||30);S.settings.leadR=n;S.renew.forEach(r=>r.lead=n);save();render();toast('تم ✓')}
 function renForm(id,pre){
   const r=id?S.renew.find(x=>x.id===id):{name:REN.id[1],type:'id',num:'',exp:'',lead:leadR(),note:'',files:[]};
-  RNF={...r,files:[...(r.files||[])],...(pre||{})};renSheet();
+  const d=id&&linkedDoc('r:'+id);
+  RNF={...r,files:d?[...d.files]:[...(r.files||[])],...(pre||{})};renSheet();
 }
 function renSheet(){
   const r=RNF;NEXTF='ren';
   sheet(`<h2>🪪 ${r.id?'كارت شخصي':'إضافة كارت'}</h2>
   ${photosBox(r.files,'rnRm')}
-  <div class="two"><button type="button" class="btn ghost" onclick="rnSnap()">📷 ${r.files.length?'صورة كمان':'صوّر الكارت'}</button>${r.files.length?`<button type="button" class="btn ghost" onclick="shareFiles(RNF.files)">📤 إرسال</button>`:''}</div>
+  ${photoBtns('rnSnap','rnGal',r.files,'shareFiles(RNF.files)')}
   <label>النوع<select id="rn-t" onchange="renType(this.value)">${Object.entries(REN).map(([k,v])=>`<option value="${k}" ${r.type===k?'selected':''}>${v[0]} ${v[1]}</option>`).join('')}</select></label>
   <label>الاسم<input id="rn-n" value="${esc(r.name)}"></label>
   <div class="two"><label>تاريخ الانتهاء<input id="rn-e" type="date" value="${r.exp||''}"></label><label>التنبيه قبلها بـ (يوم)<input id="rn-l" type="text" inputmode="numeric" value="${esc(r.lead||leadR())}"></label></div>
@@ -1021,44 +1040,105 @@ function renSheet(){
 }
 function rnRm(i){rnGrab();RNF.files.splice(i,1);renSheet()}
 function rnSnap(){rnGrab();snapPhoto({title:'صوّر الكارت',hint:'🪪 حط الكارت جوه الإطار وثبّت',card:true,name:'card',onCancel:renSheet},fid=>{RNF.files.push(fid);renSheet()})}
+function rnGal(){rnGrab();pickGallery(ids=>{RNF.files.push(...ids);renSheet()})}
 function rnGrab(){if(!$('#rn-n'))return;RNF.type=$('#rn-t').value;RNF.name=$('#rn-n').value;RNF.exp=$('#rn-e').value;RNF.lead=$('#rn-l').value;RNF.num=$('#rn-u').value;RNF.note=$('#rn-o').value}
 function renType(v){const old=RNF.name;rnGrab();if(!old.trim()||Object.values(REN).some(x=>x[1]===old))RNF.name=REN[v][1];RNF.type=v;renSheet()}
 function renSave(){
   rnGrab();const name=RNF.name.trim();if(!name)return toast('اكتب الاسم');if(!RNF.exp)return toast('اختار تاريخ الانتهاء');
   let r=RNF.id?S.renew.find(x=>x.id===RNF.id):null;if(!r){r={id:uid()};S.renew.push(r)}
-  Object.assign(r,{name,type:RNF.type,exp:RNF.exp,lead:Math.max(1,parseNum(RNF.lead)||leadR()),num:(RNF.num||'').trim(),note:(RNF.note||'').trim(),files:RNF.files});
+  Object.assign(r,{name,type:RNF.type,exp:RNF.exp,lead:Math.max(1,parseNum(RNF.lead)||leadR()),num:(RNF.num||'').trim(),note:(RNF.note||'').trim(),files:[...RNF.files]});
+  syncDoc('r:'+r.id,'personal',renDocName(r),r.files,'كارت شخصي');
   save();closeSheet();render();toast('اتحفظ ✓');
 }
 function renRenew(){rnGrab();RNF.exp=addMonths(RNF.exp||today(),12);renSheet();toast('+ سنة')}
-async function renDel(id){if(!await ask('حذف؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;S.renew=S.renew.filter(x=>x.id!==id);save();closeSheet();render()}
+async function renDel(id){if(!await ask('حذف؟','صوره هتتمسح كمان',{danger:true,icon:'🗑',ok:'حذف'}))return;unlinkDoc('r:'+id);S.renew=S.renew.filter(x=>x.id!==id);save();closeSheet();render()}
 
 /* ========== المرفقات ========== */
 const doc=id=>S.docs.find(x=>x.id===id);
+var DFOLD='bank';
 function vDocs(){
   let h=`<div class="phead"><h3>📎 ${esc(L('docs'))}</h3></div>`+tabsHTML([['my','مستنداتي'],['tx','مرفقات العمليات']],dtab,'dtab');
-  if(dtab==='my'){
-    h+=`<div class="etbar"><button class="mini pri" onclick="docForm()">+ إضافة</button></div>`;
-    h+=S.docs.length?`<div class="list">${[...S.docs].sort((a,b)=>(b.upd||0)-(a.upd||0)).map(d=>`<div class="row" onclick="docSheet('${d.id}')"><span class="ic" style="background:var(--soft)">📁</span><div class="grow"><b>${esc(d.name)}</b><small>${d.files.length} ملف${d.upd?' · '+new Date(d.upd).toLocaleDateString('ar-EG'):''}${d.note?' · '+esc(d.note):''}</small></div></div>`).join('')}</div>`:'<p class="empty">لا يوجد</p>';
-  }else h+=opsTable(S.txs.filter(t=>(t.files||[]).length));
+  if(dtab!=='my')return h+opsTable(S.txs.filter(t=>(t.files||[]).length));
+  const fs=folders();if(!fs.some(f=>f.id===DFOLD))DFOLD='bank';
+  const cnt=id=>S.docs.filter(d=>foldOf(d)===id).length;
+  h+=`<div class="tabs ctabs">${fs.map(f=>`<button class="${DFOLD===f.id?'on':''}" onclick="DFOLD='${f.id}';render()">${esc(f.name)}${cnt(f.id)?' ('+cnt(f.id)+')':''}</button>`).join('')}<button onclick="foldNew()">➕ زرار جديد</button></div>`;
+  h+=`<div class="etbar"><button class="mini pri" onclick="docForm()">+ إضافة</button>${isSysF(DFOLD)?'':`<button class="mini" onclick="foldRen('${DFOLD}')">✏️ اسم الزرار</button><button class="mini danger" onclick="foldDel('${DFOLD}')">🗑 الزرار</button>`}</div>`;
+  const list=S.docs.filter(d=>foldOf(d)===DFOLD).sort((a,b)=>(b.upd||0)-(a.upd||0));
+  h+=list.length?`<div class="list">${list.map(d=>`<div class="row" onclick="docSheet('${d.id}')"><span class="ic" style="background:var(--soft)">📁</span><div class="grow"><b>${esc(d.name)}</b><small>${d.files.length} ملف${d.upd?' · '+new Date(d.upd).toLocaleDateString('ar-EG'):''}${d.note?' · '+esc(d.note):''}</small></div></div>`).join('')}</div>`:'<p class="empty">لا يوجد</p>';
   return h;
 }
+async function foldNew(){const n=((await askInput('اسم الزرار الجديد','مثلاً: الشقة، العربية',''))||'').trim();if(!n)return;DFOLD=foldAdd(n);save();render();toast('اتعمل ✓')}
+async function foldRen(id){const f=(S.settings.dfold||[]).find(x=>x.id===id);if(!f)return;const n=((await askInput('اسم الزرار','',f.name.replace(/^📁\s*/,'')))||'').trim();if(!n)return;f.name='📁 '+n;save();render()}
+async function foldDel(id){
+  const f=(S.settings.dfold||[]).find(x=>x.id===id);if(!f)return;
+  if(!await ask(`حذف زرار ${f.name}؟`,'المستندات اللي فيه هتتنقل لـ عام',{danger:true,icon:'🗑',ok:'حذف'}))return;
+  S.docs.forEach(d=>{if(foldOf(d)===id)setFold(d.id,'gen')});
+  S.settings.dfold=(S.settings.dfold||[]).filter(x=>x.id!==id);DFOLD='gen';save();render();
+}
+const foldSel=cur=>`<label>الزرار<select id="d3" onchange="$('#d4w').style.display=this.value==='__new'?'':'none'">${folders().map(f=>`<option value="${f.id}" ${f.id===cur?'selected':''}>${esc(f.name)}</option>`).join('')}<option value="__new">➕ زرار جديد</option></select></label>
+  <label id="d4w" style="display:none">اسم الزرار الجديد<input id="d4" placeholder="مثلاً: الشقة"></label>`;
 function docForm(id){
-  const d=id?doc(id):{name:'',note:''};
-  sheet(`<h2>${id?'تعديل':'إضافة'}</h2><label>الاسم<input id="d1" value="${esc(d.name)}"></label><label>ملاحظات<input id="d2" value="${esc(d.note||'')}"></label><button class="btn" onclick="docSave('${id||''}')">حفظ</button>`);
+  const d=id?doc(id):{name:'',note:''},cur=id?foldOf(d):DFOLD;
+  sheet(`<h2>${id?'تعديل':'إضافة مستند'}</h2><label>الاسم<input id="d1" value="${esc(d.name)}"></label><label>ملاحظات<input id="d2" value="${esc(d.note||'')}"></label>
+  ${foldSel(cur)}
+  <button class="btn" onclick="docSave('${id||''}')">حفظ</button>`);
 }
 function docSave(id){
   const name=$('#d1').value.trim();if(!name)return toast('اكتب الاسم');
+  let f=$('#d3').value;
+  if(f==='__new'){const n=$('#d4').value.trim();if(!n)return toast('اكتب اسم الزرار');f=foldAdd(n)}
   let d=id?doc(id):null;if(!d){d={id:uid(),files:[]};S.docs.push(d)}
-  d.name=name;d.note=$('#d2').value.trim();d.upd=Date.now();save();render();docSheet(d.id);
+  d.name=name;d.note=$('#d2').value.trim();d.upd=Date.now();setFold(d.id,f);DFOLD=f;save();render();docSheet(d.id);
 }
 function docSheet(id){
   curDoc=id;const d=doc(id);if(!d)return closeSheet();
+  const lk=linkOf(id);
   sheet(`<div class="phead"><h2>📁 ${esc(d.name)}</h2><button class="mini" onclick="docForm('${id}')">✏️</button></div>${d.note?`<p class="muted">${esc(d.note)}</p>`:''}
+  <p class="muted">${esc(folders().find(f=>f.id===foldOf(d))?.name||'')}</p>
   ${filesBox(d.files,'doc')}
   ${d.files.length?`<button class="btn ghost" onclick="shareFiles(doc('${id}').files)">📤 مشاركة الكل</button>`:''}
+  ${lk?`<button class="btn ghost" onclick="${lk.startsWith('c:')?`cardForm('${lk.slice(2)}')`:`renForm('${lk.slice(2)}')`}">🔗 افتح الكارت</button>`:''}
+  <button class="btn ghost" onclick="docMove('${id}')">📂 نقل لزرار تاني</button>
   <button class="btn ghost danger" onclick="docDel('${id}')">🗑 حذف</button>`);
 }
-async function docDel(id){if(!await ask('حذف؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;S.docs=S.docs.filter(x=>x.id!==id);S.cards.forEach(c=>{if(c.docId===id)c.docId=''});save();closeSheet();render()}
+function docMove(id){
+  const d=doc(id);if(!d)return;const cur=foldOf(d);
+  sheet(`<h2>📂 نقل "${esc(d.name)}"</h2>
+  <div class="list">${folders().map(f=>`<div class="row" onclick="docMoveTo('${id}','${f.id}')"><span class="ic" style="background:var(--soft)">${f.id===cur?'🔘':'⚪'}</span><div class="grow"><b>${esc(f.name)}</b></div></div>`).join('')}
+  <div class="row" onclick="docMoveNew('${id}')"><span class="ic" style="background:var(--soft)">➕</span><div class="grow"><b>زرار جديد</b></div></div></div>`);
+}
+function docMoveTo(id,f){setFold(id,f);DFOLD=f;save();render();docSheet(id);toast('اتنقل ✓')}
+async function docMoveNew(id){const n=((await askInput('اسم الزرار الجديد','',''))||'').trim();if(!n)return docMove(id);docMoveTo(id,foldAdd(n))}
+async function docDel(id){
+  if(!await ask('حذف؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;
+  S.docs=S.docs.filter(x=>x.id!==id);
+  const lk=linkOf(id);if(lk)delete LNK()[lk];
+  S.cards.forEach(c=>{if(c.docId===id)c.docId=''});
+  if(S.settings.dmap)delete S.settings.dmap[id];
+  save();closeSheet();render();
+}
+
+/* ========== لما عملية فيها مرفقات تتحذف ========== */
+var SKIPDEL=false,TXSNAP=null;
+const snapTx=()=>{const m={};S.txs.forEach(t=>{if((t.files||[]).length)m[t.id]={files:[...t.files],cat:t.cat,date:t.date}});return m};
+function txWatch(){
+  const now=snapTx();if(!TXSNAP){TXSNAP=now;return}
+  const ids=new Set(S.txs.map(t=>t.id)),gone=Object.keys(TXSNAP).filter(id=>!ids.has(id)).map(id=>({id,...TXSNAP[id]}));
+  TXSNAP=now;
+  if(SKIPDEL){SKIPDEL=false;return}
+  if(!gone.length||gone.length>3)return;
+  setTimeout(()=>askKeepFiles(gone),350);
+}
+async function askKeepFiles(g){
+  const n=g.reduce((a,x)=>a+x.files.length,0);
+  S.buys=S.buys.filter(b=>!g.some(x=>x.id===b.txId));
+  const del=await ask('تحذف المرفقات كمان؟',`${n} ملف كان مع ${g.length>1?'العمليات':'العملية'} اللي اتحذفت`,{icon:'📎',ok:'🗑 احذفها',cancel:'📁 احتفظ بيها',danger:true});
+  if(!del){
+    g.forEach(x=>{const d={id:uid(),name:'📎 '+(C(x.cat)?.name||'عملية')+' · '+dmy(x.date),note:'من عملية اتحذفت',files:[...x.files],upd:Date.now()};S.docs.push(d);setFold(d.id,'gen')});
+    save();render();toast('📁 اتحفظت في مرفقاتي ← عام');
+  }else{save();render();toast('اتحذفت ✓');if(!draftGet())try{gcFiles()}catch(e){}}
+}
+try{const _sv=save;save=function(){const r=_sv.apply(this,arguments);try{txWatch()}catch(e){}return r}}catch(e){}
 
 /* ========== حفظ الشغل اللي مكملتوش (مكالمة / قفل / التطبيق اتقفل) ========== */
 const DRK='centric-draft';
@@ -1077,7 +1157,6 @@ let drT=null;
 ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(FORM&&e.target.closest&&e.target.closest('#sheet')){clearTimeout(drT);drT=setTimeout(draftSave,400)}},true));
 try{const _s=sheet;sheet=function(){FORM=NEXTF;NEXTF=null;if(!FORM&&!KEEPF&&!LOCKING)draftClear();const r=_s.apply(this,arguments);if(FORM)setTimeout(draftSave,0);return r}}catch(e){}
 try{const _c=closeSheet;closeSheet=function(){if(!KEEPF&&!LOCKING){FORM=null;draftClear()}return _c.apply(this,arguments)}}catch(e){}
-/* بعد ما تفتح بالبصمة، بيرجّعك للشاشة اللي كنت فيها */
 function waitUnlock(){
   const cx=innerWidth/2,cy=innerHeight/2;let root=document.elementFromPoint(cx,cy);
   while(root&&root.parentElement&&root.parentElement!==document.body)root=root.parentElement;
@@ -1094,7 +1173,11 @@ try{const _l=showLock;showLock=function(){draftSave();LOCKING=true;const r=_l.ap
 /* ========== تشغيل ========== */
 S.contacts.forEach(c=>{if(c.note)c.note=''});
 S.buys.forEach(b=>{b.items=[]});
+/* نقل الكروت القديمة لزراير المرفقات */
+S.cards.forEach(c=>{if(c.docId&&doc(c.docId)&&!LNK()['c:'+c.id]){LNK()['c:'+c.id]=c.docId;setFold(c.docId,'bank')}});
+S.renew.forEach(r=>{if((r.files||[]).length&&!linkedDoc('r:'+r.id))syncDoc('r:'+r.id,'personal',renDocName(r),r.files,'كارت شخصي')});
 applyTheme();applyFont();applyName();autoPostFixed();save();render();
+TXSNAP=snapTx();
 if(!draftGet())gcFiles();
 if(LK.pin)showLock();else{inAppAlerts();setTimeout(()=>draftOpen(true),300)}
 if(!DEMO&&GD.linked)loadJS('https://accounts.google.com/gsi/client').catch(()=>{});
