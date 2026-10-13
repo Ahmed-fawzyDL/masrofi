@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.13.2',VBUILD='13/10/2026 - 04:05 م';
+const VER='2.15.0',VBUILD='13/10/2026 - 05:00 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 /* المرفقات: كاميرا + الصور + ملف في كل مكان */
 try{filesBox=function(ids,ctx){return `<div class="files">${(ids||[]).map(id=>fileThumb(id,ctx)).join('')}<button type="button" class="fadd" onclick="attach('${ctx}',true)">📷<small>كاميرا</small></button><button type="button" class="fadd" onclick="attachGal('${ctx}')">🖼️<small>الصور</small></button><button type="button" class="fadd" onclick="attach('${ctx}',false)">📎<small>ملف</small></button></div>`}}catch(e){}
@@ -13,6 +13,15 @@ function attachGal(ctx){pickAny('image/*',ids=>{if(ids.length&&ATT[ctx]&&ATT[ctx
 .bir{position:relative;border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:8px 8px 2px;margin-bottom:8px}
 .bir .three label{margin:0}.bir .three b{display:block;padding:10px 4px}.bir .bix{position:absolute;top:8px;left:8px;padding:2px 8px}
 .bir>input{width:calc(100% - 44px)}
+.ctact{display:flex;gap:6px;flex:0 0 auto}
+.ctsend{display:block;margin:8px auto 4px;font-size:22px;padding:6px 18px}
+.exh{display:flex;align-items:center;gap:8px}.exh b{margin-inline-start:auto}
+#sheet .seg button[onclick="setTxType('tr')"],button[onclick="newTx('tr')"]{display:none!important}
+#fabm{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:10px;padding:8px;border-radius:20px;background:var(--card,#fff);box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:90;animation:fabin .18s ease-out}
+@keyframes fabin{from{opacity:0;transform:translateX(-50%) translateY(24px) scale(.6)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+#fabm button{border:0;border-radius:14px;padding:10px 18px;min-width:96px;font:inherit;font-weight:700;color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+#fabm button span{font-size:24px;line-height:1}
+#fabm .inc{background:#16a34a}#fabm .exp{background:#dc2626}
 input[dir=auto],textarea[dir=auto]{unicode-bidi:plaintext;text-align:start}
 b,strong,small,h2,h3,.muted,.kv b,td{unicode-bidi:plaintext}`;document.head.appendChild(s)})();
 /* اتجاه الكتابة: العربي من اليمين والإنجليزي من الشمال */
@@ -865,7 +874,7 @@ const BI_META=/(تاريخ|الوقت|date|time|البون|المستند|الو
 const BI_STOP=/(الاجمال|الإجمال|اجمالي|إجمالي|المطلوب|المجموع|الصافي|total|no\.?\s*of)/i;
 /* بيشيل الوقت والتاريخ والأرقام الطويلة (تليفونات) قبل ما يدوّر على أرقام الصنف */
 const biClean=l=>l.replace(/\d{1,2}\s*:\s*\d{2}(?:\s*:\s*\d{2})?/g,' ').replace(/\d{1,4}\s*[\/\-]\s*\d{1,2}\s*[\/\-]\s*\d{1,4}/g,' ').replace(/\d{7,}/g,' ');
-/* لازم 3 أرقام في السطر، وواحد منهم = حاصل ضرب التانيين (الكمية × السعر = القيمة).
+/* لازم 3 أرقام، وواحد منهم = حاصل ضرب التانيين (الكمية × السعر = القيمة).
    الترتيب مش فارق، والكمية هي الرقم اللي فيه كسر (زي 1.37 كيلو) */
 function biSplit(nums){
   const ok=(q,p,v)=>q>0&&p>0&&v>0&&Math.abs(q*p-v)<=Math.max(.02,v*.006);
@@ -880,9 +889,10 @@ function biSplit(nums){
   }
   return best?{q:best.q,p:best.p,v:best.v}:null;
 }
+/* بيقرا الأصناف بـ 3 طرق، وبياخد اللي يطلع منها نتيجة:
+   1) كل صنف في سطر   2) كل رقم في سطر لوحده   3) الأعمدة جاية ورا بعض (كميات، أسعار، قيم) */
 function biParse(text){
   const lines=splitLines(text);
-  /* سطر العناوين: ممكن يكون سطر واحد أو مقسوم على كذا سطر */
   let st=-1;
   for(let i=0;i<lines.length&&st<0;i++){
     const acc=new Set();
@@ -892,21 +902,37 @@ function biParse(text){
       if(acc.size>=2){st=j;break}
     }
   }
-  const out=[];let pend='';
-  for(let i=st+1;i<lines.length&&out.length<60;i++){
+  const tok=[];
+  for(let i=st+1;i<lines.length;i++){
     const l=lines[i];
     if(BI_STOP.test(l))break;
-    if(BI_META.test(l)||PHK.test(l)||ADRW.test(l)||VEND.test(l)){pend='';continue}
+    if(BI_META.test(l)||PHK.test(l)||ADRW.test(l)||VEND.test(l))continue;
     const cl=biClean(l);
-    const nums=(cl.match(/\d+(?:\.\d+)?/g)||[]).map(Number).filter(x=>x>0);
-    const name=cl.replace(/[^A-Za-z\u0621-\u064A\s]/g,' ').replace(/\s+/g,' ').trim();
-    if(!nums.length){if(name.replace(/\s/g,'').length>=2&&!SKIPM.test(l))pend=name;else pend='';continue}
-    const it=biSplit(nums);
-    if(!it){pend='';continue}
-    const n=name||pend;pend='';
-    out.push({n:n||'صنف',q:it.q,p:it.p,v:it.v});
+    tok.push({nums:(cl.match(/\d+(?:\.\d+)?/g)||[]).map(Number).filter(x=>x>0),name:cl.replace(/[^A-Za-z\u0621-\u064A\s]/g,' ').replace(/\s+/g,' ').trim(),skip:SKIPM.test(l)});
   }
-  return out;
+  const okName=t=>t.name.replace(/\s/g,'').length>=2&&!t.skip;
+  /* 1) كل صنف في سطر */
+  const rows=[];let pend='';
+  tok.forEach(t=>{
+    if(!t.nums.length){pend=okName(t)?t.name:'';return}
+    const it=biSplit(t.nums);if(!it){pend='';return}
+    rows.push({n:(okName(t)?t.name:'')||pend||'صنف',q:it.q,p:it.p,v:it.v});pend='';
+  });
+  if(rows.length)return rows.slice(0,60);
+  /* الأسماء والأرقام بالترتيب */
+  const names=tok.filter(okName).map(t=>t.name),stream=tok.flatMap(t=>t.nums);
+  const named=a=>a.map((it,k)=>({n:names[k]||'صنف',...it}));
+  /* 3) أعمدة */
+  let cols=[];
+  if(stream.length>=3&&stream.length%3===0){
+    const n=stream.length/3;
+    for(let i=0;i<n;i++){const it=biSplit([stream[i],stream[n+i],stream[2*n+i]]);if(!it){cols=[];break}cols.push(it)}
+  }
+  /* 2) كل رقم في سطر */
+  const win=[];
+  for(let i=0;i+2<stream.length;){const it=biSplit(stream.slice(i,i+3));if(it){win.push(it);i+=3}else i++}
+  const best=cols.length>=win.length?cols:win;
+  return named(best).slice(0,60);
 }
 function mergeRc(a,b){
   const sc=r=>(r.TC.length?3:0)+(r.merchant?2:0)+(r.time?1:0)+(r.date?1:0)+Math.min(2,r.phones.length);
@@ -1157,41 +1183,51 @@ async function biReread(id){
   const b=S.buys.find(x=>x.id===id);if(!b)return;
   const raw=ocrGet(id);if(!biCloudRaw(raw))return toast('مفيش نص محفوظ للريسيت ده');
   const its=biParse(raw.replace(/^──[^\n]*──$/gm,''));
-  if(!its.length)return say('ملقتش أصناف في النص','لو الريسيت فيه أصناف، ابعت النص اللي في 🔍','🧾');
+  if(!its.length)return say('ملقتش أصناف في النص','افتح 🔍 اللي البرنامج قراه ← 📋 انسخ، وابعت النص للمطوّر','🧾');
   const r=await biReview(its,b.total);
   if(r!==null){b.items=r;save();toast('اتحفظ ✓')}
   buySheet(id);
 }
-/* بيسجّل الأرقام الجديدة، وبيقولك برسالة واضحة إيه اللي حصل */
+/* أرقام المحل: بيقولك لو الرقم متسجل وباسم مين، وبيضيف الأرقام الجديدة، وبيسجّل المحل لو مش موجود */
 async function contactFromReceipt(rc,cat){
   await new Promise(r=>setTimeout(r,700));
   const phones=rc.phones||[];
-  const mine=S.contacts.find(c=>c.catId===cat.id)||S.contacts.find(c=>normAr(c.name)===normAr(cat.name));
-  const fresh=phones.filter(p=>!findPhone([p],mine?mine.id:''));
-  const kind=rc.rest?'rest':'shop';
+  let mine=S.contacts.find(c=>c.catId===cat.id)||S.contacts.find(c=>normAr(c.name)===normAr(cat.name));
+  if(!mine&&phones.length){const f=findPhone(phones);if(f)mine=f.c}
+  if(!phones.length){
+    if(mine&&!mine.catId){mine.catId=cat.id;save()}
+    if(!mine||!(mine.phones||[]).length)askAddPhone(cat,rc,mine?mine.id:null);
+    return;
+  }
+  const known=[],added=[];
+  phones.forEach(p=>{
+    const f=findPhone([p]);
+    if(f)known.push(`📞 ${p}\nمتسجل قبل كده باسم: ${f.c.name}`);
+    else added.push(p);
+  });
+  const isNew=!mine;
   if(mine){
-    const add=fresh.filter(p=>!(mine.phones||[]).includes(p));
-    mine.phones=[...(mine.phones||[]),...add];
+    if(added.length)mine.phones=[...(mine.phones||[]),...added];
     if(!mine.address&&rc.address)mine.address=rc.address;
     if(!mine.catId)mine.catId=cat.id;
-    save();
-    if(add.length)say('اتضاف رقم جديد في Contacts ✓',`${mine.name}\n${add.join('\n')}`,'📇');
-    else if(!(mine.phones||[]).length)askAddPhone(cat,rc,mine.id);
-    return;
+  }else{
+    mine={id:uid(),name:cat.name,kind:rc.rest?'rest':'shop',spec:'',phones:added,address:rc.address||'',loc:'',catId:cat.id,at:Date.now()};
+    S.contacts.push(mine);
   }
-  if(fresh.length){
-    S.contacts.push({id:uid(),name:cat.name,kind,spec:'',phones:fresh,address:rc.address||'',loc:'',catId:cat.id,at:Date.now()});
-    save();
-    say('تم تسجيل المحل في Contacts ✓',`${cat.name}\n${fresh.join('\n')}${rc.address?'\n📍 '+rc.address:''}`,'📇');
-    return;
-  }
-  save();askAddPhone(cat,rc,null);
+  save();
+  const title=isNew?'الرقم مش متسجل، واتسجل في Contacts ✓':added.length?'اتضاف رقم جديد للمحل ✓':'الرقم متسجل قبل كده ✓';
+  const body=[
+    isNew?`🏪 ${mine.name}`:'',
+    ...added.map(p=>`➕ ${p}${isNew?'':' (رقم جديد)'}`),
+    ...known,
+    isNew&&rc.address?'📍 '+rc.address:''
+  ].filter(Boolean).join('\n\n');
+  say(title,body,'📇');
 }
 /* لو ملقاش رقم، بيسألك تضيفه بإيدك (مرة واحدة لكل محل) */
 async function askAddPhone(cat,rc,id){
   const np=S.settings.noPh||[];if(np.includes(cat.id))return;
-  const t=(rc.phones||[]).length?'الأرقام اللي في الريسيت متسجلة لمحل تاني':'ملقتش رقم المحل في الريسيت';
-  if(!await ask(t,`تحب تضيف رقم ${cat.name} في Contacts بإيدك؟`,{icon:'📇',ok:'➕ ضيف الرقم',cancel:'لأ'})){S.settings.noPh=[...np,cat.id];save();return}
+  if(!await ask('ملقتش رقم المحل في الريسيت',`تحب تضيف رقم ${cat.name} في Contacts بإيدك؟`,{icon:'📇',ok:'➕ ضيف الرقم',cancel:'لأ'})){S.settings.noPh=[...np,cat.id];save();return}
   if(id)ctForm(id);else ctForm(null,{name:cat.name,catId:cat.id,address:rc.address||'',kind:rc.rest?'rest':'shop'});
 }
 /* النص اللي اتقرا من الريسيت (عشان نراجعه لو حاجة طلعت غلط) */
@@ -1199,6 +1235,7 @@ const OKEY='centric-ocr';
 const ocrAll=()=>{try{return JSON.parse(localStorage.getItem(OKEY)||'{}')}catch(e){return{}}};
 function ocrSave(id,t){try{const m=ocrAll();m[id]=String(t).slice(0,10000);const ks=Object.keys(m);while(ks.length>20)delete m[ks.shift()];localStorage.setItem(OKEY,JSON.stringify(m))}catch(e){}}
 const ocrGet=id=>ocrAll()[id]||'';
+function ocrDel(ids){try{const m=ocrAll();ids.forEach(id=>delete m[id]);localStorage.setItem(OKEY,JSON.stringify(m))}catch(e){}}
 function ocrCopy(id){const t=ocrGet(id);if(!navigator.clipboard)return toast('مش قادر أنسخ');navigator.clipboard.writeText(t).then(()=>toast('اتنسخ ✓')).catch(()=>toast('مش قادر أنسخ'))}
 
 /* ========== Contacts ========== */
@@ -1212,7 +1249,7 @@ function ctShareTxt(c){const mu=mapURL(c);return[c.name+(c.spec?' · '+c.spec:''
 function ctShareMore(id){const c=S.contacts.find(x=>x.id===id);if(!c)return;const t=ctShareTxt(c);if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast('اتنسخ ✓')).catch(()=>{})}
 function vContacts(){
   const list=S.contacts.filter(c=>ctab==='all'||c.kind===ctab).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
-  let h=`<div class="phead"><h3>📇 ${esc(L('contacts'))}</h3><button class="mini pri" onclick="ctForm(null,ctab!=='all'?{kind:ctab}:null)">+ إضافة</button></div>
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📇 ${esc(L('contacts'))}</h3><button class="mini pri" onclick="ctForm(null,ctab!=='all'?{kind:ctab}:null)">+ إضافة</button></div>
   <div class="tabs ctabs">${[['all','الكل']].concat(Object.entries(CTK).map(([k,v])=>[k,v[0]+' '+v[1]])).map(([k,l])=>`<button class="${ctab===k?'on':''}" onclick="ctab='${k}';render()">${l}</button>`).join('')}</div>
   <input id="ct-q" placeholder="🔍 اسم أو رقم..." oninput="ctFilter(this.value)">`;
   if(!list.length)return h+`<div class="nempty"><div>📇</div><b>لا يوجد</b></div>`;
@@ -1221,17 +1258,19 @@ function vContacts(){
     <div class="cta">${p?`<a class="cbt" href="tel:${p}" onclick="event.stopPropagation()">📞</a>`:''}${wa?`<a class="cbt wa" href="https://wa.me/${wa}" target="_blank" onclick="event.stopPropagation()">${waIc('💬')}</a>`:''}${mu?`<a class="cbt" href="${esc(mu)}" target="_blank" onclick="event.stopPropagation()">📍</a>`:''}</div></div>`}).join('')}</div>`;
 }
 function ctFilter(q){q=normAr(latD(q));document.querySelectorAll('.ctr').forEach(r=>r.style.display=!q||r.dataset.q.includes(q)?'':'none')}
+/* صفحة جهة الاتصال من جوا: تعديل وحذف فوق، والاتصال والواتساب والخريطة جنب الرقم */
 function ctView(id){
-  const c=S.contacts.find(x=>x.id===id);if(!c)return;const k=CTK[c.kind]||CTK.other,mu=mapURL(c),nb=S.buys.filter(b=>c.catId&&b.catId===c.catId).length;
-  sheet(`<div class="phead"><h2>${k[0]} ${esc(c.name)}</h2><button class="mini" onclick="ctForm('${id}')">✏️</button></div>
+  const c=S.contacts.find(x=>x.id===id);if(!c)return;const k=CTK[c.kind]||CTK.other,mu=mapURL(c),nb=S.buys.filter(b=>c.catId&&b.catId===c.catId).length,ph=c.phones||[];
+  const mapBtn=mu?`<a class="cbt" href="${esc(mu)}" target="_blank">📍</a>`:'';
+  sheet(`<div class="phead"><h2>${k[0]} ${esc(c.name)}</h2><div class="ctact"><button class="mini" onclick="ctForm('${id}')">✏️</button><button class="mini danger" onclick="ctDel('${id}')">🗑</button></div></div>
   ${c.spec?`<p class="muted">${esc(c.spec)}</p>`:''}
-  ${(c.phones||[]).map(p=>{const wa=waNum(p);return `<div class="phl"><b dir="ltr" style="text-align:right">${p}</b><a class="cbt" href="tel:${p}">📞</a>${wa?`<a class="cbt wa" href="https://wa.me/${wa}" target="_blank">${waIc('💬')}</a>`:''}</div>`}).join('')}
+  ${ph.map((p,i)=>{const wa=waNum(p);return `<div class="phl"><b dir="ltr" style="text-align:right">${p}</b><a class="cbt" href="tel:${p}">📞</a>${wa?`<a class="cbt wa" href="https://wa.me/${wa}" target="_blank">${waIc('💬')}</a>`:''}${i===0?mapBtn:''}</div>`}).join('')}
+  ${!ph.length&&mu?`<div class="phl"><b>الموقع</b>${mapBtn}</div>`:''}
   ${c.address?`<div class="kv"><span>العنوان</span><b>${esc(c.address)}</b></div>`:''}
   ${c.catId&&C(c.catId)?`<div class="kv"><span>البند</span><b>${esc(C(c.catId).name)}</b></div>`:''}
-  ${(c.phones||[]).length?`<a class="btn wab" href="${waShare(ctShareTxt(c))}" target="_blank">${waIc('💬')} ابعت الرقم لحد على واتساب</a>
-  <button class="btn ghost" onclick="ctShareMore('${id}')">📤 ابعته بطريقة تانية</button>`:''}
-  ${mu?`<a class="btn ghost" href="${esc(mu)}" target="_blank">📍 الخريطة</a>`:''}
-  ${nb?`<button class="btn ghost" onclick="bq='${esc(C(c.catId).name)}';closeSheet();go('buy')">🛒 المشتروات (${nb})</button>`:''}`);
+  ${ph.length?`<a class="btn wab" href="${waShare(ctShareTxt(c))}" target="_blank" dir="ltr">${waIc('💬')} Share Contact</a>
+  <button class="mini ctsend" onclick="ctShareMore('${id}')" aria-label="Share">📤</button>`:''}
+  ${nb?`<button class="btn ghost" onclick="BSTORE='${c.catId}';bq='';closeSheet();go('buy')">🛒 المشتروات (${nb})</button>`:''}`);
 }
 function ctForm(id,pre){
   const c=id?S.contacts.find(x=>x.id===id):{name:'',kind:'shop',spec:'',phones:[''],address:'',loc:'',catId:''};
@@ -1271,24 +1310,45 @@ async function ctSave(){
   Object.assign(c,{name,kind:CTF.kind,spec:CTF.spec.trim(),phones,address:CTF.address.trim(),loc:CTF.loc.trim(),catId:CTF.catId,note:''});
   save();closeSheet();render();toast('اتحفظ ✓');
 }
-async function ctDel(id){if(!await ask('حذف؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;S.contacts=S.contacts.filter(x=>x.id!==id);save();closeSheet();render()}
+async function ctDel(id){const c=S.contacts.find(x=>x.id===id);if(!await ask('حذف؟',c?c.name:'',{danger:true,icon:'🗑',ok:'حذف'}))return;S.contacts=S.contacts.filter(x=>x.id!==id);save();closeSheet();render()}
 
-/* ========== المشتروات ========== */
+/* ========== المشتروات: مقسمة بالمحلات ========== */
 const payLabel=b=>b.card?`💳 •••• ${b.card}`:[M(b.method)?.name,viaTxt(b.via)].filter((x,i,a)=>x&&a.indexOf(x)===i).join(' · ');
 const whenTxt=b=>fdate(b.date)+(b.time?' · '+fmtTime(b.time):'');
 const biOf=b=>(b.items||[]).filter(x=>x&&typeof x==='object'&&x.n);
+const bKey=b=>b.catId||('n:'+normAr(b.store||''));
+const bSort=(a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||''));
+var BSTORE='',BGRP=[];
 const buyRow=b=>`<div class="row" onclick="buySheet('${b.id}')"><span class="ic" style="background:var(--soft)">${b.deliv?'🛵':'🛍️'}</span><div class="grow"><b>${esc(b.store)}</b><small>${whenTxt(b)} · ${esc(payLabel(b))}${biOf(b).length?' · 🧾 '+biOf(b).length+' صنف':''}</small></div><div class="amt exp">${num(b.total)}</div></div>`;
 function vBuy(){
   setTimeout(bRender);
+  if(BSTORE){
+    const l=S.buys.filter(b=>bKey(b)===BSTORE);
+    if(l.length){const nm=(C(l[0].catId)||{}).name||l[0].store;
+      return `<div class="phead"><button class="mini" onclick="BSTORE='';render();scrollTo(0,0)">→</button><h3>🏪 ${esc(nm)}</h3><button class="mini pri" onclick="scanReceipt()">📷</button></div><div id="b-l"></div>`}
+    BSTORE='';
+  }
   return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🛒 ${esc(L('buy'))}</h3><button class="mini pri" onclick="scanReceipt()">📷 Receipt Scan</button></div>
   <div class="inl"><input id="b-q" placeholder="🔍 اسم المحل أو الصنف..." value="${esc(bq)}" oninput="bq=this.value;bRender()">${bq?`<button class="mini" onclick="bq='';render()">✕</button>`:''}</div><div id="b-l" style="margin-top:8px"></div>`;
 }
+function bOpen(i){const g=BGRP[i];if(!g)return;BSTORE=g.k;render();scrollTo(0,0)}
 function bRender(){
-  const el=$('#b-l');if(!el)return;const q=normAr(bq),list=[...S.buys].sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
+  const el=$('#b-l');if(!el)return;
+  const list=[...S.buys].sort(bSort);
+  if(BSTORE){
+    const l=list.filter(b=>bKey(b)===BSTORE),tot=l.reduce((a,b)=>a+(+b.total||0),0);
+    el.innerHTML=kpis([['الإجمالي',fmt(tot),'exp'],['عدد الريسيتات',l.length,'net']])+`<div class="list">${l.map(buyRow).join('')}</div>`;
+    return;
+  }
+  const q=normAr(bq);
   if(q){const inv=list.filter(b=>normAr(b.store).includes(q)||biOf(b).some(x=>normAr(x.n).includes(q)));el.innerHTML=inv.length?`<div class="list">${inv.map(buyRow).join('')}</div>`:'<p class="empty">لا يوجد</p>';return}
   if(!list.length){el.innerHTML='<div class="nempty"><div>🛒</div><b>لا يوجد مشتروات</b></div>';return}
-  const mt=list.filter(b=>b.date.startsWith(NKM)).reduce((a,b)=>a+b.total,0);
-  el.innerHTML=kpis([['مشتروات '+MONTHS[NM-1],fmt(mt),'exp'],['عدد الفواتير',list.length,'net']])+`<div class="list">${list.map(buyRow).join('')}</div>`;
+  const m=new Map();
+  list.forEach(b=>{const k=bKey(b);let g=m.get(k);if(!g){g={k,name:(C(b.catId)||{}).name||b.store,n:0,tot:0,last:b.date};m.set(k,g)}g.n++;g.tot+=(+b.total||0)});
+  BGRP=[...m.values()];
+  const mt=list.filter(b=>b.date.startsWith(NKM)).reduce((a,b)=>a+(+b.total||0),0);
+  el.innerHTML=kpis([['مشتروات '+MONTHS[NM-1],fmt(mt),'exp'],['عدد المحلات',BGRP.length,'net']])
+    +`<div class="list">${BGRP.map((g,i)=>`<div class="row" onclick="bOpen(${i})"><span class="ic" style="background:var(--soft)">🏪</span><div class="grow"><b>${esc(g.name)}</b><small>${g.n} ريسيت · آخر مرة ${fdate(g.last)}</small></div><div class="amt exp">${num(g.tot)}</div></div>`).join('')}</div>`;
 }
 function buySheet(id){
   const b=S.buys.find(x=>x.id===id);if(!b)return;const t=S.txs.find(x=>x.id===b.txId),raw=ocrGet(id),its=biOf(b);
@@ -1326,7 +1386,7 @@ function bfSave(){
   if(t&&!isClosed(t.date)&&!isClosed(b.date)){t.amount=b.total;t.date=b.date}
   save();render();buySheet(b.id);toast('اتحفظ ✓');
 }
-async function buyDel(id){if(!await ask('حذف الفاتورة؟','المصروف هيفضل متسجل',{danger:true,icon:'🗑',ok:'حذف'}))return;S.buys=S.buys.filter(x=>x.id!==id);save();closeSheet();render()}
+async function buyDel(id){if(!await ask('حذف الفاتورة؟','المصروف هيفضل متسجل',{danger:true,icon:'🗑',ok:'حذف'}))return;S.buys=S.buys.filter(x=>x.id!==id);ocrDel([id]);save();closeSheet();render()}
 
 /* ========== زراير المرفقات ========== */
 const SYSF=[{id:'bank',name:'💳 كروت بنكية'},{id:'personal',name:'🪪 كروت شخصية'}],GENF={id:'gen',name:'📂 عام'},ALLF={id:'all',name:'🗂️ الكل'};
@@ -1451,7 +1511,7 @@ async function renDel(id){if(!await ask('حذف؟','صوره هتتمسح كما
 const doc=id=>S.docs.find(x=>x.id===id);
 var DFOLD='all';
 function vDocs(){
-  let h=`<div class="phead"><h3>📎 ${esc(L('docs'))}</h3></div>`+tabsHTML([['my','مستنداتي'],['tx','مرفقات العمليات']],dtab,'dtab');
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📎 ${esc(L('docs'))}</h3></div>`+tabsHTML([['my','مستنداتي'],['tx','مرفقات العمليات']],dtab,'dtab');
   if(dtab!=='my')return h+opsTable(S.txs.filter(t=>(t.files||[]).length));
   const fs=[ALLF].concat(folders());if(!fs.some(f=>f.id===DFOLD))DFOLD='all';
   const cnt=id=>id==='all'?S.docs.length:S.docs.filter(d=>foldOf(d)===id).length;
@@ -1536,25 +1596,29 @@ async function docDel(id){
   save();closeSheet();render();
 }
 
-/* ========== لما عملية فيها مرفقات تتحذف ========== */
-var SKIPDEL=false,TXSNAP=null;
-const snapTx=()=>{const m={};S.txs.forEach(t=>{if((t.files||[]).length)m[t.id]={files:[...t.files],cat:t.cat,date:t.date}});return m};
+/* ========== لما مصروف يتمسح: كل حاجة تخصه بتتمسح (الريسيت والأصناف والصور والنص)، ورقم المحل بيفضل ========== */
+var SKIPDEL=false,TXSNAP=null,TXIDS=null;
+const snapTx=()=>{const m={};S.txs.forEach(t=>{if((t.files||[]).length)m[t.id]=1});return m};
+let CLEANING=false;
 function txWatch(){
-  const now=snapTx();if(!TXSNAP){TXSNAP=now;return}
-  const ids=new Set(S.txs.map(t=>t.id)),gone=Object.keys(TXSNAP).filter(id=>!ids.has(id)).map(id=>({id,...TXSNAP[id]}));
-  TXSNAP=now;
+  if(CLEANING)return;
+  const ids=new Set(S.txs.map(t=>t.id));
+  if(!TXIDS){TXIDS=ids;TXSNAP=snapTx();return}
+  const gone=[...TXIDS].filter(id=>!ids.has(id));
+  TXIDS=ids;const hadFiles=gone.some(id=>TXSNAP&&TXSNAP[id]);TXSNAP=snapTx();
   if(SKIPDEL){SKIPDEL=false;return}
-  if(!gone.length||gone.length>3)return;
-  setTimeout(()=>askKeepFiles(gone),350);
-}
-async function askKeepFiles(g){
-  const n=g.reduce((a,x)=>a+x.files.length,0);
-  S.buys=S.buys.filter(b=>!g.some(x=>x.id===b.txId));
-  const del=await ask('تحذف المرفقات كمان؟',`${n} ملف كان مع ${g.length>1?'العمليات':'العملية'} اللي اتحذفت`,{icon:'📎',ok:'🗑 احذفها',cancel:'📁 احتفظ بيها',danger:true});
-  if(!del){
-    g.forEach(x=>{const d={id:uid(),name:'📎 '+(C(x.cat)?.name||'عملية')+' · '+dmy(x.date),note:'من عملية اتحذفت',files:[...x.files],upd:Date.now()};S.docs.push(d);setFold(d.id,'gen')});
-    save();render();toast('📁 اتحفظت في مرفقاتي ← عام');
-  }else{save();render();toast('اتحذفت ✓');if(!draftGet())try{gcFiles()}catch(e){}}
+  if(!gone.length)return;
+  const g=new Set(gone),bs=S.buys.filter(b=>b.txId&&g.has(b.txId));
+  if(!bs.length&&!hadFiles)return;
+  CLEANING=true;
+  try{
+    if(bs.length){S.buys=S.buys.filter(b=>!(b.txId&&g.has(b.txId)));ocrDel(bs.map(b=>b.id));save()}
+  }finally{CLEANING=false}
+  setTimeout(()=>{
+    if(!draftGet())try{gcFiles()}catch(e){}
+    render();
+    toast(bs.length?'🗑 اتمسح المصروف والريسيت والأصناف · رقم المحل فاضل في Contacts':'🗑 اتمسح المصروف ومرفقاته');
+  },300);
 }
 try{const _sv=save;save=function(){const r=_sv.apply(this,arguments);try{txWatch()}catch(e){}return r}}catch(e){}
 
@@ -1605,6 +1669,54 @@ a.btn.wab{display:flex;align-items:center;justify-content:center;gap:6px}`;
   const deco=()=>document.querySelectorAll('button[onclick*="shareFiles("],button[onclick*="shareReport("]').forEach(b=>{if(b.dataset.wa)return;b.dataset.wa='1';if(b.innerHTML.includes('📤'))b.innerHTML=b.innerHTML.replace('📤',waIc('📤'))});
   let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;deco()})}).observe(document.body,{childList:true,subtree:true});deco();
 })();
+
+/* ========== الشريط اللي تحت + زرار ➕ + صفحة المزيد ========== */
+/* الدوال دي بتحل مكان اللي في app.js بنفس الاسم */
+function navHTML(){
+  const v=NAVOF[view],on=!v||v==='contacts'||v==='docs'?'more':v;
+  const b=(k,ic,l,click)=>`<button class="${on===k?'on':''}" onclick="${click||`go('${k}')`}"><span>${ic}</span>${esc(l)}</button>`;
+  return b('home','🏠',L('home'))+b('col','💰',L('col'))+b('exps','💸',L('exps'))
+    +`<button class="fab" onclick="fabMenu()" aria-label="+">+</button>`
+    +b('reports','📊',L('reports'),"rtab='';go('reports')")+b('more','☰',L('more'));
+}
+/* الـ popup الصغير اللي بيطلع من زرار ➕: تحصيل ولا مصروف */
+function fabMenu(){
+  if(document.getElementById('fabm'))return fabClose();
+  const m=document.createElement('div');m.id='fabm';
+  m.innerHTML=`<button class="inc" onclick="fabGo('inc')"><span>💰</span>${esc(L('incOne'))}</button><button class="exp" onclick="fabGo('exp')"><span>💸</span>${esc(L('expOne'))}</button>`;
+  document.body.appendChild(m);
+  setTimeout(()=>document.addEventListener('pointerdown',fabOut,true),0);
+}
+function fabOut(e){const m=document.getElementById('fabm');if(!m||m.contains(e.target)||(e.target.closest&&e.target.closest('.fab')))return;fabClose()}
+function fabClose(){const m=document.getElementById('fabm');if(m)m.remove();document.removeEventListener('pointerdown',fabOut,true)}
+function fabGo(k){fabClose();newTx(k)}
+/* صفحة المزيد: Contacts والمرفقات جنب الإعدادات */
+function vMore(){
+  const B=[['items','📋',L('items')],['pmv','🏦',L('pm')],['inst','🏦',L('inst')],['buy','🛒',L('buy')],['wallet','💳',L('wallet')],['annual','📆',L('contracts')],['cash','🏧',L('cash')],['months','🔒','قفل الشهور'],['contacts','📇',L('contacts')],['docs','📎',L('docs')],['settings','⚙️',L('settings')]];
+  return `<h3>☰ ${esc(L('more'))}</h3><div class="rgrid">${B.map(([v,ic,l])=>`<button class="rbtn" onclick="${v==='settings'?"stab='';":''}go('${v}')"><span>${ic}</span>${esc(l)}</button>`).join('')}</div>`;
+}
+
+/* ========== شاشة المصروفات: كل مصروف سطر لوحده، ولما تدوس عليه يفتح على طول ========== */
+function vExps(){
+  const k=ym(cur.y,cur.m),list=keyTx(k).filter(t=>t.type==='exp'),tot=list.reduce((a,t)=>a+t.amount,0);
+  const dl=dueList(k,'','exp'),linked=new Set(dl.filter(o=>o.s.st==='done').map(o=>o.s.t.id));
+  const others=list.filter(t=>!linked.has(t.id)),ptx=pendTx('exp',k);
+  const fixSum=dl.reduce((a,o)=>a+(o.s.st==='done'?o.s.t.amount:o.s.st==='skip'?0:o.amt),0);
+  const oSum=others.reduce((a,t)=>a+t.amount,0),rcpt=new Set(S.buys.map(b=>b.txId));
+  let h=`<div class="phead"><h3>💸 ${esc(L('exp'))}</h3><button class="mini" onclick="scanReceipt()">📷 Receipt Scan</button><button class="mini pri" onclick="newTx('exp')">+ ${esc(L('expOne'))}</button></div>`+monthBar()
+    +kpis([['اتصرف',fmt(tot),'exp'],['ثابت',fmt(fixSum),'warn'],['عدد العمليات',list.length,'net']])+sortBar();
+  const fl=sortList(dl.map(o=>({h:fixedRow(o),a:o.s.t?o.s.t.amount:o.amt,d:o.date,n:o.r.name})));
+  h+=grp('ef','📌 ثابت',fl.length,fixSum,'neg',fl.map(x=>x.h).join('')+`<div style="padding:8px 12px"><button class="mini pri" onclick="catForm(null,'exp',{fixed:true})">+ مصروف ثابت</button></div>`);
+  if(ptx.length)h+=grp('ep','⏳ لسه ما اتدفعش',ptx.length,ptx.reduce((a,t)=>a+t.amount,0),'neg',ptx.map(txRow).join(''));
+  const rows=sortList(others.map(t=>({t,a:t.amount,d:t.date+String(t.created||0).padStart(15,'0'),n:C(t.cat)?.name||''})),true);
+  h+=`<h3 class="exh">💸 المصروفات <span class="badge ${rows.length?'soon':'rej'}">${rows.length}</span><b class="neg">${num(oSum)}</b></h3>`;
+  h+=rows.length?`<div class="list">${rows.map(({t})=>{const r=rcpt.has(t.id),nf=(t.files||[]).length;
+    const sub=[fd(t.date),M(t.method)?.name,viaTxt(t.via),t.note&&!/^🧾/.test(t.note)?t.note:''].filter(Boolean).map(esc).join(' · ')+(nf&&!r?' · 📎':'');
+    return `<div class="row" onclick="editTx('${t.id}')"><span class="ic" style="background:var(--soft)">${r?'🧾':'💸'}</span><div class="grow"><b>${esc(C(t.cat)?.name||'—')}</b><small>${sub}</small></div><div class="amt exp">${num(t.amount)}</div></div>`}).join('')}</div>`
+    :'<p class="empty">لا يوجد مصروفات الشهر ده</p>';
+  return h;
+}
+
 /* لو قفلت شاشة "اسم المكان" أو "الأصناف" من برّه */
 try{const _c3=closeSheet;closeSheet=function(){const r=_c3.apply(this,arguments);if(NMR){const f=NMR;NMR=null;f(null)}if(BITR){const f=BITR;BITR=null;f(null)}return r}}catch(e){}
 /* تنضيف الأسماء البديلة الغلط اللي كانت بتلخبط اسم المحل */
@@ -1613,12 +1725,14 @@ delete S.settings.vph;
 
 /* ========== تشغيل ========== */
 S.contacts.forEach(c=>{if(c.note)c.note=''});
-/* أي أصناف قديمة بشكل غلط (من محاولة امبارح) بتتشال */
+/* أي أصناف قديمة بشكل غلط بتتشال */
 S.buys.forEach(b=>{if(!Array.isArray(b.items))b.items=[];else b.items=b.items.filter(x=>x&&typeof x==='object'&&typeof x.n==='string'&&x.n)});
+/* أي ريسيت المصروف بتاعه اتمسح قبل كده بيتشال هو كمان */
+(()=>{const ids=new Set(S.txs.map(t=>t.id)),orph=S.buys.filter(b=>b.txId&&!ids.has(b.txId));if(orph.length){S.buys=S.buys.filter(b=>!orph.includes(b));ocrDel(orph.map(b=>b.id))}})();
 S.cards.forEach(c=>{if(c.docId&&doc(c.docId)&&!LNK()['c:'+c.id]){LNK()['c:'+c.id]=c.docId;setFold(c.docId,'bank')}});
 S.renew.forEach(r=>{if((r.files||[]).length&&!linkedDoc('r:'+r.id))syncDoc('r:'+r.id,'personal',renDocName(r),r.files,'كارت شخصي')});
 applyTheme();applyFont();applyName();autoPostFixed();save();render();
-TXSNAP=snapTx();
+TXIDS=new Set(S.txs.map(t=>t.id));TXSNAP=snapTx();
 if(!draftGet())gcFiles();
 if(LK.pin)showLock();else{inAppAlerts();setTimeout(()=>draftOpen(true),300)}
 if(!DEMO&&GD.linked)loadJS('https://accounts.google.com/gsi/client').catch(()=>{});
