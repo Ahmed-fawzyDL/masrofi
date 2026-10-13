@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.13.1',VBUILD='13/10/2026 - 03:45 م';
+const VER='2.13.2',VBUILD='13/10/2026 - 04:05 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 /* المرفقات: كاميرا + الصور + ملف في كل مكان */
 try{filesBox=function(ids,ctx){return `<div class="files">${(ids||[]).map(id=>fileThumb(id,ctx)).join('')}<button type="button" class="fadd" onclick="attach('${ctx}',true)">📷<small>كاميرا</small></button><button type="button" class="fadd" onclick="attachGal('${ctx}')">🖼️<small>الصور</small></button><button type="button" class="fadd" onclick="attach('${ctx}',false)">📎<small>ملف</small></button></div>`}}catch(e){}
@@ -858,54 +858,50 @@ function parseReceipt(text){
 }
 /* ========== الأصناف: الاسم والكمية والسعر والقيمة ========== */
 /* كل الأسماء هنا بتبدأ بـ bi عشان متتعارضش مع أي اسم في app.js */
-const bi2=x=>Math.round(x*100)/100,bi3=x=>Math.round(x*1000)/1000;
-/* سطر العناوين (صنف / كمية / سعر / قيمة) بيحدد ترتيب الأعمدة */
+const bi2=x=>Math.round(x*100)/100;
+/* كلمات سطر العناوين (صنف / كمية / سعر / قيمة) */
 const BI_HEAD=/(صنف|كمي|سعر|قيم|item|qty|quantity|price|amount|description|البيان)/gi;
 const BI_META=/(تاريخ|الوقت|date|time|البون|المستند|الوردي|كاشير|البائع|العميل|cashier|invoice|فاتور)/i;
 const BI_STOP=/(الاجمال|الإجمال|اجمالي|إجمالي|المطلوب|المجموع|الصافي|total|no\.?\s*of)/i;
-function biHeadOrder(h){
-  const r=[],re=/(كمي|qty|quantity|عدد)|(سعر|price|unit)|(قيم|اجمال|إجمال|total|amount|value)/gi;let m;
-  while((m=re.exec(normAr(h))))r.push(m[1]?'q':m[2]?'p':'v');
-  return r.length>=2?r:null;
-}
-/* بيفصل أرقام السطر لكمية وسعر وقيمة، وبيتأكد إن الكمية × السعر = القيمة */
-function biSplit(nums,ord){
-  const ok=(q,p,v)=>q>0&&p>0&&v>0&&Math.abs(q*p-v)<=Math.max(.06,v*.012);
-  if(ord&&nums.length>=ord.length){
-    const t=nums.slice(-ord.length),o={};ord.forEach((r,i)=>{if(o[r]==null)o[r]=t[i]});
-    if(o.q&&o.p&&o.v&&ok(o.q,o.p,o.v))return{q:o.q,p:o.p,v:o.v};
-    if(o.q&&o.v&&o.p==null)return{q:o.q,p:bi2(o.v/o.q),v:o.v};
-    if(o.p&&o.v&&o.q==null)return{q:bi3(o.v/o.p),p:o.p,v:o.v};
+/* بيشيل الوقت والتاريخ والأرقام الطويلة (تليفونات) قبل ما يدوّر على أرقام الصنف */
+const biClean=l=>l.replace(/\d{1,2}\s*:\s*\d{2}(?:\s*:\s*\d{2})?/g,' ').replace(/\d{1,4}\s*[\/\-]\s*\d{1,2}\s*[\/\-]\s*\d{1,4}/g,' ').replace(/\d{7,}/g,' ');
+/* لازم 3 أرقام في السطر، وواحد منهم = حاصل ضرب التانيين (الكمية × السعر = القيمة).
+   الترتيب مش فارق، والكمية هي الرقم اللي فيه كسر (زي 1.37 كيلو) */
+function biSplit(nums){
+  const ok=(q,p,v)=>q>0&&p>0&&v>0&&Math.abs(q*p-v)<=Math.max(.02,v*.006);
+  const dec=n=>Math.abs(n-Math.round(n))>.001;
+  const t=nums.slice(-4);let best=null;
+  for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++)for(let k=0;k<t.length;k++){
+    if(k===i||k===j)continue;
+    const a=t[i],b=t[j],c=t[k];if(!ok(a,b,c))continue;
+    const q=dec(a)&&!dec(b)?a:dec(b)&&!dec(a)?b:Math.min(a,b),p=q===a?b:a;
+    const sc=(c>=Math.max(a,b)?2:0)+(k===t.length-1||k===0?1:0);
+    if(!best||sc>best.sc)best={q,p,v:c,sc};
   }
-  if(nums.length>=3){
-    const t3=nums.slice(-3),pr=[[0,1,2],[0,2,1],[1,2,0]];
-    for(const[a,b,c]of pr)if(ok(t3[a],t3[b],t3[c])){
-      const x=t3[a],y=t3[b],dec=n=>Math.abs(n-Math.round(n))>.001;
-      const q=dec(x)&&!dec(y)?x:dec(y)&&!dec(x)?y:Math.min(x,y);
-      return{q,p:q===x?y:x,v:t3[c]};
-    }
-  }
-  const t2=nums.slice(-2);
-  if(t2.length===2&&Math.abs(t2[0]-t2[1])<.01)return{q:1,p:t2[1],v:t2[1]};
-  if(t2.length===2){const s=Math.min(...t2),l=Math.max(...t2);if(Number.isInteger(s)&&s>=1&&s<=50&&l>s)return{q:s,p:bi2(l/s),v:l}}
-  return null;
+  return best?{q:best.q,p:best.p,v:best.v}:null;
 }
 function biParse(text){
   const lines=splitLines(text);
-  let st=-1,ord=null;
-  for(let i=0;i<lines.length;i++){
-    const m=normAr(lines[i]).match(BI_HEAD);
-    if(m&&new Set(m.map(x=>x.toLowerCase())).size>=2&&!/\d/.test(lines[i])){st=i;ord=biHeadOrder(lines[i]);break}
+  /* سطر العناوين: ممكن يكون سطر واحد أو مقسوم على كذا سطر */
+  let st=-1;
+  for(let i=0;i<lines.length&&st<0;i++){
+    const acc=new Set();
+    for(let j=i;j<Math.min(lines.length,i+4);j++){
+      if(/\d/.test(lines[j]))break;
+      (normAr(lines[j]).match(BI_HEAD)||[]).forEach(x=>acc.add(x.toLowerCase()));
+      if(acc.size>=2){st=j;break}
+    }
   }
   const out=[];let pend='';
   for(let i=st+1;i<lines.length&&out.length<60;i++){
     const l=lines[i];
     if(BI_STOP.test(l))break;
     if(BI_META.test(l)||PHK.test(l)||ADRW.test(l)||VEND.test(l)){pend='';continue}
-    const nums=(l.match(/\d+(?:\.\d+)?/g)||[]).map(Number);
-    const name=l.replace(/[^A-Za-z\u0621-\u064A\s]/g,' ').replace(/\s+/g,' ').trim();
-    if(!nums.length){if(name.replace(/\s/g,'').length>=2)pend=name;continue}
-    const it=biSplit(nums,ord);
+    const cl=biClean(l);
+    const nums=(cl.match(/\d+(?:\.\d+)?/g)||[]).map(Number).filter(x=>x>0);
+    const name=cl.replace(/[^A-Za-z\u0621-\u064A\s]/g,' ').replace(/\s+/g,' ').trim();
+    if(!nums.length){if(name.replace(/\s/g,'').length>=2&&!SKIPM.test(l))pend=name;else pend='';continue}
+    const it=biSplit(nums);
     if(!it){pend='';continue}
     const n=name||pend;pend='';
     out.push({n:n||'صنف',q:it.q,p:it.p,v:it.v});
@@ -1155,6 +1151,17 @@ async function biEdit(id){
   if(r!==null){b.items=r;save();toast('اتحفظ ✓')}
   buySheet(id);
 }
+/* بيقرا الأصناف تاني من النص المحفوظ، من غير تصوير ومن غير ما يصرف من القراءات */
+const biCloudRaw=raw=>/^(?:⚠️[^\n]*\n+)?── (?:OCR\.space|Google Vision) ──/.test(raw||'');
+async function biReread(id){
+  const b=S.buys.find(x=>x.id===id);if(!b)return;
+  const raw=ocrGet(id);if(!biCloudRaw(raw))return toast('مفيش نص محفوظ للريسيت ده');
+  const its=biParse(raw.replace(/^──[^\n]*──$/gm,''));
+  if(!its.length)return say('ملقتش أصناف في النص','لو الريسيت فيه أصناف، ابعت النص اللي في 🔍','🧾');
+  const r=await biReview(its,b.total);
+  if(r!==null){b.items=r;save();toast('اتحفظ ✓')}
+  buySheet(id);
+}
 /* بيسجّل الأرقام الجديدة، وبيقولك برسالة واضحة إيه اللي حصل */
 async function contactFromReceipt(rc,cat){
   await new Promise(r=>setTimeout(r,700));
@@ -1294,6 +1301,7 @@ function buySheet(id){
   <div class="kv"><span>الاستلام</span><b>${b.deliv?'🛵 دليفري':'🛍️ من المكان'}</b></div>
   ${its.length?`<h3>🧾 الأصناف</h3>${tbl(['الصنف','الكمية','السعر','القيمة'],its.map(x=>`<tr><td class="wrap"><b>${esc(x.n)}</b>${biHist(x,b)}</td><td>${x.q}</td><td>${num(x.p)}</td><td><b>${num(x.v)}</b></td></tr>`),`<tr><td colspan="3">المجموع</td><td><span style="color:${iok?'#16a34a':'#dc2626'}">${num(isum)}${iok?' ✓':''}</span></td></tr>`)}`:''}
   <button class="btn ghost" onclick="biEdit('${id}')">🧾 ${its.length?'عدّل الأصناف':'ضيف الأصناف'}</button>
+  ${biCloudRaw(raw)?`<button class="btn ghost" onclick="biReread('${id}')">🔄 اقرا الأصناف تاني من الريسيت</button>`:''}
   ${b.fid?`<button class="btn ghost" onclick="shareFiles(['${b.fid}'])">📤 ابعت صورة الريسيت</button>`:''}
   ${t?`<button class="btn ghost" onclick="editTx('${t.id}')">🧾 المصروف</button>`:''}
   ${raw?`<details class="gen"><summary>🔍 اللي البرنامج قراه من الريسيت</summary><pre style="white-space:pre-wrap;font:inherit;font-size:11px;max-height:260px;overflow:auto;margin:6px 0">${esc(raw)}</pre><button class="mini" onclick="ocrCopy('${id}')">📋 انسخ</button></details>`:''}
