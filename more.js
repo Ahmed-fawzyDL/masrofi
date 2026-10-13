@@ -512,6 +512,7 @@ async function ocr(lang,src,params,onP){
   OCRP=onP||null;
   try{return((await w.recognize(src)).data.text)||''}finally{OCRP=null}
 }
+/* تجهيز الصورة للقراءة. soft: بيمسح الخلفية المنقطة اللي حوالين اسم المحل */
 function prepCanvas(c,o){
   o=o||{};
   const W=c.width,H=c.height,n=W*H,x=c.getContext('2d',{willReadFrequently:true}),im=x.getImageData(0,0,W,H),d=im.data,g=new Uint8ClampedArray(n);
@@ -519,8 +520,13 @@ function prepCanvas(c,o){
   if(o.bin){
     const W1=W+1,I=new Uint32Array(W1*(H+1));
     for(let y=0;y<H;y++){let rs=0;for(let xx=0;xx<W;xx++){rs+=g[y*W+xx];I[(y+1)*W1+xx+1]=I[y*W1+xx+1]+rs}}
-    const r=Math.max(10,Math.round(Math.min(W,H)/20));
-    for(let y=0;y<H;y++){const y0=Math.max(0,y-r),y1=Math.min(H,y+r+1);for(let xx=0;xx<W;xx++){const x0=Math.max(0,xx-r),x1=Math.min(W,xx+r+1),s=I[y1*W1+x1]-I[y0*W1+x1]-I[y1*W1+x0]+I[y0*W1+x0],m=s/((x1-x0)*(y1-y0)),j=y*W+xx;g[j]=g[j]<m*.86?0:255}}
+    const r=Math.max(10,Math.round(Math.min(W,H)/20)),sr=o.soft?2:0;
+    for(let y=0;y<H;y++){const y0=Math.max(0,y-r),y1=Math.min(H,y+r+1);for(let xx=0;xx<W;xx++){
+      const x0=Math.max(0,xx-r),x1=Math.min(W,xx+r+1),s=I[y1*W1+x1]-I[y0*W1+x1]-I[y1*W1+x0]+I[y0*W1+x0],m=s/((x1-x0)*(y1-y0)),j=y*W+xx;
+      let v=g[j];
+      if(sr){const a0=Math.max(0,y-sr),a1=Math.min(H,y+sr+1),b0=Math.max(0,xx-sr),b1=Math.min(W,xx+sr+1);v=(I[a1*W1+b1]-I[a0*W1+b1]-I[a1*W1+b0]+I[a0*W1+b0])/((a1-a0)*(b1-b0))}
+      g[j]=v<m*.86?0:255;
+    }}
   }else{
     const h2=new Uint32Array(256);for(let j=0;j<n;j++)h2[g[j]]++;
     let lo=0,hi=255,acc=0;
@@ -625,8 +631,10 @@ function normPhone(x){
   if(p.length===10&&p.startsWith('1'))p='0'+p;
   return p.length>=5?p:'';
 }
+/* الأرقام العربي (٠١٢) والفارسي (۰۱۲) بتتحول لأرقام عادية */
+const arD=s=>String(s||'').replace(/[\u0660-\u0669]/g,d=>d.charCodeAt(0)-0x0660).replace(/[\u06F0-\u06F9]/g,d=>d.charCodeAt(0)-0x06F0).replace(/\u066B/g,'.').replace(/\u066C/g,',');
 const fixDec=s=>s.replace(/(\d),(\d{2})(?!\d)/g,'$1.$2');
-const splitLines=t=>fixDec(latD(t||'')).split(/\n+/).map(s=>s.trim()).filter(Boolean);
+const splitLines=t=>fixDec(latD(arD(t))).split(/\n+/).map(s=>s.trim()).filter(Boolean);
 function sim(a,b){
   const n=s=>normAr(String(s)).toLowerCase().replace(/[\s\u0640]+/g,'');a=n(a);b=n(b);
   if(!a||!b)return 0;if(a===b)return 1;if(a.length<2||b.length<2)return 0;
@@ -634,10 +642,11 @@ function sim(a,b){
   const A=bg(a),B=bg(b);let c=0;A.forEach((v,k)=>{c+=Math.min(v,B.get(k)||0)});
   return 2*c/((a.length-1)+(b.length-1));
 }
-const SKIPM=/(tel|phone|mob|fax|www|http|@|vat|tax|invoice|receipt|cashier|date|time|welcome|cash|sales|order|table|thank|visit|delivery|take\s*away|copy|فاتور|ايصال|إيصال|تليفون|هاتف|موبايل|ضريب|سجل|تاريخ|الوقت|كاشير|رقم|عنوان|شارع|اهلا|أهلا|مرحبا|مبيعات|كاش|نقد|البون|الوردي|المستند|العميل|البائع|صنف|كمية|سعر|قيمة|الاجمال|الإجمال|المطلوب|مدفوع|المتبقي|بجوار|شكر|زيار|نتمن|طلب|طاول|ترابيز|تيك|دليفري|ديليفري|توصيل|نسخ)/i;
-const ADRW=/(شارع|ش\.|عمار[ةه]|بجوار|امام|أمام|خلف|ميدان|طريق|الدور|street|road)/i;
+/* سطور عامة بتتطبع على ريسيتات محلات كتير، مش اسم المحل */
+const SKIPM=/(tel|phone|mob|fax|www|http|@|vat|tax|invoice|receipt|cashier|date|time|welcome|cash|sales|order|table|thank|visit|delivery|take\s*away|copy|shopping|فاتور|ايصال|إيصال|قسيم|مرتجع|سند|تليفون|هاتف|موبايل|ضريب|سجل|تاريخ|الوقت|كاشير|رقم|عنوان|شارع|اهلا|أهلا|مرحبا|مبيعات|كاش|نقد|البون|الوردي|المستند|العميل|البائع|صنف|كمية|سعر|قيمة|الاجمال|الإجمال|المطلوب|مدفوع|المدفوع|الباقي|الصافي|المتبقي|بجوار|شكر|زيار|نتمن|طلب|طاول|ترابيز|تيك|دليفري|ديليفري|توصيل|نسخ|(?:^|\s)بيع(?:\s|$))/i;
+const ADRW=/(شارع|ش\.|عمار[ةه]|بجوار|امام|أمام|خلف|ميدان|طريق|الدور|برج|شطر|الشطر|بلوك|مجاور|منطق|مدين[ةه]|street|road)/i;
 const VEND=/(برم|الحلول|حلول|متطور|powered|software|developed|تصميم|نظام|system)/i;
-/* المرشحين لاسم المحل: الأسطر اللي فوق ليها أولوية أكبر */
+/* المرشحين لاسم المحل: السطر الأول ليه أولوية أكبر */
 function merchantCands(lines){
   const out=[];
   lines.slice(0,12).forEach((l,i)=>{
@@ -647,14 +656,14 @@ function merchantCands(lines){
     if(!gd.length||letters<5||bad*2>gd.length)return;
     const s=gd.join(' ').slice(0,40),ar=/[\u0621-\u064A]/.test(s);
     if(!ar&&gd.some(w=>/[a-z]/.test(w)&&/[A-Z]/.test(w.slice(1))))return;
-    out.push({s,sc:Math.min(letters,24)*2-bad*5-i*6+(ar?10:0)-(gd.length>5?12:0)});
+    out.push({s,sc:Math.min(letters,24)*2-bad*5-i*10+(i===0?8:0)+(ar?10:0)-(gd.length>5?12:0)});
   });
   return out;
 }
 function rankMerchants(cs){
   const cl=[];
-  cs.forEach(c=>{const g=cl.find(g=>sim(g.top.s,c.s)>=.7);if(g){g.n++;g.sum+=c.sc;if(c.sc>g.top.sc)g.top=c}else cl.push({top:c,n:1,sum:c.sc})});
-  cl.forEach(g=>g.v=g.sum/g.n+g.n*20);
+  cs.forEach(c=>{const g=cl.find(g=>sim(g.top.s,c.s)>=.7);if(g){g.n++;if(c.sc>g.top.sc)g.top=c}else cl.push({top:c,n:1})});
+  cl.forEach(g=>g.v=g.top.sc+Math.min(g.n-1,3)*6);
   return cl.sort((a,b)=>b.v-a.v).map(g=>g.top.s);
 }
 const pickMerchant=cs=>rankMerchants(cs)[0]||'';
@@ -663,25 +672,25 @@ function storeCats(){
   const ids=new Set();S.buys.forEach(b=>b.catId&&ids.add(b.catId));S.contacts.forEach(c=>c.catId&&ids.add(c.catId));
   return S.cats.filter(c=>c.kind==='exp'&&(ids.has(c.id)||(c.alias||[]).length));
 }
-/* بيدور على محل معروف في الأسطر اللي فوق بس */
+/* بيدور على محل معروف في الأسطر اللي فوق بس، وبيرجّع الاسم اللي لقاه بيه */
 function knownStore(lines){
   const known=[];
   storeCats().forEach(c=>[c.name,...(c.alias||[])].forEach(n=>{const k=normAr(n).replace(/\s+/g,'');if(k.length>=4)known.push({n,k,c})}));
   if(!known.length)return null;
   const flat=normAr(lines.join(' ')).replace(/\s+/g,'');
   let best=null,bl=0;
-  known.forEach(x=>{if(flat.includes(x.k)&&x.k.length>bl){bl=x.k.length;best=x.c}});
-  if(best)return best;
+  known.forEach(x=>{if(flat.includes(x.k)&&x.k.length>bl){bl=x.k.length;best=x}});
+  if(best)return{c:best.c,n:best.n};
   let bs=0;
   for(const l of lines){
     if(/\d{3,}/.test(l)||l.length<4)continue;const ws=l.split(/\s+/);
     for(const x of known){
       const nw=x.n.trim().split(/\s+/).length;let s=sim(l,x.n);
       for(let w=Math.max(1,nw-1);w<=nw+1;w++)for(let i=0;i+w<=ws.length;i++)s=Math.max(s,sim(ws.slice(i,i+w).join(' '),x.n));
-      if(s>bs){bs=s;best=x.c}
+      if(s>bs){bs=s;best=x}
     }
   }
-  return bs>=.62?best:null;
+  return bs>=.62&&best?{c:best.c,n:best.n}:null;
 }
 function fixAddr(s){
   let w=s.split(/\s+/).filter(Boolean);
@@ -690,16 +699,22 @@ function fixAddr(s){
   w=w.flatMap(x=>{const m=x.match(/^([\u0621-\u064A]{3,})(ال[\u0621-\u064A]{3,})$/);return m?[m[1],m[2]]:[x]});
   return w.join(' ');
 }
-/* الأرقام: بيقرا كمان الأرقام اللي فيها مسافات، وبيتجاهل رقم شركة البرنامج */
+/* الأرقام */
 const PH=/(?<![\d.])(?:\+?20|0020)?0?1[0125]\d{8}(?![\d.])|(?<![\d.])0[2-9]\d{7,8}(?![\d.])|(?<![\d.])1[69]\d{3}(?![\d.])/g;
 const MOB=/(?<!\d)(?:\+?20|0020)?0?1[0125]\d{8}(?!\d)/g;
 const NOPH=/(ضريب|سجل|tax|vat|رقم\s*ال(?:فاتور|مستند|طلب)|invoice|receipt\s*no|order\s*no|بون)/i;
+/* سطر فيه كلمة تليفون (ت: / تليفون / هاتف / tel ...) */
+const PHK=/(?:^|[^\u0621-\u064A])ت\s*[:.]|[:.]\s*ت(?![\u0621-\u064A])|تليفون|تلفون|هاتف|موبايل|محمول|جوال|واتس|whats|tel|mob|phone|call|hotline|ساخن/i;
 const digFix=s=>s.replace(/[Oo](?=\d)|(?<=\d)[Oo]/g,'0');
 function phonesOf(lines){
   const per=lines.map(l=>{
     if(VEND.test(l)||NOPH.test(l))return[];
-    const f=digFix(l);let ps=f.match(PH)||[];
-    if(!ps.length)ps=f.replace(/(\d)[ \-–]+(?=\d)/g,'$1').match(MOB)||[];
+    const kw=PHK.test(l);
+    let f=digFix(l);
+    /* الصفر العربي (٠) صغير وبيتقرا نقطة: في سطر التليفون النقطة اللي قبل رقم = صفر */
+    if(kw)f=f.replace(/(?<=[\d\s:\-]|^)[.·•](?=\d)/g,'0');
+    let ps=(f.match(PH)||[]).filter(p=>kw||p.replace(/\D/g,'').length>5);
+    if(!ps.length)ps=f.replace(/(\d) (?=\d)/g,'$1').match(MOB)||[];
     return ps.map(normPhone).filter(Boolean);
   });
   const lastI=per.reduce((a,p,i)=>p.length?i:a,-1);
@@ -742,13 +757,13 @@ function parseReceipt(text){
   const card=S.cards.find(c=>l4.has(c.last4))||null;
   const cash=!card&&/(cash|كاش|نقد)/i.test(T);
   const phones=phonesOf(lines);
-  const ADR=/(شارع|ش\.|عمار|برج|بجوار|امام|أمام|خلف|ميدان|طريق|مدينه|مدينة|الدور|مول|street|st\.|road|mall)/i;
+  const ADR=/(شارع|ش\.|عمار|برج|بجوار|امام|أمام|خلف|ميدان|طريق|مدينه|مدينة|الدور|مول|شطر|street|st\.|road|mall)/i;
   const al=lines.find(l=>ADR.test(l)&&!VEND.test(l));
   let address='';
   if(al)address=fixAddr(al.replace(/(?:\+?20|0020)?0?1[0125]\d{8}/g,'').replace(/\s+/g,' ').trim().replace(/^(?:[^\s\d]\s+)+/,'').replace(/(?:\s+[^\s\d])+$/,'')).slice(0,90);
   const deliv=/(delivery|دليفري|ديليفري|توصيل)/i.test(T);
   const rest=/(restaurant|cafe|café|مطعم|كافيه|كافيتريا|مشويات|بيتزا|pizza|burger|برجر)/i.test(T);
-  return{total,TC,rep,date,time,no,merchant:pickMerchant(cands),names:[],cands,match:null,card,cash,phones,address,deliv,rest};
+  return{total,TC,rep,date,time,no,merchant:pickMerchant(cands),names:[],cands,match:null,matchBy:'',phMatch:false,card,cash,phones,address,deliv,rest};
 }
 function mergeRc(a,b){
   const sc=r=>(r.TC.length?3:0)+(r.merchant?2:0)+(r.time?1:0)+(r.date?1:0)+Math.min(2,r.phones.length);
@@ -770,29 +785,37 @@ function dHash(c){
   return s;
 }
 function hamm(a,b){if(!a||!b||a.length!==b.length)return 99;let n=0;for(let i=0;i<a.length;i+=2){let v=parseInt(a.substr(i,2),16)^parseInt(b.substr(i,2),16);while(v){n+=v&1;v>>=1}}return n}
-const EMPTYRC=()=>({total:0,TC:[],rep:0,date:null,time:'',no:'',merchant:'',names:[],cands:[],match:null,card:null,cash:false,phones:[],address:'',deliv:false,rest:false,ph:'',raw:''});
+const EMPTYRC=()=>({total:0,TC:[],rep:0,date:null,time:'',no:'',merchant:'',names:[],cands:[],match:null,matchBy:'',phMatch:false,card:null,cash:false,phones:[],address:'',deliv:false,rest:false,ph:'',raw:''});
 function scanReceipt(){
   openScanner({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',maxW:1800,
     read:async(c,onP)=>{
       try{
-        const ph=dHash(c),base=cloneCanvas(c),head=cropTop(c,.5);prepCanvas(c);
+        const ph=dHash(c),base=cloneCanvas(c),head=cropTop(c,.5),hb=cropTop(c,.35);prepCanvas(c);
         const P={tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'};
-        const t1=await ocr('ara+eng',c,P,p=>onP(p*.45));
+        const t1=await ocr('ara+eng',c,P,p=>onP(p*.4));
         prepCanvas(head);
-        const tH=await ocr('ara+eng',head,P,p=>onP(.45+p*.15));
-        let r=parseReceipt(t1);const texts=[t1,tH];
+        const tH=await ocr('ara+eng',head,P,p=>onP(.4+p*.12));
+        /* قراءة زيادة للجزء اللي فوق بعد مسح الخلفية المنقطة */
+        prepCanvas(hb,{bin:true,soft:true});
+        const tB=await ocr('ara+eng',hb,P,p=>onP(.52+p*.12));
+        let r=parseReceipt(t1);
+        const texts=[t1,tH,tB],lbl=['── الريسيت كله ──','── الجزء اللي فوق ──','── اسم المحل بعد تنضيف الخلفية ──'];
         if(r.rep<2){
           prepCanvas(base,{bin:true});
-          const t2=await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.6+p*.4));
-          texts.push(t2);r=mergeRc(r,parseReceipt(t2));
+          const t2=await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.64+p*.36));
+          texts.push(t2);lbl.push('── قراءة تانية ──');r=mergeRc(r,parseReceipt(t2));
         }
-        const hl=splitLines(tH),rh=parseReceipt(tH);
+        const rh=parseReceipt(tH);
         r.phones=mergePh(r.phones,rh.phones);if(!r.address)r.address=rh.address;
-        r.names=rankMerchants(r.cands.concat(merchantCands(hl).map(x=>({...x,sc:x.sc+8}))));
+        const hc=merchantCands(splitLines(tH)).concat(merchantCands(splitLines(tB))).map(x=>({...x,sc:x.sc+8}));
+        r.names=rankMerchants(r.cands.concat(hc));
         r.merchant=r.names[0]||'';
-        r.match=knownStore(texts.flatMap(t=>splitLines(t).slice(0,12)));
+        /* لو رقم التليفون متسجل لمحل قبل كده، يبقى هو المحل */
+        const byPh=r.phones.length?findPhone(r.phones):null,bc=byPh&&byPh.c.catId?C(byPh.c.catId):null;
+        if(bc&&bc.kind==='exp'){r.match=bc;r.matchBy='';r.phMatch=true}
+        else{const ks=knownStore(texts.flatMap(t=>splitLines(t).slice(0,12)));if(ks){r.match=ks.c;r.matchBy=ks.n}}
         r.ph=ph;
-        r.raw=texts.map((t,i)=>['── الريسيت كله ──','── الجزء اللي فوق ──','── قراءة تانية ──'][i]+'\n'+t.trim()).join('\n\n');
+        r.raw=texts.map((t,i)=>lbl[i]+'\n'+t.trim()).join('\n\n');
         return r;
       }catch(e){const m=String((e&&e.message)||e);return{...EMPTYRC(),err:m,raw:'⚠️ '+m}}
     },
@@ -807,7 +830,7 @@ function askStore(rc){
   NMO=o.slice(0,4);const star=!!rc.match;
   return new Promise(res=>{
     sheet(`<h2>🧾 اسم المكان؟</h2>
-    ${NMO.length?`<p class="muted">دوس على الاسم الصح</p><div class="list">${NMO.map((s,i)=>`<div class="row" onclick="nmPick(${i})"><span class="ic" style="background:var(--soft)">${star&&!i?'⭐':'🏪'}</span><div class="grow"><b>${esc(s)}</b>${star&&!i?'<small>متسجل عندك قبل كده</small>':''}</div></div>`).join('')}</div>`:''}
+    ${NMO.length?`<p class="muted">دوس على الاسم الصح</p><div class="list">${NMO.map((s,i)=>`<div class="row" onclick="nmPick(${i})"><span class="ic" style="background:var(--soft)">${star&&!i?'⭐':'🏪'}</span><div class="grow"><b>${esc(s)}</b>${star&&!i?`<small>${rc.phMatch?'عرفته من رقم التليفون':'متسجل عندك قبل كده'}</small>`:''}</div></div>`).join('')}</div>`:''}
     <label>${NMO.length?'مش موجود؟ اكتب الاسم':'اكتب اسم المكان'}<input id="nm-in" list="nm-dl" autocomplete="off" onkeydown="if(event.key==='Enter')nmPick(-1)"></label>
     <datalist id="nm-dl">${storeCats().map(c=>`<option value="${esc(c.name)}"></option>`).join('')}</datalist>
     <button class="btn" onclick="nmPick(-1)">تمام</button>
@@ -820,13 +843,22 @@ function nmPick(i){
   if(!v)return toast('اكتب الاسم');
   const r=NMR;NMR=null;closeSheet();if(r)r({name:v});
 }
-/* بيحفظ القراءة الغلط كاسم بديل، بس لو طويلة ومش بتاعة محل تاني */
+/* بيحفظ القراءة الغلط كاسم بديل، بس لو شبه اسم المحل ومش سطر عام */
 function learnAlias(cat,rc){
   const top=(rc.names||[])[0];if(!top)return;
-  const k=normAr(top);
-  if(k.replace(/\s+/g,'').length<6||k===normAr(cat.name))return;
+  const k=normAr(top),kk=k.replace(/\s+/g,'');
+  if(kk.length<6||k===normAr(cat.name)||sim(top,cat.name)<.3)return;
+  if((S.settings.genA||[]).includes(k))return;
   if(S.cats.some(c=>c.id!==cat.id&&[c.name,...(c.alias||[])].some(n=>normAr(n)===k)))return;
+  const m=ocrAll();if(S.buys.some(b=>b.catId!==cat.id&&m[b.id]&&normAr(m[b.id]).replace(/\s+/g,'').includes(kk)))return;
   cat.alias=[...new Set([...(cat.alias||[]),top])].slice(-8);
+}
+/* لو اقترح محل غلط واخترت غيره، بيمسح الاسم البديل اللي لخبطه */
+function unlearn(c,n){
+  if(!c||!n||normAr(n)===normAr(c.name))return;
+  const k=normAr(n);
+  c.alias=(c.alias||[]).filter(a=>normAr(a)!==k);
+  S.settings.genA=[...new Set([...(S.settings.genA||[]),k])].slice(-50);
 }
 
 /* الريسيت المكرر */
@@ -854,6 +886,7 @@ async function receiptFlow(rc,fid){
   if(!pick)return toast('اتلغى');
   const n=pick.name;
   const cat=(rc.match&&normAr(rc.match.name)===normAr(n))?rc.match:(S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(n))||ensureCat(n,'exp'));
+  if(rc.match&&rc.match.id!==cat.id)unlearn(rc.match,rc.matchBy);
   learnAlias(cat,rc);cat.active=true;
   const card=rc.card,cashM=S.methods.find(m=>m.active&&m.type==='cash');
   let method,via,payTxt;
@@ -902,7 +935,7 @@ async function finishReceipt(x){
   contactFromReceipt(rc,cat);
   banner('🧾',`اتسجّل ${fmt(a)}`,cat.name,()=>buySheet(b.id),'ok');
 }
-/* بيسجّل الأرقام الجديدة بس، ولو المحل موجود بيضيفله الأرقام الناقصة */
+/* بيسجّل الأرقام الجديدة، وبيقولك برسالة واضحة إيه اللي حصل */
 function contactFromReceipt(rc,cat){
   const vs=new Set(S.settings.vph||[]),phones=(rc.phones||[]).filter(p=>!vs.has(p));
   const mine=S.contacts.find(c=>c.catId===cat.id)||S.contacts.find(c=>normAr(c.name)===normAr(cat.name));
@@ -913,23 +946,36 @@ function contactFromReceipt(rc,cat){
     /* نفس الرقم في ريسيت محل تاني خالص = غالباً رقم شركة البرنامج */
     if(f.c.catId&&f.c.catId!==cat.id&&sim(f.c.name,cat.name)<.35)S.settings.vph=[...vs.add(p)];
   });
-  let msg='';
   if(mine){
     const add=fresh.filter(p=>!(mine.phones||[]).includes(p));
     mine.phones=[...(mine.phones||[]),...add];
     if(!mine.address&&rc.address)mine.address=rc.address;
     if(!mine.catId)mine.catId=cat.id;
-    if(add.length)msg=`📇 اتضاف ${add.length} رقم لـ ${mine.name}`;
-  }else if(fresh.length){
+    save();
+    if(add.length)setTimeout(()=>say('اتضاف رقم جديد في Contacts ✓',`${mine.name}\n${add.join('\n')}`,'📇'),700);
+    else if(!(mine.phones||[]).length)setTimeout(()=>askAddPhone(cat,rc,mine.id),700);
+    return;
+  }
+  if(fresh.length){
     S.contacts.push({id:uid(),name:cat.name,kind:rc.rest?'rest':'shop',spec:'',phones:fresh,address:rc.address||'',loc:'',catId:cat.id,at:Date.now()});
-    msg=`📇 اتسجّل ${cat.name} في Contacts`;
-  }else msg=(rc.phones||[]).length?'📇 الأرقام اللي في الريسيت متسجلة لمحل تاني':'📇 ملقتش رقم تليفون في الريسيت';
-  save();if(msg)setTimeout(()=>toast(msg),1200);
+    save();
+    setTimeout(()=>say('تم تسجيل المحل في Contacts ✓',`${cat.name}\n${fresh.join('\n')}${rc.address?'\n📍 '+rc.address:''}`,'📇'),700);
+    return;
+  }
+  save();setTimeout(()=>askAddPhone(cat,rc,null),700);
+}
+/* لو ملقاش رقم، بيسألك تضيفه بإيدك (مرة واحدة لكل محل) */
+async function askAddPhone(cat,rc,id){
+  const np=S.settings.noPh||[];if(np.includes(cat.id))return;
+  const t=(rc.phones||[]).length?'الأرقام اللي في الريسيت متسجلة لمحل تاني':'ملقتش رقم المحل في الريسيت';
+  if(!await ask(t,`تحب تضيف رقم ${cat.name} في Contacts بإيدك؟`,{icon:'📇',ok:'➕ ضيف الرقم',cancel:'لأ'})){S.settings.noPh=[...np,cat.id];save();return}
+  if(id)ctForm(id);else ctForm(null,{name:cat.name,catId:cat.id,address:rc.address||'',kind:rc.rest?'rest':'shop'});
 }
 /* النص اللي اتقرا من الريسيت (عشان نراجعه لو حاجة طلعت غلط) */
 const OKEY='centric-ocr';
-function ocrSave(id,t){try{const m=JSON.parse(localStorage.getItem(OKEY)||'{}');m[id]=String(t).slice(0,6000);const ks=Object.keys(m);while(ks.length>20)delete m[ks.shift()];localStorage.setItem(OKEY,JSON.stringify(m))}catch(e){}}
-const ocrGet=id=>{try{return JSON.parse(localStorage.getItem(OKEY)||'{}')[id]||''}catch(e){return ''}};
+const ocrAll=()=>{try{return JSON.parse(localStorage.getItem(OKEY)||'{}')}catch(e){return{}}};
+function ocrSave(id,t){try{const m=ocrAll();m[id]=String(t).slice(0,8000);const ks=Object.keys(m);while(ks.length>20)delete m[ks.shift()];localStorage.setItem(OKEY,JSON.stringify(m))}catch(e){}}
+const ocrGet=id=>ocrAll()[id]||'';
 function ocrCopy(id){const t=ocrGet(id);if(!navigator.clipboard)return toast('مش قادر أنسخ');navigator.clipboard.writeText(t).then(()=>toast('اتنسخ ✓')).catch(()=>toast('مش قادر أنسخ'))}
 
 /* ========== Contacts ========== */
@@ -1321,21 +1367,22 @@ try{const _l=showLock;showLock=function(){draftSave();LOCKING=true;const r=_l.ap
 const waIc=fb=>`<i class="wai"></i><span class="wat">${fb}</span>`;
 (()=>{
   const s=document.createElement('style');
-  s.textContent=`.wai{display:none;width:20px;height:20px;flex:0 0 20px;background:url(wa.png) center/contain no-repeat;vertical-align:middle}
-body.wa-ok .wai{display:inline-block}body.wa-ok .wat{display:none}
+  s.textContent=`.wai{display:none;width:20px;height:20px;flex:0 0 20px;background-position:center;background-size:contain;background-repeat:no-repeat;vertical-align:middle}
 .cbt .wai{width:22px;height:22px}.btn .wai,.mini .wai{margin-inline-end:4px}
 a.btn.wab{display:flex;align-items:center;justify-content:center;gap:6px}`;
   document.head.appendChild(s);
-  /* لو ملف wa.png موجود يظهر، ولو مش موجود يظهر 💬 */
-  const im=new Image();im.onload=()=>document.body.classList.add('wa-ok');im.src='wa.png';
+  /* بيدوّر على ملف اللوجو، وأول ما يلاقيه يظهر بداله 💬 */
+  const on=u=>{const t=document.createElement('style');t.textContent=`.wai{display:inline-block!important;background-image:url("${u}")!important}.wat{display:none!important}`;document.head.appendChild(t)};
+  const tryU=l=>{if(!l.length)return;const im=new Image();im.onload=()=>on(im.src);im.onerror=()=>tryU(l.slice(1));im.src=l[0]};
+  tryU(['wa.png','wa.svg','WA.png','wa.PNG','wa.jpg','whatsapp.png']);
   /* أي زرار إرسال (كروت، مستندات، تقارير، ريسيت) يظهر جنبه لوجو واتساب */
   const deco=()=>document.querySelectorAll('button[onclick*="shareFiles("],button[onclick*="shareReport("]').forEach(b=>{if(b.dataset.wa)return;b.dataset.wa='1';if(b.innerHTML.includes('📤'))b.innerHTML=b.innerHTML.replace('📤',waIc('📤'))});
   let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;deco()})}).observe(document.body,{childList:true,subtree:true});deco();
 })();
 /* لو قفلت شاشة "اسم المكان" من برّه */
 try{const _c3=closeSheet;closeSheet=function(){const r=_c3.apply(this,arguments);if(NMR){const f=NMR;NMR=null;f(null)}return r}}catch(e){}
-/* تنضيف الأسماء البديلة القصيرة اللي كانت بتلخبط اسم المحل */
-S.cats.forEach(c=>{if(c.alias)c.alias=c.alias.filter(a=>normAr(a).replace(/\s+/g,'').length>=6)});
+/* تنضيف الأسماء البديلة الغلط اللي كانت بتلخبط اسم المحل */
+S.cats.forEach(c=>{if(c.alias)c.alias=c.alias.filter(a=>normAr(a).replace(/\s+/g,'').length>=6&&sim(a,c.name)>=.3&&!SKIPM.test(a))});
 
 /* ========== تشغيل ========== */
 S.contacts.forEach(c=>{if(c.note)c.note=''});
