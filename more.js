@@ -1,7 +1,10 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.10.3',VBUILD='13/10/2026 - 02:25 م';
+const VER='2.11.0',VBUILD='13/10/2026 - 02:40 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
+/* المرفقات: كاميرا + الصور + ملف في كل مكان */
+try{filesBox=function(ids,ctx){return `<div class="files">${(ids||[]).map(id=>fileThumb(id,ctx)).join('')}<button type="button" class="fadd" onclick="attach('${ctx}',true)">📷<small>كاميرا</small></button><button type="button" class="fadd" onclick="attachGal('${ctx}')">🖼️<small>الصور</small></button><button type="button" class="fadd" onclick="attach('${ctx}',false)">📎<small>ملف</small></button></div>`}}catch(e){}
+function attachGal(ctx){pickAny('image/*',ids=>{if(ids.length&&ATT[ctx]&&ATT[ctx].add)ATT[ctx].add(ids)})}
 (()=>{const s=document.createElement('style');s.textContent=`#scan .frz{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:none}
 #scan .frz[style*="block"]~.sframe{display:none}
 #scan .sframe:not(.card){top:8%!important;bottom:15%!important;left:3%!important;right:3%!important;width:auto!important;height:auto!important;transform:none!important;margin:0!important}
@@ -276,11 +279,11 @@ function exportCSV(){
 }
 
 /* ========== الإعدادات ========== */
-const SETS=[['name','✏️','اسم التطبيق'],['theme','🎨','الثيم'],['font','🔠','الخط وحجمه'],['home','🏠','الشاشة الرئيسية'],['labels','🔤','المسميات'],['notif','🔔','الإشعارات والصوت'],['sec','🔒','الأمان والخصوصية'],['drive','☁️','نسخ تلقائي على Drive'],['data','💾','النسخ الاحتياطي'],['demo','🧪','نسخة تجريبية'],['about','ℹ️','عن التطبيق']];
+const SETS=[['name','✏️','اسم التطبيق'],['theme','🎨','الثيم'],['font','🔠','الخط وحجمه'],['home','🏠','الشاشة الرئيسية'],['labels','🔤','المسميات'],['notif','🔔','الإشعارات والصوت'],['sec','🔒','الأمان والخصوصية'],['ocr','🔎','قراءة الريسيت'],['drive','☁️','نسخ تلقائي على Drive'],['data','💾','النسخ الاحتياطي'],['demo','🧪','نسخة تجريبية'],['about','ℹ️','عن التطبيق']];
 function vSettings(){
   const sp=SETS.find(x=>x[0]===stab);
   if(!sp)return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>⚙️ ${esc(L('settings'))}</h3></div><div class="rgrid">${SETS.map(([k,ic,l])=>`<button class="rbtn" onclick="stab='${k}';render();scrollTo(0,0)"><span>${ic}</span>${l}</button>`).join('')}</div>`;
-  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>${sp[1]} ${sp[2]}</h3></div>`+({name:spName,theme:spTheme,font:spFont,home:spHome,labels:spLabels,notif:spNotif,sec:spSec,drive:spDrive,data:spData,demo:spDemo,about:spAbout})[stab]();
+  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>${sp[1]} ${sp[2]}</h3></div>`+({name:spName,theme:spTheme,font:spFont,home:spHome,labels:spLabels,notif:spNotif,sec:spSec,ocr:spOcr,drive:spDrive,data:spData,demo:spDemo,about:spAbout})[stab]();
 }
 const spName=()=>`<div class="box"><label>اسم التطبيق<input id="s-name" value="${esc(appName())}"></label><button class="btn" onclick="setName()">حفظ</button></div>`;
 const spTheme=()=>`<div class="themes">${Object.entries(THEMES).map(([k,t])=>`<button class="th ${(S.settings.theme||'teal')===k?'on':''}" style="--c:${t.p}" onclick="setTheme('${k}')"><i></i>${t.n}</button>`).join('')}</div>`;
@@ -330,6 +333,30 @@ function spSec(){
     <button class="btn ghost" onclick="showLock()">🔒 اقفل دلوقتي</button>`;
   }
   return h;
+}
+/* قراءة الريسيت: مفتاح Google Vision (بيتحفظ على الموبايل ده بس، مش في النسخة الاحتياطية) */
+function spOcr(){
+  const k=vKey();
+  return `${k?`<div class="ncard ok" style="cursor:default"><div class="nic">🔎</div><div class="grow"><b>Google Vision شغال ✓</b><small>الريسيتات بتتقري من جوجل. لو حصلت مشكلة، بيرجع للطريقة العادية لوحده.</small></div></div>`
+    :`<div class="ncard soon" style="cursor:default"><div class="nic">🔎</div><div class="grow"><b>القراءة دلوقتي بالطريقة العادية</b><small>حط مفتاح Google Vision عشان القراءة تبقى أدق بكتير.</small></div></div>`}
+  <label>Google Vision API Key<input id="v-key" dir="ltr" value="${esc(k)}" placeholder="AIza..."></label>
+  <button class="btn" onclick="vSave()">حفظ</button>
+  ${k?`<button class="btn ghost" onclick="vTest()">🧪 جرّب المفتاح</button><button class="btn ghost danger" onclick="vDel()">شيل المفتاح</button>`:''}
+  <details class="gen" style="margin-top:12px"><summary>📖 إزاي أجيب المفتاح</summary><ol>
+  <li>افتح <b dir="ltr">console.cloud.google.com</b> واختار <b>نفس المشروع</b> بتاع Drive.</li>
+  <li><b>Billing</b> ← اربط حساب فوترة (كارت). أول 1000 صورة في الشهر مجاناً.</li>
+  <li><b>APIs &amp; Services ← Library</b> ← <b dir="ltr">Cloud Vision API</b> ← <b>Enable</b>.</li>
+  <li><b>Credentials ← Create Credentials ← API key</b>.</li>
+  <li>افتح المفتاح الجديد:<br>• <b>Application restrictions</b> ← <b>Websites</b> ← ضيف <b dir="ltr">https://ahmed-fawzydl.github.io/*</b><br>• <b>API restrictions</b> ← <b>Restrict key</b> ← اختار <b dir="ltr">Cloud Vision API</b> بس<br>• <b>Save</b></li>
+  <li>انسخ المفتاح، حطه هنا، دوس <b>حفظ</b>، وبعدين <b>🧪 جرّب المفتاح</b>.</li></ol></details>`;
+}
+function vSave(){const v=($('#v-key').value||'').trim();if(v)localStorage.setItem(VKEY,v);else localStorage.removeItem(VKEY);render();toast('اتحفظ ✓')}
+async function vDel(){if(!await ask('شيل مفتاح Google Vision؟','القراءة هترجع للطريقة العادية',{icon:'🔎',ok:'شيله'}))return;localStorage.removeItem(VKEY);render()}
+async function vTest(){
+  const c=document.createElement('canvas');c.width=520;c.height=140;const x=c.getContext('2d');
+  x.fillStyle='#fff';x.fillRect(0,0,520,140);x.fillStyle='#000';x.font='bold 54px sans-serif';x.fillText('Centric 2026',30,90);
+  try{toast('⏳ بيجرّب...');const t=await visionText(c);say(t&&t.trim()?'المفتاح شغال ✓':'المفتاح رد بس مقراش حاجة',t?'جوجل قرا: '+t.trim():'','🔎')}
+  catch(e){say('المفتاح مش شغال',String((e&&e.message)||e),'⚠️')}
 }
 function spData(){
   const lb=localStorage.getItem(BKEY);
@@ -504,6 +531,25 @@ document.addEventListener('pointerdown',()=>{
 },true);
 
 /* ========== القراءة (OCR) ========== */
+/* Google Vision: لو فيه مفتاح، الريسيت بيتقري من جوجل */
+const VKEY='centric-vkey';
+const vKey=()=>localStorage.getItem(VKEY)||'';
+async function visionText(c){
+  const k=vKey();if(!k)return null;
+  const sc=Math.min(1,2000/Math.max(c.width,c.height));let src=c;
+  if(sc<1){src=document.createElement('canvas');src.width=Math.round(c.width*sc);src.height=Math.round(c.height*sc);src.getContext('2d').drawImage(c,0,0,src.width,src.height)}
+  const b64=src.toDataURL('image/jpeg',.88).split(',')[1];
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),25000);
+  try{
+    const r=await fetch('https://vision.googleapis.com/v1/images:annotate?key='+encodeURIComponent(k),{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,
+      body:JSON.stringify({requests:[{image:{content:b64},features:[{type:'DOCUMENT_TEXT_DETECTION'}],imageContext:{languageHints:['ar','en']}}]})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||j.error)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
+    const x=j.responses&&j.responses[0];if(x&&x.error)throw new Error(x.error.message);
+    return (x&&((x.fullTextAnnotation&&x.fullTextAnnotation.text)||(x.textAnnotations&&x.textAnnotations[0]&&x.textAnnotations[0].description)))||'';
+  }catch(e){if(e&&e.name==='AbortError')throw new Error('جوجل اتأخر في الرد');throw e}
+  finally{clearTimeout(tm)}
+}
 const OCRW={};let OCRP=null;
 function getOcr(lang){
   if(!OCRW[lang])OCRW[lang]=(async()=>{await loadJS(TESS);return await Tesseract.createWorker(lang,1,{logger:m=>{if(m.status==='recognizing text'&&OCRP)OCRP(m.progress)}})})().catch(e=>{delete OCRW[lang];throw e});
@@ -558,7 +604,7 @@ async function openScanner(o){
   const stopCam=()=>{try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null};
   const close=()=>{if(!alive)return;alive=false;SCAN=null;stopCam();ov.remove();if(o.onCancel&&!taken)o.onCancel()};
   SCAN={close};btn('x').onclick=close;
-  if(o.read)getOcr(o.lang||'ara+eng').catch(()=>{});
+  if(o.read&&!vKey())getOcr(o.lang||'ara+eng').catch(()=>{});
   const grabFrame=()=>{
     const vw=v.videoWidth,vh=v.videoHeight,r=v.getBoundingClientRect(),f=fr.getBoundingClientRect();
     const sc=Math.max(r.width/vw,r.height/vh),ox=(r.width-vw*sc)/2,oy=(r.height-vh*sc)/2;
@@ -610,13 +656,13 @@ function snapPhoto(o,cb){
   openScanner({title:o.title,hint:o.hint,card:!!o.card,onCancel:o.onCancel,
     onDone:async blob=>{const ids=await addFiles([new File([blob],(o.name||'photo')+'-'+today()+'.jpg',{type:'image/jpeg'})]);cb(ids[0])}});
 }
-/* اختيار صور أو ملفات من الموبايل */
-function pickFiles(accept,cb){
+/* اختيار صور أو ملفات من الموبايل (اسمها pickAny عشان متتعارضش مع pickFiles اللي في app.js) */
+function pickAny(accept,cb){
   const i=document.createElement('input');i.type='file';i.accept=accept;i.multiple=true;i.style.display='none';document.body.appendChild(i);
   i.onchange=async()=>{const fs=[...i.files];i.remove();if(!fs.length)return;const ids=await addFiles(fs);cb(ids)};
   i.click();
 }
-const pickGallery=cb=>pickFiles('image/*',cb);
+const pickGallery=cb=>pickAny('image/*',cb);
 const photosBox=(files,rm)=>(files||[]).length?`<div class="files">${files.map((f,i)=>`<div class="phw">${fileThumb(f,'view')}<button type="button" class="mini danger phx" onclick="${rm}(${i})">✕</button></div>`).join('')}</div>`:'';
 const photoBtns=(snap,gal,files,share)=>`<div class="${files.length?'three':'two'}"><button type="button" class="btn ghost" onclick="${snap}()">📷 صوّر</button><button type="button" class="btn ghost" onclick="${gal}()">🖼️ من الصور</button>${files.length?`<button type="button" class="btn ghost" onclick="${share}">📤 إرسال</button>`:''}</div>`;
 
@@ -646,8 +692,7 @@ const ADRW=/(شارع|ش\.|عمار[ةه]|بجوار|امام|أمام|خلف|م
 const ADDR=/(شارع|ش\.|عمار|برج|بجوار|امام|أمام|خلف|ميدان|طريق|مدينه|مدينة|الدور|مول|شطر|street|st\.|road|mall)/i;
 const VEND=/(برم|الحلول|حلول|متطور|powered|software|developed|تصميم|نظام|system)/i;
 const isAr=t=>/[\u0621-\u064A]/.test(t);
-/* المرشحين لاسم المحل:
-   السطور الملخبطة (زي الشعار) بتتجاهل ومبتتحسبش، فالاسم ميضيعش لو تحت شعار كبير */
+/* المرشحين لاسم المحل: السطور الملخبطة (زي الشعار) بتتجاهل ومبتتحسبش */
 function merchantCands(lines){
   const out=[];
   for(const ln of lines.slice(0,40)){
@@ -674,12 +719,12 @@ function rankMerchants(cs){
   return cl.sort((a,b)=>b.v-a.v).map(g=>g.top.s);
 }
 const pickMerchant=cs=>rankMerchants(cs)[0]||'';
-/* المحلات اللي اشتريت منها قبل كده بس (مش كل بنود المصروفات، عشان "سمك" في الأصناف ميتحسبش محل) */
+/* المحلات اللي اشتريت منها قبل كده بس */
 function storeCats(){
   const ids=new Set();S.buys.forEach(b=>b.catId&&ids.add(b.catId));S.contacts.forEach(c=>c.catId&&ids.add(c.catId));
   return S.cats.filter(c=>c.kind==='exp'&&(ids.has(c.id)||(c.alias||[]).length));
 }
-/* بيدور على محل معروف في الريسيت كله (زي امبارح)، وبيرجّع الاسم اللي لقاه بيه */
+/* بيدور على محل معروف في الريسيت كله، وبيرجّع الاسم اللي لقاه بيه */
 function knownStore(lines){
   const known=[];
   storeCats().forEach(c=>[c.name,...(c.alias||[])].forEach(n=>{const k=normAr(n).replace(/\s+/g,'');if(k.length>=4)known.push({n,k,c})}));
@@ -698,6 +743,15 @@ function knownStore(lines){
     }
   }
   return bs>=.62&&best?{c:best.c,n:best.n}:null;
+}
+/* بيحدد اسم المحل: من رقم التليفون الأول، وبعدين من الأسماء المعروفة */
+function lookStore(r,lines,extra){
+  r.names=rankMerchants(r.cands.concat(extra||[]));r.merchant=r.names[0]||'';
+  r.match=null;r.matchBy='';r.phMatch=false;
+  const byPh=r.phones.length?findPhone(r.phones):null,bc=byPh&&byPh.c.catId?C(byPh.c.catId):null;
+  if(bc&&bc.kind==='exp'){r.match=bc;r.phMatch=true;return r}
+  const ks=knownStore(lines);if(ks){r.match=ks.c;r.matchBy=ks.n}
+  return r;
 }
 function fixAddr(s){
   let w=s.split(/\s+/).filter(Boolean);
@@ -718,7 +772,6 @@ function phonesOf(lines){
     if(VEND.test(l)||NOPH.test(l))return[];
     const kw=PHK.test(l);
     let f=digFix(l);
-    /* الصفر العربي (٠) صغير وبيتقرا نقطة: في سطر التليفون النقطة اللي قبل رقم = صفر */
     if(kw)f=f.replace(/(?<=[\d\s:\-]|^)[.·•](?=\d)/g,'0');
     let ps=(f.match(PH)||[]).filter(p=>kw||p.replace(/\D/g,'').length>5);
     if(!ps.length)ps=f.replace(/(\d) (?=\d)/g,'$1').match(MOB)||[];
@@ -791,14 +844,25 @@ function dHash(c){
   return s;
 }
 function hamm(a,b){if(!a||!b||a.length!==b.length)return 99;let n=0;for(let i=0;i<a.length;i+=2){let v=parseInt(a.substr(i,2),16)^parseInt(b.substr(i,2),16);while(v){n+=v&1;v>>=1}}return n}
-const EMPTYRC=()=>({total:0,TC:[],rep:0,date:null,time:'',no:'',merchant:'',names:[],cands:[],match:null,matchBy:'',phMatch:false,phForced:false,card:null,cash:false,phones:[],address:'',deliv:false,rest:false,ph:'',raw:''});
-/* القراءة: الريسيت كله + الجزء اللي فوق، وقراءة تانية لو الإجمالي مش واضح.
-   ولو ملقاش أي اسم خالص: قراءة كمان بالتقسيم التلقائي للصفحة (أحسن مع الشعارات والخلفيات) */
+const EMPTYRC=()=>({total:0,TC:[],rep:0,date:null,time:'',no:'',merchant:'',names:[],cands:[],match:null,matchBy:'',phMatch:false,phForced:false,card:null,cash:false,phones:[],address:'',deliv:false,rest:false,ph:'',raw:'',verr:''});
+/* القراءة: Google Vision لو فيه مفتاح، ولو مفيش أو فشل: الطريقة العادية */
 function scanReceipt(){
   openScanner({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',maxW:1800,
     read:async(c,onP)=>{
+      const ph=dHash(c);let verr='';
+      if(vKey()){
+        try{
+          onP(.3);
+          const tv=await visionText(c);
+          if(tv&&tv.replace(/\s+/g,'').length>10){
+            const r=lookStore(parseReceipt(tv),splitLines(tv));
+            r.ph=ph;r.raw='── Google Vision ──\n'+tv.trim();return r;
+          }
+          verr='جوجل مرجعش كلام من الصورة';
+        }catch(e){verr=String((e&&e.message)||e)}
+      }
       try{
-        const ph=dHash(c),orig=cloneCanvas(c),base=cloneCanvas(c),head=cropTop(c,.5);prepCanvas(c);
+        const orig=cloneCanvas(c),base=cloneCanvas(c),head=cropTop(c,.5);prepCanvas(c);
         const P={tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'};
         const t1=await ocr('ara+eng',c,P,p=>onP(p*.4));
         prepCanvas(head);
@@ -813,30 +877,22 @@ function scanReceipt(){
         const rh=parseReceipt(tH);
         r.phones=mergePh(r.phones,rh.phones);if(!r.address)r.address=rh.address;
         const extra=merchantCands(splitLines(tH)).map(x=>({...x,sc:x.sc+8}));
-        const look=()=>{
-          r.names=rankMerchants(r.cands.concat(extra));r.merchant=r.names[0]||'';
-          r.match=null;r.matchBy='';r.phMatch=false;
-          /* لو رقم التليفون متسجل لمحل قبل كده، يبقى هو المحل */
-          const byPh=r.phones.length?findPhone(r.phones):null,bc=byPh&&byPh.c.catId?C(byPh.c.catId):null;
-          if(bc&&bc.kind==='exp'){r.match=bc;r.phMatch=true;return}
-          const ks=knownStore(texts.flatMap(t=>splitLines(t)));if(ks){r.match=ks.c;r.matchBy=ks.n}
-        };
-        look();
+        lookStore(r,texts.flatMap(t=>splitLines(t)),extra);
         if(!r.names.length&&!r.match){
           prepCanvas(orig);
           const t3=await ocr('ara+eng',orig,{tessedit_pageseg_mode:'3',preserve_interword_spaces:'1'},p=>onP(.75+p*.25));
-          texts.push(t3);lbl.push('── قراءة تلقائية ──');r=mergeRc(r,parseReceipt(t3));look();
+          texts.push(t3);lbl.push('── قراءة تلقائية ──');r=mergeRc(r,parseReceipt(t3));
+          lookStore(r,texts.flatMap(t=>splitLines(t)),extra);
         }
-        r.ph=ph;
+        r.ph=ph;r.verr=verr;
         r.raw=texts.map((t,i)=>lbl[i]+'\n'+String(t||'').trim()).join('\n\n');
         return r;
-      }catch(e){const m=String((e&&e.message)||e);return{...EMPTYRC(),err:m,raw:'⚠️ '+m}}
+      }catch(e){const m=String((e&&e.message)||e);return{...EMPTYRC(),err:m,raw:'⚠️ '+m,verr}}
     },
     onDone:async(blob,rc)=>{const ids=await addFiles([new File([blob],'receipt-'+today()+'.jpg',{type:'image/jpeg'})]);receiptFlow(rc,ids[0])}});
 }
 
-/* اختيار اسم المكان: كذا اختيار تدوس عليه، أو تكتب
-   و"🔍 اللي البرنامج قراه" تحت العنوان على طول */
+/* اختيار اسم المكان: كذا اختيار تدوس عليه، أو تكتب، و"🔍 اللي البرنامج قراه" تحت العنوان */
 let NMR=null,NMO=[];
 function askStore(rc){
   const o=[],add=s=>{s=(s||'').trim();if(s&&!o.some(x=>normAr(x)===normAr(s)))o.push(s)};
@@ -899,6 +955,7 @@ function findDup(cat,a,date,rc){
 async function receiptFlow(rc,fid){
   rc=Object.assign(EMPTYRC(),rc||{});
   if(rc.err)toast('⚠️ القراءة ما نجحتش، كمّل يدوي');
+  else if(rc.verr)toast('⚠️ Google Vision: '+rc.verr+' · اتقرا بالطريقة العادية');
   const pick=await askStore(rc);
   if(!pick)return toast('اتلغى');
   const n=pick.name;
@@ -1280,7 +1337,7 @@ function dfGrab(){if(!$('#d1'))return;DOCF.name=$('#d1').value;DOCF.note=$('#d2'
 function dfRm(i){dfGrab();DOCF.files.splice(i,1);dfSheet()}
 function dfSnap(){dfGrab();snapPhoto({title:'صوّر المستند',hint:'📄 حط الورقة كلها جوه الإطار وثبّت',name:'doc',onCancel:dfSheet},fid=>{DOCF.files.push(fid);dfSheet()})}
 function dfGal(){dfGrab();pickGallery(ids=>{DOCF.files.push(...ids);dfSheet()})}
-function dfFile(){dfGrab();pickFiles('*/*',ids=>{DOCF.files.push(...ids);dfSheet()})}
+function dfFile(){dfGrab();pickAny('*/*',ids=>{DOCF.files.push(...ids);dfSheet()})}
 function dfSave(){
   dfGrab();
   if(!DOCF.files.length&&!DOCF.name.trim())return toast('ضيف صورة أو ملف');
@@ -1394,7 +1451,6 @@ a.btn.wab{display:flex;align-items:center;justify-content:center;gap:6px}`;
 try{const _c3=closeSheet;closeSheet=function(){const r=_c3.apply(this,arguments);if(NMR){const f=NMR;NMR=null;f(null)}return r}}catch(e){}
 /* تنضيف الأسماء البديلة الغلط اللي كانت بتلخبط اسم المحل */
 S.cats.forEach(c=>{if(c.alias)c.alias=c.alias.filter(a=>normAr(a).replace(/\s+/g,'').length>=6&&sim(a,c.name)>=.3&&!SKIPM.test(a))});
-/* مسح قايمة "أرقام شركات البرمجة" اللي اتسجلت غلط */
 delete S.settings.vph;
 
 /* ========== تشغيل ========== */
