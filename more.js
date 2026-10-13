@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.18.1',VBUILD='13/10/2026 - 07:00 م';
+const VER='2.19.0',VBUILD='13/10/2026 - 07:45 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 /* المرفقات: كاميرا + الصور + ملف في كل مكان */
 try{filesBox=function(ids,ctx){return `<div class="files">${(ids||[]).map(id=>fileThumb(id,ctx)).join('')}<button type="button" class="fadd" onclick="attach('${ctx}',true)">📷<small>كاميرا</small></button><button type="button" class="fadd" onclick="attachGal('${ctx}')">🖼️<small>الصور</small></button><button type="button" class="fadd" onclick="attach('${ctx}',false)">📎<small>ملف</small></button></div>`}}catch(e){}
@@ -37,6 +37,7 @@ nav .fab{position:fixed!important;left:50%!important;right:auto!important;top:au
 .dbx p{margin:0 0 12px;color:#64748b;font-size:13.5px;white-space:pre-line;unicode-bidi:plaintext}
 .din{width:100%;margin:4px 0 12px}
 .dbt{display:grid;gap:8px}.dbt .btn{margin:0}
+#rvt:empty{display:none}
 .nm{direction:ltr;unicode-bidi:isolate;display:inline-block}
 .rtb{margin:0 0 14px;border:1px solid rgba(148,163,184,.35);border-radius:12px;overflow-x:auto}
 .rtb table{width:100%;border-collapse:collapse;font-size:12.5px}
@@ -68,6 +69,8 @@ nav .fab{position:fixed!important;left:50%!important;right:auto!important;top:au
 .rp .rs{display:flex;align-items:center;gap:8px;margin:20px 0 8px;font-weight:800;font-size:14.5px;color:#0f172a}
 .rp .rs::before{content:'';width:4px;height:18px;border-radius:4px;background:var(--p);flex:0 0 4px}
 .rp .rs em{font-style:normal;margin-inline-start:auto;font-size:11.5px;font-weight:700;background:#f1f5f9;color:#334155;border-radius:20px;padding:3px 10px}
+.rp .rs2{display:flex;align-items:center;gap:8px;margin:12px 0 6px;font-weight:700;font-size:13px;color:#334155;padding:7px 12px;background:#f1f5f9;border-radius:10px}
+.rp .rs2 em{font-style:normal;margin-inline-start:auto;font-size:12px;font-weight:800}
 .rp .rc{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:12px;margin:0 0 12px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
 .rp .rc svg{width:130px;height:130px;flex:0 0 130px;margin:auto}
 .rp .lg{flex:1;min-width:160px}
@@ -83,6 +86,48 @@ nav .fab{position:fixed!important;left:50%!important;right:auto!important;top:au
 .rp .rtb tfoot td{background:#f1f5f9;border-top:2px solid var(--p)}
 .rp .rf{margin-top:22px;padding-top:10px;border-top:1px solid #e5e9f0;text-align:center;font-size:11px;color:#64748b}
 .rp .pnote{text-align:center;color:#94a3b8;padding:14px;background:#f8fafc;border-radius:12px;margin:0 0 12px}
+.rfl{background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:10px 12px;margin:0 0 14px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+.rfl .rfg{margin-bottom:10px}.rfl .rfg:last-child{margin-bottom:0}
+.rfl .rfg>small{display:block;font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px}
+.rfl .rchs{display:flex;gap:6px;flex-wrap:wrap;max-height:126px;overflow:auto}
+.rch{border:1px solid #e2e8f0;background:#f8fafc;color:#334155;border-radius:20px;padding:5px 12px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;unicode-bidi:plaintext}
+.rch.on{background:var(--p);border-color:var(--p);color:#fff;font-weight:700}
+.rch.i::before,.rch.e::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
+.rch.i::before{background:#16a34a}.rch.e::before{background:#dc2626}
+.rch.on::before{background:#fff}
+.rfs{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rfs button{width:42px;height:36px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#334155}
+.rfs b{font-size:15px;color:#0f172a}
+.rfd{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.rfd label{font-size:11px;color:#64748b;margin:0}.rfd input{width:100%;margin-top:3px}
+@media print{.noprint{display:none!important}}
+#pwv{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column}
+#pwv .pwh{display:flex;align-items:center;gap:10px;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top));background:var(--p);background:linear-gradient(135deg,var(--p),color-mix(in srgb,var(--p) 65%,#000));color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+#pwv .pwt{flex:1}#pwv .pwt b{display:block;font-size:17px}#pwv .pwt small{opacity:.85;font-size:11.5px}
+#pwv .pwi{width:38px;height:38px;border-radius:12px;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:17px;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center;text-decoration:none}
+#pwv .pwi.s{background:var(--soft,#eef2f6);color:inherit;width:36px;height:36px;font-size:15px}
+#pwv .pwb{flex:1;overflow:auto;padding:14px;padding-bottom:40px}
+#pwv .pwc{background:var(--card,#fff);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(15,23,42,.06)}
+#pwv .pwhero{text-align:center}#pwv .pwbig{font-size:52px;line-height:1.2}
+#pwv .pwhero input{width:100%;margin:10px 0;text-align:center;font-size:17px}
+#pwv .pwsr input{width:100%;margin:0 0 10px}
+#pwv .pwr{display:flex;align-items:center;gap:12px;background:var(--card,#fff);border-radius:14px;padding:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(15,23,42,.06);cursor:pointer}
+#pwv .pwav{width:42px;height:42px;border-radius:12px;color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex:0 0 42px}
+#pwv .pwav.big{width:56px;height:56px;font-size:24px;flex-basis:56px;border-radius:16px}
+#pwv .pwr b{display:block;unicode-bidi:plaintext;text-align:start}#pwv .pwr small{color:#94a3b8;display:block;unicode-bidi:plaintext;text-align:start}
+#pwv .pwchips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px}
+#pwv .pwchips.wrap{flex-wrap:wrap;overflow:visible}
+#pwv .pwchips button{white-space:nowrap;border:1px solid var(--line,#e2e8f0);background:var(--card,#fff);color:inherit;border-radius:20px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+#pwv .pwchips button.on{background:var(--p);color:#fff;border-color:var(--p);font-weight:700}
+#pwv .pwf{display:flex;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--line,#eef2f6)}
+#pwv .pwf span{font-size:11.5px;color:#94a3b8;display:block;margin-bottom:2px}
+#pwv .pwf b{display:block;font-size:15px;word-break:break-all;unicode-bidi:plaintext;text-align:start}
+#pwv .mono{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.5px}
+#pwv .pwst{height:6px;border-radius:6px;background:#e2e8f0;overflow:hidden;margin:8px 0 3px}
+#pwv .pwst i{display:block;height:100%;border-radius:6px;transition:width .2s}
+#pwv .pwact{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#pwv .pwact .btn{margin:0;padding-left:4px;padding-right:4px}
+#pwv .pwvh{display:flex;align-items:center;gap:12px;margin-bottom:6px}
 .sec small{font-weight:400;color:#94a3b8;font-size:12px;margin-inline-start:6px}
 input[dir=auto],textarea[dir=auto]{unicode-bidi:plaintext;text-align:start}
 b,strong,small,h2,h3,.muted,.kv b,td{unicode-bidi:plaintext}`;document.head.appendChild(s)})();
@@ -93,7 +138,9 @@ b,strong,small,h2,h3,.muted,.kv b,td{unicode-bidi:plaintext}`;document.head.appe
 })();
 
 /* ========== الرسايل: كلها فيها ✕ للقفل ========== */
-/* لما تدوس ✕ بترجع null، يعني العملية اتلغت ومحدش اختار حاجة */
+/* الرسالة بتتقفل بـ ✕ أو بزرار الإلغاء بس.
+   الضغط برّه المربع مبيعملش حاجة، عشان لما الكيبورد يقفل والشاشة تتحرك الضغطة متتحسبش إلغاء.
+   لما تدوس ✕ بترجع null، يعني العملية اتلغت ومحدش اختار حاجة */
 function dlg(o){
   return new Promise(res=>{
     const ov=document.createElement('div');ov.className='dlg';
@@ -104,7 +151,6 @@ function dlg(o){
     const done=v=>{if(!ov.isConnected)return;ov.remove();document.removeEventListener('keydown',kd,true);res(v)};
     document.addEventListener('keydown',kd,true);
     ov.querySelector('.dx').onclick=()=>done(null);
-    ov.addEventListener('click',e=>{if(e.target===ov)done(null)});
     ov.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>done(b.dataset.r==='ok'?(inp?inp.value:true):(inp?null:false)));
     if(inp)setTimeout(()=>{inp.focus();inp.select()},60);
   });
@@ -132,7 +178,8 @@ function rtbl(head,rows,foot){return `<div class="rtb"><table><thead><tr>${head.
 const cT=(b,s)=>{const d=dirOf(b),a=alOf(d);return `<td class="t" dir="${d}" style="text-align:${a}"><b>${b}</b>${s?`<small dir="${dirOf(s)}" style="text-align:${a}">${s}</small>`:''}</td>`};
 const cN=(v,cls,s)=>`<td class="n"><b class="${cls||''}">${nm(v)}</b>${s?`<small dir="${dirOf(s)}">${s}</small>`:''}</td>`;
 const cC=h=>`<td class="c">${h}</td>`;
-const cD=d=>`<td class="c">${nm(d)}</td>`;
+/* التاريخ في الجداول: بالسنة كاملة (13/10/2026) */
+const cD=d=>`<td class="c">${d?nm(dmy(d)):'—'}</td>`;
 const fN=v=>`<td class="n">${nm(v)}</td>`,fC=v=>`<td class="c">${nm(v)}</td>`,fE='<td></td>';
 const ft=(label,span,...cells)=>`<tr><td class="t" colspan="${span}">${label}</td>${cells.join('')}</tr>`;
 const KC={inc:'#16a34a',exp:'#dc2626',net:'var(--p)',warn:'#ea580c'};
@@ -140,6 +187,8 @@ const rkp=a=>`<div class="rk">${a.map(([l,v,c])=>`<div style="--kc:${KC[c]||'var
 const rsec=(t,em)=>`<div class="rs"><span>${t}</span>${em!=null&&em!==''?`<em>${nmIn(em)}</em>`:''}</div>`;
 /* الحالة: محصّل / غير محصّل / متأخر */
 const stB=(s,d,kind)=>s.st==='done'?`<span class="rb ok">${kind==='exp'?'مدفوع':'محصّل'}</span>`:s.st==='skip'?'<span class="rb">اتلغى</span>':s.st==='wait'?(d<today()?'<span class="rb late">متأخر</span>':`<span class="rb wait">${kind==='exp'?'غير مدفوع':'غير محصّل'}</span>`):'<span class="rb">—</span>';
+/* البند السنوي */
+const isA=c=>{try{return !!isAnn(c)}catch(e){return (+c.every||1)>=12}};
 
 /* ========== الرسوم ========== */
 function catItems(list,kind){
@@ -170,30 +219,41 @@ function donut(items,label,valText){
 }
 const ioPie=s=>donut([{label:L('inc'),value:s.inc,color:'#16a34a'},{label:L('exp'),value:s.exp,color:'#dc2626'}],L('net'),(s.net<0?'-':'')+short(Math.abs(s.net)));
 
-/* ========== التقارير: الاختيارات ========== */
-function monthSel(){
-  const ks=[];for(let i=0;i<36;i++){const d=new Date(NY,NM-1-i,1);ks.push(ym(d.getFullYear(),d.getMonth()+1))}
-  return `<label>الشهر<select onchange="RF.month=this.value">${ks.map(k=>`<option value="${k}" ${k===RF.month?'selected':''}>${mName(k)}</option>`).join('')}</select></label>`;
-}
+/* ========== التقارير: الاختيارات جوه التقرير ========== */
+/* كل اختيار بيحدّث التقرير على طول، ومبيظهرش في الطباعة والمشاركة */
+const rvUp=()=>openRV(true);
+const chip=(on,lbl,click,cls)=>`<button type="button" class="rch ${on?'on':''} ${cls||''}" onclick="${click}">${lbl}</button>`;
+const rfBox=(...g)=>`<div class="rfl noprint">${g.join('')}</div>`;
+const rfG=(lbl,chips,extra)=>`<div class="rfg"><small>${lbl}</small><div class="rchs">${chips}</div>${extra||''}</div>`;
+const rfDates=(a,b,type)=>`<div class="rfd"><label>من<input type="${type}" value="${RF[a]||''}" onchange="RF.${a}=this.value;rvUp()"></label><label>إلى<input type="${type}" value="${RF[b]||''}" onchange="RF.${b}=this.value;rvUp()"></label></div>`;
+function rfMonth(d){RF.month=addMonths(RF.month+'-01',d).slice(0,7);rvUp()}
+function rfYear(d){RF.year=(+RF.year||NY)+d;rvUp()}
+const monthSel=()=>rfBox(`<div class="rfs"><button type="button" onclick="rfMonth(-1)">→</button><b>${esc(mName(RF.month))}</b><button type="button" onclick="rfMonth(1)">←</button></div>`);
+const yearSel=()=>rfBox(`<div class="rfs"><button type="button" onclick="rfYear(-1)">→</button><b>سنة ${nm(RF.year)}</b><button type="button" onclick="rfYear(1)">←</button></div>`);
 function yearsList(){const ys=new Set([NY,NY-1,NY-2]);S.txs.forEach(t=>ys.add(+t.date.slice(0,4)));S.cash.forEach(c=>ys.add(+c.date.slice(0,4)));return [...ys].sort((a,b)=>b-a)}
-const yearSel=()=>`<label>السنة<select onchange="RF.year=+this.value">${yearsList().map(y=>`<option value="${y}" ${y===RF.year?'selected':''}>${y}</option>`).join('')}</select></label>`;
 function catOpts(sel,type){
   const g=(k,lab)=>`<optgroup label="${esc(lab)}">${S.cats.filter(c=>c.kind===k).map(c=>`<option value="${c.id}" ${c.id===sel?'selected':''}>${esc(c.name)}</option>`).join('')}</optgroup>`;
   return (type==='exp'?'':g('inc',L('inc')))+(type==='inc'?'':g('exp',L('exp')));
 }
 function fStmt(){
   if(RF.period==='custom'&&!RF.from){RF.from=NKM+'-01';RF.to=today()}
-  return `<div class="seg">${[['all','الكل'],['inc',L('inc')],['exp',L('exp')]].map(([k,l])=>`<button class="${RF.type===k?'on '+k:''}" onclick="RF.type='${k}';RF.cat='';render()">${esc(l)}</button>`).join('')}</div>
-  <div class="two"><label>البند<select onchange="RF.cat=this.value"><option value="">كل البنود</option>${catOpts(RF.cat,RF.type)}</select></label>
-  <label>الحساب<select onchange="RF.method=this.value"><option value="">الكل</option>${opt(S.methods,RF.method)}</select></label></div>
-  <label>الفترة<select onchange="RF.period=this.value;render()">${PERIODS.map(([k,l])=>`<option value="${k}" ${RF.period===k?'selected':''}>${l}</option>`).join('')}</select></label>
-  ${RF.period==='custom'?`<div class="two"><label>من<input type="date" value="${RF.from}" onchange="RF.from=this.value"></label><label>إلى<input type="date" value="${RF.to}" onchange="RF.to=this.value"></label></div>`:''}`;
+  const cats=S.cats.filter(c=>RF.type==='all'||c.kind===RF.type);
+  return rfBox(
+    rfG('النوع',[['all','الكل'],['inc',L('inc')],['exp',L('exp')]].map(([k,l])=>chip(RF.type===k,esc(l),`RF.type='${k}';RF.cat='';rvUp()`)).join('')),
+    rfG('البند',chip(!RF.cat,'كل البنود',`RF.cat='';rvUp()`)+cats.map(c=>chip(RF.cat===c.id,esc(c.name),`RF.cat='${c.id}';rvUp()`,c.kind==='inc'?'i':'e')).join('')),
+    rfG('الحساب',chip(!RF.method,'الكل',`RF.method='';rvUp()`)+S.methods.map(m=>chip(RF.method===m.id,esc(m.name),`RF.method='${m.id}';rvUp()`)).join('')),
+    rfG('الفترة',PERIODS.map(([k,l])=>chip(RF.period===k,l,`RF.period='${k}';rvUp()`)).join(''),RF.period==='custom'?rfDates('from','to','date'):'')
+  );
 }
 function fCmp(){
-  return `<label>البند<select onchange="RF.ccat=this.value"><option value="ALL_EXP" ${RF.ccat==='ALL_EXP'?'selected':''}>كل ${esc(L('exp'))}</option><option value="ALL_INC" ${RF.ccat==='ALL_INC'?'selected':''}>كل ${esc(L('inc'))}</option>${catOpts(RF.ccat)}</select></label>
-  <label>الفترة<select onchange="RF.crange=this.value">${[['3','آخر 3 شهور'],['6','آخر 6 شهور'],['12','آخر 12 شهر']].concat(yearsList().map(y=>['y:'+y,'سنة '+y])).map(([v,l])=>`<option value="${v}" ${RF.crange===v?'selected':''}>${l}</option>`).join('')}</select></label>`;
+  if(RF.crange==='c'){RF.cf=RF.cf||prevKey(NKM);RF.ct=RF.ct||NKM}
+  const it=c=>chip(RF.ccat===c.id,esc(c.name),`RF.ccat='${c.id}';rvUp()`,c.kind==='inc'?'i':'e');
+  return rfBox(
+    rfG('البند',chip(RF.ccat==='ALL_EXP','كل '+esc(L('exp')),`RF.ccat='ALL_EXP';rvUp()`,'e')+chip(RF.ccat==='ALL_INC','كل '+esc(L('inc')),`RF.ccat='ALL_INC';rvUp()`,'i')+S.cats.filter(c=>c.kind==='exp').map(it).join('')+S.cats.filter(c=>c.kind==='inc').map(it).join('')),
+    rfG('الفترة',[['3','آخر 3 شهور'],['6','آخر 6 شهور'],['12','آخر 12 شهر']].concat(yearsList().map(y=>['y:'+y,'سنة '+y])).concat([['c','📅 من شهر لشهر']]).map(([v,l])=>chip(RF.crange===v,l,`RF.crange='${v}';rvUp()`)).join(''),RF.crange==='c'?rfDates('cf','ct','month'):'')
+  );
 }
-const fInst=()=>`<label>البند<select onchange="RF.plan=this.value"><option value="">كل الأقساط</option>${opt(S.plans,RF.plan)}</select></label>`;
+const fInst=()=>rfBox(rfG('القسط',chip(!RF.plan,'كل الأقساط',`RF.plan='';rvUp()`)+S.plans.map(p=>chip(RF.plan===p.id,esc(p.name),`RF.plan='${p.id}';rvUp()`)).join('')));
 function periodRange(){
   const p=RF.period;
   if(p==='m')return mRange(NKM);
@@ -207,9 +267,9 @@ function periodRange(){
 /* ========== التقارير: البناء ========== */
 const NONE='<p class="pnote">لا يوجد</p>';
 const sgn=n=>n<0?'-'+num(-n):num(n);
-function paper(title,sub,body){
+function paper(title,sub,body,fl){
   const subH=esc(sub||'').split(' · ').filter(Boolean).map(p=>`<bdi>${p.replace(/\d{1,2}\/\d{1,2}\/\d{2,4}/g,m=>nm(m))}</bdi>`).join(' · ');
-  return `<div class="rp"><div class="rh"><div><div class="ap"><bdi>${esc(appName())}</bdi></div><div class="tt">${esc(title)}</div><div class="st">${subH}</div></div><div class="dt">تاريخ الإصدار<b>${nm(dmy(today()))}</b></div></div>${body}
+  return `<div class="rp"><div class="rh"><div><div class="ap"><bdi>${esc(appName())}</bdi></div><div class="tt">${esc(title)}</div><div class="st">${subH}</div></div><div class="dt">تاريخ التقرير<b>${nm(dmy(today()))}</b></div></div>${fl||''}${body}
   <div class="rf"><bdi>${DEV.name}</bdi> · <bdi>${DEV.company}</bdi><br>${nm(DEV.phones.join(' - '))}</div></div>`;
 }
 const dS=(from,to,cat,type,method)=>`dOps('${from}','${to}','${cat||''}','${type||''}','${method||''}')`;
@@ -223,11 +283,11 @@ function stmtSub(from,to){return [RF.period==='all'?'كل الفترات':`من 
 const kpAll=s=>rkp([[L('inc'),fmt(s.inc),'inc'],[L('exp'),fmt(s.exp),'exp'],[L('net'),netTxt(s.net),s.net<0?'exp':'inc']]);
 const kp3=(s,n)=>RF.type==='inc'?rkp([[L('inc'),fmt(s.inc),'inc'],['عدد العمليات',n,'net']]):RF.type==='exp'?rkp([[L('exp'),fmt(s.exp),'exp'],['عدد العمليات',n,'net']]):kpAll(s);
 /* البنود: الدايرة، وجدول فيه البند وعدد العمليات والمبلغ والنسبة */
-function catTable(list,kind,click){
+function catTable(list,kind,click,nopie){
   const g={};list.filter(t=>t.type===kind&&!t.pend).forEach(t=>{g[t.cat]=g[t.cat]||{n:0,v:0};g[t.cat].n++;g[t.cat].v+=t.amount});
   const e=Object.entries(g).sort((a,b)=>b[1].v-a[1].v),tot=e.reduce((a,x)=>a+x[1].v,0),n=e.reduce((a,x)=>a+x[1].n,0);
   if(!e.length)return NONE;
-  const pie=e.length>1?donut(e.map(([id,x])=>({label:C(id)?.name||'—',value:x.v})),kind==='inc'?L('inc'):L('exp')):'';
+  const pie=!nopie&&e.length>1?donut(e.map(([id,x])=>({label:C(id)?.name||'—',value:x.v})),kind==='inc'?L('inc'):L('exp')):'';
   return pie+rtbl(['البند','العمليات|c','المبلغ|n','النسبة|n'],e.map(([id,x])=>`<tr class="${click?'clk':''}" ${click?`onclick="${click(id)}"`:''}>${cT(esc(C(id)?.name||'—'))}${cC(nm(x.n))}${cN(num(x.v),kind)}${cN(Math.round(x.v/tot*100)+'%')}</tr>`),
     e.length>1?ft('الإجمالي',1,fC(n),fN(num(tot)),fN('100%')):'');
 }
@@ -242,7 +302,7 @@ function bStmt(){
 function bOps(){
   const{from,to,rows}=stmtRows(),s=sums(rows);
   const inc=rows.filter(t=>t.type==='inc'),exp=rows.filter(t=>t.type==='exp');
-  const row=t=>`<tr class="clk" onclick="editTx('${t.id}')">${cD(dmy2(t.date))}${cT(esc(C(t.cat)?.name||'—'),[M(t.method)?.name,viaTxt(t.via)].filter(Boolean).map(esc).join(' · ')+((t.files||[]).length?' · 📎':''))}${cN(num(t.amount),t.type)}</tr>`;
+  const row=t=>`<tr class="clk" onclick="editTx('${t.id}')">${cD(t.date)}${cT(esc(C(t.cat)?.name||'—'),[M(t.method)?.name,viaTxt(t.via)].filter(Boolean).map(esc).join(' · ')+((t.files||[]).length?' · 📎':''))}${cN(num(t.amount),t.type)}</tr>`;
   const part=(l,v)=>l.length?rtbl(['التاريخ|c','البند','المبلغ|n'],l.map(row),l.length>1?ft('الإجمالي',2,fN(num(v))):''):NONE;
   let b=kp3(s,rows.length);
   b+=RF.type==='all'?ioPie(s):donut(catItems(rows,RF.type).map(x=>({label:x.label,value:x.value})),RF.type==='inc'?L('inc'):L('exp'));
@@ -254,13 +314,20 @@ function pmTable(list,f,t){
   const pm=pmStats(list).filter(x=>x.i||x.o);if(!pm.length)return NONE;
   return rtbl(['الحساب','العمليات|c','قبضت|n','صرفت|n'],pm.map(x=>`<tr class="clk" onclick="${dS(f,t,'','',x.m.id)}">${cT(esc(x.m.name))}${cC(nm(x.n))}${cN(x.i?num(x.i):'—','inc')}${cN(x.o?num(x.o):'—','exp')}</tr>`));
 }
+/* التقرير الشهري: التحصيلات متقسمة (ثابت شهري / سنوي / غير ثابت) وكل جزء ليه جدول بنوده */
+const INCG={fix:['📌 ثابت شهري','ثابت شهري','#0f766e'],ann:['📄 سنوي','سنوي','#2563eb'],var:['💵 غير ثابت','غير ثابت','#ca8a04']};
+const incGrp=t=>{const c=C(t.cat);return c&&c.fixed?(isA(c)?'ann':'fix'):'var'};
 function bMonth(){
   const k=RF.month,list=keyTx(k),s=sums(list),[f,t]=mRange(k),cl=cashOf(k).sort((a,c)=>a.date.localeCompare(c.date)),ct=cl.reduce((a,c)=>a+c.amount,0);
   let b=kpAll(s)+ioPie(s);
-  b+=rsec('💰 '+esc(L('inc')),num(s.inc))+catTable(list,'inc',id=>dS(f,t,id));
+  const gs=Object.keys(INCG).map(g=>({g,l:list.filter(x=>x.type==='inc'&&!x.pend&&incGrp(x)===g)})).filter(x=>x.l.length);
+  b+=rsec('💰 '+esc(L('inc')),num(s.inc));
+  if(!gs.length)b+=NONE;
+  if(gs.length>1)b+=donut(gs.map(x=>({label:INCG[x.g][1],value:x.l.reduce((a,y)=>a+y.amount,0),color:INCG[x.g][2]})),L('inc'));
+  gs.forEach(x=>{b+=`<div class="rs2">${INCG[x.g][0]}<em>${nm(num(x.l.reduce((a,y)=>a+y.amount,0)))}</em></div>`+catTable(x.l,'inc',id=>dS(f,t,id),true)});
   b+=rsec('💸 '+esc(L('exp')),num(s.exp))+catTable(list,'exp',id=>dS(f,t,id));
   if(pmStats(list).some(x=>x.i||x.o))b+=rsec('🏦 '+esc(L('pm')))+pmTable(list,f,t);
-  if(cl.length)b+=rsec('🏧 '+esc(L('cash')),num(ct))+rtbl(['التاريخ|c','الحساب','المبلغ|n'],cl.map(c=>`<tr>${cD(dmy2(c.date))}${cT(esc(M(c.method)?.name||'—'),esc(c.note||''))}${cN(num(c.amount))}</tr>`),cl.length>1?ft('الإجمالي',2,fN(num(ct))):'');
+  if(cl.length)b+=rsec('🏧 '+esc(L('cash')),num(ct))+rtbl(['التاريخ|c','الحساب','المبلغ|n'],cl.map(c=>`<tr>${cD(c.date)}${cT(esc(M(c.method)?.name||'—'),esc(c.note||''))}${cN(num(c.amount))}</tr>`),cl.length>1?ft('الإجمالي',2,fN(num(ct))):'');
   return{title:'تقرير شهري',sub:mName(k)+(S.closed[k]?' · 🔒 مقفول':''),body:b};
 }
 function bYear(){
@@ -274,8 +341,12 @@ function bYear(){
 }
 function bCmp(){
   let ks=[];
-  if(RF.crange.startsWith('y:')){const y=+RF.crange.slice(2);for(let i=1;i<=12;i++)ks.push(ym(y,i))}
-  else{const n=+RF.crange;for(let i=n-1;i>=0;i--){const d=new Date(NY,NM-1-i,1);ks.push(ym(d.getFullYear(),d.getMonth()+1))}}
+  if(RF.crange==='c'){
+    let a=RF.cf||prevKey(NKM),z=RF.ct||NKM;if(a>z)[a,z]=[z,a];
+    let k=a,n=0;while(k<=z&&n<36){ks.push(k);k=addMonths(k+'-01',1).slice(0,7);n++}
+  }else if(RF.crange.startsWith('y:')){const y=+RF.crange.slice(2);for(let i=1;i<=12;i++)ks.push(ym(y,i))}
+  else{const n=+RF.crange||6;for(let i=n-1;i>=0;i--){const d=new Date(NY,NM-1-i,1);ks.push(ym(d.getFullYear(),d.getMonth()+1))}}
+  if(!ks.length)ks=[NKM];
   const cc=RF.ccat,kind=cc==='ALL_INC'?'inc':cc==='ALL_EXP'?'exp':(C(cc)?.kind||'exp');
   const name=cc==='ALL_EXP'?'كل '+L('exp'):cc==='ALL_INC'?'كل '+L('inc'):(C(cc)?.name||'—');
   const match=t=>cc==='ALL_EXP'?t.type==='exp':cc==='ALL_INC'?t.type==='inc':t.cat===cc;
@@ -299,13 +370,13 @@ function bCols(){
   const got=sums(keyTx(k)).inc;
   let b=rkp([['محصّل',fmt(got),'inc'],['المتوقع',fmt(exp+pt),'net'],['غير محصّل',fmt(rem+pt),'warn']]);
   b+=donut([{label:'محصّل',value:got,color:'#16a34a'},{label:'غير محصّل',value:rem+pt,color:'#ea580c'}],'محصّل',short(got));
-  if(dl.length)b+=rsec('📌 ثابت',dl.length+' بند')+rtbl(['البند','الميعاد|c','المبلغ|n','الحالة|c'],dl.map(o=>{const done=o.s.st==='done';return `<tr class="${done?'clk':''}" ${done?`onclick="editTx('${o.s.t.id}')"`:''}>${cT(esc(o.r.name),everyTxt(o.r.every))}${cD(dmy2(o.date))}${cN(num(done?o.s.t.amount:o.amt),done?'inc':'')}${cC(stB(o.s,o.date))}</tr>`}));
-  if(ptx.length)b+=rsec('⏳ غير محصّل',num(pt))+rtbl(['البند','الميعاد|c','المبلغ|n'],ptx.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')">${cT(esc(C(x.cat)?.name||'—'),[x.post?'اتأجّل '+x.post+' مرة':'',x.note].filter(Boolean).map(esc).join(' · '))}${cD(dmy2(x.date))}${cN(num(x.amount),'wrn')}</tr>`),ptx.length>1?ft('الإجمالي',2,fN(num(pt))):'');
-  if(others.length)b+=rsec('✅ تحصيلات تانية',others.length+' عملية')+rtbl(['البند','التاريخ|c','المبلغ|n'],others.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')">${cT(esc(C(x.cat)?.name||'—'),esc(M(x.method)?.name||''))}${cD(dmy2(x.date))}${cN(num(x.amount),'inc')}</tr>`));
+  if(dl.length)b+=rsec('📌 ثابت',dl.length+' بند')+rtbl(['البند','الميعاد|c','المبلغ|n','الحالة|c'],dl.map(o=>{const done=o.s.st==='done';return `<tr class="${done?'clk':''}" ${done?`onclick="editTx('${o.s.t.id}')"`:''}>${cT(esc(o.r.name),everyTxt(o.r.every))}${cD(o.date)}${cN(num(done?o.s.t.amount:o.amt),done?'inc':'')}${cC(stB(o.s,o.date))}</tr>`}));
+  if(ptx.length)b+=rsec('⏳ غير محصّل',num(pt))+rtbl(['البند','الميعاد|c','المبلغ|n'],ptx.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')">${cT(esc(C(x.cat)?.name||'—'),[x.post?'اتأجّل '+x.post+' مرة':'',x.note].filter(Boolean).map(esc).join(' · '))}${cD(x.date)}${cN(num(x.amount),'wrn')}</tr>`),ptx.length>1?ft('الإجمالي',2,fN(num(pt))):'');
+  if(others.length)b+=rsec('✅ تحصيلات تانية',others.length+' عملية')+rtbl(['البند','التاريخ|c','المبلغ|n'],others.sort(byAsc).map(x=>`<tr class="clk" onclick="editTx('${x.id}')">${cT(esc(C(x.cat)?.name||'—'),esc(M(x.method)?.name||''))}${cD(x.date)}${cN(num(x.amount),'inc')}</tr>`));
   if(!dl.length&&!ptx.length&&!others.length)b+=NONE;
   return{title:'تقرير التحصيلات',sub:mName(k),body:b};
 }
-/* التحصيلات السنوية: مواعيد سنة معيّنة بس */
+/* التحصيلات السنوية: مواعيد سنة معيّنة بس. التاريخ هو تاريخ التجديد اللي انت حاطه، وبيزيد سنة كل سنة */
 function annualOcc(y){
   const out=[];
   FX().filter(isAnn).forEach(r=>{for(let k=0;k<300;k++){const d=occDate(r,k),yy=+d.slice(0,4);if(yy>y)break;if(yy<y)continue;const s=stOf(occRec(r,k));if(r.active===false&&s.st==='wait')continue;out.push({r,k,d,amt:occAmt(r,k),s})}});
@@ -318,7 +389,7 @@ function bContracts(){
   let ex=0,got=0,rem=0;oc.forEach(o=>{ex+=o.amt;if(o.s.st==='done')got+=o.s.t.amount;else if(o.s.st==='wait')rem+=o.amt});
   let b=rkp([['المتوقع',fmt(ex),'net'],['محصّل',fmt(got),'inc'],['غير محصّل',fmt(rem),'warn']]);
   b+=donut([{label:'محصّل',value:got,color:'#16a34a'},{label:'غير محصّل',value:rem,color:'#ea580c'}],'المتوقع',short(ex));
-  b+=rsec('📄 مواعيد سنة '+y,oc.length+' ميعاد')+rtbl(['البند','الميعاد|c','المبلغ|n','الحالة|c'],oc.map(o=>{const done=o.s.st==='done';return `<tr class="${done?'clk':''}" ${done?`onclick="editTx('${o.s.t.id}')"`:''}>${cT(esc(o.r.name),annSub(o.r))}${cD(dmy2(o.d))}${cN(num(done?o.s.t.amount:o.amt),done?'inc':'',done?'يوم '+dmy2(o.s.t.date):'')}${cC(stB(o.s,o.d,o.r.kind))}</tr>`}),
+  b+=rsec('📄 مواعيد سنة '+y,oc.length+' ميعاد')+rtbl(['البند','تاريخ التجديد|c','المبلغ|n','الحالة|c'],oc.map(o=>{const done=o.s.st==='done';return `<tr class="${done?'clk':''}" ${done?`onclick="editTx('${o.s.t.id}')"`:''}>${cT(esc(o.r.name),annSub(o.r))}${cD(o.d)}${cN(num(done?o.s.t.amount:o.amt),done?'inc':'')}${cC(stB(o.s,o.d,o.r.kind))}</tr>`}),
     oc.length>1?ft('الإجمالي',2,fN(num(got+rem)),fE):'');
   return{title:'التحصيلات السنوية',sub:'سنة '+y,body:b};
 }
@@ -329,7 +400,7 @@ function bContractsNext(){
   const ex=oc.reduce((a,o)=>a+o.amt,0);
   let b=rkp([['عدد البنود',new Set(oc.map(o=>o.r.id)).size,'net'],['المتوقع',fmt(ex),'warn']]);
   b+=donut(oc.map(o=>({label:o.r.name,value:o.amt})),'المتوقع',short(ex));
-  b+=rsec('🗓️ مواعيد سنة '+y,oc.length+' ميعاد')+rtbl(['البند','الميعاد|c','المتوقع|n','الزيادة|n'],oc.map(o=>{const pv=o.k>0?(occActual(o.r,o.k-1)??occAmt(o.r,o.k-1)):null;return `<tr>${cT(esc(o.r.name),annSub(o.r))}${cD(dmy2(o.d))}${cN(num(o.amt),'',pv!=null?'المرة اللي فاتت '+num(pv):'')}${cN(o.r.pct?o.r.pct+'%':'—')}</tr>`}),
+  b+=rsec('🗓️ مواعيد سنة '+y,oc.length+' ميعاد')+rtbl(['البند','تاريخ التجديد|c','المتوقع|n','الزيادة|n'],oc.map(o=>{const pv=o.k>0?(occActual(o.r,o.k-1)??occAmt(o.r,o.k-1)):null;return `<tr>${cT(esc(o.r.name),annSub(o.r))}${cD(o.d)}${cN(num(o.amt),'',pv!=null?'المرة اللي فاتت '+num(pv):'')}${cN(o.r.pct?o.r.pct+'%':'—')}</tr>`}),
     oc.length>1?ft('الإجمالي',2,fN(num(ex)),fE):'');
   return{title:'التحصيلات السنوية السنة القادمة',sub:'سنة '+y,body:b};
 }
@@ -341,11 +412,11 @@ function bInst(){
   let b=rkp([['الإجمالي',fmt(T),'net'],['المدفوع',fmt(P),'inc'],['الباقي',fmt(T-P),'exp']]);
   b+=donut([{label:'المدفوع',value:P,color:'#16a34a'},{label:'الباقي',value:T-P,color:'#dc2626'}],'الإجمالي',short(T));
   if(plans.length>1){
-    b+=rsec('🏦 الأقساط',plans.length)+rtbl(['القسط','المدفوع|c','الباقي|n','الجاي|c'],plans.map(p=>{const s=planStats(p);return `<tr class="clk" onclick="drill(()=>{RF.plan='${p.id}'})">${cT(esc(p.name),s.late?s.late+' متأخر':'')}${cC(nm(s.paidN+'/'+s.n))}${cN(num(s.total-s.paid),'exp')}${s.next?cD(dmy2(s.next.due)):cC('✓')}</tr>`}),
+    b+=rsec('🏦 الأقساط',plans.length)+rtbl(['القسط','المدفوع|c','الباقي|n','الجاي|c'],plans.map(p=>{const s=planStats(p);return `<tr class="clk" onclick="drill(()=>{RF.plan='${p.id}'})">${cT(esc(p.name),s.late?s.late+' متأخر':'')}${cC(nm(s.paidN+'/'+s.n))}${cN(num(s.total-s.paid),'exp')}${s.next?cD(s.next.due):cC('✓')}</tr>`}),
       ft('الإجمالي',2,fN(num(T-P)),fE));
   }else{
     const p=plans[0];
-    b+=rsec('📅 المواعيد',p.items.length+' قسط')+rtbl(['الميعاد|c','المبلغ|n','اتدفع|c','الحالة|c'],[...p.items].sort((a,c)=>(a.due||'').localeCompare(c.due||'')).map(it=>{const t=itTx(it);return `<tr class="${t?'clk':''}" ${t?`onclick="editTx('${t.id}')"`:''}>${cD(dmy2(it.due))}${cN(num(+it.amount||0))}${t?cC(nm(dmy2(t.date))+((t.files||[]).length?' 📎':'')):cC('—')}${cC(t?'<span class="rb ok">مدفوع</span>':stB({st:'wait'},it.due,'exp'))}</tr>`}),
+    b+=rsec('📅 المواعيد',p.items.length+' قسط')+rtbl(['الميعاد|c','المبلغ|n','اتدفع|c','الحالة|c'],[...p.items].sort((a,c)=>(a.due||'').localeCompare(c.due||'')).map(it=>{const t=itTx(it);return `<tr class="${t?'clk':''}" ${t?`onclick="editTx('${t.id}')"`:''}>${cD(it.due)}${cN(num(+it.amount||0))}${t?cC(nm(dmy(t.date))+((t.files||[]).length?' 📎':'')):cC('—')}${cC(t?'<span class="rb ok">مدفوع</span>':stB({st:'wait'},it.due,'exp'))}</tr>`}),
       `<tr><td class="c">الإجمالي</td>${fN(num(T))}${fE}${fE}</tr>`);
   }
   return{title:'تقرير الأقساط',sub:plans.length===1?plans[0].name:'كل الأقساط',body:b};
@@ -362,7 +433,7 @@ function bCash(){
   let b=rkp([['المسحوب',fmt(tot),'warn'],['متوسط الشهر',fmt(tot/act),'net'],['عدد المرات',yl.length,'net']]);
   b+=donut(Object.entries(g).map(([id,v])=>({label:M(id)?.name||'—',value:v})),'المسحوب');
   if(ms.length>1)b+=rsec('📅 شهر بشهر')+rtbl(['الشهر','المرات|c','المسحوب|n'],ms.map(([n,l])=>`<tr>${cT(n)}${cC(nm(l.length))}${cN(num(l.reduce((a,c)=>a+c.amount,0)))}</tr>`));
-  b+=rsec('🏧 التفاصيل',num(tot))+(yl.length?rtbl(['التاريخ|c','الحساب','المبلغ|n'],yl.map(c=>`<tr>${cD(dmy2(c.date))}${cT(esc(M(c.method)?.name||'—'),esc(c.note||''))}${cN(num(c.amount))}</tr>`),yl.length>1?ft('الإجمالي',2,fN(num(tot))):''):NONE);
+  b+=rsec('🏧 التفاصيل',num(tot))+(yl.length?rtbl(['التاريخ|c','الحساب','المبلغ|n'],yl.map(c=>`<tr>${cD(c.date)}${cT(esc(M(c.method)?.name||'—'),esc(c.note||''))}${cN(num(c.amount))}</tr>`),yl.length>1?ft('الإجمالي',2,fN(num(tot))):''):NONE);
   return{title:'تقرير '+L('cash'),sub:'سنة '+y,body:b,csv:{head:['التاريخ','سحبت من','المبلغ','ملاحظة'],rows:yl.map(c=>[dmy(c.date),M(c.method)?.name||'',c.amount,c.note||''])}};
 }
 const REPS={
@@ -378,40 +449,209 @@ const REPS={
   pmr:{ic:'💳',t:'تقرير الحسابات',f:monthSel,b:bPm},
   cash:{ic:'🏧',t:'السحب الكاش',f:yearSel,b:bCash}
 };
+/* صفحة التقارير: لما تدوس على تقرير بيفتح على طول، والاختيارات جواه */
 function vReports(){
-  if(!rtab||!REPS[rtab])return `<h3>📊 ${esc(L('reports'))}</h3><div class="rgrid">${Object.entries(REPS).map(([k,r])=>`<button class="rbtn" onclick="rtab='${k}';RF={...RFDEF};render();scrollTo(0,0)"><span>${r.ic}</span>${r.t}</button>`).join('')}</div>`;
-  const Rp=REPS[rtab];
-  return `<div class="phead"><button class="mini" onclick="rtab='';render()">→</button><h3>${Rp.ic} ${Rp.t}</h3></div><div class="box">${Rp.f()}<button class="btn" onclick="openRV()">📄 عرض التقرير</button></div>`;
+  if(rtab&&REPS[rtab]&&!$('#rv').classList.contains('on'))setTimeout(()=>{if(rtab&&REPS[rtab])openRV()},0);
+  return `<h3>📊 ${esc(L('reports'))}</h3><div class="rgrid">${Object.entries(REPS).map(([k,r])=>`<button class="rbtn" onclick="rtab='${k}';RF={...RFDEF};openRV()"><span>${r.ic}</span>${r.t}</button>`).join('')}</div>`;
 }
+var RVTITLE='';
 function openRV(keep){
   const Rp=REPS[rtab];if(!Rp)return;
   if(!keep)RVST=[];
-  const r=Rp.b();RVCSV=r.csv||null;
-  $('#rvt').textContent=r.title;$('#rvdoc').innerHTML=paper(r.title,r.sub,r.body);
+  const fl=Rp.f?Rp.f():'';
+  const r=Rp.b();RVCSV=r.csv||null;RVTITLE=r.title;
+  $('#rvt').textContent='';$('#rvdoc').innerHTML=paper(r.title,r.sub,r.body,fl);
   $('#rvcsv').style.display=RVCSV?'':'none';
   $('#rv').classList.add('on');if(!keep||keep==='nav')$('#rvbody').scrollTop=0;
 }
 function drill(set){RVST.push({rtab,RF:JSON.parse(JSON.stringify(RF))});set();openRV('nav')}
 function rvBack(){const p=RVST.pop();if(!p)return closeRV();rtab=p.rtab;RF=p.RF;openRV('nav')}
 function refreshRV(){if($('#rv').classList.contains('on'))openRV(true)}
-function closeRV(){$('#rv').classList.remove('on');RVST=[];if(view==='reports')render()}
+function closeRV(){$('#rv').classList.remove('on');RVST=[];rtab='';if(view==='reports')render()}
+/* الطباعة والمشاركة: من غير الاختيارات */
+function rvClean(){const d=$('#rvdoc').cloneNode(true);d.querySelectorAll('.noprint').forEach(e=>e.remove());return d.innerHTML}
 function printReport(){
-  const pa=$('#printArea');pa.innerHTML=`<div class="paper">${$('#rvdoc').innerHTML}</div>`;
+  const pa=$('#printArea');pa.innerHTML=`<div class="paper">${rvClean()}</div>`;
   document.body.classList.add('printing');
   const done=()=>{document.body.classList.remove('printing');pa.innerHTML='';removeEventListener('afterprint',done)};
   addEventListener('afterprint',done);setTimeout(()=>window.print(),80);
 }
 function shareReport(){
-  const t=$('#rvt').textContent,cs=getComputedStyle(document.documentElement),p=cs.getPropertyValue('--p'),ff=cs.getPropertyValue('--ff'),fk=S.settings.font,fl=FONTS[fk]&&FONTS[fk][2]?`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${FONTS[fk][2]}&display=swap">`:'';
+  const t=RVTITLE||'تقرير',cs=getComputedStyle(document.documentElement),p=cs.getPropertyValue('--p'),ff=cs.getPropertyValue('--ff'),fk=S.settings.font,fl=FONTS[fk]&&FONTS[fk][2]?`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${FONTS[fk][2]}&display=swap">`:'';
   const css=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
-  const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(t)}</title>${fl}<style>${css}:root{--p:${p};--ff:${ff};--z:1}body{background:#eef1f4;padding:12px;overflow:auto}</style></head><body><div class="paper">${$('#rvdoc').innerHTML.replace(/ onclick="[^"]*"/g,'')}</div></body></html>`;
+  const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(t)}</title>${fl}<style>${css}:root{--p:${p};--ff:${ff};--z:1}body{background:#eef1f4;padding:12px;overflow:auto}</style></head><body><div class="paper">${rvClean().replace(/ onclick="[^"]*"/g,'')}</div></body></html>`;
   shareOrDl([new File([html],`${t}-${today()}.html`,{type:'text/html'})]);
 }
 function exportCSV(){
   if(!RVCSV)return;const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
   const lines=[RVCSV.head.map(q).join(',')].concat(RVCSV.rows.map(r=>r.map(q).join(',')));
-  shareOrDl([new File(['\ufeff'+lines.join('\r\n')],`${$('#rvt').textContent}-${today()}.csv`,{type:'text/csv'})]);
+  shareOrDl([new File(['\ufeff'+lines.join('\r\n')],`${RVTITLE||'تقرير'}-${today()}.csv`,{type:'text/csv'})]);
 }
+
+/* ========== الباسوردات: خزنة متشفرة ========== */
+/* كل الباسوردات بتتحفظ متشفرة (AES-256) بالباسورد الرئيسي. الخزنة بتتقفل أول ما تخرج منها */
+const PWCAT={bank:['🏦','بنوك'],mail:['📧','إيميل'],social:['💬','سوشيال'],work:['💼','شغل'],wifi:['📶','واي فاي'],web:['🌐','مواقع'],other:['🔑','أخرى']};
+const PWCOL=['#0f766e','#2563eb','#db2777','#ea580c','#7c3aed','#ca8a04','#0891b2','#16a34a','#dc2626','#475569'];
+var PWV={key:null,items:null,q:'',cat:'all',mode:'list',cur:null,f:null,show:false,pv:false};
+const pwTe=new TextEncoder(),pwTd=new TextDecoder();
+const pwB64=u=>{const a=new Uint8Array(u);let s='';for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s)};
+const pwUnB64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function pwKey(pass,salt){const k=await crypto.subtle.importKey('raw',pwTe.encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function pwEnc(key,items){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,pwTe.encode(JSON.stringify(items)));return{iv:pwB64(iv),ct:pwB64(ct)}}
+async function pwDec(key,v){const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:pwUnB64(v.iv)},key,pwUnB64(v.ct));return JSON.parse(pwTd.decode(pt))}
+async function pwSeal(){const e=await pwEnc(PWV.key,PWV.items);Object.assign(S.settings.vault,e,{n:PWV.items.length,up:Date.now()});save()}
+function pwScreen(){
+  if(!(window.crypto&&crypto.subtle))return say('مش متاح','المتصفح ده مش بيدعم التشفير','⚠️');
+  let ov=$('#pwv');if(!ov){ov=document.createElement('div');ov.id='pwv';document.body.appendChild(ov)}
+  const cs=getComputedStyle(document.body),bg=cs.backgroundColor;
+  ov.style.background=bg&&bg!=='rgba(0, 0, 0, 0)'&&bg!=='transparent'?bg:'#f4f6f9';ov.style.color=cs.color;
+  PWV.mode='list';pwRender();
+}
+function pwClose(){pwLock(true);const ov=$('#pwv');if(ov)ov.remove()}
+function pwLock(silent){PWV.key=null;PWV.items=null;PWV.mode='list';PWV.f=null;PWV.cur=null;PWV.show=false;PWV.pv=false;PWV.q='';if(!silent)pwRender()}
+function pwGo(m,id){
+  PWV.mode=m;PWV.show=false;
+  if(m==='view')PWV.cur=id;
+  if(m==='edit'){const x=id?PWV.items.find(i=>i.id===id):null;PWV.cur=id||null;PWV.f=x?{...x}:{id:'',t:'',c:'other',u:'',p:'',url:'',n:''};PWV.pv=false}
+  pwRender();const b=document.querySelector('#pwv .pwb');if(b)b.scrollTop=0;
+}
+function pwRender(){
+  const ov=$('#pwv');if(!ov)return;
+  const V=S.settings.vault,open=!!PWV.items;
+  const back=open&&PWV.mode!=='list'?(PWV.mode==='edit'&&PWV.cur?`pwGo('view','${PWV.cur}')`:`pwGo('list')`):'pwClose()';
+  const st=open?`${PWV.items.length} حساب · مفتوحة 🔓`:V?'مقفولة 🔒':'جديدة';
+  const hdr=`<div class="pwh"><button class="pwi" onclick="${back}">→</button><div class="pwt"><b>🔐 الباسوردات</b><small>${st}</small></div>${open?`<button class="pwi" title="الإعدادات" onclick="pwGo('set')">⋮</button><button class="pwi" title="اقفل" onclick="pwLock()">🔒</button>`:''}</div>`;
+  let b='';
+  if(!V)b=pwSetupHTML();
+  else if(!open)b=pwUnlockHTML();
+  else b=PWV.mode==='view'?pwViewHTML():PWV.mode==='edit'?pwEditHTML():PWV.mode==='set'?pwSetHTML():pwListHTML();
+  ov.innerHTML=hdr+`<div class="pwb">${b}</div>`;
+  const f=ov.querySelector('[data-focus]');if(f)setTimeout(()=>f.focus(),80);
+}
+const pwSetupHTML=()=>`<div class="pwc pwhero"><div class="pwbig">🔐</div><h3>خزنة الباسوردات</h3><p class="muted">كل الباسوردات بتتحفظ <b>متشفرة</b> على الموبايل ده، وبتتفتح بباسورد رئيسي انت بس اللي تعرفه.</p></div>
+  <div class="pwc"><label>الباسورد الرئيسي<input id="pw-m1" type="password" autocomplete="new-password" dir="ltr" data-focus></label>
+  <label>اكتبه تاني<input id="pw-m2" type="password" autocomplete="new-password" dir="ltr" onkeydown="if(event.key==='Enter')pwCreate()"></label>
+  <p class="warn">⚠️ لو نسيت الباسورد الرئيسي مش هتقدر تفتح الخزنة تاني. اكتبه في مكان أمين.</p>
+  <button class="btn" onclick="pwCreate()">🔐 اعمل الخزنة</button></div>`;
+const pwUnlockHTML=()=>`<div class="pwc pwhero"><div class="pwbig">🔒</div><h3>الخزنة مقفولة</h3><p class="muted">اكتب الباسورد الرئيسي عشان تفتحها</p>
+  <input id="pw-m" type="password" dir="ltr" autocomplete="current-password" data-focus onkeydown="if(event.key==='Enter')pwUnlock()">
+  <button class="btn" onclick="pwUnlock()">🔓 افتح</button></div>`;
+async function pwCreate(){
+  const a=$('#pw-m1').value,b=$('#pw-m2').value;
+  if(a.length<6)return toast('الباسورد الرئيسي 6 حروف على الأقل');
+  if(a!==b)return toast('الباسوردين مش زي بعض');
+  toast('⏳ ...');
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  PWV.key=await pwKey(a,salt);PWV.items=[];S.settings.vault={v:1,salt:pwB64(salt)};
+  await pwSeal();toast('الخزنة جاهزة ✓');pwGo('list');
+}
+async function pwUnlock(){
+  const el=$('#pw-m'),v=el?el.value:'';if(!v)return toast('اكتب الباسورد');
+  toast('⏳ ...');
+  try{const V=S.settings.vault,key=await pwKey(v,pwUnB64(V.salt));PWV.items=await pwDec(key,V);PWV.key=key;pwGo('list')}
+  catch(e){toast('الباسورد غلط');if(el){el.value='';el.focus()}}
+}
+const pwAv=(x,big)=>{let h=0;for(const c of (x.t||'?'))h=(h*31+c.charCodeAt(0))>>>0;const ch=[...(x.t||'?').trim()][0]||'?';return `<span class="pwav${big?' big':''}" style="background:${PWCOL[h%PWCOL.length]}">${esc(ch.toUpperCase())}</span>`};
+function pwListHTML(){
+  const its=PWV.items,cnt=k=>its.filter(x=>x.c===k).length,cats=Object.keys(PWCAT).filter(k=>cnt(k));
+  if(PWV.cat!=='all'&&!cnt(PWV.cat))PWV.cat='all';
+  return `${its.length?`<div class="pwsr"><input id="pw-q" placeholder="🔍 دوّر بالاسم أو اليوزر أو الموقع..." value="${esc(PWV.q)}" oninput="PWV.q=this.value;pwListOnly()"></div>`:''}
+  ${cats.length>1?`<div class="pwchips">${[['all','🗂️ الكل',its.length]].concat(cats.map(k=>[k,PWCAT[k][0]+' '+PWCAT[k][1],cnt(k)])).map(([k,l,n])=>`<button class="${PWV.cat===k?'on':''}" onclick="PWV.cat='${k}';pwRender()">${l} ${n}</button>`).join('')}</div>`:''}
+  <button class="btn" onclick="pwGo('edit')">➕ إضافة حساب</button>
+  <div id="pw-list" style="margin-top:10px">${pwRows()}</div>`;
+}
+function pwRows(){
+  if(!PWV.items.length)return `<div class="pwc pwhero"><div class="pwbig">🗝️</div><b>لسه مفيش حسابات</b><p class="muted">دوس ➕ إضافة حساب عشان تسجل أول باسورد</p></div>`;
+  const q=normAr(latD(PWV.q||'')).toLowerCase();
+  const l=PWV.items.filter(x=>(PWV.cat==='all'||x.c===PWV.cat)&&(!q||normAr([x.t,x.u,x.url,x.n].join(' ')).toLowerCase().includes(q))).sort((a,b)=>(a.t||'').localeCompare(b.t||'','ar'));
+  if(!l.length)return '<p class="empty">مفيش نتايج</p>';
+  return l.map(x=>`<div class="pwr" onclick="pwGo('view','${x.id}')">${pwAv(x)}<div class="grow"><b>${esc(x.t)}</b><small>${esc(x.u||(PWCAT[x.c]||PWCAT.other)[1])}</small></div>${x.u?`<button class="pwi s" title="انسخ اليوزر" onclick="event.stopPropagation();pwCopy('${x.id}','u')">👤</button>`:''}<button class="pwi s" title="انسخ الباسورد" onclick="event.stopPropagation();pwCopy('${x.id}','p')">🔑</button></div>`).join('');
+}
+function pwListOnly(){const el=$('#pw-list');if(el)el.innerHTML=pwRows()}
+function pwCopy(id,f){
+  const x=PWV.items&&PWV.items.find(i=>i.id===id);if(!x)return;const v=x[f]||'';if(!v)return toast('فاضي');
+  if(!navigator.clipboard)return toast('مش قادر أنسخ');
+  navigator.clipboard.writeText(v).then(()=>toast(f==='p'?'🔑 اتنسخ الباسورد ✓':'👤 اتنسخ اليوزر ✓')).catch(()=>toast('مش قادر أنسخ'));
+}
+function pwStrength(p){
+  p=p||'';let s=0;
+  if(p.length>=8)s++;if(p.length>=12)s++;if(/[a-z]/.test(p)&&/[A-Z]/.test(p))s++;if(/\d/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;
+  if(p.length<6)s=Math.min(s,1);
+  const L=[['ضعيف جداً','#dc2626'],['ضعيف','#ea580c'],['متوسط','#ca8a04'],['كويس','#65a30d'],['قوي','#16a34a'],['قوي جداً','#15803d']];
+  return{l:L[s][0],c:L[s][1],w:Math.max(8,s/5*100)};
+}
+function pwGen(n){n=n||16;const cs='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?-_';const a=crypto.getRandomValues(new Uint32Array(n));let s='';for(const v of a)s+=cs[v%cs.length];return s}
+function pwStr(){const st=pwStrength(PWV.f.p),b=$('#pf-sb'),l=$('#pf-sl');if(b){b.style.width=st.w+'%';b.style.background=st.c}if(l){l.textContent=PWV.f.p?st.l:'';l.style.color=st.c}}
+function pwViewHTML(){
+  const x=PWV.items.find(i=>i.id===PWV.cur);if(!x){PWV.mode='list';return pwListHTML()}
+  const cat=PWCAT[x.c]||PWCAT.other,st=pwStrength(x.p),url=x.url&&!/^https?:\/\//i.test(x.url)?'https://'+x.url:x.url;
+  const row=(lbl,val,btns,cls)=>`<div class="pwf"><div class="grow"><span>${lbl}</span><b class="${cls||''}">${val}</b></div>${btns||''}</div>`;
+  return `<div class="pwc"><div class="pwvh">${pwAv(x,1)}<div class="grow"><h3 style="margin:0;unicode-bidi:plaintext;text-align:start">${esc(x.t)}</h3><small class="muted">${cat[0]} ${cat[1]}</small></div></div>
+  ${x.u?row('👤 اسم المستخدم / الإيميل',esc(x.u),`<button class="pwi s" onclick="pwCopy('${x.id}','u')">📋</button>`):''}
+  ${row('🔑 الباسورد',PWV.show?esc(x.p):'••••••••••',`<button class="pwi s" onclick="PWV.show=!PWV.show;pwRender()">${PWV.show?'🙈':'👁️'}</button><button class="pwi s" onclick="pwCopy('${x.id}','p')">📋</button>`,'mono')}
+  <div class="pwst"><i style="width:${st.w}%;background:${st.c}"></i></div><small style="color:${st.c};font-weight:700">قوة الباسورد: ${st.l}</small>
+  ${x.url?row('🌐 الموقع',esc(x.url),`<a class="pwi s" href="${esc(url)}" target="_blank" rel="noopener">↗️</a>`):''}
+  ${x.n?row('📝 ملاحظات',esc(x.n).replace(/\n/g,'<br>')):''}
+  <small class="muted" style="display:block;margin-top:10px">آخر تعديل: ${x.up?new Date(x.up).toLocaleString('ar-EG'):'—'}</small></div>
+  <div class="pwact"><button class="btn" onclick="pwGo('edit','${x.id}')">✏️ تعديل</button><button class="btn ghost" onclick="pwShare('${x.id}')">↗️ مشاركة</button><button class="btn ghost danger" onclick="pwDel('${x.id}')">🗑 حذف</button></div>`;
+}
+function pwEditHTML(){
+  const f=PWV.f,st=pwStrength(f.p);
+  return `<div class="pwc"><h3 style="margin-top:0">${f.id?'✏️ تعديل الحساب':'➕ حساب جديد'}</h3>
+  <label>اسم الحساب<input id="pf-t" value="${esc(f.t)}" placeholder="مثلاً: Gmail، البنك الأهلي، واي فاي البيت" oninput="PWV.f.t=this.value" ${f.id?'':'data-focus'}></label>
+  <div class="fl">النوع</div><div class="pwchips wrap">${Object.entries(PWCAT).map(([k,[ic,l]])=>`<button type="button" class="${f.c===k?'on':''}" onclick="PWV.f.c='${k}';pwRender()">${ic} ${l}</button>`).join('')}</div>
+  <label>اسم المستخدم / الإيميل<input id="pf-u" dir="ltr" autocomplete="off" value="${esc(f.u)}" oninput="PWV.f.u=this.value"></label>
+  <label>الباسورد<div class="inl"><input id="pf-p" class="mono" type="${PWV.pv?'text':'password'}" dir="ltr" autocomplete="new-password" value="${esc(f.p)}" oninput="PWV.f.p=this.value;pwStr()"><button type="button" class="mini" onclick="PWV.pv=!PWV.pv;pwRender()">${PWV.pv?'🙈':'👁️'}</button><button type="button" class="mini" title="اعمل باسورد قوي" onclick="PWV.f.p=pwGen();PWV.pv=true;pwRender()">🎲</button></div></label>
+  <div class="pwst"><i id="pf-sb" style="width:${st.w}%;background:${st.c}"></i></div><small id="pf-sl" style="color:${st.c};font-weight:700">${f.p?st.l:''}</small>
+  <label style="margin-top:10px">الموقع<input id="pf-url" dir="ltr" value="${esc(f.url)}" placeholder="example.com" oninput="PWV.f.url=this.value"></label>
+  <label>ملاحظات<textarea id="pf-n" rows="3" oninput="PWV.f.n=this.value">${esc(f.n)}</textarea></label>
+  <button class="btn" onclick="pwSave()">💾 حفظ</button>
+  <button class="btn ghost" onclick="${f.id?`pwGo('view','${f.id}')`:`pwGo('list')`}">إلغاء</button></div>`;
+}
+async function pwSave(){
+  const f=PWV.f;f.t=(f.t||'').trim();
+  if(!f.t)return toast('اكتب اسم الحساب');if(!f.p)return toast('اكتب الباسورد');
+  const now=Date.now(),v={t:f.t,c:f.c||'other',u:(f.u||'').trim(),p:f.p,url:(f.url||'').trim(),n:(f.n||'').trim(),up:now};
+  let x=f.id&&PWV.items.find(i=>i.id===f.id);
+  if(x)Object.assign(x,v);else{x={id:uid(),at:now,...v};PWV.items.push(x)}
+  try{await pwSeal()}catch(e){return say('ما اتحفظش',String((e&&e.message)||e),'⚠️')}
+  toast('اتحفظ ✓');pwGo('view',x.id);
+}
+async function pwDel(id){
+  const x=PWV.items.find(i=>i.id===id);if(!x)return;
+  if(!await ask('حذف الحساب؟',x.t,{danger:true,icon:'🗑',ok:'حذف'}))return;
+  PWV.items=PWV.items.filter(i=>i.id!==id);await pwSeal();toast('اتحذف');pwGo('list');
+}
+async function pwShare(id){
+  const x=PWV.items.find(i=>i.id===id);if(!x)return;
+  if(!await ask('مشاركة الحساب؟','الباسورد هيظهر في الرسالة. ابعته لحد انت واثق فيه بس.',{icon:'⚠️',ok:'↗️ شارك',cancel:'إلغاء'}))return;
+  const t=[`🔐 ${x.t}`,x.u?`👤 ${x.u}`:'',`🔑 ${x.p}`,x.url?`🌐 ${x.url}`:'',x.n?`📝 ${x.n}`:''].filter(Boolean).join('\n');
+  if(navigator.share){try{await navigator.share({text:t});return}catch(e){if(e&&e.name==='AbortError')return}}
+  window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
+}
+const pwSetHTML=()=>`<div class="pwc"><h3 style="margin-top:0">🔑 غيّر الباسورد الرئيسي</h3>
+  <label>الباسورد الحالي<input id="ps-o" type="password" dir="ltr" autocomplete="current-password"></label>
+  <label>الباسورد الجديد<input id="ps-n1" type="password" dir="ltr" autocomplete="new-password"></label>
+  <label>اكتبه تاني<input id="ps-n2" type="password" dir="ltr" autocomplete="new-password"></label>
+  <button class="btn" onclick="pwChange()">تغيير</button></div>
+  <div class="pwc"><h3 style="margin-top:0">🛡️ الأمان</h3><p class="muted">الخزنة بتتقفل لوحدها أول ما تخرج منها أو تقفل الموبايل. الباسوردات متشفرة كمان جوه النسخة الاحتياطية.</p>
+  <button class="btn ghost danger" onclick="pwWipe()">🗑 امسح الخزنة كلها</button></div>`;
+async function pwChange(){
+  const o=$('#ps-o').value,n1=$('#ps-n1').value,n2=$('#ps-n2').value;
+  if(n1.length<6)return toast('الباسورد الجديد 6 حروف على الأقل');
+  if(n1!==n2)return toast('الباسوردين الجداد مش زي بعض');
+  toast('⏳ ...');
+  try{await pwDec(await pwKey(o,pwUnB64(S.settings.vault.salt)),S.settings.vault)}catch(e){return toast('الباسورد الحالي غلط')}
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  PWV.key=await pwKey(n1,salt);S.settings.vault.salt=pwB64(salt);await pwSeal();
+  toast('اتغير الباسورد الرئيسي ✓');pwGo('list');
+}
+async function pwWipe(){
+  if(!await ask('امسح الخزنة كلها؟','كل الباسوردات هتتمسح ومش هترجع تاني',{danger:true,icon:'🗑',ok:'امسح'}))return;
+  delete S.settings.vault;save();pwLock(true);pwRender();toast('اتمسحت');
+}
+/* الخزنة بتتقفل وتختفي أول ما تخرج من التطبيق */
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&$('#pwv'))pwClose()});
 
 /* ========== الإعدادات ========== */
 const SETS=[['name','✏️','اسم التطبيق'],['theme','🎨','الثيم'],['font','🔠','الخط وحجمه'],['home','🏠','الشاشة الرئيسية'],['labels','🔤','المسميات'],['notif','🔔','الإشعارات والصوت'],['sec','🔒','الأمان والخصوصية'],['ocr','🔎','قراءة الريسيت'],['drive','☁️','نسخ تلقائي على Drive'],['data','💾','النسخ الاحتياطي'],['demo','🧪','نسخة تجريبية'],['about','ℹ️','عن التطبيق']];
@@ -1817,10 +2057,10 @@ function fabMenu(){
 function fabOut(e){const m=document.getElementById('fabm');if(!m||m.contains(e.target)||(e.target.closest&&e.target.closest('.fab')))return;fabClose()}
 function fabClose(){const m=document.getElementById('fabm');if(m)m.remove();document.removeEventListener('pointerdown',fabOut,true)}
 function fabGo(k){fabClose();newTx(k)}
-/* صفحة المزيد: Contacts والمرفقات جنب الإعدادات */
+/* صفحة المزيد: Contacts والمرفقات والباسوردات جنب الإعدادات */
 function vMore(){
-  const B=[['items','📋',L('items')],['pmv','🏦',L('pm')],['inst','🏦',L('inst')],['buy','🛒',L('buy')],['wallet','💳',L('wallet')],['annual','📆',L('contracts')],['cash','🏧',L('cash')],['months','🔒','قفل الشهور'],['contacts','📇',L('contacts')],['docs','📎',L('docs')],['settings','⚙️',L('settings')]];
-  return `<h3>☰ ${esc(L('more'))}</h3><div class="rgrid">${B.map(([v,ic,l])=>`<button class="rbtn" onclick="${v==='settings'?"stab='';":''}go('${v}')"><span>${ic}</span>${esc(l)}</button>`).join('')}</div>`;
+  const B=[['items','📋',L('items')],['pmv','🏦',L('pm')],['inst','🏦',L('inst')],['buy','🛒',L('buy')],['wallet','💳',L('wallet')],['annual','📆',L('contracts')],['cash','🏧',L('cash')],['months','🔒','قفل الشهور'],['contacts','📇',L('contacts')],['docs','📎',L('docs')],['pw','🔐','الباسوردات'],['settings','⚙️',L('settings')]];
+  return `<h3>☰ ${esc(L('more'))}</h3><div class="rgrid">${B.map(([v,ic,l])=>`<button class="rbtn" onclick="${v==='pw'?'pwScreen()':(v==='settings'?"stab='';":'')+`go('${v}')`}"><span>${ic}</span>${esc(l)}</button>`).join('')}</div>`;
 }
 
 /* ========== إضافة / تعديل تحصيل أو مصروف ========== */
