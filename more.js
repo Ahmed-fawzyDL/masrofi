@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.11.0',VBUILD='13/10/2026 - 02:40 م';
+const VER='2.12.0',VBUILD='13/10/2026 - 02:55 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 /* المرفقات: كاميرا + الصور + ملف في كل مكان */
 try{filesBox=function(ids,ctx){return `<div class="files">${(ids||[]).map(id=>fileThumb(id,ctx)).join('')}<button type="button" class="fadd" onclick="attach('${ctx}',true)">📷<small>كاميرا</small></button><button type="button" class="fadd" onclick="attachGal('${ctx}')">🖼️<small>الصور</small></button><button type="button" class="fadd" onclick="attach('${ctx}',false)">📎<small>ملف</small></button></div>`}}catch(e){}
@@ -334,28 +334,37 @@ function spSec(){
   }
   return h;
 }
-/* قراءة الريسيت: مفتاح Google Vision (بيتحفظ على الموبايل ده بس، مش في النسخة الاحتياطية) */
+/* قراءة الريسيت: المفاتيح بتتحفظ على الموبايل ده بس، مش في النسخة الاحتياطية */
 function spOcr(){
-  const k=vKey();
-  return `${k?`<div class="ncard ok" style="cursor:default"><div class="nic">🔎</div><div class="grow"><b>Google Vision شغال ✓</b><small>الريسيتات بتتقري من جوجل. لو حصلت مشكلة، بيرجع للطريقة العادية لوحده.</small></div></div>`
-    :`<div class="ncard soon" style="cursor:default"><div class="nic">🔎</div><div class="grow"><b>القراءة دلوقتي بالطريقة العادية</b><small>حط مفتاح Google Vision عشان القراءة تبقى أدق بكتير.</small></div></div>`}
-  <label>Google Vision API Key<input id="v-key" dir="ltr" value="${esc(k)}" placeholder="AIza..."></label>
-  <button class="btn" onclick="vSave()">حفظ</button>
-  ${k?`<button class="btn ghost" onclick="vTest()">🧪 جرّب المفتاح</button><button class="btn ghost danger" onclick="vDel()">شيل المفتاح</button>`:''}
-  <details class="gen" style="margin-top:12px"><summary>📖 إزاي أجيب المفتاح</summary><ol>
-  <li>افتح <b dir="ltr">console.cloud.google.com</b> واختار <b>نفس المشروع</b> بتاع Drive.</li>
+  const vk=vKey(),ok=oKey(),on=[vk?'Google Vision':'',ok?'OCR.space':''].filter(Boolean).join(' + ');
+  return `${on?`<div class="ncard ok" style="cursor:default"><div class="nic">🔎</div><div class="grow"><b>القراءة شغالة بـ ${on} ✓</b><small>لو حصلت مشكلة، بيرجع للطريقة العادية لوحده.</small></div></div>`
+    :`<div class="ncard soon" style="cursor:default"><div class="nic">🔎</div><div class="grow"><b>القراءة دلوقتي بالطريقة العادية</b><small>حط مفتاح OCR.space (مجاني ومن غير كارت) عشان القراءة تبقى أدق بكتير.</small></div></div>`}
+  <h3>OCR.space · مجاني</h3>
+  <label>OCR.space API Key<input id="o-key" dir="ltr" value="${esc(ok)}" placeholder="K8..."></label>
+  <button class="btn" onclick="kSave('o')">حفظ</button>
+  ${ok?`<button class="btn ghost" onclick="kTest('o')">🧪 جرّب المفتاح</button><button class="btn ghost danger" onclick="kDel('o')">شيل المفتاح</button>`:''}
+  <details class="gen" style="margin-top:8px"><summary>📖 إزاي أجيب المفتاح</summary><ol>
+  <li>افتح <b dir="ltr">ocr.space/ocrapi</b> ودوس <b dir="ltr">Register for free API key</b>.</li>
+  <li>اكتب إيميلك، والمفتاح هيوصلك على الإيميل.</li>
+  <li>انسخه هنا، دوس <b>حفظ</b>، وبعدين <b>🧪 جرّب المفتاح</b>.</li></ol></details>
+  <h3>Google Vision · محتاج كارت</h3>
+  <label>Google Vision API Key<input id="v-key" dir="ltr" value="${esc(vk)}" placeholder="AIza..."></label>
+  <button class="btn" onclick="kSave('v')">حفظ</button>
+  ${vk?`<button class="btn ghost" onclick="kTest('v')">🧪 جرّب المفتاح</button><button class="btn ghost danger" onclick="kDel('v')">شيل المفتاح</button>`:''}
+  <details class="gen" style="margin-top:8px"><summary>📖 إزاي أجيب المفتاح</summary><ol>
+  <li>افتح <b dir="ltr">console.cloud.google.com</b> واختار مشروعك.</li>
   <li><b>Billing</b> ← اربط حساب فوترة (كارت). أول 1000 صورة في الشهر مجاناً.</li>
   <li><b>APIs &amp; Services ← Library</b> ← <b dir="ltr">Cloud Vision API</b> ← <b>Enable</b>.</li>
   <li><b>Credentials ← Create Credentials ← API key</b>.</li>
-  <li>افتح المفتاح الجديد:<br>• <b>Application restrictions</b> ← <b>Websites</b> ← ضيف <b dir="ltr">https://ahmed-fawzydl.github.io/*</b><br>• <b>API restrictions</b> ← <b>Restrict key</b> ← اختار <b dir="ltr">Cloud Vision API</b> بس<br>• <b>Save</b></li>
-  <li>انسخ المفتاح، حطه هنا، دوس <b>حفظ</b>، وبعدين <b>🧪 جرّب المفتاح</b>.</li></ol></details>`;
+  <li>افتح المفتاح:<br>• <b>Application restrictions</b> ← <b>Websites</b> ← <b dir="ltr">https://ahmed-fawzydl.github.io/*</b><br>• <b>API restrictions</b> ← <b dir="ltr">Cloud Vision API</b> بس ← <b>Save</b></li>
+  <li>انسخ المفتاح هنا ← <b>حفظ</b> ← <b>🧪 جرّب المفتاح</b>.</li></ol></details>`;
 }
-function vSave(){const v=($('#v-key').value||'').trim();if(v)localStorage.setItem(VKEY,v);else localStorage.removeItem(VKEY);render();toast('اتحفظ ✓')}
-async function vDel(){if(!await ask('شيل مفتاح Google Vision؟','القراءة هترجع للطريقة العادية',{icon:'🔎',ok:'شيله'}))return;localStorage.removeItem(VKEY);render()}
-async function vTest(){
+function kSave(w){const v=(($('#'+w+'-key')||{}).value||'').trim(),k=w==='v'?VKEY:OKEY2;if(v)localStorage.setItem(k,v);else localStorage.removeItem(k);render();toast('اتحفظ ✓')}
+async function kDel(w){if(!await ask('شيل المفتاح؟','',{icon:'🔎',ok:'شيله'}))return;localStorage.removeItem(w==='v'?VKEY:OKEY2);render()}
+async function kTest(w){
   const c=document.createElement('canvas');c.width=520;c.height=140;const x=c.getContext('2d');
   x.fillStyle='#fff';x.fillRect(0,0,520,140);x.fillStyle='#000';x.font='bold 54px sans-serif';x.fillText('Centric 2026',30,90);
-  try{toast('⏳ بيجرّب...');const t=await visionText(c);say(t&&t.trim()?'المفتاح شغال ✓':'المفتاح رد بس مقراش حاجة',t?'جوجل قرا: '+t.trim():'','🔎')}
+  try{toast('⏳ بيجرّب...');const t=await(w==='v'?visionText(c):ospaceText(c));say(t&&t.trim()?'المفتاح شغال ✓':'المفتاح رد بس مقراش حاجة',t?'اتقرا: '+t.trim():'','🔎')}
   catch(e){say('المفتاح مش شغال',String((e&&e.message)||e),'⚠️')}
 }
 function spData(){
@@ -531,25 +540,45 @@ document.addEventListener('pointerdown',()=>{
 },true);
 
 /* ========== القراءة (OCR) ========== */
-/* Google Vision: لو فيه مفتاح، الريسيت بيتقري من جوجل */
-const VKEY='centric-vkey';
+/* القراءة من النت: Google Vision أو OCR.space، ولو مفيش مفتاح أو فشلوا: الطريقة العادية */
+const VKEY='centric-vkey',OKEY2='centric-okey';
 const vKey=()=>localStorage.getItem(VKEY)||'';
-async function visionText(c){
-  const k=vKey();if(!k)return null;
-  const sc=Math.min(1,2000/Math.max(c.width,c.height));let src=c;
-  if(sc<1){src=document.createElement('canvas');src.width=Math.round(c.width*sc);src.height=Math.round(c.height*sc);src.getContext('2d').drawImage(c,0,0,src.width,src.height)}
-  const b64=src.toDataURL('image/jpeg',.88).split(',')[1];
-  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),25000);
-  try{
-    const r=await fetch('https://vision.googleapis.com/v1/images:annotate?key='+encodeURIComponent(k),{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,
-      body:JSON.stringify({requests:[{image:{content:b64},features:[{type:'DOCUMENT_TEXT_DETECTION'}],imageContext:{languageHints:['ar','en']}}]})});
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok||j.error)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
-    const x=j.responses&&j.responses[0];if(x&&x.error)throw new Error(x.error.message);
-    return (x&&((x.fullTextAnnotation&&x.fullTextAnnotation.text)||(x.textAnnotations&&x.textAnnotations[0]&&x.textAnnotations[0].description)))||'';
-  }catch(e){if(e&&e.name==='AbortError')throw new Error('جوجل اتأخر في الرد');throw e}
+const oKey=()=>localStorage.getItem(OKEY2)||'';
+function scaleCanvas(c,mx){const sc=Math.min(1,mx/Math.max(c.width,c.height));if(sc>=1)return c;const n=document.createElement('canvas');n.width=Math.round(c.width*sc);n.height=Math.round(c.height*sc);const x=n.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(c,0,0,n.width,n.height);return n}
+async function fetchT(url,opt,ms,slow){
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),ms);
+  try{return await fetch(url,{...opt,signal:ctl.signal})}
+  catch(e){if(e&&e.name==='AbortError')throw new Error(slow);throw new Error('مفيش نت أو السيرفر مش بيرد')}
   finally{clearTimeout(tm)}
 }
+async function visionText(c){
+  const k=vKey();if(!k)return null;
+  const b64=scaleCanvas(c,2000).toDataURL('image/jpeg',.88).split(',')[1];
+  const r=await fetchT('https://vision.googleapis.com/v1/images:annotate?key='+encodeURIComponent(k),{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({requests:[{image:{content:b64},features:[{type:'DOCUMENT_TEXT_DETECTION'}],imageContext:{languageHints:['ar','en']}}]})},25000,'جوجل اتأخر في الرد');
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||j.error)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
+  const x=j.responses&&j.responses[0];if(x&&x.error)throw new Error(x.error.message);
+  return (x&&((x.fullTextAnnotation&&x.fullTextAnnotation.text)||(x.textAnnotations&&x.textAnnotations[0]&&x.textAnnotations[0].description)))||'';
+}
+/* OCR.space: Engine 3 (الأدق، وبيعرف العربي والإنجليزي لوحده). الصورة لازم تبقى أقل من 1 ميجا */
+async function ospaceText(c){
+  const k=oKey();if(!k)return null;
+  let mx=1600,q=.82,b64='';
+  for(let i=0;i<7;i++){b64=scaleCanvas(c,mx).toDataURL('image/jpeg',q);if(b64.length*.75<900000)break;mx=Math.round(mx*.85);q=Math.max(.55,q-.06)}
+  const fd=new FormData();
+  fd.append('apikey',k);fd.append('base64Image',b64);fd.append('OCREngine','3');
+  fd.append('isTable','true');fd.append('scale','true');fd.append('detectOrientation','true');
+  const r=await fetchT('https://api.ocr.space/parse/image',{method:'POST',body:fd},50000,'OCR.space اتأخر في الرد');
+  const raw=await r.text();let j=null;try{j=JSON.parse(raw)}catch(e){}
+  if(!j||typeof j!=='object')throw new Error((raw||('HTTP '+r.status)).slice(0,160));
+  const em=m=>Array.isArray(m)?m.filter(Boolean).join(' · '):String(m||'');
+  if(j.IsErroredOnProcessing||!r.ok)throw new Error(em(j.ErrorMessage)||em(j.ErrorDetails)||('HTTP '+r.status));
+  const t=(j.ParsedResults||[]).map(p=>p.ParsedText||'').join('\n');
+  /* Engine 3 ساعات بيرجّع الجداول بشكل Markdown: نشيل الخطوط ونسيب الكلام */
+  return t.replace(/^\s*\|?[\s:|-]*-{3,}[\s:|-]*$/gm,'').replace(/\|/g,' ').replace(/^#+\s*/gm,'').replace(/[ \t]+/g,' ');
+}
+const CLOUD=[['Google Vision',visionText,vKey],['OCR.space',ospaceText,oKey]];
 const OCRW={};let OCRP=null;
 function getOcr(lang){
   if(!OCRW[lang])OCRW[lang]=(async()=>{await loadJS(TESS);return await Tesseract.createWorker(lang,1,{logger:m=>{if(m.status==='recognizing text'&&OCRP)OCRP(m.progress)}})})().catch(e=>{delete OCRW[lang];throw e});
@@ -604,7 +633,7 @@ async function openScanner(o){
   const stopCam=()=>{try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null};
   const close=()=>{if(!alive)return;alive=false;SCAN=null;stopCam();ov.remove();if(o.onCancel&&!taken)o.onCancel()};
   SCAN={close};btn('x').onclick=close;
-  if(o.read&&!vKey())getOcr(o.lang||'ara+eng').catch(()=>{});
+  if(o.read&&!vKey()&&!oKey())getOcr(o.lang||'ara+eng').catch(()=>{});
   const grabFrame=()=>{
     const vw=v.videoWidth,vh=v.videoHeight,r=v.getBoundingClientRect(),f=fr.getBoundingClientRect();
     const sc=Math.max(r.width/vw,r.height/vh),ox=(r.width-vw*sc)/2,oy=(r.height-vh*sc)/2;
@@ -845,22 +874,24 @@ function dHash(c){
 }
 function hamm(a,b){if(!a||!b||a.length!==b.length)return 99;let n=0;for(let i=0;i<a.length;i+=2){let v=parseInt(a.substr(i,2),16)^parseInt(b.substr(i,2),16);while(v){n+=v&1;v>>=1}}return n}
 const EMPTYRC=()=>({total:0,TC:[],rep:0,date:null,time:'',no:'',merchant:'',names:[],cands:[],match:null,matchBy:'',phMatch:false,phForced:false,card:null,cash:false,phones:[],address:'',deliv:false,rest:false,ph:'',raw:'',verr:''});
-/* القراءة: Google Vision لو فيه مفتاح، ولو مفيش أو فشل: الطريقة العادية */
+/* القراءة: من النت لو فيه مفتاح، ولو مفيش أو فشل: الطريقة العادية */
 function scanReceipt(){
   openScanner({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',maxW:1800,
     read:async(c,onP)=>{
-      const ph=dHash(c);let verr='';
-      if(vKey()){
+      const ph=dHash(c),errs=[];
+      for(const[name,fn,has]of CLOUD){
+        if(!has())continue;
         try{
           onP(.3);
-          const tv=await visionText(c);
+          const tv=await fn(c);
           if(tv&&tv.replace(/\s+/g,'').length>10){
             const r=lookStore(parseReceipt(tv),splitLines(tv));
-            r.ph=ph;r.raw='── Google Vision ──\n'+tv.trim();return r;
+            r.ph=ph;r.raw='── '+name+' ──\n'+tv.trim();return r;
           }
-          verr='جوجل مرجعش كلام من الصورة';
-        }catch(e){verr=String((e&&e.message)||e)}
+          errs.push(name+': مرجعش كلام من الصورة');
+        }catch(e){errs.push(name+': '+String((e&&e.message)||e))}
       }
+      const verr=errs.join(' · ');
       try{
         const orig=cloneCanvas(c),base=cloneCanvas(c),head=cropTop(c,.5);prepCanvas(c);
         const P={tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'};
@@ -885,9 +916,9 @@ function scanReceipt(){
           lookStore(r,texts.flatMap(t=>splitLines(t)),extra);
         }
         r.ph=ph;r.verr=verr;
-        r.raw=texts.map((t,i)=>lbl[i]+'\n'+String(t||'').trim()).join('\n\n');
+        r.raw=(verr?'⚠️ '+verr+'\n\n':'')+texts.map((t,i)=>lbl[i]+'\n'+String(t||'').trim()).join('\n\n');
         return r;
-      }catch(e){const m=String((e&&e.message)||e);return{...EMPTYRC(),err:m,raw:'⚠️ '+m,verr}}
+      }catch(e){const m=String((e&&e.message)||e);return{...EMPTYRC(),err:m,raw:'⚠️ '+(verr?verr+' · ':'')+m,verr}}
     },
     onDone:async(blob,rc)=>{const ids=await addFiles([new File([blob],'receipt-'+today()+'.jpg',{type:'image/jpeg'})]);receiptFlow(rc,ids[0])}});
 }
@@ -897,9 +928,9 @@ let NMR=null,NMO=[];
 function askStore(rc){
   const o=[],add=s=>{s=(s||'').trim();if(s&&!o.some(x=>normAr(x)===normAr(s)))o.push(s)};
   if(rc.match)add(rc.match.name);(rc.names||[]).slice(0,4).forEach(add);
-  NMO=o.slice(0,5);const star=!!rc.match,raw=String(rc.raw||'').trim(),hasTxt=raw.replace(/──[^\n]*──/g,'').replace(/\s+/g,'').length>10;
+  NMO=o.slice(0,5);const star=!!rc.match,raw=String(rc.raw||'').trim(),hasTxt=raw.replace(/──[^\n]*──/g,'').replace(/⚠️[^\n]*/g,'').replace(/\s+/g,'').length>10;
   const diag=hasTxt?`<details class="gen" style="margin:0 0 8px"><summary>🔍 اللي البرنامج قراه</summary><pre style="white-space:pre-wrap;font:inherit;font-size:11px;max-height:260px;overflow:auto;margin:6px 0">${esc(raw)}</pre></details>`
-    :`<p class="warn">⚠️ البرنامج مقراش أي كلام من الصورة${rc.err?'<br><small>'+esc(rc.err)+'</small>':''}</p>`;
+    :`<p class="warn">⚠️ البرنامج مقراش أي كلام من الصورة${rc.err||rc.verr?'<br><small>'+esc([rc.verr,rc.err].filter(Boolean).join(' · '))+'</small>':''}</p>`;
   return new Promise(res=>{
     sheet(`<h2>🧾 اسم المكان؟</h2>
     ${diag}
@@ -955,7 +986,7 @@ function findDup(cat,a,date,rc){
 async function receiptFlow(rc,fid){
   rc=Object.assign(EMPTYRC(),rc||{});
   if(rc.err)toast('⚠️ القراءة ما نجحتش، كمّل يدوي');
-  else if(rc.verr)toast('⚠️ Google Vision: '+rc.verr+' · اتقرا بالطريقة العادية');
+  else if(rc.verr)toast('⚠️ '+rc.verr+' · اتقرا بالطريقة العادية');
   const pick=await askStore(rc);
   if(!pick)return toast('اتلغى');
   const n=pick.name;
