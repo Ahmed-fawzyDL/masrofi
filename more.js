@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.19.0',VBUILD='13/10/2026 - 07:45 م';
+const VER='2.19.1',VBUILD='13/10/2026 - 08:15 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 /* المرفقات: كاميرا + الصور + ملف في كل مكان */
 try{filesBox=function(ids,ctx){return `<div class="files">${(ids||[]).map(id=>fileThumb(id,ctx)).join('')}<button type="button" class="fadd" onclick="attach('${ctx}',true)">📷<small>كاميرا</small></button><button type="button" class="fadd" onclick="attachGal('${ctx}')">🖼️<small>الصور</small></button><button type="button" class="fadd" onclick="attach('${ctx}',false)">📎<small>ملف</small></button></div>`}}catch(e){}
@@ -26,7 +26,6 @@ nav .fab{position:fixed!important;left:50%!important;right:auto!important;top:au
 #fabm .inc{background:#16a34a}#fabm .exp{background:#dc2626}
 .cres{margin:-4px 0 10px;max-height:280px;overflow:auto}
 .cpick{display:block;margin:-6px 0 10px;color:#16a34a;font-weight:700}
-.shx{float:left;position:sticky;top:0;z-index:6;width:34px;height:34px;border-radius:50%;border:0;background:var(--soft,#eef2f6);color:inherit;font-size:15px;margin:0 8px 6px 0;cursor:pointer}
 .dlg{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:3000;display:flex;align-items:center;justify-content:center;padding:16px;animation:dlgf .15s ease-out}
 @keyframes dlgf{from{opacity:0}to{opacity:1}}
 .dbx{position:relative;width:min(100%,380px);max-height:85vh;overflow:auto;background:var(--card,#fff);border-radius:20px;padding:26px 18px 16px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);animation:dlgi .18s ease-out}
@@ -35,7 +34,7 @@ nav .fab{position:fixed!important;left:50%!important;right:auto!important;top:au
 .dic{font-size:38px;line-height:1;margin-bottom:6px}
 .dbx h3{margin:4px 0 6px;font-size:17px}
 .dbx p{margin:0 0 12px;color:#64748b;font-size:13.5px;white-space:pre-line;unicode-bidi:plaintext}
-.din{width:100%;margin:4px 0 12px}
+.din{width:100%;margin:4px 0 12px;text-align:center;font-size:17px}
 .dbt{display:grid;gap:8px}.dbt .btn{margin:0}
 #rvt:empty{display:none}
 .nm{direction:ltr;unicode-bidi:isolate;display:inline-block}
@@ -99,6 +98,7 @@ nav .fab{position:fixed!important;left:50%!important;right:auto!important;top:au
 .rfs button{width:42px;height:36px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#334155}
 .rfs b{font-size:15px;color:#0f172a}
 .rfd{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.rfd.one{grid-template-columns:1fr}
 .rfd label{font-size:11px;color:#64748b;margin:0}.rfd input{width:100%;margin-top:3px}
 @media print{.noprint{display:none!important}}
 #pwv{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column}
@@ -108,10 +108,12 @@ nav .fab{position:fixed!important;left:50%!important;right:auto!important;top:au
 #pwv .pwi.s{background:var(--soft,#eef2f6);color:inherit;width:36px;height:36px;font-size:15px}
 #pwv .pwb{flex:1;overflow:auto;padding:14px;padding-bottom:40px}
 #pwv .pwc{background:var(--card,#fff);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(15,23,42,.06)}
+#pwv label{display:block}
+#pwv textarea{display:block;width:100%;box-sizing:border-box;min-height:84px;margin-top:6px;padding:10px 12px;border-radius:12px;border:1px solid var(--line,rgba(148,163,184,.4));background:transparent;color:inherit;font:inherit;resize:vertical}
 #pwv .pwhero{text-align:center}#pwv .pwbig{font-size:52px;line-height:1.2}
 #pwv .pwhero input{width:100%;margin:10px 0;text-align:center;font-size:17px}
 #pwv .pwsr input{width:100%;margin:0 0 10px}
-#pwv .pwr{display:flex;align-items:center;gap:12px;background:var(--card,#fff);border-radius:14px;padding:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(15,23,42,.06);cursor:pointer}
+#pwv .pwr{display:flex;align-items:center;gap:10px;background:var(--card,#fff);border-radius:14px;padding:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(15,23,42,.06);cursor:pointer}
 #pwv .pwav{width:42px;height:42px;border-radius:12px;color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex:0 0 42px}
 #pwv .pwav.big{width:56px;height:56px;font-size:24px;flex-basis:56px;border-radius:16px}
 #pwv .pwr b{display:block;unicode-bidi:plaintext;text-align:start}#pwv .pwr small{color:#94a3b8;display:block;unicode-bidi:plaintext;text-align:start}
@@ -139,12 +141,12 @@ b,strong,small,h2,h3,.muted,.kv b,td{unicode-bidi:plaintext}`;document.head.appe
 
 /* ========== الرسايل: كلها فيها ✕ للقفل ========== */
 /* الرسالة بتتقفل بـ ✕ أو بزرار الإلغاء بس.
-   الضغط برّه المربع مبيعملش حاجة، عشان لما الكيبورد يقفل والشاشة تتحرك الضغطة متتحسبش إلغاء.
    لما تدوس ✕ بترجع null، يعني العملية اتلغت ومحدش اختار حاجة */
 function dlg(o){
   return new Promise(res=>{
     const ov=document.createElement('div');ov.className='dlg';
-    ov.innerHTML=`<div class="dbx"><button type="button" class="dx" aria-label="close">✕</button>${o.icon?`<div class="dic">${o.icon}</div>`:''}<h3>${esc(o.title||'')}</h3>${o.msg?`<p>${esc(o.msg)}</p>`:''}${o.input?`<input class="din" ${o.num?'inputmode="decimal" dir="ltr"':'dir="auto"'} value="${esc(o.val||'')}">`:''}<div class="dbt"><button type="button" class="btn ${o.danger?'danger':''}" data-r="ok">${esc(o.ok||'تمام')}</button>${o.cancel?`<button type="button" class="btn ghost" data-r="no">${esc(o.cancel)}</button>`:''}</div></div>`;
+    const inType=o.pw?'type="password" dir="ltr" autocomplete="current-password"':o.num?'inputmode="decimal" dir="ltr"':'dir="auto"';
+    ov.innerHTML=`<div class="dbx"><button type="button" class="dx" aria-label="close">✕</button>${o.icon?`<div class="dic">${o.icon}</div>`:''}<h3>${esc(o.title||'')}</h3>${o.msg?`<p>${esc(o.msg)}</p>`:''}${o.input?`<input class="din" ${inType} value="${esc(o.val||'')}">`:''}<div class="dbt"><button type="button" class="btn ${o.danger?'danger':''}" data-r="ok">${esc(o.ok||'تمام')}</button>${o.cancel?`<button type="button" class="btn ghost" data-r="no">${esc(o.cancel)}</button>`:''}</div></div>`;
     document.body.appendChild(ov);
     const inp=ov.querySelector('.din');
     const kd=e=>{if(e.key==='Escape'){e.stopPropagation();done(null)}else if(e.key==='Enter'&&inp){e.preventDefault();done(inp.value)}};
@@ -155,17 +157,12 @@ function dlg(o){
     if(inp)setTimeout(()=>{inp.focus();inp.select()},60);
   });
 }
-try{ask=function(title,msg,o){o=o||{};return dlg({title,msg,icon:o.icon||'❓',ok:o.ok||'تمام',cancel:o.cancel===undefined?'إلغاء':o.cancel,danger:o.danger})}}catch(e){}
+/* أي رسالة فيها حاجة زيادة (زي خانة كتابة) بتتعرض بالطريقة القديمة بتاعة app.js */
+const ASK0=typeof ask==='function'?ask:null;
+try{ask=function(title,msg,o){o=o||{};if(ASK0&&Object.keys(o).some(k=>!['icon','ok','cancel','danger'].includes(k)))return ASK0.apply(this,arguments);return dlg({title,msg,icon:o.icon||'❓',ok:o.ok||'تمام',cancel:o.cancel===undefined?'إلغاء':o.cancel,danger:o.danger})}}catch(e){}
 try{say=function(title,msg,icon){return dlg({title,msg,icon:icon||'ℹ️',ok:'تمام'}).then(()=>{})}}catch(e){}
-try{askInput=function(title,msg,val,num){return dlg({title,msg,icon:'✏️',input:true,val,num,ok:'تمام',cancel:'إلغاء'})}}catch(e){}
-/* الشاشات اللي بتطلع من تحت: ✕ فوق */
-function addX(){
-  const sh=document.getElementById('sheet');if(!sh)return;
-  const h=sh.querySelector('h2');if(!h)return;
-  const box=(h.closest('.phead')||h).parentElement;if(!box||box.querySelector(':scope>.shx'))return;
-  const b=document.createElement('button');b.type='button';b.className='shx';b.textContent='✕';b.setAttribute('aria-label','close');b.onclick=()=>closeSheet();
-  box.insertBefore(b,box.firstChild);
-}
+/* خانة كتابة (المبلغ وأسماء الزراير): ليها رسالتها لوحدها ومبتعتمدش على أي حاجة تانية */
+const askIn=(title,msg,val,num,ok)=>dlg({title,msg,icon:num?'💰':'✏️',input:true,val,num,ok:ok||'حفظ',cancel:'إلغاء'});
 
 /* ========== التقارير: أدوات ========== */
 /* كل خانة كلام: اتجاهها حسب أول حرف (إنجليزي شمال، عربي يمين). الأرقام دايماً من الشمال */
@@ -228,6 +225,9 @@ const rfG=(lbl,chips,extra)=>`<div class="rfg"><small>${lbl}</small><div class="
 const rfDates=(a,b,type)=>`<div class="rfd"><label>من<input type="${type}" value="${RF[a]||''}" onchange="RF.${a}=this.value;rvUp()"></label><label>إلى<input type="${type}" value="${RF[b]||''}" onchange="RF.${b}=this.value;rvUp()"></label></div>`;
 function rfMonth(d){RF.month=addMonths(RF.month+'-01',d).slice(0,7);rvUp()}
 function rfYear(d){RF.year=(+RF.year||NY)+d;rvUp()}
+/* المقارنة بشهور محددة: تضيف أي شهر أو تشيله */
+function rfAddM(v){if(!v)return;RF.cms=[...new Set([...(RF.cms||[]),v])].sort();rvUp()}
+function rfDelM(k){RF.cms=(RF.cms||[]).filter(x=>x!==k);rvUp()}
 const monthSel=()=>rfBox(`<div class="rfs"><button type="button" onclick="rfMonth(-1)">→</button><b>${esc(mName(RF.month))}</b><button type="button" onclick="rfMonth(1)">←</button></div>`);
 const yearSel=()=>rfBox(`<div class="rfs"><button type="button" onclick="rfYear(-1)">→</button><b>سنة ${nm(RF.year)}</b><button type="button" onclick="rfYear(1)">←</button></div>`);
 function yearsList(){const ys=new Set([NY,NY-1,NY-2]);S.txs.forEach(t=>ys.add(+t.date.slice(0,4)));S.cash.forEach(c=>ys.add(+c.date.slice(0,4)));return [...ys].sort((a,b)=>b-a)}
@@ -247,10 +247,13 @@ function fStmt(){
 }
 function fCmp(){
   if(RF.crange==='c'){RF.cf=RF.cf||prevKey(NKM);RF.ct=RF.ct||NKM}
+  if(RF.crange==='p'&&!(RF.cms&&RF.cms.length))RF.cms=[prevKey(NKM),NKM];
   const it=c=>chip(RF.ccat===c.id,esc(c.name),`RF.ccat='${c.id}';rvUp()`,c.kind==='inc'?'i':'e');
+  const extra=RF.crange==='c'?rfDates('cf','ct','month')
+    :RF.crange==='p'?`<div class="rchs" style="margin-top:8px">${(RF.cms||[]).slice().sort().map(k=>chip(true,esc(mName(k))+' ✕',`rfDelM('${k}')`)).join('')}</div><div class="rfd one"><label>➕ ضيف شهر<input type="month" onchange="rfAddM(this.value)"></label></div>`:'';
   return rfBox(
     rfG('البند',chip(RF.ccat==='ALL_EXP','كل '+esc(L('exp')),`RF.ccat='ALL_EXP';rvUp()`,'e')+chip(RF.ccat==='ALL_INC','كل '+esc(L('inc')),`RF.ccat='ALL_INC';rvUp()`,'i')+S.cats.filter(c=>c.kind==='exp').map(it).join('')+S.cats.filter(c=>c.kind==='inc').map(it).join('')),
-    rfG('الفترة',[['3','آخر 3 شهور'],['6','آخر 6 شهور'],['12','آخر 12 شهر']].concat(yearsList().map(y=>['y:'+y,'سنة '+y])).concat([['c','📅 من شهر لشهر']]).map(([v,l])=>chip(RF.crange===v,l,`RF.crange='${v}';rvUp()`)).join(''),RF.crange==='c'?rfDates('cf','ct','month'):'')
+    rfG('الفترة',[['3','آخر 3 شهور'],['6','آخر 6 شهور'],['12','آخر 12 شهر']].concat(yearsList().map(y=>['y:'+y,'سنة '+y])).concat([['c','📅 من شهر لشهر'],['p','🔀 شهور محددة']]).map(([v,l])=>chip(RF.crange===v,l,`RF.crange='${v}';rvUp()`)).join(''),extra)
   );
 }
 const fInst=()=>rfBox(rfG('القسط',chip(!RF.plan,'كل الأقساط',`RF.plan='';rvUp()`)+S.plans.map(p=>chip(RF.plan===p.id,esc(p.name),`RF.plan='${p.id}';rvUp()`)).join('')));
@@ -314,18 +317,33 @@ function pmTable(list,f,t){
   const pm=pmStats(list).filter(x=>x.i||x.o);if(!pm.length)return NONE;
   return rtbl(['الحساب','العمليات|c','قبضت|n','صرفت|n'],pm.map(x=>`<tr class="clk" onclick="${dS(f,t,'','',x.m.id)}">${cT(esc(x.m.name))}${cC(nm(x.n))}${cN(x.i?num(x.i):'—','inc')}${cN(x.o?num(x.o):'—','exp')}</tr>`));
 }
-/* التقرير الشهري: التحصيلات متقسمة (ثابت شهري / سنوي / غير ثابت) وكل جزء ليه جدول بنوده */
-const INCG={fix:['📌 ثابت شهري','ثابت شهري','#0f766e'],ann:['📄 سنوي','سنوي','#2563eb'],var:['💵 غير ثابت','غير ثابت','#ca8a04']};
+/* التقرير الشهري:
+   التحصيلات: ثابت شهري ← غير ثابت ← سنوي ← إجمالي التحصيلات
+   المصروفات: ثابت ← متغير ← إجمالي المصروفات
+   وفي الآخر: إجمالي التحصيلات ناقص إجمالي المصروفات = الناتج */
+const INCG={fix:['📌 ثابت شهري','ثابت شهري','#0f766e'],var:['💵 غير ثابت','غير ثابت','#ca8a04'],ann:['📄 سنوي','سنوي','#2563eb']};
+const EXPG={fix:['📌 مصروف ثابت','مصروف ثابت','#dc2626'],var:['🛒 مصروف متغير','مصروف متغير','#ea580c']};
 const incGrp=t=>{const c=C(t.cat);return c&&c.fixed?(isA(c)?'ann':'fix'):'var'};
+const expGrp=t=>{const c=C(t.cat);return c&&c.fixed?'fix':'var'};
+const gsum=l=>l.reduce((a,y)=>a+y.amount,0);
+function grpBlock(list,kind,G,fn,click){
+  const gs=Object.keys(G).map(g=>({g,l:list.filter(x=>x.type===kind&&!x.pend&&fn(x)===g)})),used=gs.filter(x=>x.l.length);
+  let b='';
+  if(used.length>1)b+=donut(used.map(x=>({label:G[x.g][1],value:gsum(x.l),color:G[x.g][2]})),kind==='inc'?L('inc'):L('exp'));
+  if(!used.length)b+=NONE;
+  used.forEach(x=>{b+=`<div class="rs2">${G[x.g][0]}<em>${nm(num(gsum(x.l)))}</em></div>`+catTable(x.l,kind,click,true)});
+  const tot=gs.reduce((a,x)=>a+gsum(x.l),0);
+  b+=`<div class="rs2">🧾 إجمالي ${esc(kind==='inc'?L('inc'):L('exp'))}</div>`+rtbl(['البيان','المبلغ|n'],gs.map(x=>`<tr>${cT(G[x.g][1])}${cN(num(gsum(x.l)),kind)}</tr>`),ft('الإجمالي',1,fN(num(tot))));
+  return b;
+}
 function bMonth(){
   const k=RF.month,list=keyTx(k),s=sums(list),[f,t]=mRange(k),cl=cashOf(k).sort((a,c)=>a.date.localeCompare(c.date)),ct=cl.reduce((a,c)=>a+c.amount,0);
+  const ti=list.filter(x=>x.type==='inc'&&!x.pend).reduce((a,x)=>a+x.amount,0),te=list.filter(x=>x.type==='exp'&&!x.pend).reduce((a,x)=>a+x.amount,0),net=ti-te;
   let b=kpAll(s)+ioPie(s);
-  const gs=Object.keys(INCG).map(g=>({g,l:list.filter(x=>x.type==='inc'&&!x.pend&&incGrp(x)===g)})).filter(x=>x.l.length);
-  b+=rsec('💰 '+esc(L('inc')),num(s.inc));
-  if(!gs.length)b+=NONE;
-  if(gs.length>1)b+=donut(gs.map(x=>({label:INCG[x.g][1],value:x.l.reduce((a,y)=>a+y.amount,0),color:INCG[x.g][2]})),L('inc'));
-  gs.forEach(x=>{b+=`<div class="rs2">${INCG[x.g][0]}<em>${nm(num(x.l.reduce((a,y)=>a+y.amount,0)))}</em></div>`+catTable(x.l,'inc',id=>dS(f,t,id),true)});
-  b+=rsec('💸 '+esc(L('exp')),num(s.exp))+catTable(list,'exp',id=>dS(f,t,id));
+  b+=rsec('💰 '+esc(L('inc')),num(ti))+grpBlock(list,'inc',INCG,incGrp,id=>dS(f,t,id));
+  b+=rsec('💸 '+esc(L('exp')),num(te))+grpBlock(list,'exp',EXPG,expGrp,id=>dS(f,t,id));
+  b+=rsec('🧮 الناتج')+rtbl(['البيان','المبلغ|n'],[`<tr>${cT('إجمالي '+esc(L('inc')))}${cN(num(ti),'inc')}</tr>`,`<tr>${cT('إجمالي '+esc(L('exp')))}${cN('-'+num(te),'exp')}</tr>`],
+    `<tr><td class="t">${esc(L('net'))}</td><td class="n"><b class="${net<0?'exp':'inc'}">${nm(sgn(net))}</b></td></tr>`);
   if(pmStats(list).some(x=>x.i||x.o))b+=rsec('🏦 '+esc(L('pm')))+pmTable(list,f,t);
   if(cl.length)b+=rsec('🏧 '+esc(L('cash')),num(ct))+rtbl(['التاريخ|c','الحساب','المبلغ|n'],cl.map(c=>`<tr>${cD(c.date)}${cT(esc(M(c.method)?.name||'—'),esc(c.note||''))}${cN(num(c.amount))}</tr>`),cl.length>1?ft('الإجمالي',2,fN(num(ct))):'');
   return{title:'تقرير شهري',sub:mName(k)+(S.closed[k]?' · 🔒 مقفول':''),body:b};
@@ -341,7 +359,8 @@ function bYear(){
 }
 function bCmp(){
   let ks=[];
-  if(RF.crange==='c'){
+  if(RF.crange==='p'){ks=[...new Set(RF.cms||[])].sort()}
+  else if(RF.crange==='c'){
     let a=RF.cf||prevKey(NKM),z=RF.ct||NKM;if(a>z)[a,z]=[z,a];
     let k=a,n=0;while(k<=z&&n<36){ks.push(k);k=addMonths(k+'-01',1).slice(0,7);n++}
   }else if(RF.crange.startsWith('y:')){const y=+RF.crange.slice(2);for(let i=1;i<=12;i++)ks.push(ym(y,i))}
@@ -360,7 +379,8 @@ function bCmp(){
   let b=rkp([['الإجمالي',fmt(tot),kind],['المتوسط الشهري',fmt(avg),'net'],['أعلى شهر',vals[mx]?`${MONTHS[+ks[mx].slice(5)-1]} · ${num(vals[mx])}`:'—','warn']]);
   b+=donut(ks.map((k,i)=>({label:mName(k),value:vals[i]})),name);
   b+=rsec('📅 شهر بشهر')+rtbl(['الشهر','المبلغ|n','التغيير|n'],rows,ft('الإجمالي',1,fN(num(tot)),fE));
-  return{title:'مقارنة: '+name,sub:`${mName(ks[0])} - ${mName(ks[ks.length-1])}`,body:b,
+  const sub=RF.crange==='p'?ks.map(mName).join(' · '):`${mName(ks[0])} - ${mName(ks[ks.length-1])}`;
+  return{title:'مقارنة: '+name,sub,body:b,
     csv:{head:['الشهر','المبلغ','الفرق','التغيير %'],rows:ks.map((k,i)=>{const pv=i?vals[i-1]:null;return[mName(k),vals[i],pv==null?'':vals[i]-pv,pv?Math.round((vals[i]-pv)/pv*100):'']})}};
 }
 function bCols(){
@@ -500,6 +520,8 @@ async function pwKey(pass,salt){const k=await crypto.subtle.importKey('raw',pwTe
 async function pwEnc(key,items){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,pwTe.encode(JSON.stringify(items)));return{iv:pwB64(iv),ct:pwB64(ct)}}
 async function pwDec(key,v){const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:pwUnB64(v.iv)},key,pwUnB64(v.ct));return JSON.parse(pwTd.decode(pt))}
 async function pwSeal(){const e=await pwEnc(PWV.key,PWV.items);Object.assign(S.settings.vault,e,{n:PWV.items.length,up:Date.now()});save()}
+/* بيتأكد إن الباسورد الرئيسي صح */
+async function pwCheck(pass){try{await pwDec(await pwKey(pass,pwUnB64(S.settings.vault.salt)),S.settings.vault);return true}catch(e){return false}}
 function pwScreen(){
   if(!(window.crypto&&crypto.subtle))return say('مش متاح','المتصفح ده مش بيدعم التشفير','⚠️');
   let ov=$('#pwv');if(!ov){ov=document.createElement('div');ov.id='pwv';document.body.appendChild(ov)}
@@ -565,7 +587,7 @@ function pwRows(){
   const q=normAr(latD(PWV.q||'')).toLowerCase();
   const l=PWV.items.filter(x=>(PWV.cat==='all'||x.c===PWV.cat)&&(!q||normAr([x.t,x.u,x.url,x.n].join(' ')).toLowerCase().includes(q))).sort((a,b)=>(a.t||'').localeCompare(b.t||'','ar'));
   if(!l.length)return '<p class="empty">مفيش نتايج</p>';
-  return l.map(x=>`<div class="pwr" onclick="pwGo('view','${x.id}')">${pwAv(x)}<div class="grow"><b>${esc(x.t)}</b><small>${esc(x.u||(PWCAT[x.c]||PWCAT.other)[1])}</small></div>${x.u?`<button class="pwi s" title="انسخ اليوزر" onclick="event.stopPropagation();pwCopy('${x.id}','u')">👤</button>`:''}<button class="pwi s" title="انسخ الباسورد" onclick="event.stopPropagation();pwCopy('${x.id}','p')">🔑</button></div>`).join('');
+  return l.map(x=>`<div class="pwr" onclick="pwGo('view','${x.id}')">${pwAv(x)}<div class="grow"><b>${esc(x.t)}</b><small>${esc(x.u||(PWCAT[x.c]||PWCAT.other)[1])}</small></div><button class="pwi s" title="Share Pass" onclick="event.stopPropagation();pwShare('${x.id}')">🔗</button><button class="pwi s" title="انسخ الباسورد" onclick="event.stopPropagation();pwCopy('${x.id}','p')">🔑</button></div>`).join('');
 }
 function pwListOnly(){const el=$('#pw-list');if(el)el.innerHTML=pwRows()}
 function pwCopy(id,f){
@@ -580,29 +602,28 @@ function pwStrength(p){
   const L=[['ضعيف جداً','#dc2626'],['ضعيف','#ea580c'],['متوسط','#ca8a04'],['كويس','#65a30d'],['قوي','#16a34a'],['قوي جداً','#15803d']];
   return{l:L[s][0],c:L[s][1],w:Math.max(8,s/5*100)};
 }
-function pwGen(n){n=n||16;const cs='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?-_';const a=crypto.getRandomValues(new Uint32Array(n));let s='';for(const v of a)s+=cs[v%cs.length];return s}
 function pwStr(){const st=pwStrength(PWV.f.p),b=$('#pf-sb'),l=$('#pf-sl');if(b){b.style.width=st.w+'%';b.style.background=st.c}if(l){l.textContent=PWV.f.p?st.l:'';l.style.color=st.c}}
 function pwViewHTML(){
   const x=PWV.items.find(i=>i.id===PWV.cur);if(!x){PWV.mode='list';return pwListHTML()}
-  const cat=PWCAT[x.c]||PWCAT.other,st=pwStrength(x.p),url=x.url&&!/^https?:\/\//i.test(x.url)?'https://'+x.url:x.url;
+  const cat=PWCAT[x.c]||PWCAT.other,st=pwStrength(x.p),url=x.url&&!/^https?:\/\//i.test(x.url)?'https://'+x.url:x.url,wifi=x.c==='wifi';
   const row=(lbl,val,btns,cls)=>`<div class="pwf"><div class="grow"><span>${lbl}</span><b class="${cls||''}">${val}</b></div>${btns||''}</div>`;
   return `<div class="pwc"><div class="pwvh">${pwAv(x,1)}<div class="grow"><h3 style="margin:0;unicode-bidi:plaintext;text-align:start">${esc(x.t)}</h3><small class="muted">${cat[0]} ${cat[1]}</small></div></div>
-  ${x.u?row('👤 اسم المستخدم / الإيميل',esc(x.u),`<button class="pwi s" onclick="pwCopy('${x.id}','u')">📋</button>`):''}
+  ${x.u?row(wifi?'📶 اسم الشبكة':'👤 اسم المستخدم / الإيميل',esc(x.u),`<button class="pwi s" onclick="pwCopy('${x.id}','u')">📋</button>`):''}
   ${row('🔑 الباسورد',PWV.show?esc(x.p):'••••••••••',`<button class="pwi s" onclick="PWV.show=!PWV.show;pwRender()">${PWV.show?'🙈':'👁️'}</button><button class="pwi s" onclick="pwCopy('${x.id}','p')">📋</button>`,'mono')}
   <div class="pwst"><i style="width:${st.w}%;background:${st.c}"></i></div><small style="color:${st.c};font-weight:700">قوة الباسورد: ${st.l}</small>
   ${x.url?row('🌐 الموقع',esc(x.url),`<a class="pwi s" href="${esc(url)}" target="_blank" rel="noopener">↗️</a>`):''}
   ${x.n?row('📝 ملاحظات',esc(x.n).replace(/\n/g,'<br>')):''}
   <small class="muted" style="display:block;margin-top:10px">آخر تعديل: ${x.up?new Date(x.up).toLocaleString('ar-EG'):'—'}</small></div>
-  <div class="pwact"><button class="btn" onclick="pwGo('edit','${x.id}')">✏️ تعديل</button><button class="btn ghost" onclick="pwShare('${x.id}')">↗️ مشاركة</button><button class="btn ghost danger" onclick="pwDel('${x.id}')">🗑 حذف</button></div>`;
+  <div class="pwact"><button class="btn" onclick="pwGo('edit','${x.id}')">✏️ تعديل</button><button class="btn ghost" onclick="pwShare('${x.id}')">🔗 Share Pass</button><button class="btn ghost danger" onclick="pwDel('${x.id}')">🗑 حذف</button></div>`;
 }
 function pwEditHTML(){
-  const f=PWV.f,st=pwStrength(f.p);
+  const f=PWV.f,st=pwStrength(f.p),wifi=f.c==='wifi';
   return `<div class="pwc"><h3 style="margin-top:0">${f.id?'✏️ تعديل الحساب':'➕ حساب جديد'}</h3>
   <label>اسم الحساب<input id="pf-t" value="${esc(f.t)}" placeholder="مثلاً: Gmail، البنك الأهلي، واي فاي البيت" oninput="PWV.f.t=this.value" ${f.id?'':'data-focus'}></label>
   <div class="fl">النوع</div><div class="pwchips wrap">${Object.entries(PWCAT).map(([k,[ic,l]])=>`<button type="button" class="${f.c===k?'on':''}" onclick="PWV.f.c='${k}';pwRender()">${ic} ${l}</button>`).join('')}</div>
-  <label>اسم المستخدم / الإيميل<input id="pf-u" dir="ltr" autocomplete="off" value="${esc(f.u)}" oninput="PWV.f.u=this.value"></label>
-  <label>الباسورد<div class="inl"><input id="pf-p" class="mono" type="${PWV.pv?'text':'password'}" dir="ltr" autocomplete="new-password" value="${esc(f.p)}" oninput="PWV.f.p=this.value;pwStr()"><button type="button" class="mini" onclick="PWV.pv=!PWV.pv;pwRender()">${PWV.pv?'🙈':'👁️'}</button><button type="button" class="mini" title="اعمل باسورد قوي" onclick="PWV.f.p=pwGen();PWV.pv=true;pwRender()">🎲</button></div></label>
-  <div class="pwst"><i id="pf-sb" style="width:${st.w}%;background:${st.c}"></i></div><small id="pf-sl" style="color:${st.c};font-weight:700">${f.p?st.l:''}</small>
+  <label>${wifi?'اسم الشبكة':'اسم المستخدم / الإيميل'}<input id="pf-u" dir="ltr" autocomplete="off" value="${esc(f.u)}" oninput="PWV.f.u=this.value"></label>
+  <label>الباسورد<div class="inl"><input id="pf-p" class="mono" type="${PWV.pv?'text':'password'}" dir="ltr" autocomplete="new-password" value="${esc(f.p)}" oninput="PWV.f.p=this.value;pwStr()"><button type="button" class="mini" onclick="PWV.pv=!PWV.pv;pwRender()">${PWV.pv?'🙈':'👁️'}</button></div></label>
+  <div class="pwst"><i id="pf-sb" style="width:${f.p?st.w:0}%;background:${st.c}"></i></div><small id="pf-sl" style="color:${st.c};font-weight:700">${f.p?st.l:''}</small>
   <label style="margin-top:10px">الموقع<input id="pf-url" dir="ltr" value="${esc(f.url)}" placeholder="example.com" oninput="PWV.f.url=this.value"></label>
   <label>ملاحظات<textarea id="pf-n" rows="3" oninput="PWV.f.n=this.value">${esc(f.n)}</textarea></label>
   <button class="btn" onclick="pwSave()">💾 حفظ</button>
@@ -622,11 +643,17 @@ async function pwDel(id){
   if(!await ask('حذف الحساب؟',x.t,{danger:true,icon:'🗑',ok:'حذف'}))return;
   PWV.items=PWV.items.filter(i=>i.id!==id);await pwSeal();toast('اتحذف');pwGo('list');
 }
+/* Share Pass: لازم تكتب الباسورد الرئيسي الأول */
 async function pwShare(id){
-  const x=PWV.items.find(i=>i.id===id);if(!x)return;
-  if(!await ask('مشاركة الحساب؟','الباسورد هيظهر في الرسالة. ابعته لحد انت واثق فيه بس.',{icon:'⚠️',ok:'↗️ شارك',cancel:'إلغاء'}))return;
-  const t=[`🔐 ${x.t}`,x.u?`👤 ${x.u}`:'',`🔑 ${x.p}`,x.url?`🌐 ${x.url}`:'',x.n?`📝 ${x.n}`:''].filter(Boolean).join('\n');
+  const x=PWV.items&&PWV.items.find(i=>i.id===id);if(!x)return;
+  const m=await dlg({title:'Share Pass',msg:`اكتب الباسورد الرئيسي عشان تشارك «${x.t}»`,icon:'🔐',input:true,pw:true,ok:'تأكيد',cancel:'إلغاء'});
+  if(m==null||m==='')return;
+  toast('⏳ ...');
+  if(!await pwCheck(m))return toast('❌ الباسورد الرئيسي غلط');
+  const wifi=x.c==='wifi';
+  const t=[`🔐 ${x.t}`,x.u?(wifi?`📶 الشبكة: ${x.u}`:`👤 ${x.u}`):'',`🔑 ${wifi?'الباسورد: ':''}${x.p}`,x.url?`🌐 ${x.url}`:''].filter(Boolean).join('\n');
   if(navigator.share){try{await navigator.share({text:t});return}catch(e){if(e&&e.name==='AbortError')return}}
+  if(navigator.clipboard){try{await navigator.clipboard.writeText(t);return say('اتنسخ ✓','الصق الرسالة في الواتساب أو أي مكان تبعته منه','📋')}catch(e){}}
   window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
 }
 const pwSetHTML=()=>`<div class="pwc"><h3 style="margin-top:0">🔑 غيّر الباسورد الرئيسي</h3>
@@ -641,7 +668,7 @@ async function pwChange(){
   if(n1.length<6)return toast('الباسورد الجديد 6 حروف على الأقل');
   if(n1!==n2)return toast('الباسوردين الجداد مش زي بعض');
   toast('⏳ ...');
-  try{await pwDec(await pwKey(o,pwUnB64(S.settings.vault.salt)),S.settings.vault)}catch(e){return toast('الباسورد الحالي غلط')}
+  if(!await pwCheck(o))return toast('الباسورد الحالي غلط');
   const salt=crypto.getRandomValues(new Uint8Array(16));
   PWV.key=await pwKey(n1,salt);S.settings.vault.salt=pwB64(salt);await pwSeal();
   toast('اتغير الباسورد الرئيسي ✓');pwGo('list');
@@ -1439,7 +1466,8 @@ async function receiptFlow(rc,fid){
   if(card&&M(card.acct)){method=card.acct;via='card';payTxt=`💳 ${card.name} •••• ${card.last4}`}
   else if(rc.cash&&cashM){method=cashM.id;via='cash';payTxt='💵 كاش'}
   else{method=cat.acct&&M(cat.acct)?cat.acct:defMethod();via=cat.via||'';payTxt=M(method)?.name||''}
-  const a=parseNum(await askInput('المبلغ',`${cat.name}${payTxt?'\n'+payTxt:''}`,rc.total?amtStr(rc.total):'',true));
+  /* المبلغ: خانة بتكتب فيها الرقم، وزرار حفظ */
+  const a=parseNum(await askIn('المبلغ',`${cat.name}${payTxt?'\n'+payTxt:''}`,rc.total?amtStr(rc.total):'',true,'حفظ'));
   if(!(a>0))return toast('اتلغى');
   let date=rc.date||today();if(isClosed(date))date=today();
   if(isClosed(date))return toast('الشهر الحالي مقفول');
@@ -1887,8 +1915,8 @@ function vDocs(){
 }
 /* الإضافة حسب الزرار: الكروت بتفتح شاشتها، والباقي بيفتح إضافة مستند */
 function addInFold(){if(DFOLD==='bank')return cardForm();if(DFOLD==='personal')return renForm();docForm()}
-async function foldNew(){const n=((await askInput('اسم الزرار الجديد','مثلاً: الشقة، العربية',''))||'').trim();if(!n)return;DFOLD=foldAdd(n);save();render();toast('اتعمل ✓')}
-async function foldRen(id){const f=(S.settings.dfold||[]).find(x=>x.id===id);if(!f)return;const n=((await askInput('اسم الزرار','',f.name.replace(/^📁\s*/,'')))||'').trim();if(!n)return;f.name='📁 '+n;save();render()}
+async function foldNew(){const n=((await askIn('اسم الزرار الجديد','مثلاً: الشقة، العربية',''))||'').trim();if(!n)return;DFOLD=foldAdd(n);save();render();toast('اتعمل ✓')}
+async function foldRen(id){const f=(S.settings.dfold||[]).find(x=>x.id===id);if(!f)return;const n=((await askIn('اسم الزرار','',f.name.replace(/^📁\s*/,'')))||'').trim();if(!n)return;f.name='📁 '+n;save();render()}
 async function foldDel(id){
   const f=(S.settings.dfold||[]).find(x=>x.id===id);if(!f)return;
   if(!await ask(`حذف زرار ${f.name}؟`,'المستندات اللي فيه هتتنقل لـ عام',{danger:true,icon:'🗑',ok:'حذف'}))return;
@@ -1949,7 +1977,7 @@ function docMove(id){
   <div class="row" onclick="docMoveNew('${id}')"><span class="ic" style="background:var(--soft)">➕</span><div class="grow"><b>زرار جديد</b></div></div></div>`);
 }
 function docMoveTo(id,f){setFold(id,f);DFOLD=f;save();render();docSheet(id);toast('اتنقل ✓')}
-async function docMoveNew(id){const n=((await askInput('اسم الزرار الجديد','',''))||'').trim();if(!n)return docMove(id);docMoveTo(id,foldAdd(n))}
+async function docMoveNew(id){const n=((await askIn('اسم الزرار الجديد','',''))||'').trim();if(!n)return docMove(id);docMoveTo(id,foldAdd(n))}
 async function docDel(id){
   if(!await ask('حذف؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;
   S.docs=S.docs.filter(x=>x.id!==id);
@@ -2001,7 +2029,7 @@ function draftGet(){try{const x=JSON.parse(localStorage.getItem(DRK)||'null');if
 function draftOpen(msg){const x=draftGet();if(!x)return;try{FORMS[x.k].o(x.d);if(msg)toast('📝 كمّل اللي كنت بتعمله')}catch(e){draftClear()}}
 let drT=null;
 ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(FORM&&e.target.closest&&e.target.closest('#sheet')){clearTimeout(drT);drT=setTimeout(draftSave,400)}},true));
-try{const _s=sheet;sheet=function(){FORM=NEXTF;NEXTF=null;if(!FORM&&!KEEPF&&!LOCKING)draftClear();const r=_s.apply(this,arguments);if(FORM)setTimeout(draftSave,0);try{addX()}catch(e){}return r}}catch(e){}
+try{const _s=sheet;sheet=function(){FORM=NEXTF;NEXTF=null;if(!FORM&&!KEEPF&&!LOCKING)draftClear();const r=_s.apply(this,arguments);if(FORM)setTimeout(draftSave,0);return r}}catch(e){}
 try{const _c=closeSheet;closeSheet=function(){if(!KEEPF&&!LOCKING){FORM=null;draftClear()}return _c.apply(this,arguments)}}catch(e){}
 function waitUnlock(){
   const cx=innerWidth/2,cy=innerHeight/2;let root=document.elementFromPoint(cx,cy);
