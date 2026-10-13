@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.18.0',VBUILD='13/10/2026 - 06:30 م';
+const VER='2.18.1',VBUILD='13/10/2026 - 07:00 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 /* المرفقات: كاميرا + الصور + ملف في كل مكان */
 try{filesBox=function(ids,ctx){return `<div class="files">${(ids||[]).map(id=>fileThumb(id,ctx)).join('')}<button type="button" class="fadd" onclick="attach('${ctx}',true)">📷<small>كاميرا</small></button><button type="button" class="fadd" onclick="attachGal('${ctx}')">🖼️<small>الصور</small></button><button type="button" class="fadd" onclick="attach('${ctx}',false)">📎<small>ملف</small></button></div>`}}catch(e){}
@@ -1824,20 +1824,17 @@ function vMore(){
 }
 
 /* ========== إضافة / تعديل تحصيل أو مصروف ========== */
-/* التحصيل: بتكتب اسم البند، ولو فيه بند شبهه البرنامج بيسألك.
-   المصروف: خانة بحث بالاسم أو المحل أو رقم الموبايل */
+/* البند في التحصيل والمصروف: خانة بحث بالاسم أو المحل أو رقم الموبايل.
+   في التحصيل: لو كتبت اسم جديد وفيه بند شبهه، البرنامج بيسألك */
 function txForm(){
   const orig=F.id&&S.txs.find(t=>t.id===F.id),locked=orig&&!orig.pend&&isClosed(orig.date),inc=F.type==='inc',tr=F.type==='tr',pend=inc&&F.pend;
   const canFlip=inc&&F.id&&!(orig&&orig.src),cur=F.cat&&C(F.cat);
-  if(F.ci==null||(!F.ci&&cur))F.ci=cur?cur.name:'';
   if(F.cq==null||(!F.cq&&cur))F.cq=cur?cur.name:'';
   const meths=S.methods.filter(m=>m.active||m.id===F.method||m.id===F.to);
   const addAcct=`<button type="button" class="mini" title="حساب جديد" onclick="grab();TXBACK=true;editMethod()">+</button>`;
   const ttl=F.id?(tr?'✏️ تعديل التحويل':inc?'✏️ تعديل التحصيل':'✏️ تعديل المصروف'):(inc?'💰 تحصيل جديد':'💸 مصروف جديد');
-  const catBox=inc
-    ?`<label>البند<input id="f-ci" autocomplete="off" value="${esc(F.ci)}" placeholder="اكتب اسم البند" oninput="F.ci=this.value" ${orig&&orig.src?'disabled':''}></label>`
-    :`<label>البند<input id="f-cq" autocomplete="off" value="${esc(F.cq)}" placeholder="🔍 اسم البند أو المحل أو رقم الموبايل" oninput="catSearch(this.value)" onfocus="catSearch(this.value,1)"></label><div id="f-cres"></div>
-      ${cur?`<small class="cpick">✓ ${esc(cur.name)}</small>`:F.cat==='__new'?`<small class="cpick">➕ بند جديد: ${esc(F.newCat||'')}</small>`:''}`;
+  const catBox=`<label>البند<input id="f-cq" autocomplete="off" value="${esc(F.cq)}" placeholder="🔍 اسم البند أو المحل أو رقم الموبايل" oninput="catSearch(this.value)" onfocus="catSearch(this.value,1)" ${orig&&orig.src?'disabled':''}></label><div id="f-cres"></div>
+    ${cur?`<small class="cpick">✓ ${esc(cur.name)}</small>`:F.cat==='__new'?`<small class="cpick">➕ بند جديد: ${esc(F.newCat||'')}</small>`:''}`;
   const stBox=canFlip?`<div class="kv"><span>الحالة</span><b>${pend?'⏳ غير محصّل':'✅ محصّل'}</b></div>
     ${F._st?`<div class="two"><button type="button" class="btn ${pend?'ghost':''}" onclick="txSetSt(0)">✅ محصّل</button><button type="button" class="btn ${pend?'':'ghost'}" onclick="txSetSt(1)">⏳ غير محصّل</button></div>`
     :`<button type="button" class="btn ghost" onclick="grab();F._st=1;SHKEEP=1;txForm()">🔄 تغيير الحالة</button>`}`:'';
@@ -1868,28 +1865,29 @@ function txSetSt(p){
   }
   SHKEEP=1;txForm();
 }
-/* بحث بنود المصروفات: الاسم، الأسماء التانية، اسم المحل في Contacts، الوصف، رقم الموبايل */
+/* بحث البنود (تحصيل أو مصروف): الاسم، الأسماء التانية، اسم المحل في Contacts، الوصف، رقم الموبايل.
+   في التحصيل: مبيظهرش حاجة غير لما تكتب. في المصروف: أول ما تدوس بيظهر آخر البنود اللي استخدمتها */
 function catSearch(q,focus){
   F.cq=q;
-  const cur=F.cat&&C(F.cat);
+  const kind=F.type==='inc'?'inc':'exp',cur=F.cat&&C(F.cat);
   if(!focus&&!(cur&&normAr(cur.name)===normAr(q))){F.cat='';F.newCat='';const p=document.querySelector('#sheet .cpick');if(p)p.remove()}
   const el=$('#f-cres');if(!el)return;
   const nq=normAr(latD(q)),dq=latD(q).replace(/\D/g,'');
   let list=[];
   if(nq||dq.length>=3){
-    S.cats.filter(c=>c.kind==='exp'&&c.active!==false).forEach(c=>{
+    S.cats.filter(c=>c.kind===kind&&c.active!==false).forEach(c=>{
       const cts=S.contacts.filter(x=>x.catId===c.id);
       const hay=normAr([c.name,...(c.alias||[]),...cts.map(x=>x.name+' '+(x.spec||''))].join(' '));
       const ph=dq.length>=3?cts.flatMap(x=>x.phones||[]).find(p=>p.includes(dq)):null;
       if((nq&&hay.includes(nq))||ph)list.push({c,ph,sc:normAr(c.name).startsWith(nq)?2:1});
     });
     list.sort((a,b)=>b.sc-a.sc);list=list.slice(0,8);
-  }else{
+  }else if(kind==='exp'){
     const seen=[];[...S.txs].filter(t=>t.type==='exp'&&t.cat).sort(byDesc).forEach(t=>{if(seen.length<6&&!seen.includes(t.cat)&&C(t.cat))seen.push(t.cat)});
     list=seen.map(id=>({c:C(id)}));
   }
   const qt=q.trim(),exact=list.some(x=>normAr(x.c.name)===nq),showNew=qt&&!exact&&!/^[\d\s+]+$/.test(qt);
-  el.innerHTML=list.length||showNew?`<div class="list cres">${list.map(x=>`<div class="row" onclick="catPick('${x.c.id}')"><span class="ic" style="background:var(--soft)">${x.c.fixed?'📌':'🏷️'}</span><div class="grow"><b>${esc(x.c.name)}</b>${x.ph?`<small dir="ltr" style="text-align:right">📞 ${x.ph}</small>`:''}</div></div>`).join('')}${showNew?`<div class="row" onclick="catPick('__new')"><span class="ic" style="background:var(--soft)">➕</span><div class="grow"><b>بند جديد: ${esc(qt)}</b></div></div>`:''}</div>`:'';
+  el.innerHTML=list.length||showNew?`<div class="list cres">${list.map(x=>`<div class="row" onclick="catPick('${x.c.id}')"><span class="ic" style="background:var(--soft)">${x.c.fixed?'📌':kind==='inc'?'💵':'🏷️'}</span><div class="grow"><b>${esc(x.c.name)}</b>${x.ph?`<small dir="ltr" style="text-align:right">📞 ${x.ph}</small>`:x.c.fixed?'<small>ثابت</small>':''}</div></div>`).join('')}${showNew?`<div class="row" onclick="catPick('__new')"><span class="ic" style="background:var(--soft)">➕</span><div class="grow"><b>بند جديد: ${esc(qt)}</b></div></div>`:''}</div>`:'';
 }
 function catPick(id){
   grab();
@@ -1899,10 +1897,10 @@ function catPick(id){
     if(c.acct&&M(c.acct))F.method=c.acct;if(c.via)F.via=c.via}
   SHKEEP=1;txForm();
 }
-/* بيدوّر على بند تحصيل اسمه شبه اللي اتكتب */
-function findIncCat(name){
+/* بيدوّر على بند اسمه شبه اللي اتكتب */
+function findIncCat(name,kind){
   const k=normAr(name).replace(/\s+/g,'');let best=null,bs=0;
-  S.cats.filter(c=>c.kind==='inc').forEach(c=>{
+  S.cats.filter(c=>c.kind===(kind||'inc')).forEach(c=>{
     const ck=normAr(c.name).replace(/\s+/g,'');let s=ck===k?1:sim(c.name,name);
     if(k.length>=3&&ck.length>=3&&(ck.includes(k)||k.includes(ck)))s=Math.max(s,.8);
     if(s>bs){bs=s;best=c}
@@ -1916,28 +1914,29 @@ async function saveTx(){
   if(!F.method)return toast('اختار الحساب');
   let cid=null,newName='';
   if(F.type==='tr'){if(!F.to||F.to===F.method)return toast('اختار حسابين مختلفين')}
-  else if(F.type==='inc'){
-    const name=(F.ci||'').trim();if(!name)return toast('اكتب اسم البند');
-    const cc=F.cat&&C(F.cat);
-    if(cc&&cc.kind==='inc'&&normAr(cc.name)===normAr(name))cid=cc.id;
+  else{
+    const kind=F.type,cc=F.cat&&F.cat!=='__new'&&C(F.cat);
+    if(cc&&cc.kind===kind)cid=cc.id;
     else{
-      const m=findIncCat(name);
-      if(m){
-        const use=await ask('خلي بالك ⚠️',`فيه بند متسجل قبل كده اسمه «${m.name}».\nتسجّل على البند ده، ولا تعمل بند جديد باسم «${name}»؟`,{icon:'⚠️',ok:'سجّل عليه',cancel:'➕ بند جديد'});
-        if(use===null)return;
-        if(use)cid=m.id;
-        else if(normAr(m.name)===normAr(name))return toast('فيه بند بنفس الاسم بالظبط، غيّر الاسم شوية');
-        else newName=name;
-      }else newName=name;
-    }
-  }else{
-    if(F.cat==='__new'){newName=(F.newCat||'').trim();if(!newName)return toast('اكتب اسم البند')}
-    else if(F.cat&&C(F.cat))cid=F.cat;
-    else{
-      const q=(F.cq||'').trim();if(!q)return toast('اختار البند');
-      const ex=S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(q));
-      if(ex)cid=ex.id;
-      else{if(!await ask('بند جديد؟',`مفيش بند اسمه «${q}».\nتعمل بند جديد بالاسم ده؟`,{icon:'➕',ok:'اعمل بند جديد',cancel:'رجوع'}))return;newName=q}
+      const name=(F.cat==='__new'?F.newCat:F.cq||'').trim();
+      if(!name)return toast(kind==='inc'?'اكتب اسم البند':'اختار البند');
+      const ex=S.cats.find(c=>c.kind===kind&&normAr(c.name)===normAr(name));
+      if(ex&&F.cat!=='__new')cid=ex.id;
+      else if(kind==='inc'){
+        /* التحصيل: لو فيه بند اسمه شبهه بيسألك */
+        const m=findIncCat(name,'inc');
+        if(m){
+          const use=await ask('خلي بالك ⚠️',`فيه بند متسجل قبل كده اسمه «${m.name}».\nتسجّل على البند ده، ولا تعمل بند جديد باسم «${name}»؟`,{icon:'⚠️',ok:'سجّل عليه',cancel:'➕ بند جديد'});
+          if(use===null)return;
+          if(use)cid=m.id;
+          else if(normAr(m.name)===normAr(name))return toast('فيه بند بنفس الاسم بالظبط، غيّر الاسم شوية');
+          else newName=name;
+        }else newName=name;
+      }else{
+        if(ex)cid=ex.id;
+        else if(F.cat==='__new')newName=name;
+        else{if(!await ask('بند جديد؟',`مفيش بند اسمه «${name}».\nتعمل بند جديد بالاسم ده؟`,{icon:'➕',ok:'اعمل بند جديد',cancel:'رجوع'}))return;newName=name}
+      }
     }
   }
   /* تحصيل جديد: بيسأل محصّل ولا غير محصّل، ولو قفلت الرسالة بـ ✕ مبيسجلش */
