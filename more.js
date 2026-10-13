@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.10.1',VBUILD='13/10/2026 - 01:45 م';
+const VER='2.10.2',VBUILD='13/10/2026 - 02:10 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 (()=>{const s=document.createElement('style');s.textContent=`#scan .frz{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:none}
 #scan .frz[style*="block"]~.sframe{display:none}
@@ -724,8 +724,8 @@ function phonesOf(lines){
   });
   const lastI=per.reduce((a,p,i)=>p.length?i:a,-1);
   if(lastI>=0&&lastI===lines.length-1&&per[lastI].length===1&&per.slice(0,lastI).some(p=>p.length))per[lastI]=[];
-  const vs=new Set(S.settings.vph||[]),out=[];
-  per.flat().forEach(p=>{if(!out.includes(p)&&!vs.has(p))out.push(p)});
+  const out=[];
+  per.flat().forEach(p=>{if(!out.includes(p))out.push(p)});
   return out;
 }
 function mergePh(a,b){
@@ -823,19 +823,22 @@ function scanReceipt(){
     onDone:async(blob,rc)=>{const ids=await addFiles([new File([blob],'receipt-'+today()+'.jpg',{type:'image/jpeg'})]);receiptFlow(rc,ids[0])}});
 }
 
-/* اختيار اسم المكان: كذا اختيار تدوس عليه، أو تكتب */
+/* اختيار اسم المكان: كذا اختيار تدوس عليه، أو تكتب
+   وتحت فيه "🔍 اللي البرنامج قراه" عشان لو حاجة غلطت تاخد سكرين شوت على طول */
 let NMR=null,NMO=[];
 function askStore(rc){
   const o=[],add=s=>{s=(s||'').trim();if(s&&!o.some(x=>normAr(x)===normAr(s)))o.push(s)};
   if(rc.match)add(rc.match.name);(rc.names||[]).slice(0,4).forEach(add);
-  NMO=o.slice(0,5);const star=!!rc.match;
+  NMO=o.slice(0,5);const star=!!rc.match,raw=String(rc.raw||'').trim(),hasTxt=raw.replace(/──[^\n]*──/g,'').replace(/\s+/g,'').length>10;
   return new Promise(res=>{
     sheet(`<h2>🧾 اسم المكان؟</h2>
     ${NMO.length?`<p class="muted">دوس على الاسم الصح</p><div class="list">${NMO.map((s,i)=>`<div class="row" onclick="nmPick(${i})"><span class="ic" style="background:var(--soft)">${star&&!i?'⭐':'🏪'}</span><div class="grow"><b>${esc(s)}</b>${star&&!i?`<small>${rc.phMatch?'عرفته من رقم التليفون':'متسجل عندك قبل كده'}</small>`:''}</div></div>`).join('')}</div>`:''}
     <label>${NMO.length?'مش موجود؟ اكتب الاسم':'اكتب اسم المكان'}<input id="nm-in" list="nm-dl" autocomplete="off" onkeydown="if(event.key==='Enter')nmPick(-1)"></label>
     <datalist id="nm-dl">${storeCats().map(c=>`<option value="${esc(c.name)}"></option>`).join('')}</datalist>
     <button class="btn" onclick="nmPick(-1)">تمام</button>
-    <button class="btn ghost" onclick="closeSheet()">إلغاء</button>`);
+    <button class="btn ghost" onclick="closeSheet()">إلغاء</button>
+    ${hasTxt?`<details class="gen" style="margin-top:10px"><summary>🔍 اللي البرنامج قراه</summary><pre style="white-space:pre-wrap;font:inherit;font-size:11px;max-height:260px;overflow:auto;margin:6px 0">${esc(raw)}</pre></details>`
+      :`<p class="warn" style="margin-top:10px">⚠️ البرنامج مقراش أي كلام من الصورة${rc.err?'<br><small>'+esc(rc.err)+'</small>':''}</p>`}`);
     NMR=res;
   });
 }
@@ -939,15 +942,9 @@ async function finishReceipt(x){
 /* بيسجّل الأرقام الجديدة، وبيقولك برسالة واضحة إيه اللي حصل */
 async function contactFromReceipt(rc,cat){
   await new Promise(r=>setTimeout(r,700));
-  const vs=new Set(S.settings.vph||[]),phones=(rc.phones||[]).filter(p=>!vs.has(p));
+  const phones=rc.phones||[];
   const mine=S.contacts.find(c=>c.catId===cat.id)||S.contacts.find(c=>normAr(c.name)===normAr(cat.name));
-  const fresh=[];
-  phones.forEach(p=>{
-    const f=findPhone([p],mine?mine.id:'');
-    if(!f){fresh.push(p);return}
-    /* نفس الرقم في ريسيت محل تاني خالص = غالباً رقم شركة البرنامج */
-    if(f.c.catId&&f.c.catId!==cat.id&&sim(f.c.name,cat.name)<.35)S.settings.vph=[...vs.add(p)];
-  });
+  const fresh=phones.filter(p=>!findPhone([p],mine?mine.id:''));
   const kind=rc.rest?'rest':'shop';
   if(mine){
     const add=fresh.filter(p=>!(mine.phones||[]).includes(p));
@@ -1047,8 +1044,6 @@ async function ctSave(){
   ctGrab();const name=CTF.name.trim();if(!name)return toast('اكتب الاسم');
   const phones=[...new Set(CTF.phones.map(normPhone).filter(Boolean))];
   for(const p of phones){const f=findPhone([p],CTF.id);if(f&&!await ask(`${p}`,dupTxt(f),{icon:'📇',ok:'احفظ برضه',cancel:'رجوع'}))return}
-  /* لو كتبت رقم بإيدك، البرنامج مش هيعتبره رقم شركة برمجة تاني */
-  S.settings.vph=(S.settings.vph||[]).filter(p=>!phones.includes(p));
   let c=CTF.id?S.contacts.find(x=>x.id===CTF.id):null;if(!c){c={id:uid(),at:Date.now()};S.contacts.push(c)}
   Object.assign(c,{name,kind:CTF.kind,spec:CTF.spec.trim(),phones,address:CTF.address.trim(),loc:CTF.loc.trim(),catId:CTF.catId,note:''});
   save();closeSheet();render();toast('اتحفظ ✓');
@@ -1386,6 +1381,8 @@ a.btn.wab{display:flex;align-items:center;justify-content:center;gap:6px}`;
 try{const _c3=closeSheet;closeSheet=function(){const r=_c3.apply(this,arguments);if(NMR){const f=NMR;NMR=null;f(null)}return r}}catch(e){}
 /* تنضيف الأسماء البديلة الغلط اللي كانت بتلخبط اسم المحل */
 S.cats.forEach(c=>{if(c.alias)c.alias=c.alias.filter(a=>normAr(a).replace(/\s+/g,'').length>=6&&sim(a,c.name)>=.3&&!SKIPM.test(a))});
+/* مسح قايمة "أرقام شركات البرمجة" اللي اتسجلت غلط وكانت بتخلي البرنامج يتجاهل أرقام المحلات */
+delete S.settings.vph;
 
 /* ========== تشغيل ========== */
 S.contacts.forEach(c=>{if(c.note)c.note=''});
