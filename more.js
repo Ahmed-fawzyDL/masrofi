@@ -1,6 +1,6 @@
 /* ========== Centric · more.js ========== */
 /* رقم الإصدار: بيتغير مع كل تحديث للملف ده */
-const VER='2.10.2',VBUILD='13/10/2026 - 02:10 م';
+const VER='2.10.3',VBUILD='13/10/2026 - 02:25 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${VER} · ${VBUILD}</small></div>`}}catch(e){}
 (()=>{const s=document.createElement('style');s.textContent=`#scan .frz{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:none}
 #scan .frz[style*="block"]~.sframe{display:none}
@@ -646,23 +646,25 @@ const ADRW=/(شارع|ش\.|عمار[ةه]|بجوار|امام|أمام|خلف|م
 const ADDR=/(شارع|ش\.|عمار|برج|بجوار|امام|أمام|خلف|ميدان|طريق|مدينه|مدينة|الدور|مول|شطر|street|st\.|road|mall)/i;
 const VEND=/(برم|الحلول|حلول|متطور|powered|software|developed|تصميم|نظام|system)/i;
 const isAr=t=>/[\u0621-\u064A]/.test(t);
-/* المرشحين لاسم المحل (الإنجليزي المتلزق وسط العربي بيترمي، لأنه غالباً نقط من الخلفية أو الشعار) */
+/* المرشحين لاسم المحل:
+   السطور الملخبطة (زي الشعار) بتتجاهل ومبتتحسبش، فالاسم ميضيعش لو تحت شعار كبير */
 function merchantCands(lines){
   const out=[];
-  lines.slice(0,14).forEach(ln=>{
+  for(const ln of lines.slice(0,40)){
+    if(out.length>=6)break;
     const l=fixDec(latD(arD(ln)));
-    if(SKIPM.test(l)||ADRW.test(l)||VEND.test(l)||/\d/.test(l))return;
+    if(SKIPM.test(l)||ADRW.test(l)||VEND.test(l)||/\d/.test(l))continue;
     const ws=l.replace(/[^A-Za-z\u0621-\u064A\s&']/g,' ').split(/\s+/).filter(Boolean);
     let gd=ws.filter(w=>w.replace(/\u0640/g,'').length>=3&&!/^(.)\1/.test(w));
     const arN=gd.filter(isAr).length,enN=gd.length-arN;
     if(arN&&enN)gd=gd.filter(w=>isAr(w)===(arN>=enN));
     const bad=ws.length-gd.length,letters=gd.join('').replace(/\u0640/g,'').length;
-    if(!gd.length||letters<5||bad*2>gd.length+1)return;
+    if(!gd.length||letters<5||bad*2>gd.length+1)continue;
     const s=gd.join(' ').slice(0,40),ar=isAr(s);
-    if(!ar&&gd.some(w=>/[a-z]/.test(w)&&/[A-Z]/.test(w.slice(1))))return;
+    if(!ar&&gd.some(w=>/[a-z]/.test(w)&&/[A-Z]/.test(w.slice(1))))continue;
     const k=out.length;
     out.push({s,sc:Math.min(letters,24)*2-bad*4-k*3+(ar?12:0)-(gd.length>5?12:0)});
-  });
+  }
   return out;
 }
 function rankMerchants(cs){
@@ -672,12 +674,12 @@ function rankMerchants(cs){
   return cl.sort((a,b)=>b.v-a.v).map(g=>g.top.s);
 }
 const pickMerchant=cs=>rankMerchants(cs)[0]||'';
-/* المحلات اللي اتسجلت قبل كده بس (مش كل بنود المصروفات) */
+/* المحلات اللي اشتريت منها قبل كده بس (مش كل بنود المصروفات، عشان "سمك" في الأصناف ميتحسبش محل) */
 function storeCats(){
   const ids=new Set();S.buys.forEach(b=>b.catId&&ids.add(b.catId));S.contacts.forEach(c=>c.catId&&ids.add(c.catId));
   return S.cats.filter(c=>c.kind==='exp'&&(ids.has(c.id)||(c.alias||[]).length));
 }
-/* بيدور على محل معروف في الأسطر اللي فوق بس، وبيرجّع الاسم اللي لقاه بيه */
+/* بيدور على محل معروف في الريسيت كله (زي امبارح)، وبيرجّع الاسم اللي لقاه بيه */
 function knownStore(lines){
   const known=[];
   storeCats().forEach(c=>[c.name,...(c.alias||[])].forEach(n=>{const k=normAr(n).replace(/\s+/g,'');if(k.length>=4)known.push({n,k,c})}));
@@ -790,31 +792,41 @@ function dHash(c){
 }
 function hamm(a,b){if(!a||!b||a.length!==b.length)return 99;let n=0;for(let i=0;i<a.length;i+=2){let v=parseInt(a.substr(i,2),16)^parseInt(b.substr(i,2),16);while(v){n+=v&1;v>>=1}}return n}
 const EMPTYRC=()=>({total:0,TC:[],rep:0,date:null,time:'',no:'',merchant:'',names:[],cands:[],match:null,matchBy:'',phMatch:false,phForced:false,card:null,cash:false,phones:[],address:'',deliv:false,rest:false,ph:'',raw:''});
-/* القراءة: نفس طريقة امبارح اللي كانت شغالة (الريسيت كله + الجزء اللي فوق، وقراءة تانية لو الإجمالي مش واضح) */
+/* القراءة: الريسيت كله + الجزء اللي فوق، وقراءة تانية لو الإجمالي مش واضح.
+   ولو ملقاش أي اسم خالص: قراءة كمان بالتقسيم التلقائي للصفحة (أحسن مع الشعارات والخلفيات) */
 function scanReceipt(){
   openScanner({title:'Receipt Scan',hint:'📄 خلي الريسيت كله جوه الإطار وثبّت',maxW:1800,
     read:async(c,onP)=>{
       try{
-        const ph=dHash(c),base=cloneCanvas(c),head=cropTop(c,.5);prepCanvas(c);
+        const ph=dHash(c),orig=cloneCanvas(c),base=cloneCanvas(c),head=cropTop(c,.5);prepCanvas(c);
         const P={tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'};
-        const t1=await ocr('ara+eng',c,P,p=>onP(p*.5));
+        const t1=await ocr('ara+eng',c,P,p=>onP(p*.4));
         prepCanvas(head);
-        const tH=await ocr('ara+eng',head,P,p=>onP(.5+p*.2));
+        const tH=await ocr('ara+eng',head,P,p=>onP(.4+p*.15));
         let r=parseReceipt(t1);
         const texts=[t1,tH],lbl=['── الريسيت كله ──','── الجزء اللي فوق ──'];
         if(r.rep<2){
           prepCanvas(base,{bin:true});
-          const t2=await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.7+p*.3));
+          const t2=await ocr('ara+eng',base,{tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'},p=>onP(.55+p*.2));
           texts.push(t2);lbl.push('── قراءة تانية ──');r=mergeRc(r,parseReceipt(t2));
         }
         const rh=parseReceipt(tH);
         r.phones=mergePh(r.phones,rh.phones);if(!r.address)r.address=rh.address;
-        r.names=rankMerchants(r.cands.concat(merchantCands(splitLines(tH)).map(x=>({...x,sc:x.sc+8}))));
-        r.merchant=r.names[0]||'';
-        /* لو رقم التليفون متسجل لمحل قبل كده، يبقى هو المحل */
-        const byPh=r.phones.length?findPhone(r.phones):null,bc=byPh&&byPh.c.catId?C(byPh.c.catId):null;
-        if(bc&&bc.kind==='exp'){r.match=bc;r.matchBy='';r.phMatch=true}
-        else{const ks=knownStore(texts.flatMap(t=>splitLines(t).slice(0,14)));if(ks){r.match=ks.c;r.matchBy=ks.n}}
+        const extra=merchantCands(splitLines(tH)).map(x=>({...x,sc:x.sc+8}));
+        const look=()=>{
+          r.names=rankMerchants(r.cands.concat(extra));r.merchant=r.names[0]||'';
+          r.match=null;r.matchBy='';r.phMatch=false;
+          /* لو رقم التليفون متسجل لمحل قبل كده، يبقى هو المحل */
+          const byPh=r.phones.length?findPhone(r.phones):null,bc=byPh&&byPh.c.catId?C(byPh.c.catId):null;
+          if(bc&&bc.kind==='exp'){r.match=bc;r.phMatch=true;return}
+          const ks=knownStore(texts.flatMap(t=>splitLines(t)));if(ks){r.match=ks.c;r.matchBy=ks.n}
+        };
+        look();
+        if(!r.names.length&&!r.match){
+          prepCanvas(orig);
+          const t3=await ocr('ara+eng',orig,{tessedit_pageseg_mode:'3',preserve_interword_spaces:'1'},p=>onP(.75+p*.25));
+          texts.push(t3);lbl.push('── قراءة تلقائية ──');r=mergeRc(r,parseReceipt(t3));look();
+        }
         r.ph=ph;
         r.raw=texts.map((t,i)=>lbl[i]+'\n'+String(t||'').trim()).join('\n\n');
         return r;
@@ -824,21 +836,22 @@ function scanReceipt(){
 }
 
 /* اختيار اسم المكان: كذا اختيار تدوس عليه، أو تكتب
-   وتحت فيه "🔍 اللي البرنامج قراه" عشان لو حاجة غلطت تاخد سكرين شوت على طول */
+   و"🔍 اللي البرنامج قراه" تحت العنوان على طول */
 let NMR=null,NMO=[];
 function askStore(rc){
   const o=[],add=s=>{s=(s||'').trim();if(s&&!o.some(x=>normAr(x)===normAr(s)))o.push(s)};
   if(rc.match)add(rc.match.name);(rc.names||[]).slice(0,4).forEach(add);
   NMO=o.slice(0,5);const star=!!rc.match,raw=String(rc.raw||'').trim(),hasTxt=raw.replace(/──[^\n]*──/g,'').replace(/\s+/g,'').length>10;
+  const diag=hasTxt?`<details class="gen" style="margin:0 0 8px"><summary>🔍 اللي البرنامج قراه</summary><pre style="white-space:pre-wrap;font:inherit;font-size:11px;max-height:260px;overflow:auto;margin:6px 0">${esc(raw)}</pre></details>`
+    :`<p class="warn">⚠️ البرنامج مقراش أي كلام من الصورة${rc.err?'<br><small>'+esc(rc.err)+'</small>':''}</p>`;
   return new Promise(res=>{
     sheet(`<h2>🧾 اسم المكان؟</h2>
+    ${diag}
     ${NMO.length?`<p class="muted">دوس على الاسم الصح</p><div class="list">${NMO.map((s,i)=>`<div class="row" onclick="nmPick(${i})"><span class="ic" style="background:var(--soft)">${star&&!i?'⭐':'🏪'}</span><div class="grow"><b>${esc(s)}</b>${star&&!i?`<small>${rc.phMatch?'عرفته من رقم التليفون':'متسجل عندك قبل كده'}</small>`:''}</div></div>`).join('')}</div>`:''}
     <label>${NMO.length?'مش موجود؟ اكتب الاسم':'اكتب اسم المكان'}<input id="nm-in" list="nm-dl" autocomplete="off" onkeydown="if(event.key==='Enter')nmPick(-1)"></label>
     <datalist id="nm-dl">${storeCats().map(c=>`<option value="${esc(c.name)}"></option>`).join('')}</datalist>
     <button class="btn" onclick="nmPick(-1)">تمام</button>
-    <button class="btn ghost" onclick="closeSheet()">إلغاء</button>
-    ${hasTxt?`<details class="gen" style="margin-top:10px"><summary>🔍 اللي البرنامج قراه</summary><pre style="white-space:pre-wrap;font:inherit;font-size:11px;max-height:260px;overflow:auto;margin:6px 0">${esc(raw)}</pre></details>`
-      :`<p class="warn" style="margin-top:10px">⚠️ البرنامج مقراش أي كلام من الصورة${rc.err?'<br><small>'+esc(rc.err)+'</small>':''}</p>`}`);
+    <button class="btn ghost" onclick="closeSheet()">إلغاء</button>`);
     NMR=res;
   });
 }
@@ -1381,7 +1394,7 @@ a.btn.wab{display:flex;align-items:center;justify-content:center;gap:6px}`;
 try{const _c3=closeSheet;closeSheet=function(){const r=_c3.apply(this,arguments);if(NMR){const f=NMR;NMR=null;f(null)}return r}}catch(e){}
 /* تنضيف الأسماء البديلة الغلط اللي كانت بتلخبط اسم المحل */
 S.cats.forEach(c=>{if(c.alias)c.alias=c.alias.filter(a=>normAr(a).replace(/\s+/g,'').length>=6&&sim(a,c.name)>=.3&&!SKIPM.test(a))});
-/* مسح قايمة "أرقام شركات البرمجة" اللي اتسجلت غلط وكانت بتخلي البرنامج يتجاهل أرقام المحلات */
+/* مسح قايمة "أرقام شركات البرمجة" اللي اتسجلت غلط */
 delete S.settings.vph;
 
 /* ========== تشغيل ========== */
