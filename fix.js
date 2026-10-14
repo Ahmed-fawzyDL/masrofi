@@ -928,4 +928,29 @@ function openRep(key,set){
   openRV();
 }
 try{const _crv2=closeRV;closeRV=function(){const h=XRVSH;XRVSH=null;const r=_crv2.apply(this,arguments);if(h)sheet(h,true);return r}}catch(e){}
+/* ========== حذف القسط: تختار تحذف مصروفاته معاه ولا لأ ========== */
+async function planDel(id){
+  const p=plan(id);if(!p)return;
+  const txs=S.txs.filter(t=>(t.src&&t.src.k==='i'&&t.src.id===id)||p.items.some(it=>it.txId===t.id));
+  let delTx=false;
+  if(txs.length){
+    const r=await ask(`حذف ${p.name}؟`,`عليه ${txs.length} قسط مدفوع بإجمالي ${fmt(txs.reduce((a,t)=>a+t.amount,0))}.\nتحذف مصروفاتهم كمان؟`,{danger:true,icon:'🗑',ok:'🗑 احذف القسط ومصروفاته',cancel:'احذف القسط بس'});
+    if(r===null)return;delTx=r;
+  }else if(!await ask(`حذف ${p.name}؟`,'',{danger:true,icon:'🗑',ok:'حذف'}))return;
+  let kept=0;
+  if(delTx){const ids=new Set(txs.filter(t=>{if(isClosed(t.date)){kept++;return false}return true}).map(t=>t.id));S.txs=S.txs.filter(t=>!ids.has(t.id))}
+  S.plans=S.plans.filter(x=>x.id!==id);save();closeSheet();go('inst');refreshRV();
+  toast(kept?`اتحذف · ${kept} مصروف في شهور مقفولة فضلوا`:'اتحذف ✓');
+}
+/* مصروفات أقساط اتحذفت قبل كده: بيسألك مرة واحدة تحذفها */
+async function xOrphanInst(){
+  const l=S.txs.filter(t=>t.src&&t.src.k==='i'&&!plan(t.src.id)&&!isClosed(t.date));if(!l.length)return;
+  const sig=l.map(t=>t.id).sort().join(',');if(S.settings.xorph===sig)return;
+  const r=await ask('مصروفات أقساط اتحذفت',`لقيت ${l.length} مصروف لأقساط انت حذفتها قبل كده، بإجمالي ${fmt(l.reduce((a,t)=>a+t.amount,0))}.\nأحذفهم؟`,{danger:true,icon:'🧹',ok:'🗑 احذفهم',cancel:'سيبهم'});
+  if(r===null)return;
+  if(!r){S.settings.xorph=sig;save();return}
+  const ids=new Set(l.map(t=>t.id));S.txs=S.txs.filter(t=>!ids.has(t.id));save();render();refreshRV();toast('اتحذفوا ✓');
+}
+function xOrphanLater(){if($('#lock').classList.contains('on')||document.querySelector('.dlg'))return setTimeout(xOrphanLater,2000);xOrphanInst()}
+setTimeout(xOrphanLater,3000);
 /* نهاية fix.js */
