@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.24',XVBUILD='14/10/2026 - 04:38 م';
+   const XVER='2.21.25',XVBUILD='14/10/2026 - 04:49 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1893,4 +1893,47 @@ function vSettings(){
 try{const _emT=editMethod;editMethod=function(){const r=_emT.apply(this,arguments);try{const s=$('#m-type'),l=s&&s.closest('label');if(l&&!$('#xt-go')){const b=document.createElement('button');b.type='button';b.id='xt-go';b.className='mini';b.style.cssText='margin:-4px 0 10px';b.textContent='🏷️ عدّل أو ضيف أنواع';b.onclick=()=>{TXBACK=false;closeSheet();stab='types';go('settings')};l.after(b)}}catch(e){}return r}}catch(e){}
 xApplyTypes();
 try{const _rTy=render;render=function(){try{xApplyTypes()}catch(e){}return _rTy.apply(this,arguments)}}catch(e){}
+/* ========== ألوان المستويات: البند ← العمليات (بنفسجي) ← البيانات (تركواز) ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view details.grp .list>details[open],#view details.grp .ckx:has(>details[open]){border-color:color-mix(in srgb,var(--p) 60%,transparent)!important;background:color-mix(in srgb,var(--p) 12%,rgba(255,255,255,.03))!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--p) 30%,transparent),0 6px 18px rgba(0,0,0,.15)!important}
+#view details.xgr>.xb{background:color-mix(in srgb,#6366f1 8%,transparent)!important;border:1px solid color-mix(in srgb,#6366f1 30%,transparent)!important;border-radius:12px!important;padding:6px!important}
+#view details.xgr .xl3{background:color-mix(in srgb,#6366f1 16%,rgba(255,255,255,.02))!important;border:1px solid color-mix(in srgb,#6366f1 40%,transparent)!important}
+#view details.xgr .xl3[open]{border-color:color-mix(in srgb,#6366f1 75%,transparent)!important;background:color-mix(in srgb,#6366f1 24%,rgba(255,255,255,.02))!important}
+#view details.xgr .xl3 .xn{background:#6366f1!important}
+#view details.xr:not(.xgr)>.xb{background:color-mix(in srgb,#14b8a6 10%,transparent)!important;border:1px solid color-mix(in srgb,#14b8a6 38%,transparent)!important}
+#view details.xr:not(.xgr)>.xb>.kv{background:color-mix(in srgb,#14b8a6 12%,rgba(255,255,255,.03))!important;border-color:color-mix(in srgb,#14b8a6 30%,transparent)!important}
+#view details.xr:not(.xgr)>.xb>.kv.xbig>b{color:#14b8a6!important}
+/* وضع التركيز */
+#view.xfocus details.grp:not(.xon),#view.xfocus>.exh{display:none!important}
+#view.xfocus details.grp.xon .list>*:not(.xon),#view.xfocus details.grp.xon>.ckx:not(.xon),#view.xfocus details.grp.xon>div[style*="padding"]{display:none!important}
+#view details.xgr.xf2 .xl3:not(.xon2){display:none!important}
+#view .xbk{display:block;width:calc(100% - 14px);margin:6px 7px 8px;padding:8px;border-radius:11px;border:1px dashed color-mix(in srgb,var(--p) 55%,transparent);background:color-mix(in srgb,var(--p) 10%,transparent);color:inherit;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer}
+`;document.head.appendChild(s)})();
+function xFocusClear(){
+  const v=$('#view');if(!v)return;v.classList.remove('xfocus');
+  v.querySelectorAll('.xon').forEach(e=>e.classList.remove('xon'));v.querySelectorAll('.xbk').forEach(e=>e.remove());
+}
+function xFocusBack(){const o=document.querySelector('#view details.grp.xon .xon details.xr[open]:not(.xl3),#view details.grp.xon details.xr.xon[open]');if(o)o.open=false;else xFocusClear()}
+document.addEventListener('toggle',e=>{
+  const d=e.target;if(!d||d.tagName!=='DETAILS'||!d.closest('#view'))return;
+  const v=$('#view');
+  if(d.classList.contains('xl3')){
+    const g=d.closest('details.xgr');if(!g)return;
+    if(d.open){g.classList.add('xf2');g.querySelectorAll('.xon2').forEach(x=>x.classList.remove('xon2'));d.classList.add('xon2')}
+    else if(!g.querySelector('.xl3[open]')){g.classList.remove('xf2');d.classList.remove('xon2')}
+    return;
+  }
+  if(d.classList.contains('grp')){if(!d.open&&d.classList.contains('xon'))xFocusClear();return}
+  if(!d.classList.contains('xr'))return;
+  const grp=d.closest('details.grp');if(!grp)return;
+  const item=d.closest('.ckx')||d;
+  if(d.open){
+    xFocusClear();v.classList.add('xfocus');grp.classList.add('xon');item.classList.add('xon');
+    const b=document.createElement('button');b.type='button';b.className='xbk';b.textContent='↩ عرض كل العمليات';b.onclick=ev=>{ev.stopPropagation();d.open=false};
+    (grp.querySelector(':scope>summary')||grp).after(b);
+    setTimeout(()=>{try{grp.scrollIntoView({block:'start',behavior:'smooth'});setTimeout(()=>scrollBy(0,-70),250)}catch(err){}},80);
+  }else if(item.classList.contains('xon'))xFocusClear();
+},true);
+try{const _rFo=render;render=function(){xFocusClear();return _rFo.apply(this,arguments)}}catch(e){}
+try{const _hbF=handleBack;handleBack=function(){if($('#view')&&$('#view').classList.contains('xfocus')){const o=document.querySelector('#view .xon details.xr[open]:not(.xl3)')||document.querySelector('#view details.xr.xon[open]');if(o){const l=o.querySelector('.xl3[open]');if(l){l.open=false;return true}o.open=false}else xFocusClear();return true}return _hbF.apply(this,arguments)}}catch(e){}
 /* نهاية fix.js */
