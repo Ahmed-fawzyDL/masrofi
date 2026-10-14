@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.23',XVBUILD='14/10/2026 - 04:32 م';
+   const XVER='2.21.24',XVBUILD='14/10/2026 - 04:38 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1834,4 +1834,63 @@ function gfApply(){const q=qn(GQ[view]||'');document.querySelectorAll('#view .li
 #view .xl3 .grow>b{display:block;font-size:12.5px!important;font-weight:800}
 #view .xl3 .xa{flex:0 0 auto;font-size:13.5px;font-weight:800;direction:ltr;min-width:46px;text-align:left}
 `;document.head.appendChild(s)})();
+/* ========== الأنواع والطرق: تعديل وإضافة أنواع الحسابات وطرق الدفع ========== */
+const XT0={...TYPES},XV0=VIA.map(x=>x.slice()),XVIA0={};Object.entries(XVIA).forEach(([k,v])=>XVIA0[k]=v.slice());
+function xTCfg(){const c=S.settings.xt||(S.settings.xt={});c.t=c.t||{};c.v=c.v||{};return c}
+function xApplyTypes(){
+  const cfg=xTCfg();
+  Object.keys(TYPES).forEach(k=>delete TYPES[k]);Object.assign(TYPES,XT0);
+  Object.entries(cfg.t).forEach(([k,o])=>{if(o&&o.n)TYPES[k]=o.n});
+  VIA.length=0;XV0.forEach(([k,l])=>VIA.push([k,(k&&cfg.v[k]&&cfg.v[k].n)||l]));
+  Object.entries(cfg.v).forEach(([k,o])=>{if(o&&o.x&&o.n)VIA.push([k,o.n])});
+  Object.keys(XVIA).forEach(k=>{if(!XVIA0[k])delete XVIA[k]});Object.entries(XVIA0).forEach(([k,v])=>XVIA[k]=v.slice());
+  [...Object.entries(cfg.t),...Object.entries(cfg.v)].forEach(([k,o])=>{if(!o)return;const b=XVIA[k]||['🔹','#475569'];XVIA[k]=[o.ic||b[0],o.c||b[1]]});
+}
+function spTypes(){
+  const cfg=xTCfg();
+  const row=(kind,k,n)=>{const ic=XVIA[k]||['🔹','#475569'],cu=cfg[kind][k]&&cfg[kind][k].x;
+    return `<div class="row" onclick="xTypeForm('${kind}','${k}')"><span class="ic" style="background:${ic[1]};color:#fff;overflow:hidden">${XLG[k]?`<img src="${XLG[k]}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:ic[0]}</span><div class="grow"><b>${esc(n)}</b><small>${cu?'من عندك':'أساسي'}${cfg[kind][k]&&!cu?' · متعدّل':''}</small></div><span class="mini">✏️</span></div>`};
+  return `<p class="muted">تقدر تغيّر اسم أي نوع أو طريقة، وأيقونتها ولونها، أو تضيف جديد.</p>
+  <h3>🏦 أنواع الحسابات</h3><div class="list">${Object.entries(TYPES).map(([k,n])=>row('t',k,n)).join('')}</div>
+  <button class="btn ghost" onclick="xTypeForm('t')">+ نوع حساب جديد</button>
+  <h3>💳 طرق الدفع</h3><div class="list">${VIA.filter(x=>x[0]).map(([k,n])=>row('v',k,n)).join('')}</div>
+  <button class="btn ghost" onclick="xTypeForm('v')">+ طريقة دفع جديدة</button>`;
+}
+function xTypeForm(kind,key){
+  const cfg=xTCfg(),o=key?(cfg[kind][key]||{}):{},cu=!key||o.x;
+  const name=key?(kind==='t'?TYPES[key]:viaTxt(key)):'',ic=key?(XVIA[key]||['🔹'])[0]:'🔹',col=key?(XVIA[key]||['','#475569'])[1]:COLORS[S.methods.length%COLORS.length];
+  sheet(`<h2>${key?'✏️ تعديل':'➕ إضافة'} ${kind==='t'?'نوع حساب':'طريقة دفع'}</h2>
+  <label>الاسم<input id="xt-n" value="${esc(name)}" placeholder="${kind==='t'?'مثلاً: شهادات، ذهب':'مثلاً: Valu، فوري، Vodafone Cash'}"></label>
+  <label>الأيقونة (إيموجي)<input id="xt-i" value="${esc(ic)}" maxlength="6"></label>
+  <div class="fl">اللون</div>
+  <div class="colors">${COLORS.map(c=>`<button type="button" class="sw ${c===col?'on':''}" style="background:${c}" onclick="document.querySelectorAll('#sheet .sw').forEach(x=>x.classList.remove('on'));this.classList.add('on');$('#xt-c').value='${c}'"></button>`).join('')}</div>
+  <input type="hidden" id="xt-c" value="${col}">
+  <button class="btn" onclick="xTypeSave('${kind}','${key||''}')">حفظ</button>
+  ${key&&cu?`<button class="btn ghost danger" onclick="xTypeDel('${kind}','${key}')">🗑 حذف</button>`:''}
+  ${key&&!cu&&cfg[kind][key]?`<button class="btn ghost" onclick="xTypeReset('${kind}','${key}')">↺ رجّع الأصلي</button>`:''}`);
+}
+function xTypeSave(kind,key){
+  const n=($('#xt-n').value||'').trim(),ic=($('#xt-i').value||'').trim(),c=$('#xt-c').value;if(!n)return toast('اكتب الاسم');
+  const box=xTCfg()[kind];let k=key;if(!k){k='c'+uid();box[k]={x:1}}
+  box[k]=Object.assign(box[k]||{},{n,ic,c});
+  save();xApplyTypes();closeSheet();render();toast('اتحفظ ✓');
+}
+async function xTypeReset(kind,key){delete xTCfg()[kind][key];save();xApplyTypes();closeSheet();render();toast('رجع الأصلي ✓')}
+async function xTypeDel(kind,key){
+  const used=kind==='t'?S.methods.some(m=>m.type===key):(S.txs.some(t=>t.via===key)||S.cats.some(c=>c.via===key)||S.plans.some(p=>p.via===key));
+  if(used)return say('مينفعش تحذفه','مستخدم في حسابات أو عمليات. تقدر تغيّر اسمه بدل الحذف.','🏷️');
+  if(!await ask('حذف؟',kind==='t'?TYPES[key]:viaTxt(key),{danger:true,icon:'🗑',ok:'حذف'}))return;
+  delete xTCfg()[kind][key];save();xApplyTypes();closeSheet();render();toast('اتحذف');
+}
+if(!SETS.some(x=>x[0]==='types')){const i=SETS.findIndex(x=>x[0]==='fab');SETS.splice(i>=0?i+1:4,0,['types','🏷️','الأنواع والطرق'])}
+function vSettings(){
+  const sp=SETS.find(x=>x[0]===stab);
+  if(!sp)return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>⚙️ ${esc(L('settings'))}</h3></div><div class="rgrid">${SETS.map(([k,ic,l])=>`<button class="rbtn" onclick="stab='${k}';render();scrollTo(0,0)"><span>${ic}</span>${l}</button>`).join('')}</div>`;
+  const P={name:spName,theme:spTheme,font:spFont,home:spHome,labels:spLabels,notif:spNotif,sec:spSec,ocr:spOcr,drive:spDrive,data:spData,demo:spDemo,about:spAbout,fab:spFab,types:spTypes};
+  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>${sp[1]} ${sp[2]}</h3></div>`+P[stab]();
+}
+/* في تعديل الحساب: زرار يوديك للأنواع */
+try{const _emT=editMethod;editMethod=function(){const r=_emT.apply(this,arguments);try{const s=$('#m-type'),l=s&&s.closest('label');if(l&&!$('#xt-go')){const b=document.createElement('button');b.type='button';b.id='xt-go';b.className='mini';b.style.cssText='margin:-4px 0 10px';b.textContent='🏷️ عدّل أو ضيف أنواع';b.onclick=()=>{TXBACK=false;closeSheet();stab='types';go('settings')};l.after(b)}}catch(e){}return r}}catch(e){}
+xApplyTypes();
+try{const _rTy=render;render=function(){try{xApplyTypes()}catch(e){}return _rTy.apply(this,arguments)}}catch(e){}
 /* نهاية fix.js */
