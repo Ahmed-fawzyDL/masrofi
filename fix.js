@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.7',XVBUILD='14/10/2026 - 02:40 م';
+const XVER='2.21.8',XVBUILD='14/10/2026 - 02:50 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1216,4 +1216,33 @@ function vHome(){
   if(wOn('recent',true))h+='<h3>آخر العمليات</h3>'+opsTable(keyTx(NKM).sort(byDesc).slice(0,8),hid);
   return h;
 }
+/* ========== كل مبلغ مخفي بيطلب البصمة لوحده ========== */
+async function xReveal(el){
+  if(!el||!el.dataset.v)return;
+  if(LK.bio){try{await bioVerify()}catch(e){return toast('البصمة ما اتعرفتش')}}
+  else if(LK.pin){const v=await ask('الرقم السري','',{input:'',num:true,pw:true,icon:'🔒',ok:'إظهار'});if(v==null)return;if(await hash(v)!==LK.pin)return toast('الرقم السري غلط')}
+  el.outerHTML='<b>'+decodeURIComponent(el.dataset.v)+'</b>';
+}
+
+/* ========== تصغير الشاشة الخضرا والأزرار ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.hero{padding:10px 12px!important;margin-bottom:10px!important;border-radius:18px!important}
+.hero .hero-t{font-size:12.5px!important;gap:6px!important}
+.hero .hero-t em{font-size:11px!important;padding:2px 8px!important}
+.xhb{gap:6px!important;margin:8px 0 6px!important}
+.xbx{padding:7px!important;gap:4px!important;border-radius:13px!important}
+.xbx>small{font-size:11px!important}
+.xbx .xv{font-size:14.5px!important;min-height:32px!important;padding:4px 6px!important;border-radius:9px!important}
+.xbx .xd{padding:4px!important;font-size:11px!important;border-radius:8px!important}
+.hero .hnet{padding:5px 2px!important;margin:0!important;font-size:12.5px!important}
+.hero .hnet b{font-size:15px!important}
+.xcr{font-size:11px!important;margin:4px 0 2px!important}
+.dash{gap:8px!important}
+.dash .tile{padding:8px 9px!important;min-height:0!important;border-radius:14px!important}
+.dash .tile .tth{font-size:11.5px!important;gap:5px!important}
+.dash .tile .ti{font-size:15px!important}
+.dash .tile small{font-size:10.5px!important;line-height:1.35!important}
+.tile .xv{font-size:13px!important;min-height:26px!important;padding:3px 6px!important;margin:5px 0 3px!important;border-radius:8px!important}
+.tile .xd{font-size:10px!important;margin-top:4px!important;padding-top:3px!important}
+`;document.head.appendChild(s)})();
 /* نهاية fix.js */
