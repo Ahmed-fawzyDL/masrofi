@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.4',XVBUILD='14/10/2026 - 12:30 م';
+const XVER='2.21.5',XVBUILD='14/10/2026 - 12:40 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1113,4 +1113,33 @@ function xFabBuild(){
     return `<button type="button" class="xfi" style="--x:${pos[i][0]}px;--y:${pos[i][1]}px;--d:${i*40}ms;background:linear-gradient(135deg,${col})" onclick="xFab(0);${js}"><span>${ic}</span><small>${esc(l)}</small>${c?`<b class="xfb">${c}</b>`:''}</button>`}).join('');
   if(!n)toast('مفيش زراير · ظبطها من ⚙️ الإعدادات ← أزرار ➕');
 }
+/* ========== زرار ➕ في الرئيسية بس ========== */
+(()=>{const s=document.createElement('style');s.textContent='body:not(.xhome) #xfw{display:none!important}';document.head.appendChild(s)})();
+function xHomeCls(){try{document.body.classList.toggle('xhome',view==='home')}catch(e){}}
+try{const _rH=render;render=function(){const r=_rH.apply(this,arguments);xHomeCls();return r}}catch(e){}
+xHomeCls();
+
+/* ========== تقسيط للغير في شاشة "تحصيل جديد" كمان ========== */
+function xP3Tx(){
+  if(!F||F.type!=='inc'||!F.fix)return;
+  const s=$('#f-ev');if(!s||s.querySelector('option[value="p3"]'))return;
+  const o=document.createElement('option');o.value='p3';o.textContent='🤝 تقسيط للغير';s.appendChild(o);
+  s.setAttribute('onchange','grab();SHKEEP=1;txForm()');
+  if(!F.p3)return;
+  s.value='p3';
+  const l=s.closest('label');if(!l)return;
+  const w=document.createElement('label');w.innerHTML=`📅 تاريخ الانتهاء<input id="f-end" type="date" value="${F.end3||''}">`;l.after(w);
+  const d=$('#f-d'),dl=d&&d.closest('label');if(dl&&dl.firstChild&&dl.firstChild.nodeType===3)dl.firstChild.nodeValue='📅 أول قسط';
+}
+try{const _tf9=txForm;txForm=function(){const r=_tf9.apply(this,arguments);try{xP3Tx()}catch(e){}return r}}catch(e){}
+try{const _gb9=grab;grab=function(){_gb9();const s=$('#f-ev');if(s)F.p3=s.value==='p3';if($('#f-end'))F.end3=$('#f-end').value}}catch(e){}
+try{const _st9=saveTx;saveTx=async function(){
+  grab();const p3=F.type==='inc'&&F.fix&&F.p3,end=F.end3||'';
+  if(p3&&!end)return toast('اختار تاريخ الانتهاء');
+  if(p3&&F.date&&end<F.date)return toast('تاريخ الانتهاء لازم يكون بعد أول قسط');
+  const cid=F.cat&&F.cat!=='__new'?F.cat:null,nm0=(F.newCat||'').trim();
+  const r=await _st9.apply(this,arguments);
+  if(p3){const c=cid?C(cid):S.cats.find(x=>x.kind==='inc'&&normAr(x.name)===normAr(nm0));if(c&&c.fixed){c.p3=true;c.end=end;save();render()}}
+  return r;
+}}catch(e){}
 /* نهاية fix.js */
