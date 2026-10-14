@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.20',XVBUILD='14/10/2026 - 03:56 م';
+   const XVER='2.21.21',XVBUILD='14/10/2026 - 04:03 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1698,4 +1698,74 @@ body.dark{--tx2:#cbd5e1}
 #view .xl2 .xcs{margin-top:4px!important}
 #view .xl2 .xa{flex:0 0 auto;font-size:13.5px;font-weight:800;direction:ltr;min-width:46px;text-align:left}
 `;document.head.appendChild(s)})();
+/* ========== البوكسات الصغيرة ملونة حسب النوع ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+:root{--tx1:#0f172a}body.dark{--tx1:#ffffff}
+#view .xc2.xcc{background:color-mix(in srgb,var(--cc) 16%,transparent)!important;border-color:color-mix(in srgb,var(--cc) 48%,transparent)!important;color:color-mix(in srgb,var(--cc) 68%,var(--tx1))!important;font-weight:700!important}
+#view details.grp .grow>b,#view .list .grow>b{font-size:13px!important}
+`;document.head.appendChild(s)})();
+function xC(h,c){return[h,c||'']}
+function xChips(a){return `<small class="xcs" data-ch="1">${a.map(x=>{const[h,c]=Array.isArray(x)?x:[x,''];return `<span class="xc2${c?' xcc':''}"${c?` style="--cc:${c}"`:''}>${h}</span>`}).join('')}</small>`}
+function xMeta(t,fee){
+  const m=M(t.method),out=[xC('📅 '+dmy(t.date))];
+  if(m)out.push(xC(xMIc(m,1)+' '+esc(m.name)+(xIsCr(t.method)?' 💳':''),m.color||'#2563eb'));
+  if(t.via&&!fee)out.push(xC(xViaIc(t.via,1)+' '+esc(viaTxt(t.via)),(XVIA[t.via]||[])[1]));
+  if(t.ipay&&t.ipay.v)out.push(xC('← <bdi>'+esc(t.ipay.v)+'</bdi>','#7c3aed'));
+  if((t.files||[]).length&&!XRC.has(t.id))out.push(xC('📎 '+t.files.length));
+  return out;
+}
+function xFeeName(n){n=String(n||'');const p=XFEEN+' · ';return n.indexOf(p)===0?n.slice(p.length):''}
+function xLine(t,inc){
+  const fee=!!t.feeOf,o=fee&&S.txs.find(x=>x.id===t.feeOf),meta=xMeta(t,fee);
+  let ti='';
+  if(fee){ti=o?'↩ لـ '+esc(C(o.cat)?.name||'—'):'↩ مصاريف تحويل';if(o)meta.splice(1,0,xC('💰 '+num(o.amount),'#ca8a04'))}
+  else if(t.note&&!/^🧾/.test(t.note))ti=esc(t.note);
+  return `<div class="xl2" onclick="editTx('${t.id}')"><div class="grow">${ti?`<b>${ti}</b>`:''}${xChips(meta)}</div><b class="xa ${inc?'pos':'neg'}">${num(t.amount)}</b></div>`;
+}
+function xGroup(txs,kind){
+  const g={};txs.forEach(t=>{(g[t.cat]=g[t.cat]||[]).push(t)});
+  return Object.entries(g).map(([id,ts])=>{
+    ts.sort(byDesc);const a=ts.reduce((s,t)=>s+t.amount,0),d=ts[0].date+String(ts[0].created||0).padStart(15,'0'),n=C(id)?.name||'';
+    if(ts.length===1)return{h:kind==='exp'?xExpRow(ts[0]):txRow(ts[0]),a,d,n};
+    const c=C(id),inc=kind==='inc',bank=xFeeName(n),bm=bank&&S.methods.find(m=>m.name===bank);
+    const chips=[];if(bank)chips.push(xC((bm?xMIc(bm,1)+' ':'🏦 ')+esc(bank),bm&&bm.color||'#2563eb'));
+    chips.push(xC(ts.length+' عمليات'),xC('آخر مرة '+dmy(ts[0].date)));
+    const h=`<details class="xr xgr"><summary><span class="ic" style="background:var(--soft)">${bank?'💸':c&&c.fixed?'📌':inc?'💵':'🛒'}</span><div class="grow"><b>${bank?'مصاريف إنستاباي':esc(n||'—')}</b>${xChips(chips)}</div><div class="amt ${inc?'inc':'exp'}">${num(a)}</div></summary><div class="xb">${ts.map(t=>xLine(t,inc)).join('')}</div></details>`;
+    return{h,a,d,n};
+  });
+}
+function xExpRow(t){
+  const r=XRC.has(t.id),lo=t.loan?r2(t.amount-xLoanPaid(t)):0,fee=!!t.feeOf,o=fee&&S.txs.find(x=>x.id===t.feeOf),meta=xMeta(t,fee),cn=C(t.cat)?.name||'—';
+  if(o)meta.splice(1,0,xC('↩ لـ '+esc(C(o.cat)?.name||'—'),'#0d9488'),xC('💰 '+num(o.amount),'#ca8a04'));
+  else if(t.note&&!/^🧾/.test(t.note))meta.push(xC('📝 '+esc(t.note)));
+  return `<div class="row" onclick="editTx('${t.id}')"><span class="ic" style="background:var(--soft)">${r?'🧾':t.loan?'🤝':'💸'}</span><div class="grow"><b>${xFeeName(cn)?'مصاريف إنستاباي':esc(cn)}${t.loan?` <span class="tag ${lo>0?'wait':'ok'}">${lo>0?'سلفة':'اتسددت'}</span>`:''}</b>${xChips(meta)}</div><div class="amt exp">${num(t.amount)}</div></div>`;
+}
+/* البوكسات اللي بتتعمل من الكلام (التحصيلات والثابت): لون حسب معناها */
+function xChipColor(tx){
+  if(/متأخر/.test(tx))return '#dc2626';
+  if(/^(محصّل|مدفوع)\s/.test(tx))return '#16a34a';
+  if(/غير محصّل|غير مدفوع|منتظر/.test(tx))return '#ea580c';
+  if(/بينزل لوحده/.test(tx))return '#2563eb';
+  if(/اتلغى|سابق/.test(tx))return '#64748b';
+  const v=VIA.find(x=>x[1]&&tx===x[1]);if(v&&XVIA[v[0]])return XVIA[v[0]][1];
+  const m=S.methods.find(x=>tx===x.name||tx===x.name+' 💳');if(m)return m.color||'#2563eb';
+  return '';
+}
+function xChipify(){
+  document.querySelectorAll('#view details.grp .grow>small:not([data-ch]),#view .list .grow>small:not([data-ch])').forEach(s=>{
+    s.setAttribute('data-ch','1');if(s.closest('.xb'))return;
+    const parts=s.innerHTML.split(' · ').map(x=>x.trim()).filter(Boolean);
+    if(parts.length<2&&!/\d{2}\/\d{2}\/\d{4}/.test(s.textContent))return;
+    s.innerHTML=parts.map(p=>{const tx=p.replace(/<[^>]+>/g,'').trim(),c=xChipColor(tx);return `<span class="xc2${c?' xcc':''}"${c?` style="--cc:${c}"`:''}>${/^\d{2}\/\d{2}\/\d{4}$/.test(tx)?'📅 ':''}${p}</span>`}).join('');
+    s.classList.add('xcs');
+  });
+}
+
+/* ========== لما تفتح حاجة، اللي قبلها تتقفل لوحدها ========== */
+document.addEventListener('toggle',e=>{
+  const d=e.target;if(!d||d.tagName!=='DETAILS'||!d.open||!d.closest('#view'))return;
+  const lvl=d.classList.contains('grp')?'details.grp':d.classList.contains('xr')?'details.xr':null;if(!lvl)return;
+  document.querySelectorAll('#view '+lvl+'[open]').forEach(o=>{if(o!==d&&!o.contains(d)&&!d.contains(o))o.open=false});
+  setTimeout(()=>{try{d.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(err){}},60);
+},true);
 /* نهاية fix.js */
