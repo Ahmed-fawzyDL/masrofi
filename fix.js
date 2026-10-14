@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.8',XVBUILD='14/10/2026 - 02:50 م';
+const XVER='2.21.10',XVBUILD='14/10/2026 - 03:10 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1245,4 +1245,74 @@ async function xReveal(el){
 .tile .xv{font-size:13px!important;min-height:26px!important;padding:3px 6px!important;margin:5px 0 3px!important;border-radius:8px!important}
 .tile .xd{font-size:10px!important;margin-top:4px!important;padding-top:3px!important}
 `;document.head.appendChild(s)})();
+/* ========== مصاريف إنستاباي: بتتحسب لوحدها وبتتسجل مصروف منفصل ========== */
+(()=>{const s=document.createElement('style');s.textContent=`.xfee{margin-top:10px;padding-top:8px;border-top:1px dashed rgba(148,163,184,.4)}.xfee .inl input{flex:1}.xfee small{display:block;margin-top:4px}`;document.head.appendChild(s)})();
+function xFeeCfg(){return S.settings.ipfee||{p:.1,min:.5,max:20}}
+function xFeeCalc(a){const c=xFeeCfg();a=+a||0;if(!(a>0))return 0;return r2(Math.min(+c.max,Math.max(+c.min,a*(+c.p)/100)))}
+function xFeeTx(id){return id?S.txs.find(x=>x.feeOf===id):null}
+function xFeeInject(){
+  if(!F||F.type!=='exp'||F.via!=='instapay')return;
+  const orig=F.id&&S.txs.find(t=>t.id===F.id);if(orig&&orig.feeOf)return;
+  const box=document.querySelector('#sheet .xipb');if(!box||$('#f-feeon'))return;
+  if(F.feeOn==null){const ft=xFeeTx(F.id);F.feeOn=F.id?!!ft:true;if(ft){F.fee=amtStr(ft.amount);F.feeMan=true}}
+  if(!F.feeMan)F.fee=amtStr(xFeeCalc(parseNum(F.amount)));
+  const c=xFeeCfg(),w=document.createElement('div');w.className='xfee';
+  w.innerHTML=`<label class="chk"><input type="checkbox" id="f-feeon" ${F.feeOn?'checked':''} onchange="grab();F.feeOn=this.checked;SHKEEP=1;txForm()"> 💸 مصاريف إنستاباي</label>
+  ${F.feeOn?`<div class="inl"><input id="f-fee" inputmode="decimal" dir="ltr" value="${esc(F.fee||'')}" oninput="F.feeMan=true"><button type="button" class="mini" onclick="xFeeAuto()">↺</button><button type="button" class="mini" onclick="xIpFeeCfg()">⚙️</button></div>
+  <small class="muted">${c.p}% من المبلغ · أقل حاجة ${c.min} · أقصى حاجة ${c.max} · بتتسجل مصروف لوحدها</small>`:''}`;
+  box.appendChild(w);
+  const a=$('#f-amt');if(a)a.addEventListener('input',()=>{if(!F.feeMan&&$('#f-fee'))$('#f-fee').value=amtStr(xFeeCalc(parseNum(a.value)))});
+}
+function xFeeAuto(){F.feeMan=false;const f=$('#f-fee');if(f)f.value=amtStr(xFeeCalc(parseNum(($('#f-amt')||{}).value)))}
+async function xIpFeeCfg(){
+  const c=xFeeCfg();
+  const p=await askIn('نسبة المصاريف %','دلوقتي '+c.p+'%',String(c.p),true);if(p==null)return;
+  const mn=await askIn('أقل مبلغ للمصاريف','',String(c.min),true);if(mn==null)return;
+  const mx=await askIn('أقصى مبلغ للمصاريف','',String(c.max),true);if(mx==null)return;
+  S.settings.ipfee={p:parseNum(p)||0,min:parseNum(mn)||0,max:parseNum(mx)||0};save();
+  grab();F.feeMan=false;SHKEEP=1;txForm();toast('اتحفظ ✓');
+}
+try{const _tfF=txForm;txForm=function(){const r=_tfF.apply(this,arguments);try{xFeeInject()}catch(e){}return r}}catch(e){}
+try{const _gbF=grab;grab=function(){_gbF();if($('#f-feeon'))F.feeOn=$('#f-feeon').checked;if($('#f-fee'))F.fee=$('#f-fee').value}}catch(e){}
+try{const _stF=saveTx;saveTx=async function(){
+  grab();const before=new Set(S.txs.map(t=>t.id)),fid=F.id,ip=F.type==='exp'&&F.via==='instapay',on=!!F.feeOn,fee=parseNum(F.fee);
+  const r=await _stF.apply(this,arguments);
+  try{
+    let mid=fid;if(!mid){const n=S.txs.find(t=>!before.has(t.id)&&t.type==='exp'&&!t.feeOf);mid=n&&n.id}
+    const m=mid&&S.txs.find(t=>t.id===mid);if(!m||m.feeOf)return r;
+    const old=xFeeTx(m.id);
+    if(ip&&on&&fee>0&&!m.pend&&!isClosed(m.date)){
+      const c=ensureCat('مصاريف إنستاباي','exp');c.active=true;
+      if(old)Object.assign(old,{amount:fee,method:m.method,date:m.date});
+      else S.txs.push({id:uid(),type:'exp',amount:fee,cat:c.id,method:m.method,via:'instapay',date:m.date,note:'💸 مصاريف تحويل',files:[],created:Date.now(),feeOf:m.id});
+      save();render();
+    }else if(old&&!isClosed(old.date)){S.txs=S.txs.filter(t=>t.id!==old.id);save();render()}
+  }catch(e){}
+  return r;
+}}catch(e){}
+try{const _dtF=delTx;delTx=async function(){const id=F&&F.id;const r=await _dtF.apply(this,arguments);if(id&&!S.txs.some(t=>t.id===id)){const n=S.txs.length;S.txs=S.txs.filter(t=>t.feeOf!==id);if(S.txs.length!==n){save();render()}}return r}}catch(e){}
+try{const _tbF=txBody;txBody=function(t){let h=_tbF(t);const f=xFeeTx(t.id);
+  if(f)h=h.replace('<div class="etbar"',`<div class="kv"><span>💸 مصاريف إنستاباي</span><b>${fmt(f.amount)}</b></div><div class="etbar"`);
+  if(t.feeOf){const m=S.txs.find(x=>x.id===t.feeOf);if(m)h=h.replace('<div class="etbar"',`<div class="kv"><span>🔗 مصاريف تحويل لـ</span><b>${esc(C(m.cat)?.name||'')} · ${fmt(m.amount)}</b></div><div class="etbar"`)}
+  return h}}catch(e){}
+
+/* ========== مصاريف إنستاباي للمصروفات القديمة (مرة واحدة) ========== */
+async function xFeeBackfill(){
+  if(S.settings.xfeebf)return;
+  const c0=S.cats.find(c=>c.kind==='exp'&&c.name==='مصاريف إنستاباي');
+  const l=S.txs.filter(t=>t.type==='exp'&&t.via==='instapay'&&!t.pend&&!t.feeOf&&t.amount>0&&!(c0&&t.cat===c0.id)&&!xFeeTx(t.id)&&!isClosed(t.date));
+  if(!l.length){S.settings.xfeebf=1;save();return}
+  const tot=r2(l.reduce((a,t)=>a+xFeeCalc(t.amount),0));
+  const r=await ask('مصاريف إنستاباي القديمة',`لقيت ${l.length} مصروف متسجل بإنستاباي من غير مصاريف.\nمصاريفهم كلها ${fmt(tot)}.\nأضيفها؟`,{icon:'💸',ok:'✓ ضيفها',cancel:'لأ'});
+  if(r===null)return;
+  S.settings.xfeebf=1;
+  if(r){
+    const c=ensureCat('مصاريف إنستاباي','exp');c.active=true;
+    l.forEach(t=>S.txs.push({id:uid(),type:'exp',amount:xFeeCalc(t.amount),cat:c.id,method:t.method,via:'instapay',date:t.date,note:'💸 مصاريف تحويل',files:[],created:Date.now(),feeOf:t.id}));
+    toast(`اتضاف مصاريف ${l.length} تحويل ✓`);
+  }
+  save();render();refreshRV();
+}
+function xFeeLater(){if($('#lock').classList.contains('on')||document.querySelector('.dlg'))return setTimeout(xFeeLater,2000);xFeeBackfill()}
+setTimeout(xFeeLater,4500);
 /* نهاية fix.js */
