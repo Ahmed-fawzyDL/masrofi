@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.14',XVBUILD='14/10/2026 - 03:20 م';
+   const XVER='2.21.17',XVBUILD='14/10/2026 - 03:30 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1481,4 +1481,150 @@ function xCatOpen(){
     catPick(o.dataset.v);
   };
 }
+/* ========== المصروفات والتحصيلات: كروت blur + التفاصيل في بوكسات صغيرة ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view details.grp{background:color-mix(in srgb,var(--card,#fff) 62%,transparent)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(148,163,184,.22)!important;border-radius:16px!important;box-shadow:0 6px 20px rgba(0,0,0,.12)!important}
+#view details.grp>summary{padding:10px 12px!important;font-size:13.5px!important;min-height:0}
+#view details.grp>summary .gs{font-size:13.5px!important;min-width:72px!important}
+#view details.grp>summary .badge{font-size:10.5px;padding:1px 8px}
+#view details.grp[open]>summary{border-bottom:0!important}
+#view details.grp .ckx,#view details.grp .list>.row,#view details.grp .list>details.xgr{margin:0 7px 6px!important;border:1px solid rgba(148,163,184,.18)!important;border-radius:12px!important;background:color-mix(in srgb,var(--p) 5%,rgba(255,255,255,.04))!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-inline:9px!important}
+#view details.grp .list>.row{padding-block:6px!important}
+#view details.grp .ckx:first-child,#view details.grp .list>:first-child{margin-top:3px!important}
+#view details.grp details.xr>summary,#view details.grp .ckx>.row,#view details.grp details.xgr>summary{padding:6px 0!important;min-height:44px!important;gap:8px!important}
+#view details.grp .list>.row{min-height:44px!important;gap:8px!important}
+#view details.grp .ic{width:28px!important;height:28px!important;flex-basis:28px!important;border-radius:9px!important;font-size:14px!important}
+#view details.grp .ckx>input[type=checkbox]{width:18px!important;height:18px!important;flex-basis:18px!important}
+#view details.grp .grow>b{font-size:13px!important;line-height:1.3!important}
+#view details.grp .grow>b .xcnt{font-size:9.5px;padding:0 5px}
+#view details.grp .amt{font-size:13.5px!important;min-width:64px!important}
+#view .xcs{display:flex!important;flex-wrap:wrap;gap:3px;margin-top:4px!important;opacity:1!important}
+#view .xc2{display:inline-flex;align-items:center;gap:3px;background:rgba(148,163,184,.13);border:1px solid rgba(148,163,184,.2);border-radius:7px;padding:1px 6px;font-size:10px;line-height:1.45;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+#view .xcs.neg .xc2:first-child{background:rgba(220,38,38,.14);border-color:rgba(220,38,38,.3);color:#ef4444}
+#view .xc2 .xlogo.s,#view .xc2 .xic.s{width:14px!important;height:14px!important;flex-basis:14px!important;border-radius:4px!important;font-size:8px!important}
+#view details.grp details.xr .xb{margin:0 0 7px!important}
+#view details.grp details.xgr .xl{border-radius:9px;margin:0 0 4px;padding:6px 9px!important;background:rgba(148,163,184,.08)}
+`;document.head.appendChild(s)})();
+function xChipify(){
+  document.querySelectorAll('#view details.grp .grow>small:not([data-ch])').forEach(s=>{
+    s.setAttribute('data-ch','1');
+    const parts=s.innerHTML.split(' · ').map(x=>x.trim()).filter(Boolean);if(!parts.length)return;
+    s.innerHTML=parts.map(p=>{const tx=p.replace(/<[^>]+>/g,'').trim();return `<span class="xc2">${/^\d{2}\/\d{2}\/\d{4}$/.test(tx)?'📅 ':''}${p}</span>`}).join('');
+    s.classList.add('xcs');
+  });
+}
+try{const _rCh=render;render=function(){const r=_rCh.apply(this,arguments);try{xChipify()}catch(e){}return r}}catch(e){}
+setTimeout(()=>{try{xChipify()}catch(e){}},500);
+
+/* ========== تصغير البرنامج كله: الشاشات والبوكسات والأزرار ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view h3{font-size:15.5px!important;margin:10px 0 8px!important}
+#view .phead h3{font-size:16.5px!important}
+#view .phead .mini{height:32px!important;font-size:12px!important;padding:0 10px!important}
+#view .mbar{padding:4px!important;border-radius:12px!important}
+#view .mbar b{font-size:14px!important}
+#view .mbar button{width:34px!important;height:30px!important}
+#view .kpi{min-height:52px!important;padding:7px 5px!important;border-radius:12px!important}
+#view .kpi small{font-size:10px!important}
+#view .kpi b{font-size:12.5px!important}
+#view .tiles.x4 .tile{min-height:52px!important;padding:4px 3px!important;border-radius:12px!important}
+#view .tiles.x4 .tile span{font-size:16px!important}
+#view .tiles.x4 .tile b{font-size:10.5px!important}
+#view .tiles.x4 .tile small{font-size:9.5px!important}
+#view .sortbar .sseg button{padding:5px 2px!important;font-size:10.5px!important}
+#view .sortbar>span{font-size:11px!important}
+#view .gsr{padding:0 10px!important;border-radius:12px!important}
+#view .gsr input{padding:8px 0!important;font-size:13px!important}
+#view .rgrid{gap:8px!important}
+#view .rbtn{padding:10px 4px!important;font-size:11.5px!important;border-radius:14px!important;min-height:0!important}
+#view .rbtn span{font-size:20px!important;margin-bottom:2px}
+#view .list .row{padding-block:8px!important}
+#view .list .row b{font-size:13.5px}
+#view .list .row small{font-size:11.5px}
+#sheet .sz{font-size:13.5px}
+#sheet .sz h2{font-size:16px!important;margin:2px 0 10px!important}
+#sheet .shbar{padding-block:6px!important}
+#sheet .shbar .mini{padding:5px 11px!important;font-size:12.5px!important}
+#sheet label{font-size:12px!important;margin-bottom:8px!important}
+#sheet input:not([type=checkbox]):not([type=radio]):not([type=range]),#sheet textarea{font-size:13.5px!important;padding:8px 10px!important;min-height:38px!important;border-radius:10px!important}
+#sheet .amt-in{font-size:22px!important;padding:6px 12px!important;min-height:48px!important}
+#sheet .two{gap:8px!important}
+#sheet .btn{padding:9px 12px!important;font-size:13.5px!important;border-radius:11px!important;margin-top:7px!important}
+#sheet .mini{padding:5px 9px!important;font-size:12px!important}
+#sheet .kv{font-size:12.5px!important;padding:6px 0!important}
+#sheet .seg button{padding:7px 4px!important;font-size:12.5px!important}
+#sheet .fl{font-size:12px!important;margin:6px 0!important}
+#sheet .files .fth,#sheet .files .fadd{width:62px!important;height:62px!important;font-size:18px!important;border-radius:12px!important}
+#sheet .files .fadd small,#sheet .files .fth small{font-size:9.5px!important}
+.xsel{min-height:38px!important;padding:4px 10px!important;font-size:13px!important;border-radius:10px!important;gap:7px!important}
+.xic{width:24px!important;height:24px!important;flex-basis:24px!important;font-size:13px!important;border-radius:7px!important}
+.xlogo{width:24px!important;height:24px!important;flex-basis:24px!important;border-radius:7px!important}
+.xic0{font-size:15px!important;width:24px!important;flex-basis:24px!important}
+.xchip{padding:5px 12px!important;font-size:12px!important;border-radius:16px!important}
+.xchips{gap:6px!important;margin:2px 0 8px!important}
+.xforig{padding:5px 10px 10px!important;border-radius:12px!important;margin-bottom:10px!important}
+.xforig .xft{font-size:13px!important}
+.xforig .kv>b,.xb .kv>b{font-size:13px!important}
+.xb .kv.xbig>b{font-size:15.5px!important}
+.xforig .btn{padding:8px!important;font-size:13px!important}
+.xipb{padding:8px!important;border-radius:12px!important}
+.xpb{padding:10px 10px calc(10px + env(safe-area-inset-bottom))!important;border-radius:18px 18px 0 0!important}
+.xpt b{font-size:14.5px!important}
+.xpx{width:30px!important;height:30px!important}
+.xpo{padding:7px 9px!important;font-size:13px!important;border-radius:11px!important;gap:8px!important}
+.xpl{gap:5px!important}
+.xcg button{font-size:13px!important}
+nav button{font-size:10.5px!important}
+nav button span{font-size:19px!important}
+`;document.head.appendChild(s)})();
+/* ========== توحيد شكل كل الشاشات: بوكسات blur + سطور كروت + بوكسات صغيرة للتفاصيل ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .list{background:color-mix(in srgb,var(--card,#fff) 62%,transparent)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(148,163,184,.22)!important;border-radius:16px!important;padding:5px 0 1px!important;margin:0 0 10px!important;box-shadow:0 6px 20px rgba(0,0,0,.1)!important;overflow:hidden}
+#view .list>.row,#view .list>a.row,#view .list>.ckx,#view .list>details{margin:0 6px 5px!important;border:1px solid rgba(148,163,184,.18)!important;border-radius:12px!important;background:color-mix(in srgb,var(--p) 5%,rgba(255,255,255,.04))!important;padding:7px 9px!important;min-height:44px;display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit}
+#view .list .ic{width:28px!important;height:28px!important;flex:0 0 28px!important;border-radius:9px!important;font-size:14px!important;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#view .list .dot{width:12px;height:12px;flex:0 0 12px;border-radius:50%}
+#view .list .grow{flex:1;min-width:0}
+#view .list .grow>b{display:block;font-size:13px!important;font-weight:800;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#view .list .grow>small{display:block;font-size:10.5px!important;opacity:.8;line-height:1.45;margin-top:2px}
+#view .list .amt{flex:0 0 auto;font-size:13.5px!important;font-weight:800;min-width:60px;text-align:left;direction:ltr;font-variant-numeric:tabular-nums}
+#view .list .acts{display:flex;gap:5px}
+#view .list .acts .mini,#view .list>.row>.mini{height:28px;padding:0 9px!important;font-size:12px!important;border-radius:9px!important}
+#view .list .cta{display:flex;gap:5px}
+#view .list .cbt{width:30px!important;height:30px!important;border-radius:9px!important;font-size:14px!important;display:flex;align-items:center;justify-content:center}
+#view .list .badge,#view .list .tag{font-size:10px!important;padding:1px 7px!important}
+#view .list .sseg{display:flex;gap:3px;background:rgba(148,163,184,.15);border-radius:10px;padding:2px}
+#view .list .sseg button{border:0!important;background:transparent!important;color:inherit;border-radius:8px!important;padding:4px 8px!important;font-size:11px!important;box-shadow:none!important}
+#view .list .sseg button.on{background:var(--card,#fff)!important;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+#view .pcard{background:color-mix(in srgb,var(--card,#fff) 62%,transparent)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(148,163,184,.22)!important;border-radius:16px!important;padding:10px 12px!important;margin:0 0 8px!important;box-shadow:0 6px 20px rgba(0,0,0,.1)!important}
+#view .pcard b{font-size:13.5px}#view .pcard small{font-size:11px;opacity:.85}
+#view .box{background:color-mix(in srgb,var(--card,#fff) 62%,transparent)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(148,163,184,.22)!important;border-radius:16px!important;padding:10px 12px!important}
+#view .ncard{border-radius:14px!important;padding:9px 11px!important;font-size:13px}
+#view .ncard b{font-size:13px}#view .ncard small{font-size:11px}
+#view .ptbl,#view .tbl{border-radius:14px!important;overflow:hidden;border:1px solid rgba(148,163,184,.22)!important;background:color-mix(in srgb,var(--card,#fff) 62%,transparent)!important;backdrop-filter:blur(14px)}
+#view .ptbl td,#view .ptbl th,#view .tbl td,#view .tbl th{font-size:12px!important;padding:7px 6px!important}
+#view .tabs{display:flex!important;gap:3px!important;background:rgba(148,163,184,.15)!important;border-radius:12px!important;padding:3px!important;margin:0 0 10px!important;overflow-x:auto;border:0!important}
+#view .tabs button{flex:1 0 auto;border:0!important;background:transparent!important;color:inherit!important;border-radius:9px!important;padding:7px 10px!important;font:inherit;font-size:12px!important;white-space:nowrap;box-shadow:none!important}
+#view .tabs button.on{background:var(--card,#fff)!important;font-weight:800;box-shadow:0 1px 4px rgba(0,0,0,.12)!important}
+#view .etbar{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+#view .etbar .mini{height:32px;padding:0 11px!important;font-size:12px!important;border-radius:10px!important}
+#view .ccard{border-radius:16px!important;margin-bottom:10px!important}
+#view .nempty{background:color-mix(in srgb,var(--card,#fff) 62%,transparent);backdrop-filter:blur(14px);border:1px dashed rgba(148,163,184,.3);border-radius:16px;padding:20px!important;font-size:13px}
+#view .empty{font-size:12.5px;opacity:.65;text-align:center}
+#view .fonts,#view .themes{gap:8px!important}
+#view .xcs{display:flex!important;flex-wrap:wrap;gap:3px;margin-top:4px!important;opacity:1!important}
+#view .xc2{display:inline-flex;align-items:center;gap:3px;background:rgba(148,163,184,.13);border:1px solid rgba(148,163,184,.2);border-radius:7px;padding:1px 6px;font-size:10px;line-height:1.45;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+#view .xc2 .xlogo.s,#view .xc2 .xic.s{width:14px!important;height:14px!important;flex-basis:14px!important;border-radius:4px!important;font-size:8px!important}
+`;document.head.appendChild(s)})();
+/* التفاصيل تحت الاسم بتتحول لبوكسات صغيرة في كل القوايم */
+function xChipify(){
+  document.querySelectorAll('#view details.grp .grow>small:not([data-ch]),#view .list .grow>small:not([data-ch])').forEach(s=>{
+    s.setAttribute('data-ch','1');
+    if(s.closest('.xb'))return;
+    const parts=s.innerHTML.split(' · ').map(x=>x.trim()).filter(Boolean);if(parts.length<2&&!/\d{2}\/\d{2}\/\d{4}/.test(s.textContent))return;
+    s.innerHTML=parts.map(p=>{const tx=p.replace(/<[^>]+>/g,'').trim();return `<span class="xc2">${/^\d{2}\/\d{2}\/\d{4}$/.test(tx)?'📅 ':''}${p}</span>`}).join('');
+    s.classList.add('xcs');
+  });
+}
+try{const _rCh2=render;render=function(){const r=_rCh2.apply(this,arguments);try{xChipify()}catch(e){}return r}}catch(e){}
+setTimeout(()=>{try{xChipify()}catch(e){}},600);
 /* نهاية fix.js */
