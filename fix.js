@@ -1091,4 +1091,12 @@ function vSettings(){
 if(!S.settings.xhw1){S.settings.hw=Object.assign({},S.settings.hw);['pending','annual','inst','renew'].forEach(k=>{if(S.settings.hw[k]==='show')S.settings.hw[k]='auto'});S.settings.xhw1=1;save()}
 
 xTopFab();render();
+/* ========== زرار ➕ بيختفي في شاشة التقارير وكمان وهو التقرير مفتوح ========== */
+function xFabVis(){
+  const w=$('#xfw');if(!w)return;
+  const h=view==='reports'||$('#rv').classList.contains('on')||$('#lock').classList.contains('on')||!!$('#pwv')||!!$('#scan');
+  w.classList.toggle('xh',h);if(h)w.classList.remove('on');
+}
+try{const _rV=render;render=function(){const r=_rV.apply(this,arguments);try{xFabVis()}catch(e){}return r}}catch(e){}
+setInterval(()=>{try{xFabVis()}catch(e){}},700);
 /* نهاية fix.js */
