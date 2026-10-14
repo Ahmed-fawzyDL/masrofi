@@ -1,5 +1,5 @@
-const CACHE = 'centric-v4';
-const ASSETS = ['./', 'index.html', 'app.js', 'more.js', 'manifest.json', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'wa.png'];
+const CACHE = 'centric-v5';
+const ASSETS = ['./', 'index.html', 'app.js', 'more.js', 'fix.js', 'manifest.json', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'wa.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
