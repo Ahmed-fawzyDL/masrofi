@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.17',XVBUILD='14/10/2026 - 03:30 م';
+   const XVER='2.21.18',XVBUILD='14/10/2026 - 03:37 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1627,4 +1627,20 @@ function xChipify(){
 }
 try{const _rCh2=render;render=function(){const r=_rCh2.apply(this,arguments);try{xChipify()}catch(e){}return r}}catch(e){}
 setTimeout(()=>{try{xChipify()}catch(e){}},600);
+/* ========== تصليح: البند المجمّع في المصروفات زي سطور التحصيلات بالظبط ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .list>details,#view details.grp .list>details.xgr{display:block!important;padding:0 9px!important}
+#view .list>details>summary,#view details.grp details.xgr>summary{display:flex!important;align-items:center;gap:8px!important;padding:7px 0!important;min-height:46px!important;list-style:none;cursor:pointer}
+#view details.xgr>summary::-webkit-details-marker{display:none}
+#view details.xgr[open]>summary{border-bottom:1px dashed rgba(148,163,184,.3)!important;margin-bottom:6px!important}
+#view details.xgr>.xb{display:block!important;margin:0 0 8px!important;padding:6px!important;background:color-mix(in srgb,var(--p) 5%,var(--card,#fff))!important;border:1px solid color-mix(in srgb,var(--p) 18%,transparent)!important;border-radius:12px!important}
+#view details.xgr .xl{display:flex!important;align-items:center;gap:8px!important;padding:8px 9px!important;margin:0 0 5px!important;border-radius:10px!important;background:rgba(148,163,184,.08)!important;font-size:12.5px!important;cursor:pointer}
+#view details.xgr .xl:last-child{margin-bottom:0!important}
+#view details.xgr .xl>span{font-weight:700;white-space:nowrap;font-size:11.5px!important;flex:0 0 auto}
+#view details.xgr .xl .grow{flex:1;min-width:0}
+#view details.xgr .xl .grow small{display:flex;flex-wrap:wrap;gap:3px;font-size:10.5px!important;opacity:.85}
+#view details.xgr .xl>b{flex:0 0 auto;font-size:13px!important;font-weight:800;direction:ltr;min-width:52px;text-align:left}
+`;document.head.appendChild(s)})();
+/* تفاصيل البند المجمّع: البنك والطريقة في بوكسات صغيرة زي باقي الشاشة */
+try{const _cfy=xChipify;xChipify=function(){_cfy();document.querySelectorAll('#view details.xgr .xl .grow>small:not([data-c2])').forEach(s=>{s.setAttribute('data-c2','1');const p=s.innerHTML.split(' · ').map(x=>x.trim()).filter(Boolean);if(p.length)s.innerHTML=p.map(x=>`<span class="xc2">${x}</span>`).join('')})}}catch(e){}
 /* نهاية fix.js */
