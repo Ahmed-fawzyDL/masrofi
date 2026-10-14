@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.21',XVBUILD='14/10/2026 - 04:03 م';
+   const XVER='2.21.22',XVBUILD='14/10/2026 - 04:15 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1767,5 +1767,20 @@ document.addEventListener('toggle',e=>{
   const lvl=d.classList.contains('grp')?'details.grp':d.classList.contains('xr')?'details.xr':null;if(!lvl)return;
   document.querySelectorAll('#view '+lvl+'[open]').forEach(o=>{if(o!==d&&!o.contains(d)&&!d.contains(o))o.open=false});
   setTimeout(()=>{try{d.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(err){}},60);
+},true);
+/* ========== تصليح الرسم لما قايمة تتقفل: شكل زجاجي ثابت بدل blur الحقيقي في القوايم ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view details.grp,#view .list,#view .pcard,#view .box,#view .nempty,#view .ptbl,#view .tbl{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:linear-gradient(180deg,color-mix(in srgb,var(--card,#fff) 88%,rgba(255,255,255,.06)),color-mix(in srgb,var(--card,#fff) 76%,transparent))!important;transform:translateZ(0)}
+#view details.grp .ckx,#view details.grp .list>.row,#view details.grp .list>details.xgr,#view .list>.row,#view .list>a.row,#view .list>.ckx,#view .list>details{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:linear-gradient(180deg,color-mix(in srgb,var(--p) 7%,rgba(255,255,255,.05)),color-mix(in srgb,var(--p) 3%,rgba(255,255,255,.02)))!important}
+#view details.grp>summary{position:relative;z-index:1}
+`;document.head.appendChild(s)})();
+/* بعد ما اللي قبلها يتقفل: استنى الرسم يخلص وبعدين روح على اللي اتفتح */
+document.addEventListener('toggle',e=>{
+  const d=e.target;if(!d||d.tagName!=='DETAILS'||!d.open||!d.closest('#view'))return;
+  if(!d.classList.contains('grp')&&!d.classList.contains('xr'))return;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.querySelectorAll('#view details.grp,#view details.xr').forEach(x=>{x.style.transform='translateZ(0)';void x.offsetHeight;x.style.transform=''});
+    try{const r=d.getBoundingClientRect();if(r.top<70||r.top>innerHeight-120)d.scrollIntoView({block:'start',behavior:'auto'});scrollBy(0,-70)}catch(err){}
+  }));
 },true);
 /* نهاية fix.js */
