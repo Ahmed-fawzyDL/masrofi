@@ -918,4 +918,14 @@ function vCol(){
 /* الفلتر بيدوّر في البنود المجمّعة كمان */
 function gfApply(){const q=qn(GQ[view]||'');document.querySelectorAll('#view .row, #view details.xgr').forEach(r=>{if(r.closest('details.xgr')&&!r.matches('details.xgr'))return;r.style.display=!q||qn(r.textContent).includes(q)?'':'none'})}
 xTopFab();
+/* ========== التقرير بيفتح فوق الشاشة اللي انت فيها، ولما تقفله ترجع لها ========== */
+var XRVSH=null;
+function openRep(key,set){
+  const sh=$('#sheet');
+  XRVSH=sh&&sh.classList.contains('open')?(($('#sheet .sz')||{}).innerHTML||null):null;
+  closeSheet();$('#rv').classList.remove('on');
+  RVST=[];RF={...RFDEF};rtab=key;if(set)set();
+  openRV();
+}
+try{const _crv2=closeRV;closeRV=function(){const h=XRVSH;XRVSH=null;const r=_crv2.apply(this,arguments);if(h)sheet(h,true);return r}}catch(e){}
 /* نهاية fix.js */
