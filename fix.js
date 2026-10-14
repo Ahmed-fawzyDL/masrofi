@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.5',XVBUILD='14/10/2026 - 12:40 م';
+const XVER='2.21.6',XVBUILD='14/10/2026 - 12:45 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1142,4 +1142,20 @@ try{const _st9=saveTx;saveTx=async function(){
   if(p3){const c=cid?C(cid):S.cats.find(x=>x.kind==='inc'&&normAr(x.name)===normAr(nm0));if(c&&c.fixed){c.p3=true;c.end=end;save();render()}}
   return r;
 }}catch(e){}
+/* ========== تقسيط للغير: أول قسط الأول وبعده تاريخ الانتهاء جنب بعض ========== */
+function xP3Tx(){
+  if(!F||F.type!=='inc'||!F.fix)return;
+  const s=$('#f-ev');if(!s||s.querySelector('option[value="p3"]'))return;
+  const o=document.createElement('option');o.value='p3';o.textContent='🤝 تقسيط للغير';s.appendChild(o);
+  s.setAttribute('onchange','grab();SHKEEP=1;txForm()');
+  if(!F.p3)return;
+  s.value='p3';
+  const l=s.closest('label'),d=$('#f-d'),dl=d&&d.closest('label');if(!l||!dl)return;
+  const old=dl.parentElement;
+  if(dl.firstChild&&dl.firstChild.nodeType===3)dl.firstChild.nodeValue='📅 أول قسط';
+  const end=document.createElement('label');end.innerHTML=`📅 تاريخ الانتهاء<input id="f-end" type="date" value="${F.end3||''}">`;
+  const row=document.createElement('div');row.className='two';row.appendChild(dl);row.appendChild(end);
+  l.after(row);
+  if(old&&old.classList.contains('two'))old.style.gridTemplateColumns='1fr';
+}
 /* نهاية fix.js */
