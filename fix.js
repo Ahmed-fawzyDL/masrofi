@@ -814,4 +814,19 @@ xRestore();
 setTimeout(()=>{if(!$('#lock').classList.contains('on')&&!$('#sheet').classList.contains('open')&&draftGet())draftOpen(true)},600);
 setTimeout(xDedupeLater,1500);
 setTimeout(()=>{xSnapAt=0;xAutoSnap()},4000);
+/* ========== الأقساط: السداد منك انت، وتاريخ السداد بيبدأ بميعاد القسط ========== */
+function xAutoPlans(){return 0}
+function payStart(pid,iid){
+  const p=plan(pid),it=p.items.find(x=>x.id===iid),dm=p.acct&&M(p.acct)?p.acct:defMethod();
+  if(!dm)return toast('ضيف حساب الأول');
+  const d=it.due&&!isClosed(it.due)?it.due:today();
+  PAY={pid,iid,amount:amtStr(it.amount),method:dm,via:p.via||'',date:d,note:'',files:[]};paySheet();
+}
+function xInstPay(pid,iid,el){el.checked=false;payStart(pid,iid)}
+try{const _ps1=paySheet;paySheet=function(){const r=_ps1.apply(this,arguments);try{
+  const p=plan(PAY.pid),it=p&&p.items.find(x=>x.id===PAY.iid),m=document.querySelector('#sheet .sz p.muted');
+  if(m&&it)m.textContent='📅 ميعاد القسط: '+fdate(it.due);
+  const d=$('#y-d');if(d){const l=d.closest('label');if(l&&l.firstChild&&l.firstChild.nodeType===3)l.firstChild.nodeValue='تاريخ السداد'}
+}catch(e){}return r}}catch(e){}
+(()=>{const s=document.createElement('style');s.textContent='label:has(#q7){display:none!important}';document.head.appendChild(s)})();
 /* نهاية fix.js */
