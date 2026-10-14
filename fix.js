@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.26',XVBUILD='14/10/2026 - 04:53 م';
+   const XVER='2.21.27',XVBUILD='14/10/2026 - 04:55 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1938,4 +1938,29 @@ try{const _rFo=render;render=function(){xFocusClear();return _rFo.apply(this,arg
 try{const _hbF=handleBack;handleBack=function(){if($('#view')&&$('#view').classList.contains('xfocus')){const o=document.querySelector('#view .xon details.xr[open]:not(.xl3)')||document.querySelector('#view details.xr.xon[open]');if(o){const l=o.querySelector('.xl3[open]');if(l){l.open=false;return true}o.open=false}else xFocusClear();return true}return _hbF.apply(this,arguments)}}catch(e){}
 /* ========== عمليات نفس البند بتفضل ظاهرة (مقفولة) لما تفتح واحدة منهم ========== */
 (()=>{const s=document.createElement('style');s.textContent=`#view details.xgr.xf2 .xl3:not(.xon2){display:block!important}`;document.head.appendChild(s)})();
+/* ========== الرئيسية أصغر ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.hero{padding:8px 10px!important;margin-bottom:8px!important;border-radius:16px!important}
+.hero .hero-t{font-size:11.5px!important;gap:5px!important;margin-bottom:0!important}
+.hero .hero-t em{font-size:10px!important;padding:1px 7px!important}
+.hero .hero-t .eye{font-size:13px!important}
+.xhb{gap:5px!important;margin:6px 0 4px!important}
+.xbx{padding:5px 6px!important;gap:3px!important;border-radius:11px!important}
+.xbx>small{font-size:10px!important}
+.xbx .xv{font-size:13px!important;min-height:26px!important;padding:2px 5px!important;border-radius:8px!important}
+.xbx .xd{padding:3px!important;font-size:10px!important;border-radius:7px!important}
+.hero .hnet{padding:3px 2px!important;font-size:11.5px!important}
+.hero .hnet b{font-size:13.5px!important}
+.xcr{font-size:10px!important;margin:3px 0 1px!important}
+.dash{gap:6px!important;margin-bottom:8px!important}
+.dash .tile{padding:6px 7px!important;border-radius:12px!important}
+.dash .tile .tth{font-size:10.5px!important;gap:4px!important}
+.dash .tile .ti{font-size:13px!important}
+.dash .tile .tb{font-size:9.5px!important;padding:0 5px!important}
+.dash .tile small{font-size:9.5px!important;line-height:1.3!important}
+.tile .xv{font-size:12px!important;min-height:22px!important;padding:2px 5px!important;margin:4px 0 2px!important;border-radius:7px!important}
+.tile .xd{font-size:9.5px!important;margin-top:3px!important;padding-top:2px!important}
+#view>.warn{padding:6px 10px!important;font-size:12px!important;border-radius:10px!important;margin-bottom:8px!important}
+#view .ptbl table td,#view .ptbl table th{font-size:11.5px!important;padding:5px 5px!important}
+`;document.head.appendChild(s)})();
 /* نهاية fix.js */
