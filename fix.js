@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.22',XVBUILD='14/10/2026 - 04:15 م';
+   const XVER='2.21.23',XVBUILD='14/10/2026 - 04:32 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1783,4 +1783,55 @@ document.addEventListener('toggle',e=>{
     try{const r=d.getBoundingClientRect();if(r.top<70||r.top>innerHeight-120)d.scrollIntoView({block:'start',behavior:'auto'});scrollBy(0,-70)}catch(err){}
   }));
 },true);
+/* ========== المصروف بيفتح تحته زي التحصيل بالظبط + عمليات البند مترقمة ========== */
+function xExpRow(t){
+  const r=XRC.has(t.id),lo=t.loan?r2(t.amount-xLoanPaid(t)):0,fee=!!t.feeOf,o=fee&&S.txs.find(x=>x.id===t.feeOf),meta=xMeta(t,fee),cn=C(t.cat)?.name||'—';
+  if(o)meta.splice(1,0,xC('↩ لـ '+esc(C(o.cat)?.name||'—'),'#0d9488'),xC('💰 '+num(o.amount),'#ca8a04'));
+  else if(t.note&&!/^🧾/.test(t.note))meta.push(xC('📝 '+esc(t.note)));
+  return `<details class="xr"><summary><span class="ic" style="background:var(--soft)">${r?'🧾':t.loan?'🤝':'💸'}</span><div class="grow"><b>${xFeeName(cn)?'مصاريف إنستاباي':esc(cn)}${t.loan?` <span class="tag ${lo>0?'wait':'ok'}">${lo>0?'سلفة':'اتسددت'}</span>`:''}</b>${xChips(meta)}</div><div class="amt exp">${num(t.amount)}</div></summary><div class="xb">${txBody(t)}</div></details>`;
+}
+function xLine(t,inc,i){
+  const fee=!!t.feeOf,o=fee&&S.txs.find(x=>x.id===t.feeOf),meta=xMeta(t,fee);
+  let ti='';
+  if(fee){ti=o?'↩ لـ '+esc(C(o.cat)?.name||'—'):'↩ مصاريف تحويل';if(o)meta.splice(1,0,xC('💰 '+num(o.amount),'#ca8a04'))}
+  else if(t.note&&!/^🧾/.test(t.note))ti=esc(t.note);
+  return `<details class="xr xl3"><summary><span class="xn">${(i||0)+1}</span><div class="grow">${ti?`<b>${ti}</b>`:''}${xChips(meta)}</div><b class="xa ${inc?'pos':'neg'}">${num(t.amount)}</b></summary><div class="xb">${txBody(t)}</div></details>`;
+}
+function xGroup(txs,kind){
+  const g={};txs.forEach(t=>{(g[t.cat]=g[t.cat]||[]).push(t)});
+  return Object.entries(g).map(([id,ts])=>{
+    ts.sort(byDesc);const a=ts.reduce((s,t)=>s+t.amount,0),d=ts[0].date+String(ts[0].created||0).padStart(15,'0'),n=C(id)?.name||'';
+    if(ts.length===1)return{h:kind==='exp'?xExpRow(ts[0]):txRow(ts[0]),a,d,n};
+    const c=C(id),inc=kind==='inc',bank=xFeeName(n),bm=bank&&S.methods.find(m=>m.name===bank);
+    const chips=[];if(bank)chips.push(xC((bm?xMIc(bm,1)+' ':'🏦 ')+esc(bank),bm&&bm.color||'#2563eb'));
+    chips.push(xC(ts.length+' عمليات'),xC('آخر مرة '+dmy(ts[0].date)));
+    const h=`<details class="xr xgr"><summary><span class="ic" style="background:var(--soft)">${bank?'💸':c&&c.fixed?'📌':inc?'💵':'🛒'}</span><div class="grow"><b>${bank?'مصاريف إنستاباي':esc(n||'—')}</b>${xChips(chips)}</div><div class="amt ${inc?'inc':'exp'}">${num(a)}</div></summary><div class="xb">${ts.map((t,i)=>xLine(t,inc,i)).join('')}</div></details>`;
+    return{h,a,d,n};
+  });
+}
+function gfApply(){const q=qn(GQ[view]||'');document.querySelectorAll('#view .list>*,#view details.grp>.ckx').forEach(r=>{r.style.display=!q||qn(r.textContent).includes(q)?'':'none'})}
+
+/* ========== بوكس التفاصيل الصغير (مربعات جنب بعض) في كل الشاشات ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view details.xr:not(.xgr)>.xb{display:grid!important;grid-template-columns:1fr 1fr;gap:5px!important;padding:6px!important;margin:2px 0 8px!important;border-radius:12px!important}
+#view details.xr:not(.xgr)>.xb>.kv{display:flex!important;flex-direction:column;align-items:flex-start!important;justify-content:center;gap:2px!important;padding:6px 8px!important;margin:0!important;border:1px solid rgba(148,163,184,.18)!important;border-radius:9px!important;background:rgba(148,163,184,.07);min-width:0}
+#view details.xr:not(.xgr)>.xb>.kv>span{font-size:10.5px!important}
+#view details.xr:not(.xgr)>.xb>.kv>b{font-size:12.5px!important;justify-content:flex-start!important;text-align:right!important;max-width:100%}
+#view details.xr:not(.xgr)>.xb>.kv.xbig{grid-column:1/-1;flex-direction:row!important;justify-content:space-between!important;align-items:center!important}
+#view details.xr:not(.xgr)>.xb>.kv.xbig>b{font-size:14.5px!important}
+#view details.xr:not(.xgr)>.xb>.etbar,#view details.xr:not(.xgr)>.xb>.files,#view details.xr:not(.xgr)>.xb>:not(.kv){grid-column:1/-1}
+#view details.xr:not(.xgr)>.xb .etbar{margin:2px 0 0!important;gap:6px!important}
+#view details.xr:not(.xgr)>.xb .etbar .mini{height:32px;padding:0 8px!important;font-size:12px!important;border-radius:9px!important}
+#view details.xr:not(.xgr)>.xb .xlogo.s,#view details.xr:not(.xgr)>.xb .xic.s{width:16px!important;height:16px!important;flex-basis:16px!important}
+#view details.xr:not(.xgr)>.xb .files .fth{width:48px!important;height:48px!important}
+#view details.xgr>.xb{display:block!important}
+#view .xl3{margin:0 0 6px!important;border-radius:11px!important;background:rgba(148,163,184,.09)!important;border:1px solid rgba(148,163,184,.16)!important;padding:0 9px!important}
+#view .xl3:last-child{margin-bottom:0!important}
+#view .xl3>summary{display:flex!important;align-items:center;gap:8px!important;padding:8px 0!important;min-height:0!important;list-style:none;cursor:pointer}
+#view .xl3>summary::-webkit-details-marker{display:none}
+#view .xn{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+#view .xl3 .grow{flex:1;min-width:0}
+#view .xl3 .grow>b{display:block;font-size:12.5px!important;font-weight:800}
+#view .xl3 .xa{flex:0 0 auto;font-size:13.5px;font-weight:800;direction:ltr;min-width:46px;text-align:left}
+`;document.head.appendChild(s)})();
 /* نهاية fix.js */
