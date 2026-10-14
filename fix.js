@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.6',XVBUILD='14/10/2026 - 12:45 م';
+const XVER='2.21.7',XVBUILD='14/10/2026 - 02:40 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1157,5 +1157,63 @@ function xP3Tx(){
   const row=document.createElement('div');row.className='two';row.appendChild(dl);row.appendChild(end);
   l.after(row);
   if(old&&old.classList.contains('two'))old.style.gridTemplateColumns='1fr';
+}
+/* ========== الرئيسية: كل مبلغ بيظهر لوحده + بوكس الفلوس وبوكس التفاصيل منفصلين ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xhb{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.xbx{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:6px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.xbx>small{opacity:.9;font-size:12px;font-weight:700}
+.xbx .xv{background:rgba(255,255,255,.18);border-radius:12px;padding:8px;text-align:center;font-size:17px;font-weight:800;min-height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.xbx .xd{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:inherit;border-radius:10px;padding:7px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.tile .xv{background:color-mix(in srgb,var(--p) 10%,transparent);border-radius:10px;padding:6px 8px;margin:6px 0 4px;font-size:15px;font-weight:800;text-align:center;cursor:pointer;min-height:34px;display:flex;align-items:center;justify-content:center}
+.tile .xd{display:block;margin-top:6px;font-size:11px;font-weight:700;color:var(--p);text-align:center;border-top:1px dashed rgba(148,163,184,.4);padding-top:5px}
+.hero .hnet .xmk,.xv .xmk{cursor:pointer}
+`;document.head.appendChild(s)})();
+/* المبلغ المخفي: بيشيل قيمته جواه، ولما تدوس عليه يظهر هو بس */
+function xMk(v){return `<span class="msk xmk" data-v="${encodeURIComponent(String(v))}" onclick="event.stopPropagation();xReveal(this)">••••••</span>`}
+var XAUTH=0;
+async function xReveal(el){
+  if(!el||!el.dataset.v)return;
+  if(Date.now()-XAUTH>60000){
+    if(LK.bio){try{await bioVerify()}catch(e){return toast('البصمة ما اتعرفتش')}}
+    else if(LK.pin){const v=await ask('الرقم السري','',{input:'',num:true,pw:true,icon:'🔒',ok:'إظهار'});if(v==null)return;if(await hash(v)!==LK.pin)return toast('الرقم السري غلط')}
+    XAUTH=Date.now();
+  }
+  el.outerHTML='<b>'+decodeURIComponent(el.dataset.v)+'</b>';
+}
+function xVbox(v,hid){return `<div class="xv" onclick="event.stopPropagation();const m=this.querySelector('.xmk');if(m)xReveal(m)">${hid?xMk(v):`<b>${v}</b>`}</div>`}
+function tileHTML(t){
+  const hid=!t.nomask&&amtHidden()&&/\d/.test(String(t.val));
+  return `<div class="tile ${t.cls||''}" onclick="${t.go}"><div class="tth"><span class="ti">${t.ic}</span><span class="tl">${esc(t.label)}</span>${t.badge?`<span class="tb">${t.badge}</span>`:''}</div>${xVbox(t.val,hid)}${t.sub?`<small>${t.sub}</small>`:''}<span class="xd">التفاصيل ‹</span></div>`;
+}
+function vHome(){
+  const mn=MONTHS[NM-1],s=xSums(keyTx(NKM)),pk=prevKey(NKM),tiles=[],hid=amtHidden();
+  const nt=v=>v<0?num(-v)+' ج.م · سالب':num(v)+' ج.م';
+  let h='';
+  if(!S.closed[pk]&&keyTx(pk).length)h+=`<div class="warn" onclick="go('months')">⚠️ ${mName(pk)} لسه مفتوح</div>`;
+  if(wOn('cur',true)){
+    const bx=(k,l,v)=>`<div class="xbx"><small>${esc(l)}</small>${xVbox(num(v),hid)}<button type="button" class="xd" onclick="openFlow('${k}')">📄 التفاصيل ‹</button></div>`;
+    h+=`<div class="hero"><div class="hero-t"><span>${esc(L('cur'))}</span><span class="hm">${mn}</span>${S.settings.mask!==false?`<em class="eye" onclick="${hid?'revealAmts()':'hideAmts()'}">${hid?'👁️':'🙈'}</em>`:''}${S.closed[NKM]?`<em class="cl" onclick="go('months')">🔒 اتقفل</em>`:`<em class="op" onclick="go('months')">🔓 مفتوح</em>`}</div>
+    <div class="xhb">${bx('inc',L('inc'),s.inc)}${bx('exp',L('exp'),s.exp)}</div>
+    ${s.cr>0?`<div class="xcr"><span>💳 منها كريديت <b>${hid?xMk(num(s.cr)):num(s.cr)}</b></span><span>💵 من فلوسك <b>${hid?xMk(num(s.expNC)):num(s.expNC)}</b></span></div>`:''}
+    <div class="hnet x0"><span>${esc(L('net'))}</span><b class="${s.net<0?'hneg':''}">${hid?xMk(nt(s.net)):nt(s.net)}</b></div>
+    ${s.cr>0?`<div class="hnet x0 xnn"><span>${esc(L('net'))} من غير الكريديت</span><b class="${s.netNC<0?'hneg':''}">${hid?xMk(nt(s.netNC)):nt(s.netNC)}</b></div>`:''}</div>`;
+  }
+  const pend=pendAll(),pv=pend.reduce((a,x)=>a+x.a,0);
+  if(wOn('pending',pend.length))tiles.push({ic:'💼',label:'غير محصّل',val:pend.length?fmt(pv):'✓ كله محصّل',sub:pend.length?`${pend.length} بند`:mn,cls:pend.length?'hot':'',badge:pend.length,go:'pendingSheet()'});
+  const ad=annualDue();
+  if(wOn('annual',ad.length))tiles.push({ic:'📆',label:'تحصيلات سنوية قريبة',val:ad.length?fmt(ad.reduce((a,o)=>a+o.amt,0)):'لا يوجد',sub:ad.length?`${esc(ad[0].r.name)} · ${leftTxt(ad[0].left)}`:`خلال ${leadA()} يوم`,cls:ad.some(o=>o.left<0)?'hot':ad.length?'soon':'',badge:ad.length,go:'annualSheet()'});
+  const idue=instDue();
+  if(wOn('inst',idue.length))tiles.push({ic:'🏦',label:'أقساط قريبة',val:idue.length?fmt(idue.reduce((a,o)=>a+(+o.it.amount||0),0)):'لا يوجد',sub:idue.length?`${esc(idue[0].p.name)} · ${leftTxt(idue[0].left)}`:`خلال ${leadI()} يوم`,cls:idue.some(o=>o.left<0)?'hot':idue.length?'soon':'',badge:idue.length,go:'instSheet()'});
+  const rd=renDue();
+  if(wOn('renew',rd.length))tiles.push({ic:'🪪',label:'كروت شخصية',val:rd.length?esc(rd[0].r.name):'لا يوجد',sub:rd.length?(rd[0].left<0?`منتهي من ${-rd[0].left} يوم`:`باقي ${rd[0].left} يوم`):'',cls:rd.some(x=>x.left<0)?'hot':rd.length?'soon':'',badge:rd.length,go:"wtab='ren';go('wallet')",nomask:1});
+  const cl=cashOf(NKM),ct=cl.reduce((a,c)=>a+c.amount,0);
+  if(wOn('cash',cl.length))tiles.push({ic:'🏧',label:'سحب كاش · '+mn,val:fmt(ct),sub:`${cl.length} مرة`,go:'cashSheet()'});
+  const ci=catItems(keyTx(NKM),'exp');
+  if(wOn('topexp',ci.length))tiles.push({ic:'💸',label:'أكبر مصروف · '+mn,val:ci.length?fmt(ci[0].value):'—',sub:ci.length?esc(ci[0].label):'لا يوجد',go:'topSheet()'});
+  (S.settings.pins||[]).forEach(p=>{if(p.mode==='hide')return;const t=pinTile(p);if(t&&(p.mode==='show'||t.rel))tiles.push(t)});
+  if(tiles.length)h+=`<div class="dash">${tiles.map(tileHTML).join('')}</div>`;
+  if(wOn('recent',true))h+='<h3>آخر العمليات</h3>'+opsTable(keyTx(NKM).sort(byDesc).slice(0,8),hid);
+  return h;
 }
 /* نهاية fix.js */
