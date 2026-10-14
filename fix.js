@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.18',XVBUILD='14/10/2026 - 03:37 م';
+   const XVER='2.21.19',XVBUILD='14/10/2026 - 03:42 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1643,4 +1643,8 @@ setTimeout(()=>{try{xChipify()}catch(e){}},600);
 `;document.head.appendChild(s)})();
 /* تفاصيل البند المجمّع: البنك والطريقة في بوكسات صغيرة زي باقي الشاشة */
 try{const _cfy=xChipify;xChipify=function(){_cfy();document.querySelectorAll('#view details.xgr .xl .grow>small:not([data-c2])').forEach(s=>{s.setAttribute('data-c2','1');const p=s.innerHTML.split(' · ').map(x=>x.trim()).filter(Boolean);if(p.length)s.innerHTML=p.map(x=>`<span class="xc2">${x}</span>`).join('')})}}catch(e){}
+/* ========== الأسامي كاملة من غير قص في كل الشاشات ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view details.grp .grow>b,#view .list .grow>b,#view details.xr>summary .grow>b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:break-word;line-height:1.35!important}
+`;document.head.appendChild(s)})();
 /* نهاية fix.js */
