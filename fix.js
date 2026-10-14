@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.3',XVBUILD='14/10/2026 - 12:20 م';
+const XVER='2.21.4',XVBUILD='14/10/2026 - 12:30 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1103,4 +1103,14 @@ setInterval(()=>{try{xFabVis()}catch(e){}},700);
 (()=>{const s=document.createElement('style');s.textContent=`body:has(#rv.on) #xfw,body.xrep #xfw{display:none!important}`;document.head.appendChild(s)})();
 try{const _rW=render;render=function(){const r=_rW.apply(this,arguments);try{document.body.classList.toggle('xrep',view==='reports')}catch(e){}return r}}catch(e){}
 try{document.body.classList.toggle('xrep',view==='reports')}catch(e){}
+/* ========== زراير ➕ في نص دايرة واحدة (ولو أكتر من 6: نصين دايرة) ========== */
+function xFabBuild(){
+  const w=$('#xfw');if(!w)return;const ks=xFabList(),box=w.querySelector('.xfis'),n=ks.length,pos=[];
+  const arc=(m,R)=>{for(let j=0;j<m;j++){const a=(m===1?45:90-j*90/(m-1))*Math.PI/180;pos.push([-Math.round(Math.cos(a)*R),-Math.round(Math.sin(a)*R)])}};
+  if(n<=6)arc(n,n<=3?120:175);
+  else{const inner=Math.min(6,Math.round(n*175/(175+245)));arc(inner,175);arc(n-inner,245)}
+  box.innerHTML=ks.map((k,i)=>{const[ic,l,js,col]=XFC[k],c=xFabRel(k);
+    return `<button type="button" class="xfi" style="--x:${pos[i][0]}px;--y:${pos[i][1]}px;--d:${i*40}ms;background:linear-gradient(135deg,${col})" onclick="xFab(0);${js}"><span>${ic}</span><small>${esc(l)}</small>${c?`<b class="xfb">${c}</b>`:''}</button>`}).join('');
+  if(!n)toast('مفيش زراير · ظبطها من ⚙️ الإعدادات ← أزرار ➕');
+}
 /* نهاية fix.js */
