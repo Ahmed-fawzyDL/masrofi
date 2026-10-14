@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.25',XVBUILD='14/10/2026 - 04:49 م';
+   const XVER='2.21.26',XVBUILD='14/10/2026 - 04:53 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1936,4 +1936,6 @@ document.addEventListener('toggle',e=>{
 },true);
 try{const _rFo=render;render=function(){xFocusClear();return _rFo.apply(this,arguments)}}catch(e){}
 try{const _hbF=handleBack;handleBack=function(){if($('#view')&&$('#view').classList.contains('xfocus')){const o=document.querySelector('#view .xon details.xr[open]:not(.xl3)')||document.querySelector('#view details.xr.xon[open]');if(o){const l=o.querySelector('.xl3[open]');if(l){l.open=false;return true}o.open=false}else xFocusClear();return true}return _hbF.apply(this,arguments)}}catch(e){}
+/* ========== عمليات نفس البند بتفضل ظاهرة (مقفولة) لما تفتح واحدة منهم ========== */
+(()=>{const s=document.createElement('style');s.textContent=`#view details.xgr.xf2 .xl3:not(.xon2){display:block!important}`;document.head.appendChild(s)})();
 /* نهاية fix.js */
