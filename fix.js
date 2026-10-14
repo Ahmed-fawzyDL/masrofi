@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.19',XVBUILD='14/10/2026 - 03:42 م';
+   const XVER='2.21.20',XVBUILD='14/10/2026 - 03:56 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1646,5 +1646,56 @@ try{const _cfy=xChipify;xChipify=function(){_cfy();document.querySelectorAll('#v
 /* ========== الأسامي كاملة من غير قص في كل الشاشات ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 #view details.grp .grow>b,#view .list .grow>b,#view details.xr>summary .grow>b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:break-word;line-height:1.35!important}
+`;document.head.appendChild(s)})();
+/* ========== سطر العملية: عنوان واضح + بوكسات صغيرة من غير قص ========== */
+function xMeta(t,fee){
+  const m=M(t.method),out=['📅 '+dmy(t.date)];
+  if(m)out.push(xMIc(m,1)+' '+esc(m.name)+(xIsCr(t.method)?' 💳':''));
+  if(t.via&&!fee)out.push(xViaIc(t.via,1)+' '+esc(viaTxt(t.via)));
+  if(t.ipay&&t.ipay.v)out.push('← <bdi>'+esc(t.ipay.v)+'</bdi>');
+  if((t.files||[]).length&&!XRC.has(t.id))out.push('📎 '+t.files.length);
+  return out;
+}
+function xChips(a){return `<small class="xcs" data-ch="1">${a.map(x=>`<span class="xc2">${x}</span>`).join('')}</small>`}
+function xLine(t,inc){
+  const fee=!!t.feeOf,o=fee&&S.txs.find(x=>x.id===t.feeOf),meta=xMeta(t,fee);
+  let ti='';
+  if(fee){ti=o?'↩ لـ '+esc(C(o.cat)?.name||'—'):'↩ مصاريف تحويل';if(o)meta.splice(1,0,'💰 '+num(o.amount))}
+  else if(t.note&&!/^🧾/.test(t.note))ti=esc(t.note);
+  return `<div class="xl2" onclick="editTx('${t.id}')"><div class="grow">${ti?`<b>${ti}</b>`:''}${xChips(meta)}</div><b class="xa ${inc?'pos':'neg'}">${num(t.amount)}</b></div>`;
+}
+function xGroup(txs,kind){
+  const g={};txs.forEach(t=>{(g[t.cat]=g[t.cat]||[]).push(t)});
+  return Object.entries(g).map(([id,ts])=>{
+    ts.sort(byDesc);const a=ts.reduce((s,t)=>s+t.amount,0),d=ts[0].date+String(ts[0].created||0).padStart(15,'0'),n=C(id)?.name||'';
+    if(ts.length===1)return{h:kind==='exp'?xExpRow(ts[0]):txRow(ts[0]),a,d,n};
+    const c=C(id),inc=kind==='inc';
+    const h=`<details class="xr xgr"><summary><span class="ic" style="background:var(--soft)">${c&&c.fixed?'📌':inc?'💵':String(n).indexOf('مصاريف إنستاباي')===0?'💸':'🛒'}</span><div class="grow"><b>${esc(n||'—')}<span class="xcnt">${ts.length}</span></b>${xChips([ts.length+' عمليات','آخر مرة '+dmy(ts[0].date)])}</div><div class="amt ${inc?'inc':'exp'}">${num(a)}</div></summary><div class="xb">${ts.map(t=>xLine(t,inc)).join('')}</div></details>`;
+    return{h,a,d,n};
+  });
+}
+function xExpRow(t){
+  const r=XRC.has(t.id),lo=t.loan?r2(t.amount-xLoanPaid(t)):0,fee=!!t.feeOf,o=fee&&S.txs.find(x=>x.id===t.feeOf),meta=xMeta(t,fee);
+  if(o)meta.splice(1,0,'↩ لـ '+esc(C(o.cat)?.name||'—'),'💰 '+num(o.amount));
+  else if(t.note&&!/^🧾/.test(t.note))meta.push('📝 '+esc(t.note));
+  return `<div class="row" onclick="editTx('${t.id}')"><span class="ic" style="background:var(--soft)">${r?'🧾':t.loan?'🤝':'💸'}</span><div class="grow"><b>${esc(C(t.cat)?.name||'—')}${t.loan?` <span class="tag ${lo>0?'wait':'ok'}">${lo>0?'سلفة':'اتسددت'}</span>`:''}</b>${xChips(meta)}</div><div class="amt exp">${num(t.amount)}</div></div>`;
+}
+
+/* ========== الخطوط والكلام في البرنامج كله: أوضح وأتقل ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+:root{--tx2:#475569}
+body.dark{--tx2:#cbd5e1}
+#view .list small,#view details.grp small,#view .pcard small,#view .ncard small,#view .muted,#view .tile small,#sheet small,#sheet .muted,#sheet label,.xpo small,.xb .kv>span,.xforig .kv>span{color:var(--tx2)!important;opacity:1!important;font-weight:600!important}
+#view .list .grow>b,#view details.grp .grow>b,#view .pcard b,#sheet .kv>b,.xb .kv>b{font-weight:800!important}
+#view .xcs{display:flex!important;flex-wrap:wrap;gap:4px!important;margin-top:4px!important}
+#view .xc2{display:inline-flex!important;align-items:center;gap:4px;padding:2px 7px!important;border-radius:7px!important;font-size:11px!important;font-weight:600!important;line-height:1.5!important;background:rgba(148,163,184,.16)!important;border:1px solid rgba(148,163,184,.26)!important;color:var(--tx2)!important;white-space:normal!important;max-width:100%!important;overflow:visible!important;text-overflow:clip!important;word-break:break-word}
+#view .xc2 .xlogo.s,#view .xc2 .xic.s{width:15px!important;height:15px!important;flex:0 0 15px!important}
+#view .xl2{display:flex;align-items:center;gap:10px;padding:9px 10px;margin:0 0 6px;border-radius:11px;background:rgba(148,163,184,.09);border:1px solid rgba(148,163,184,.15);cursor:pointer}
+#view .xl2:last-child{margin-bottom:0}
+#view .xl2 .grow{flex:1;min-width:0}
+#view .xl2 .grow>b{display:block;font-size:12.5px;font-weight:800;line-height:1.35;word-break:break-word}
+#view .xl2 .xcs{margin-top:4px!important}
+#view .xl2 .xa{flex:0 0 auto;font-size:13.5px;font-weight:800;direction:ltr;min-width:46px;text-align:left}
 `;document.head.appendChild(s)})();
 /* نهاية fix.js */
