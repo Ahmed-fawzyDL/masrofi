@@ -829,4 +829,93 @@ try{const _ps1=paySheet;paySheet=function(){const r=_ps1.apply(this,arguments);t
   const d=$('#y-d');if(d){const l=d.closest('label');if(l&&l.firstChild&&l.firstChild.nodeType===3)l.firstChild.nodeValue='تاريخ السداد'}
 }catch(e){}return r}}catch(e){}
 (()=>{const s=document.createElement('style');s.textContent='label:has(#q7){display:none!important}';document.head.appendChild(s)})();
+/* ========== زرار ➕ فوق في النص جنب Centric ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+nav .fab{display:none!important}
+#view{padding-bottom:16px!important}
+#xfab{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:46px!important;height:46px!important;min-width:46px;margin:0!important;padding:0!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.28)!important;background:linear-gradient(135deg,color-mix(in srgb,var(--p) 85%,#fff),color-mix(in srgb,var(--p) 78%,#000))!important;color:#fff!important;font-size:28px!important;line-height:1!important;display:flex!important;align-items:center;justify-content:center;box-shadow:0 6px 18px color-mix(in srgb,var(--p) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.3)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;z-index:5}
+#xfab:active{transform:translate(-50%,-50%) scale(.92)!important}
+details.xgr>summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:10px 12px}
+details.xgr>summary::-webkit-details-marker{display:none}
+details.xgr>summary .xcnt{font-size:11px;font-weight:800;background:var(--p);color:#fff;border-radius:20px;padding:1px 8px;margin-inline-start:6px}
+details.xgr[open]>summary{border-bottom:1px dashed rgba(148,163,184,.35)}
+details.xgr .xl{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:13px}
+details.xgr .xl+.xl{border-top:1px solid rgba(148,163,184,.15)}
+details.xgr .xl .grow{min-width:0}
+`;document.head.appendChild(s)})();
+function xTopFab(){
+  if($('#xfab'))return;const a=$('#appn'),bell=$('#bell');if(!a)return;
+  let host=a.closest('header');if(!host){host=a;while(host&&bell&&!host.contains(bell))host=host.parentElement}if(!host)host=a.parentElement;
+  if(getComputedStyle(host).position==='static')host.style.position='relative';
+  const b=document.createElement('button');b.id='xfab';b.className='fab xfab';b.type='button';b.setAttribute('aria-label','+');b.textContent='+';b.onclick=xFabOpen;
+  host.appendChild(b);
+}
+function xFabOpen(){
+  fabMenu();const m=$('#fabm'),b=$('#xfab');
+  if(m&&b){const r=b.getBoundingClientRect();m.style.top=(r.bottom+10)+'px';m.style.bottom='auto';m.style.animation='none'}
+}
+
+/* ========== البند المتكرر في نفس الشهر: سطر واحد بالتوتال، ولما تدوس عليه تظهر التفاصيل ========== */
+function xGroup(txs,kind){
+  const g={};txs.forEach(t=>{(g[t.cat]=g[t.cat]||[]).push(t)});
+  return Object.entries(g).map(([id,ts])=>{
+    ts.sort(byDesc);const a=ts.reduce((s,t)=>s+t.amount,0),d=ts[0].date+String(ts[0].created||0).padStart(15,'0'),n=C(id)?.name||'';
+    if(ts.length===1)return{h:kind==='exp'?xExpRow(ts[0]):txRow(ts[0]),a,d,n};
+    const c=C(id),inc=kind==='inc';
+    const lines=ts.map(t=>{const m=M(t.method),r=XRC.has(t.id);
+      const det=[m?xMIc(m,1)+' '+esc(m.name)+(xIsCr(t.method)?' 💳':''):'',t.via?xViaIc(t.via,1)+' '+esc(viaTxt(t.via)):'',t.ipay&&t.ipay.v?'← <bdi>'+esc(t.ipay.v)+'</bdi>':'',t.note&&!/^🧾/.test(t.note)?esc(t.note):''].filter(Boolean).join(' · ');
+      return `<div class="xl" onclick="editTx('${t.id}')"><span>${r?'🧾':''}${dmy(t.date)}</span><div class="grow"><small>${det}</small></div>${(t.files||[]).length&&!r?'📎':''}<b class="${inc?'pos':'neg'}">${num(t.amount)}</b></div>`}).join('');
+    const h=`<details class="xr xgr"><summary><span class="ic" style="background:var(--soft)">${c&&c.fixed?'📌':inc?'💵':'🛒'}</span><div class="grow"><b>${esc(n||'—')}<span class="xcnt">${ts.length}</span></b><small>${ts.length} عمليات · آخر مرة ${dmy(ts[0].date)}</small></div><div class="amt ${inc?'inc':'exp'}">${num(a)}</div></summary><div class="xb">${lines}</div></details>`;
+    return{h,a,d,n};
+  });
+}
+function vExps(){
+  const k=ym(cur.y,cur.m),list=keyTx(k).filter(t=>t.type==='exp'),s=xSums(keyTx(k));
+  const dl=dueList(k,'','exp'),linked=new Set(dl.filter(o=>o.s.st==='done').map(o=>o.s.t.id));
+  const instT=list.filter(t=>t.src&&t.src.k==='i'),instU=xInstDue(k);
+  const others=list.filter(t=>!linked.has(t.id)&&!(t.src&&t.src.k==='i')),ptx=pendTx('exp',k);
+  XRC=new Set(S.buys.map(b=>b.txId));
+  const fixSum=dl.reduce((a,o)=>a+(o.s.st==='done'?o.s.t.amount:o.s.st==='skip'?0:o.amt),0);
+  const instSum=instT.reduce((a,t)=>a+t.amount,0)+instU.reduce((a,x)=>a+(+x.it.amount||0),0);
+  const varSum=others.reduce((a,t)=>a+t.amount,0),pSum=ptx.reduce((a,t)=>a+t.amount,0),g=XE.g;
+  let h=`<div class="phead"><h3>💸 ${esc(L('exp'))}</h3><button class="mini" onclick="scanReceipt()">📷 Receipt Scan</button><button class="mini pri" onclick="newTx('exp')">+ ${esc(L('expOne'))}</button></div>`+monthBar()
+    +kpis([['اتصرف',fmt(s.exp),'exp'],['💳 كريديت',fmt(s.cr),'warn'],['💵 من فلوسك',fmt(s.expNC),'net']])
+    +xTiles([['all','🗂️','الكل',list.length+ptx.length+instU.length],['fix','📌','ثابت',dl.length],['inst','🏦','أقساط',instT.length+instU.length],['var','🛒','متغير',others.length+ptx.length]],g,'XE.g')+sortBar();
+  if(g==='all'||g==='fix'){const fl=sortList(dl.map(o=>({h:fixedRow(o),a:o.s.t?o.s.t.amount:o.amt,d:o.date,n:o.r.name})));
+    h+=grp('ef','📌 ثابت',fl.length,fixSum,'neg',fl.map(x=>x.h).join('')+`<div style="padding:8px 12px"><button class="mini pri" onclick="catForm(null,'exp',{fixed:true})">+ مصروف ثابت</button></div>`)}
+  if(g==='all'||g==='inst'){const il=sortList(instU.map(x=>({h:xInstDueRow(x),a:+x.it.amount||0,d:x.it.due,n:x.p.name})).concat(instT.map(t=>({h:xInstPaidRow(t),a:t.amount,d:t.date,n:(plan(t.src.id)||{}).name||''}))));
+    h+=grp('ei','🏦 أقساط',il.length,instSum,'neg',il.map(x=>x.h).join('')+`<div style="padding:8px 12px"><button class="mini pri" onclick="planNew()">+ أقساط جديدة</button></div>`)}
+  if(g==='all'||g==='var'){
+    if(ptx.length)h+=grp('ep','⏳ غير مدفوع',ptx.length,pSum,'neg',ptx.map(txRow).join(''));
+    const rows=sortList(xGroup(others,'exp'),true);
+    h+=grp('ev','🛒 متغير',others.length,varSum,'neg',rows.length?`<div class="list">${rows.map(x=>x.h).join('')}</div>`:'');
+  }
+  return h;
+}
+function vCol(){
+  const key=ym(cur.y,cur.m),dm=dueList(key,'m','inc'),da=dueList(key,'a','inc');
+  const linked=new Set(dm.concat(da).filter(o=>o.s.st==='done').map(o=>o.s.t.id));
+  const others=keyTx(key).filter(t=>t.type==='inc'&&!linked.has(t.id)),ptx=pendTx('inc',key),it=[];
+  XRC=new Set(S.buys.map(b=>b.txId));
+  const fo=(o,g)=>({g,w:o.s.st==='wait',h:fixedRow(o),a:o.s.t?o.s.t.amount:o.amt,d:o.s.t?o.s.t.date:o.date,n:o.r.name});
+  dm.forEach(o=>it.push(fo(o,'fix')));da.forEach(o=>it.push(fo(o,'ann')));
+  const tg=t=>{const c=C(t.cat);return c&&c.fixed?(isA(c)?'ann':'fix'):'var'};
+  others.filter(t=>tg(t)!=='var').forEach(t=>it.push({g:tg(t),w:false,h:txRow(t),a:t.amount,d:t.date,n:C(t.cat)?.name||''}));
+  xGroup(others.filter(t=>tg(t)==='var'),'inc').forEach(x=>it.push({g:'var',w:false,...x}));
+  ptx.forEach(t=>it.push({g:tg(t),w:true,h:txRow(t),a:t.amount,d:t.date,n:C(t.cat)?.name||''}));
+  const got=sums(keyTx(key)).inc,rem=it.filter(x=>x.w).reduce((a,x)=>a+x.a,0),g=XI.g;
+  const cnt=k=>it.filter(x=>k==='all'||x.g===k).length,sel=it.filter(x=>g==='all'||x.g===g),sm0=l=>l.reduce((a,x)=>a+x.a,0);
+  let h=`<div class="phead"><h3>💰 ${esc(L('inc'))}</h3><button class="mini pri" onclick="newTx('inc')">+ تحصيل جديد</button></div>`+monthBar()
+    +kpis([['محصّل',fmt(got),'inc'],['المتوقع',fmt(got+rem),'net'],['غير محصّل',fmt(rem),'exp']]);
+  if(got+rem)h+=`<div class="prog"><i style="width:${Math.min(100,got/(got+rem)*100)}%"></i></div>`;
+  h+=xTiles([['all','🗂️','الكل',cnt('all')],['fix','📌','ثابت',cnt('fix')],['ann','📄','سنوي',cnt('ann')],['var','💵','غير ثابت',cnt('var')]],g,'XI.g')+sortBar();
+  const pl=sortList(sel.filter(x=>x.w)),dn=sortList(sel.filter(x=>!x.w),true);
+  const add=g==='fix'?`<div style="padding:8px 12px"><button class="mini pri" onclick="catForm(null,'inc',{fixed:true})">+ تحصيل ثابت</button></div>`:g==='ann'?`<div style="padding:8px 12px"><button class="mini pri" onclick="catForm(null,'inc',{fixed:true,every:12})">+ تحصيل سنوي</button></div>`:'';
+  h+=grp('cp','⏳ غير محصّل',pl.length,sm0(pl),'neg',pl.map(x=>x.h).join('')+add);
+  h+=grp('cd','✅ محصّل',dn.length,sm0(dn),'pos',dn.map(x=>x.h).join(''));
+  return h;
+}
+/* الفلتر بيدوّر في البنود المجمّعة كمان */
+function gfApply(){const q=qn(GQ[view]||'');document.querySelectorAll('#view .row, #view details.xgr').forEach(r=>{if(r.closest('details.xgr')&&!r.matches('details.xgr'))return;r.style.display=!q||qn(r.textContent).includes(q)?'':'none'})}
+xTopFab();
 /* نهاية fix.js */
