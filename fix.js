@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.13',XVBUILD='14/10/2026 - 03:16 م';
+const XVER='2.21.14',XVBUILD='14/10/2026 - 03:20 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1437,4 +1437,48 @@ setTimeout(()=>{if(xFeeClean())render()},1500);
 #view details.grp .empty{padding:14px;text-align:center;opacity:.6;margin:0}
 #view h3.exh{display:flex;align-items:center;gap:8px}
 `;document.head.appendChild(s)})();
+/* ========== القوايم بتطلع فوق الكيبورد في كل البرنامج ========== */
+(()=>{
+  const m=document.querySelector('meta[name=viewport]');
+  if(m&&!/interactive-widget/.test(m.content))m.setAttribute('content',m.content+', interactive-widget=resizes-content');
+  const vv=window.visualViewport,R=document.documentElement;
+  const set=()=>{R.style.setProperty('--vvh',(vv?vv.height:innerHeight)+'px');R.style.setProperty('--vvt',(vv?vv.offsetTop:0)+'px')};
+  if(vv){vv.addEventListener('resize',set);vv.addEventListener('scroll',set)}
+  addEventListener('resize',set);set();
+  const s=document.createElement('style');s.textContent=`
+.xpk{inset:auto 0 auto 0!important;top:var(--vvt,0)!important;height:var(--vvh,100vh)!important}
+.xpb{max-height:calc(var(--vvh,100vh) - 12px)!important}
+.xpl{flex:1 1 auto;min-height:0;overscroll-behavior:contain}
+#sheet .body{max-height:calc(var(--vvh,100vh) - 24px)!important;overflow:auto!important}
+`;document.head.appendChild(s);
+  /* لما تكتب في أي خانة، بتتحرك لفوق عشان متستخباش ورا الكيبورد */
+  document.addEventListener('focusin',e=>{const t=e.target;if(t&&t.matches&&t.matches('input,textarea')&&!t.closest('.xpk'))setTimeout(()=>{try{t.scrollIntoView({block:'center',behavior:'smooth'})}catch(err){}},300)});
+})();
+
+/* ========== اختيار البند: من غير بنود مصاريف إنستاباي (بتتسجل لوحدها) ========== */
+function xCatOpen(){
+  grab();const kind=F.type==='inc'?'inc':'exp',used={};
+  S.txs.forEach(t=>{if(t.cat&&t.type===kind&&!t.feeOf)used[t.cat]=Math.max(used[t.cat]||0,t.created||0)});
+  const cats=S.cats.filter(c=>c.kind===kind&&(c.active!==false||c.id===F.cat)&&(c.id===F.cat||String(c.name).indexOf('مصاريف إنستاباي')!==0)).sort((a,b)=>(used[b.id]||0)-(used[a.id]||0)||a.name.localeCompare(b.name,'ar'));
+  const H=cats.map(c=>{const cts=S.contacts.filter(x=>x.catId===c.id);return[c,qn([c.name,...(c.alias||[]),...cts.map(x=>x.name+' '+(x.spec||'')+' '+(x.phones||[]).join(' '))].join(' '))]});
+  const ov=xOv();
+  ov.innerHTML=`<div class="xpb"><div class="xpt"><b>${kind==='inc'?'💰 بند التحصيل':'💸 بند المصروف'}</b><button type="button" class="xpx">✕</button></div><input class="xpq" placeholder="🔍 اسم البند أو المحل أو رقم الموبايل"><div class="xpl"></div></div>`;
+  const q=ov.querySelector('.xpq'),box=ov.querySelector('.xpl');
+  const draw=()=>{
+    const v=qn(q.value),raw=q.value.trim(),l=H.filter(([c,h])=>!v||h.includes(v)),exact=l.some(([c])=>qn(c.name)===v);
+    box.innerHTML=(raw&&!exact&&!/^[\d\s+]+$/.test(raw)?`<button type="button" class="xpo xnew" data-new="1"><span class="xic0">➕</span><span class="xl">بند جديد: ${esc(raw)}</span></button>`:'')
+      +l.map(([c])=>`<button type="button" class="xpo ${c.id===F.cat?'on':''}" data-v="${c.id}">${xCatIc(c)}<span class="xl">${esc(c.name)}${c.fixed?'<small>📌 ثابت</small>':''}</span>${c.id===F.cat?'<i>✓</i>':''}</button>`).join('')
+      +(l.length?'':'<p class="muted" style="text-align:center;margin:8px 0">مفيش بند بالاسم ده</p>')
+      +`<button type="button" class="xpo xnew" data-full="1"><span class="xic0">⚙️</span><span class="xl">بند جديد بالتفاصيل</span></button>`;
+    box.scrollTop=0;
+  };
+  draw();q.oninput=draw;
+  ov.onclick=e=>{
+    if(e.target===ov||e.target.closest('.xpx'))return xOvClose(ov);
+    const o=e.target.closest('.xpo');if(!o)return;const nm0=q.value.trim();xOvClose(ov);
+    if(o.dataset.new){F.cat='__new';F.newCat=nm0;SHKEEP=1;txForm();return}
+    if(o.dataset.full){XCATBACK=true;catForm(null,kind,nm0?{name:nm0}:undefined);return}
+    catPick(o.dataset.v);
+  };
+}
 /* نهاية fix.js */
