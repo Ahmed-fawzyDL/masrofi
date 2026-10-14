@@ -985,4 +985,23 @@ function xTopFab(){
 function xFab(v){const w=$('#xfw');if(!w)return;w.classList.toggle('on',v==null?!w.classList.contains('on'):!!v)}
 try{const _hb2=handleBack;handleBack=function(){const w=$('#xfw');if(w&&w.classList.contains('on')){xFab(0);return true}return _hb2.apply(this,arguments)}}catch(e){}
 xTopFab();
+/* ========== زرار ➕ على اليمين + زرار الإعدادات ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#xfw{left:auto!important;right:16px!important}
+#xfw .xfi{width:50px!important;height:50px!important;left:4px!important;top:4px!important}
+#xfw .xfi span{font-size:18px}
+#xfw .xfi small{font-size:8.5px}
+#xfw .xfi.set{background:linear-gradient(135deg,#64748b,#334155)}
+`;document.head.appendChild(s)})();
+function xTopFab(){
+  const old=$('#xfab');if(old)old.remove();
+  const ow=$('#xfw');if(ow)ow.remove();
+  const IT=[['inc','💰','تحصيل',"newTx('inc')"],['exp','💸','مصروف',"newTx('exp')"],['inst','🏦','الأقساط',"go('inst')"],['docs','📎','المرفقات',"go('docs')"],['buy','🛒','المشتروات',"go('buy')"],['set','⚙️','الإعدادات',"stab='';go('settings')"]];
+  const R=175,n=IT.length,w=document.createElement('div');w.id='xfw';
+  w.innerHTML=`<div class="xfbg" onclick="xFab(0)"></div>`+IT.map(([k,ic,l,js],i)=>{const a=(90-i*90/(n-1))*Math.PI/180,x=-Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R);
+    return `<button type="button" class="xfi ${k}" style="--x:${x}px;--y:${-y}px;--d:${i*45}ms" onclick="xFab(0);${js}"><span>${ic}</span><small>${l}</small></button>`}).join('')
+    +`<button type="button" class="xfm" onclick="xFab()" aria-label="+">+</button>`;
+  document.body.appendChild(w);
+}
+xTopFab();
 /* نهاية fix.js */
