@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.10',XVBUILD='14/10/2026 - 03:10 م';
+const XVER='2.21.11',XVBUILD='14/10/2026 - 03:30 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1315,4 +1315,70 @@ async function xFeeBackfill(){
 }
 function xFeeLater(){if($('#lock').classList.contains('on')||document.querySelector('.dlg'))return setTimeout(xFeeLater,2000);xFeeBackfill()}
 setTimeout(xFeeLater,4500);
+/* ========== مصاريف إنستاباي: بند لكل بنك + المعاملة الأصلية ========== */
+const XFEEN='مصاريف إنستاباي';
+function xFeeNorm(){
+  let ch=false;
+  S.txs.forEach(t=>{
+    if(!t.feeOf)return;const m=S.txs.find(x=>x.id===t.feeOf);
+    const cn=XFEEN+' · '+(M(t.method)?.name||'—'),c=C(t.cat);
+    if(!c||c.name!==cn){const nc=ensureCat(cn,'exp');nc.active=true;t.cat=nc.id;ch=true}
+    if(m){const nt='💸 مصاريف تحويل لـ '+(C(m.cat)?.name||'—')+' · '+num(m.amount);if((!t.note||t.note.startsWith('💸 مصاريف تحويل'))&&t.note!==nt){t.note=nt;ch=true}}
+  });
+  const g=S.cats.find(c=>c.kind==='exp'&&c.name===XFEEN);
+  if(g&&!S.txs.some(t=>t.cat===g.id)){S.cats=S.cats.filter(c=>c!==g);ch=true}
+  if(ch)save();return ch;
+}
+try{const _rFe=render;render=function(){try{xFeeNorm()}catch(e){}return _rFe.apply(this,arguments)}}catch(e){}
+/* لما تفتح مصروف مصاريف: بوكس فيه المعاملة الأصلية */
+function xFeeOrigBox(){
+  if(!F||!F.id)return;const t=S.txs.find(x=>x.id===F.id);if(!t||!t.feeOf)return;
+  const sz=document.querySelector('#sheet .sz');if(!sz||sz.querySelector('.xforig'))return;
+  const m=S.txs.find(x=>x.id===t.feeOf),d=document.createElement('div');d.className='xforig';
+  d.innerHTML=m?`<b class="xft">🔗 دي مصاريف تحويل إنستاباي لـ</b>
+  <div class="kv"><span>📋 البند</span><b>${esc(C(m.cat)?.name||'—')}</b></div>
+  <div class="kv"><span>💰 المبلغ</span><b>${fmt(m.amount)}</b></div>
+  <div class="kv"><span>📅 التاريخ</span><b>${fdate(m.date)}</b></div>
+  <div class="kv"><span>🏦 من</span><b>${M(m.method)?xMIc(M(m.method),1)+' ':''}${esc(M(m.method)?.name||'—')}</b></div>
+  ${m.ipay&&m.ipay.v?`<div class="kv"><span>⚡ حولت لـ</span><b><bdi>${esc(m.ipay.v)}</bdi></b></div>`:''}
+  ${m.note&&!/^🧾/.test(m.note)?`<div class="kv"><span>📝 ملاحظة</span><b>${esc(m.note)}</b></div>`:''}
+  <button type="button" class="btn ghost" onclick="editTx('${m.id}')">📂 افتح المعاملة الأصلية</button>`
+  :'<b class="xft">⚠️ المعاملة الأصلية اتحذفت</b>';
+  const h2=sz.querySelector('h2');if(h2)h2.after(d);else sz.prepend(d);
+}
+try{const _tfO=txForm;txForm=function(){const r=_tfO.apply(this,arguments);try{xFeeOrigBox()}catch(e){}return r}}catch(e){}
+
+/* ========== تفاصيل المصروف والتحصيل: واضحة ومقرية ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+details.xr .xb{background:color-mix(in srgb,var(--p) 5%,var(--card,#fff));border:1px solid color-mix(in srgb,var(--p) 18%,transparent);border-radius:14px;margin:4px 8px 10px;padding:6px 12px 10px}
+.xb .kv,.xforig .kv{display:flex!important;justify-content:space-between;align-items:center;gap:12px;padding:9px 0!important;margin:0!important;border-bottom:1px dashed rgba(148,163,184,.35);font-size:14px}
+.xb .kv:last-of-type,.xforig .kv:last-of-type{border-bottom:0}
+.xb .kv>span,.xforig .kv>span{opacity:.75;font-weight:600;white-space:nowrap;flex:0 0 auto}
+.xb .kv>b,.xforig .kv>b{font-weight:800;font-size:14.5px;text-align:left;unicode-bidi:plaintext;word-break:break-word;display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.xb .kv.xbig>b{font-size:18px;color:var(--p)}
+.xb .files{margin-top:8px}
+.xb .etbar{display:flex!important;gap:8px;flex-wrap:wrap;margin-top:10px!important}
+.xb .etbar .mini{flex:1;padding:10px 8px!important;font-size:13px!important;text-align:center}
+.xb small,.xb b{opacity:1}
+details.xgr .xl{padding:11px 14px!important;font-size:14px!important;align-items:center}
+details.xgr .xl>span{font-weight:700;white-space:nowrap;font-size:13px}
+details.xgr .xl small{font-size:12.5px!important;opacity:.85;line-height:1.5}
+details.xgr .xl>b{font-size:15px;font-weight:800}
+details.xr>summary small{font-size:12.5px!important;line-height:1.5}
+.xforig{border:1.5px dashed var(--p);border-radius:14px;padding:8px 12px 12px;margin:0 0 12px;background:color-mix(in srgb,var(--p) 6%,transparent)}
+.xforig .xft{display:block;margin:2px 0 4px;font-size:14px;color:var(--p)}
+.xforig .btn{margin-top:8px}
+`;document.head.appendChild(s)})();
+try{const _tbX=txBody;txBody=function(t){
+  let h=_tbX(t);const m=M(t.method);
+  h=h.replace('<span>التاريخ</span>','<span>📅 التاريخ</span>')
+     .replace('<span>دفعت من</span><b>','<span>🏦 دفعت من</span><b>'+(m?xMIc(m,1)+' ':''))
+     .replace('<span>استلمت في</span><b>','<span>🏦 استلمت في</span><b>'+(m?xMIc(m,1)+' ':''))
+     .replace('<span>الطريقة</span><b>','<span>💳 الطريقة</span><b>'+(t.via?xViaIc(t.via,1)+' ':''))
+     .replace('<span>ملاحظة</span>','<span>📝 ملاحظة</span>')
+     .replace('<span>اتأجّل قبل كده</span>','<span>⏭ اتأجّل</span>');
+  return `<div class="kv xbig"><span>💰 المبلغ</span><b>${fmt(t.amount)}</b></div>`+h;
+}}catch(e){}
+/* ========== بنود مصاريف إنستاباي الفاضية بتتمسح لوحدها ========== */
+try{const _fn0=xFeeNorm;xFeeNorm=function(){let ch=_fn0();const e=S.cats.filter(c=>c.kind==='exp'&&c.name.startsWith(XFEEN+' · ')&&!S.txs.some(t=>t.cat===c.id));if(e.length){S.cats=S.cats.filter(c=>!e.includes(c));save();ch=true}return ch}}catch(e){}
 /* نهاية fix.js */
