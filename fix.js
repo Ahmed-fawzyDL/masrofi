@@ -1004,4 +1004,91 @@ function xTopFab(){
   document.body.appendChild(w);
 }
 xTopFab();
+/* ========== زرار ➕: تختار زراريره بنفسك (يظهر / تلقائي / مخفي) ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#xfw.xh{display:none!important}
+#xfw .xfis{position:absolute;inset:0}
+#xfw .xfi{overflow:visible}
+#xfw .xfb{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:#dc2626;color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff;box-sizing:border-box}
+#xfw .xfdot{position:absolute;top:3px;right:3px;width:13px;height:13px;border-radius:50%;background:#dc2626;border:2px solid #fff;display:none}
+#xfw.dot .xfdot{display:block}#xfw.on .xfdot{display:none}
+`;document.head.appendChild(s)})();
+/* كل زرار: [أيقونة، اسم، بيعمل إيه، ألوان، امتى يظهر في "تلقائي"، وصف التلقائي] */
+var XFC={
+  inc:['💰','تحصيل',"newTx('inc')",'#22c55e,#15803d',()=>pendAll().length,'لما يكون فيه تحصيل غير محصّل'],
+  exp:['💸','مصروف',"newTx('exp')",'#ef4444,#b91c1c',()=>pendTx('exp',NKM).length+dueList(NKM,'','exp').filter(o=>o.s.st==='wait'&&o.date<today()).length,'لما يكون فيه مصروف غير مدفوع'],
+  inst:['🏦','الأقساط',"go('inst')",'#8b5cf6,#6d28d9',()=>instDue().length,'لما يقرب ميعاد قسط أو يتأخر'],
+  loans:['🤝','السلف',"go('loans')",'#06b6d4,#0e7490',()=>xLoans().filter(t=>t.loan.due&&daysBetween(t.loan.due,today())<=3&&t.amount-xLoanPaid(t)>0).length,'لما يقرب ميعاد سداد سلفة أو يتأخر'],
+  annual:['📆','السنوي',"go('annual')",'#0ea5e9,#0369a1',()=>annualDue().length,'لما يقرب ميعاد تحصيل سنوي'],
+  wallet:['💳','الكروت',"go('wallet')",'#14b8a6,#0f766e',()=>renDue().length,'لما كارت شخصي يقرب يخلص'],
+  months:['🔒','قفل الشهور',"go('months')",'#64748b,#1e293b',()=>{const pk=prevKey(NKM);return !S.closed[pk]&&keyTx(pk).length?1:0},'لما الشهر اللي فات يكون لسه مفتوح'],
+  set:['⚙️','الإعدادات',"stab='';go('settings')",'#64748b,#334155',()=>{const lb=localStorage.getItem(BKEY);return !DEMO&&S.txs.length&&(!lb||(Date.now()-new Date(lb))/864e5>30)?1:0},'لما يبقى وقت النسخة الاحتياطية'],
+  scan:['📷','ريسيت',"scanReceipt()",'#f43f5e,#be123c',()=>0,''],
+  cash:['🏧','سحب كاش',"cashForm()",'#eab308,#a16207',()=>0,''],
+  buy:['🛒','المشتروات',"go('buy')",'#f97316,#c2410c',()=>0,''],
+  docs:['📎','المرفقات',"go('docs')",'#3b82f6,#1d4ed8',()=>0,''],
+  contacts:['📇','Contacts',"go('contacts')",'#a855f7,#7e22ce',()=>0,''],
+  items:['📋','البنود',"go('items')",'#10b981,#047857',()=>0,''],
+  pmv:['🏛️','الحسابات',"go('pmv')",'#0891b2,#155e75',()=>0,''],
+  reports:['📊','التقارير',"rtab='';go('reports')",'#6366f1,#4338ca',()=>0,''],
+  pw:['🔐','الباسوردات',"pwScreen()",'#475569,#0f172a',()=>0,'']
+};
+var XFDEF=['inc','exp','inst','docs','buy','set'];
+function xFabCfg(){const f=S.settings.fab||(S.settings.fab={});if(!Array.isArray(f.order))f.order=[...XFDEF];Object.keys(XFC).forEach(k=>{if(!f.order.includes(k))f.order.push(k)});f.order=f.order.filter(k=>XFC[k]);f.m=f.m||{};return f}
+function xFabMode(k){const f=xFabCfg();return f.m[k]||(XFDEF.includes(k)?'show':'hide')}
+function xFabRel(k){try{return +XFC[k][4]()||0}catch(e){return 0}}
+function xFabList(){return xFabCfg().order.filter(k=>{const m=xFabMode(k);return m==='show'||(m==='auto'&&xFabRel(k)>0)})}
+function xTopFab(){
+  const old=$('#xfab');if(old)old.remove();
+  const ow=$('#xfw');if(ow)ow.remove();
+  const w=document.createElement('div');w.id='xfw';
+  w.innerHTML=`<div class="xfbg" onclick="xFab(0)"></div><div class="xfis"></div><button type="button" class="xfm" onclick="xFab()" aria-label="+">+<i class="xfdot"></i></button>`;
+  document.body.appendChild(w);
+  try{xFabDot();xFabVis()}catch(e){}
+}
+function xFabBuild(){
+  const w=$('#xfw');if(!w)return;const ks=xFabList(),box=w.querySelector('.xfis'),pos=[];
+  let i=0,R=105;
+  while(i<ks.length){const cap=Math.floor(Math.PI/2*R/56)+1,m=Math.min(cap,ks.length-i);
+    for(let j=0;j<m;j++){const a=(m===1?45:90-j*90/(m-1))*Math.PI/180;pos.push([-Math.round(Math.cos(a)*R),-Math.round(Math.sin(a)*R)])}
+    i+=m;R+=62}
+  box.innerHTML=ks.map((k,i)=>{const[ic,l,js,col]=XFC[k],n=xFabRel(k);
+    return `<button type="button" class="xfi" style="--x:${pos[i][0]}px;--y:${pos[i][1]}px;--d:${i*40}ms;background:linear-gradient(135deg,${col})" onclick="xFab(0);${js}"><span>${ic}</span><small>${esc(l)}</small>${n?`<b class="xfb">${n}</b>`:''}</button>`}).join('');
+  if(!ks.length)toast('مفيش زراير · ظبطها من ⚙️ الإعدادات ← أزرار ➕');
+}
+function xFab(v){
+  const w=$('#xfw');if(!w)return;const on=v==null?!w.classList.contains('on'):!!v;
+  if(on&&!w.classList.contains('on')){xFabBuild();void w.offsetWidth;w.classList.add('on')}else if(!on)w.classList.remove('on');
+}
+/* نقطة حمرا على ➕ لو فيه زرار تلقائي ظاهر */
+function xFabDot(){const w=$('#xfw');if(!w)return;w.classList.toggle('dot',xFabCfg().order.some(k=>xFabMode(k)==='auto'&&xFabRel(k)>0))}
+/* الزرار بيختفي وقت التقرير والقفل والباسوردات والكاميرا */
+function xFabVis(){const w=$('#xfw');if(!w)return;const h=$('#rv').classList.contains('on')||$('#lock').classList.contains('on')||!!$('#pwv')||!!$('#scan');w.classList.toggle('xh',h);if(h)w.classList.remove('on')}
+(()=>{const mo=new MutationObserver(()=>{try{xFabVis()}catch(e){}});['#rv','#lock'].forEach(s=>{const e=$(s);if(e)mo.observe(e,{attributes:true,attributeFilter:['class']})});mo.observe(document.body,{childList:true})})();
+try{const _rF=render;render=function(){const r=_rF.apply(this,arguments);try{xFabDot()}catch(e){}return r}}catch(e){}
+
+/* الإعدادات ← أزرار ➕ */
+function spFab(){
+  const f=xFabCfg();
+  return `<p class="muted"><b>يظهر:</b> دايماً جوه ➕ · <b>تلقائي:</b> يظهر لوحده لما يكون فيه حاجة متأخرة أو مستنياك · <b>مخفي:</b> مبيظهرش<br>رتّبهم بـ ▲▼</p>
+  <div class="list">${f.order.map((k,i)=>{const c=XFC[k],n=xFabRel(k);
+    return `<div class="row" style="cursor:default;flex-wrap:wrap"><span class="ic" style="background:linear-gradient(135deg,${c[3]});color:#fff">${c[0]}</span><div class="grow"><b>${esc(c[1])}</b><small>${c[5]?'تلقائي: '+c[5]+(n?' · دلوقتي '+n:''):'مالوش تلقائي، اختار يظهر أو مخفي'}</small></div><div class="acts"><button class="mini" onclick="xFabMove(${i},-1)" ${i?'':'disabled'}>▲</button><button class="mini" onclick="xFabMove(${i},1)" ${i<f.order.length-1?'':'disabled'}>▼</button></div>${modeSeg(xFabMode(k),`xFabSet('${k}',`)}</div>`}).join('')}</div>
+  <button class="btn ghost" onclick="xFabReset()">↺ رجّع الأصلي</button>`;
+}
+function xFabSet(k,m){xFabCfg().m[k]=m;save();render()}
+function xFabMove(i,d){const o=xFabCfg().order,j=i+d;if(j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];save();render()}
+function xFabReset(){delete S.settings.fab;save();render();toast('رجع الأصلي ✓')}
+if(!SETS.some(x=>x[0]==='fab'))SETS.splice(4,0,['fab','➕','أزرار ➕']);
+function vSettings(){
+  const sp=SETS.find(x=>x[0]===stab);
+  if(!sp)return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>⚙️ ${esc(L('settings'))}</h3></div><div class="rgrid">${SETS.map(([k,ic,l])=>`<button class="rbtn" onclick="stab='${k}';render();scrollTo(0,0)"><span>${ic}</span>${l}</button>`).join('')}</div>`;
+  const P={name:spName,theme:spTheme,font:spFont,home:spHome,labels:spLabels,notif:spNotif,sec:spSec,ocr:spOcr,drive:spDrive,data:spData,demo:spDemo,about:spAbout,fab:spFab};
+  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>${sp[1]} ${sp[2]}</h3></div>`+P[stab]();
+}
+
+/* الرئيسية: "غير محصّل" وأخواته بيختفوا لوحدهم لما مفيش حاجة */
+['pending','annual','inst','renew'].forEach(k=>HWDEF[k]='auto');
+if(!S.settings.xhw1){S.settings.hw=Object.assign({},S.settings.hw);['pending','annual','inst','renew'].forEach(k=>{if(S.settings.hw[k]==='show')S.settings.hw[k]='auto'});S.settings.xhw1=1;save()}
+
+xTopFab();render();
 /* نهاية fix.js */
