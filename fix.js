@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-      const XVER='2.21.29',XVBUILD='15/10/2026 - 10:30 ص';
+         const XVER='2.21.30',XVBUILD='15/10/2026 - 10:45 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -2158,4 +2158,188 @@ function xPreDraw(keep){
     <button class="btn xpgo" onclick="xPreGo()">📄 اعرض التقرير</button></div>`,keep)}
   finally{XPRDRAW=false}
 }
+/* ========== 2.21.30: من تاريخ إلى تاريخ في كل التقارير + أكتر من بند وحساب + الرجوع للفلاتر ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xpre .xmr{display:flex;align-items:flex-end;gap:6px}
+.xpre .xmr label{flex:1;min-width:0}
+.xpre .xmr .mini{height:38px;flex:0 0 38px;padding:0!important;margin-bottom:1px}
+.xpre .xadd{display:block;width:100%;margin-top:8px;padding:8px!important;border-style:dashed!important}
+`;document.head.appendChild(s)})();
+
+/* الفترة: بترجّع من / إلى (أو شهر / سنة) */
+var XPD={stmt:'m',ops:'m',month:'m',cols:'m',pmr:'m',year:'y',contracts:'y',cash:'y',cnext:'ny',inst:'all'};
+function xRngTxt(f,t){return `من ${dmy(f)} إلى ${dmy(t)}`}
+function xMonthsIn(f,t){const out=[];let k=f.slice(0,7),n=0;const e=t.slice(0,7);while(k<=e&&n<240){out.push(k);k=addMonths(k+'-01',1).slice(0,7);n++}return out}
+function xPer(k){
+  const p=RF.xp||XPD[k]||'m',o={p};
+  if(p==='m')o.k=NKM;else if(p==='pm')o.k=prevKey(NKM);else if(p==='mon')o.k=RF.month||NKM;
+  else if(p==='y')o.y=NY;else if(p==='py')o.y=NY-1;else if(p==='ny')o.y=NY+1;else if(p==='yr')o.y=+RF.year||NY;
+  if(o.k)[o.f,o.t]=mRange(o.k);
+  else if(o.y){o.f=o.y+'-01-01';o.t=o.y+'-12-31'}
+  else if(p==='all'){const ds=S.txs.map(t=>t.date).concat(S.cash.map(c=>c.date)).sort();o.f=ds[0]||NKM+'-01';o.t=(NY+1)+'-12-31'}
+  else{o.f=RF.xf||NKM+'-01';o.t=RF.xto||today();if(o.f>o.t)[o.f,o.t]=[o.t,o.f]}
+  return o;
+}
+/* الاختيارات القديمة (من الرئيسية والشاشات) بتتحول للفلاتر الجديدة */
+function xLegacy(k){
+  if(RF.xp)return;
+  if(k==='stmt'||k==='ops'){
+    if(RF.type&&RF.type!=='all')RF.xt=RF.type;
+    if(RF.cat)RF.xc=[RF.cat];if(RF.method)RF.xms=[RF.method];
+    if(RF.period==='custom'){RF.xp='custom';RF.xf=RF.from;RF.xto=RF.to}else RF.xp=RF.period||'m';
+    RF.cat='';RF.method='';
+  }
+  else if(['month','cols','pmr'].includes(k))RF.xp=RF.month&&RF.month!==NKM?'mon':'m';
+  else if(['year','contracts','cash'].includes(k))RF.xp=RF.year&&+RF.year!==NY?'yr':'y';
+  else RF.xp=XPD[k]||'m';
+}
+
+/* الفلاتر: النوع + أكتر من حساب + أكتر من بند */
+function xRepScope(fn){
+  if(rtab==='cmp')return fn();
+  const sel=new Set((RF.xc||[]).filter(Boolean)),ms=new Set((RF.xms||[]).filter(Boolean)),ty=RF.xt||'';
+  if(!sel.size&&!ms.size&&!ty)return fn();
+  const T=S.txs,Cs=S.cats,Ca=S.cash,P=S.plans;
+  try{
+    S.txs=T.filter(t=>(!sel.size||sel.has(t.cat))&&(!ms.size||ms.has(t.method)||ms.has(t.to))&&(!ty||t.type===ty));
+    if(sel.size||ty)S.cats=Cs.filter(x=>(!sel.size||sel.has(x.id))&&(!ty||x.kind===ty));
+    S.cash=sel.size||ty==='inc'?[]:Ca.filter(x=>!ms.size||ms.has(x.method));
+    if(sel.size)S.plans=P.filter(p=>sel.has(p.catId));
+    return fn();
+  }finally{S.txs=T;S.cats=Cs;S.cash=Ca;S.plans=P}
+}
+function xRepSum(){
+  if(rtab==='cmp')return '';const p=[],g=n=>(RF[n]||[]).filter(Boolean);
+  if(RF.xt)p.push(RF.xt==='inc'?L('inc'):L('exp'));
+  const ms=g('xms').map(id=>M(id)?.name).filter(Boolean);if(ms.length)p.push(ms.join('، '));
+  const xs=g('xc').map(id=>C(id)?.name).filter(Boolean);if(xs.length)p.push(xs.length>3?xs.slice(0,3).join('، ')+' +'+(xs.length-3):xs.join('، '));
+  return p.join(' · ');
+}
+
+/* تقارير الفترة (لما تختار من تاريخ إلى تاريخ أو كل الفترات) */
+function xBRange(f,t){
+  const list=S.txs.filter(x=>!x.pend&&x.date>=f&&x.date<=t),s=xSums(list);
+  const cl=S.cash.filter(c=>c.date>=f&&c.date<=t).sort((a,b)=>a.date.localeCompare(b.date)),ct=cl.reduce((a,c)=>a+c.amount,0);
+  let b=xKp(s)+ioPie(s);
+  const rows=xMonthsIn(f,t).map(k=>[k,sums(list.filter(x=>x.date.startsWith(k+'-')))]).filter(([,d])=>d.inc||d.exp)
+    .map(([k,d])=>`<tr class="clk" onclick="dMonth('${k}')">${cT(esc(mName(k)))}${cN(num(d.inc),'inc')}${cN(num(d.exp),'exp')}${cN(sgn(d.net),d.net<0?'exp':'inc')}</tr>`);
+  if(rows.length>1)b+=rsec('📅 شهر بشهر')+rtbl(['الشهر',esc(L('inc'))+'|n',esc(L('exp'))+'|n',esc(L('net'))+'|n'],rows,ft('الإجمالي',1,fN(num(s.inc)),fN(num(s.exp)),fN(sgn(s.net))));
+  b+=rsec('💰 '+esc(L('inc')),num(s.inc))+grpBlock(list,'inc',INCG,incGrp,id=>dS(f,t,id));
+  b+=rsec('💸 '+esc(L('exp')),num(s.exp))+grpBlock(list,'exp',XEXPG,xExpGrp,id=>dS(f,t,id));
+  b+=rsec('🧮 '+esc(L('net')))+xNetTbl(s);
+  if(pmStats(list).some(x=>x.i||x.o))b+=rsec('🏦 '+esc(L('pm')))+pmTable(list,f,t);
+  if(cl.length)b+=rsec('🏧 '+esc(L('cash')),num(ct))+rtbl(['التاريخ|c','الحساب','المبلغ|n'],cl.map(c=>`<tr>${cD(c.date)}${cT(esc(M(c.method)?.name||'—'),esc(c.note||''))}${cN(num(c.amount))}</tr>`),cl.length>1?ft('الإجمالي',2,fN(num(ct))):'');
+  return{title:'تقرير الفترة',sub:xRngTxt(f,t),body:b};
+}
+function xBPmRange(f,t){
+  const list=S.txs.filter(x=>!x.pend&&x.date>=f&&x.date<=t),s=sums(list);
+  return{title:'تقرير '+L('pm'),sub:xRngTxt(f,t),body:rkp([[L('inc'),s.inc,'inc'],[L('exp'),s.exp,'exp']])+donut(pmStats(list).filter(x=>x.o).map(x=>({label:x.m.name,value:x.o})),L('exp'))+rsec('🏦 '+esc(L('pm')))+pmTable(list,f,t)};
+}
+function xBColsRange(f,t){
+  const got=S.txs.filter(x=>x.type==='inc'&&!x.pend&&x.date>=f&&x.date<=t),gs=got.reduce((a,x)=>a+x.amount,0);
+  const ptx=S.txs.filter(x=>x.type==='inc'&&x.pend&&x.date>=f&&x.date<=t),wait=[];
+  xMonthsIn(f,t).forEach(k=>dueList(k,'m','inc').forEach(o=>{if(o.s.st==='wait'&&o.date>=f&&o.date<=t)wait.push(o)}));
+  const rem=wait.reduce((a,o)=>a+o.amt,0)+ptx.reduce((a,x)=>a+x.amount,0),td=today();
+  let b=rkp([['محصّل',gs,'inc'],['المتوقع',gs+rem,'net'],['غير محصّل',rem,'warn']]);
+  b+=donut([{label:'محصّل',value:gs,color:'#16a34a'},{label:'غير محصّل',value:rem,color:'#ea580c'}],'محصّل',short(gs));
+  b+=rsec('✅ محصّل',num(gs))+catTable(got,'inc',id=>dS(f,t,id),true);
+  const pr=wait.map(o=>({n:o.r.name,d:o.date,a:o.amt,s:everyTxt(o.r.every),c:`occSheet('${o.r.id}',${o.k})`}))
+    .concat(ptx.map(x=>({n:C(x.cat)?.name||'—',d:x.date,a:x.amount,s:x.note||'',c:`editTx('${x.id}')`}))).sort((a,b)=>a.d.localeCompare(b.d));
+  b+=rsec('⏳ غير محصّل',num(rem))+(pr.length?rtbl(['البند','الميعاد|c','المبلغ|n','الحالة|c'],pr.map(x=>`<tr class="clk" onclick="${x.c}">${cT(esc(x.n),esc(x.s))}${cD(x.d)}${cN(num(x.a),'wrn')}${cC(x.d<td?'<span class="rb late">متأخر</span>':'<span class="rb wait">غير محصّل</span>')}</tr>`),pr.length>1?ft('الإجمالي',2,fN(num(rem)),fE):''):NONE);
+  return{title:'تقرير التحصيلات',sub:xRngTxt(f,t),body:b};
+}
+function xBAnnRange(f,t){
+  const oc=[];
+  FX().filter(isAnn).forEach(r=>{for(let k=0;k<300;k++){const d=occDate(r,k);if(d>t)break;if(d<f)continue;const s=stOf(occRec(r,k));if(r.active===false&&s.st==='wait')continue;oc.push({r,k,d,amt:occAmt(r,k),s})}});
+  oc.sort((a,b)=>a.d.localeCompare(b.d));
+  if(!oc.length)return{title:'التحصيلات السنوية',sub:xRngTxt(f,t),body:NONE};
+  let ex=0,got=0,rem=0;oc.forEach(o=>{ex+=o.amt;if(o.s.st==='done')got+=o.s.t.amount;else if(o.s.st==='wait')rem+=o.amt});
+  let b=rkp([['المتوقع',ex,'net'],['محصّل',got,'inc'],['غير محصّل',rem,'warn']]);
+  b+=donut([{label:'محصّل',value:got,color:'#16a34a'},{label:'غير محصّل',value:rem,color:'#ea580c'}],'المتوقع',short(ex));
+  b+=rsec('📄 المواعيد',oc.length+' ميعاد')+rtbl(['البند','تاريخ التجديد|c','المبلغ|n','الحالة|c'],oc.map(o=>{const done=o.s.st==='done';return `<tr class="${done?'clk':''}" ${done?`onclick="editTx('${o.s.t.id}')"`:''}>${cT(esc(o.r.name),annSub(o.r))}${cD(o.d)}${cN(num(done?o.s.t.amount:o.amt),done?'inc':'')}${cC(stB(o.s,o.d,o.r.kind))}</tr>`}),oc.length>1?ft('الإجمالي',2,fN(num(got+rem)),fE):'');
+  return{title:'التحصيلات السنوية',sub:xRngTxt(f,t),body:b};
+}
+function xBCashRange(f,t){
+  const yl=S.cash.filter(c=>c.date>=f&&c.date<=t).sort((a,b)=>a.date.localeCompare(b.date)),tot=yl.reduce((a,c)=>a+c.amount,0);
+  const ms=xMonthsIn(f,t).map(k=>[k,yl.filter(c=>c.date.startsWith(k+'-'))]).filter(x=>x[1].length),g={};
+  yl.forEach(c=>{g[c.method]=(g[c.method]||0)+c.amount});
+  let b=rkp([['المسحوب',tot,'warn'],['متوسط الشهر',r2(tot/(ms.length||1)),'net'],['عدد المرات',String(yl.length),'net']]);
+  b+=donut(Object.entries(g).map(([id,v])=>({label:M(id)?.name||'—',value:v})),'المسحوب');
+  if(ms.length>1)b+=rsec('📅 شهر بشهر')+rtbl(['الشهر','المرات|c','المسحوب|n'],ms.map(([k,l])=>`<tr>${cT(esc(mName(k)))}${cC(nm(l.length))}${cN(num(l.reduce((a,c)=>a+c.amount,0)))}</tr>`));
+  b+=rsec('🏧 التفاصيل',num(tot))+(yl.length?rtbl(['التاريخ|c','الحساب','المبلغ|n'],yl.map(c=>`<tr>${cD(c.date)}${cT(esc(M(c.method)?.name||'—'),esc(c.note||''))}${cN(num(c.amount))}</tr>`),yl.length>1?ft('الإجمالي',2,fN(num(tot))):''):NONE);
+  return{title:'تقرير '+L('cash'),sub:xRngTxt(f,t),body:b,csv:{head:['التاريخ','سحبت من','المبلغ','ملاحظة'],rows:yl.map(c=>[dmy(c.date),M(c.method)?.name||'',c.amount,c.note||''])}};
+}
+/* كل تقرير بيشتغل على الفترة اللي اخترتها */
+function xRepRun(k){
+  xLegacy(k);const p=xPer(k),B=window.XB0;
+  if(k==='stmt'||k==='ops'){RF.period='custom';RF.from=p.f;RF.to=p.t;RF.type=RF.xt||'all';RF.cat='';RF.method='';return B[k]()}
+  if(k==='month'||k==='year'){if(p.k){RF.month=p.k;return B.month()}if(p.y){RF.year=p.y;return B.year()}return xBRange(p.f,p.t)}
+  if(k==='pmr'){if(p.k){RF.month=p.k;return B.pmr()}return xBPmRange(p.f,p.t)}
+  if(k==='cols'){if(p.k){RF.month=p.k;return B.cols()}return xBColsRange(p.f,p.t)}
+  if(k==='contracts'||k==='cnext'){if(k==='cnext'&&p.y===NY+1)return B.cnext();if(p.y){RF.year=p.y;return B.contracts()}return xBAnnRange(p.f,p.t)}
+  if(k==='cash'){if(p.y){RF.year=p.y;return B.cash()}return xBCashRange(p.f,p.t)}
+  if(k==='inst'){if(p.p==='all')return B.inst();const P=S.plans;try{S.plans=P.map(x=>({...x,items:x.items.filter(it=>it.due&&it.due>=p.f&&it.due<=p.t)})).filter(x=>x.items.length);const r=B.inst();r.sub=(r.sub?r.sub+' · ':'')+xRngTxt(p.f,p.t);return r}finally{S.plans=P}}
+  return B[k]();
+}
+if(!window.XB0){window.XB0={};Object.keys(REPS).forEach(k=>{window.XB0[k]=REPS[k].b;if(k!=='cmp')REPS[k].b=()=>xRepRun(k)})}
+/* لما تدوس على حاجة جوه التقرير بيفتح تقرير تاني بنفس الطريقة */
+function dOps(from,to,cat,type,method){drill(()=>{rtab='ops';RF.xp='custom';RF.xf=from;RF.xto=to;RF.xc=cat?[cat]:[];RF.xt=type||(cat?(C(cat)?.kind||''):'');RF.xms=method?[method]:[]})}
+function dMonth(k){drill(()=>{rtab='month';RF.xp='mon';RF.month=k})}
+
+/* شاشة الفلاتر: قوايم منسدلة + من / إلى + ➕ بند تاني */
+function xMulti(lbl,key,vals,opts,addLbl){
+  const v=vals.length?vals:[''];
+  return v.map((x,i)=>`<div class="xmr"><label>${i?lbl+' '+(i+1):lbl}<select onchange="xPF('${key}',this.value,${i})">${opts(x,i)}</select></label>${v.length>1?`<button type="button" class="mini danger" onclick="xPF('${key}-del','',${i})">✕</button>`:''}</div>`).join('')
+    +(vals.filter(Boolean).length?`<button type="button" class="mini xadd" onclick="xPF('${key}-add','')">➕ ${addLbl}</button>`:'');
+}
+function xPreFields(){
+  const k=rtab,R=RF,f=[],two=(a,b)=>`<div class="two">${a}${b}</div>`;
+  const month=(key,lbl,val)=>`<label>${lbl}<input type="month" value="${val||NKM}" onchange="xPF('${key}',this.value)"></label>`;
+  if(k==='cmp'){
+    f.push(xSel('📋 البند','ccat',`<option value="ALL_EXP" ${R.ccat==='ALL_EXP'?'selected':''}>كل ${esc(L('exp'))}</option><option value="ALL_INC" ${R.ccat==='ALL_INC'?'selected':''}>كل ${esc(L('inc'))}</option>`+xCatOptsH(R.ccat,'all','',null)));
+    f.push(xSel('📆 الفترة','crange',xOptL(CMPR(),R.crange)));
+    if(R.crange==='c')f.push(two(month('cf','من شهر',R.cf||prevKey(NKM)),month('ct','إلى شهر',R.ct||NKM)));
+    if(R.crange==='p')f.push(`<div class="xpm">${(R.cms||[]).slice().sort().map(m=>`<button type="button" onclick="xPF('delm','${m}')">${esc(mName(m))} ✕</button>`).join('')}</div><label>➕ ضيف شهر<input type="month" value="" onchange="xPF('addm',this.value)"></label>`);
+    return f.join('');
+  }
+  xLegacy(k);const p=R.xp;
+  const PO=[['m','الشهر الحالي'],['pm','الشهر اللي فات'],['mon','شهر معيّن'],['y','السنة الحالية'],['py','السنة اللي فاتت'],['yr','سنة معيّنة']]
+    .concat(['contracts','cnext','inst'].includes(k)?[['ny','السنة الجاية']]:[]).concat([['all','كل الفترات'],['custom','📅 من تاريخ إلى تاريخ']]);
+  f.push(xSel('📆 الفترة','xp',xOptL(PO,p)));
+  if(p==='mon')f.push(month('month','📅 الشهر',R.month));
+  if(p==='yr')f.push(xSel('📅 السنة','year',xOptL(yearsList().map(y=>[y,String(y)]),R.year)));
+  if(p==='custom')f.push(two(`<label>📅 من تاريخ<input type="date" value="${R.xf||NKM+'-01'}" onchange="xPF('xf',this.value)"></label>`,`<label>📅 إلى تاريخ<input type="date" value="${R.xto||today()}" onchange="xPF('xto',this.value)"></label>`));
+  if(k==='inst'){f.push(xSel('🏦 القسط','plan',xOptL([['','كل الأقساط']].concat(S.plans.map(x=>[x.id,x.name])),R.plan||'')));return f.join('')}
+  const noType=['cols','contracts','cnext','cash'].includes(k),mode=k==='cols'?'inc':(k==='contracts'||k==='cnext')?'ann':'all';
+  if(!noType)f.push(xSel('🔀 النوع','xt',xOptL([['','الكل'],['inc',L('inc')],['exp',L('exp')]],R.xt||'')));
+  if(k!=='contracts'&&k!=='cnext')f.push(xMulti('🏦 الحساب','xms',R.xms||[],(x,i)=>xOptL([['',i?'— اختار —':'كل الحسابات']].concat(S.methods.map(m=>[m.id,m.name])),x),'حساب تاني'));
+  if(k!=='cash')f.push(xMulti('📋 البند','xc',R.xc||[],(x,i)=>xCatOptsH(x,mode,R.xt||'',i?'— اختار —':'كل البنود'),'بند تاني'));
+  return f.join('');
+}
+function xPF(k,v,i){
+  const R=RF,arr=n=>(R[n]=(R[n]||[]).slice());
+  if(k==='xc'||k==='xms'){const a=arr(k);if(!a.length)a.push('');if(v)a[i]=v;else a.splice(i,1);R[k]=a.filter((x,j)=>!x||a.indexOf(x)===j)}
+  else if(k==='xc-add'||k==='xms-add')arr(k.slice(0,-4)).push('');
+  else if(k==='xc-del'||k==='xms-del')arr(k.slice(0,-4)).splice(i,1);
+  else if(k==='xt'){R.xt=v;R.xc=[]}
+  else if(k==='xp'){R.xp=v;if(v==='custom'){R.xf=R.xf||NKM+'-01';R.xto=R.xto||today()}if(v==='mon')R.month=R.month||NKM;if(v==='yr')R.year=R.year||NY}
+  else if(k==='year')R.year=+v;
+  else if(k==='crange'){R.crange=v;if(v==='c'){R.cf=R.cf||prevKey(NKM);R.ct=R.ct||NKM}if(v==='p'&&!(R.cms&&R.cms.length))R.cms=[prevKey(NKM),NKM]}
+  else if(k==='addm'){if(v)R.cms=[...new Set([...(R.cms||[]),v])].sort()}
+  else if(k==='delm')R.cms=(R.cms||[]).filter(x=>x!==v);
+  else R[k]=v;
+  xPreDraw(true);
+}
+function xPreReset(){RF={...RFDEF};xLegacy(rtab);xPreDraw(true)}
+
+/* → رجوع من التقرير: بيرجعك للفلاتر عشان تشغّله تاني · ✕: بيقفله ويرجعك لشاشة التقارير */
+function rvBack(){
+  const p=RVST.pop();
+  if(p){rtab=p.rtab;RF=p.RF;openRV('nav');return}
+  const k=rtab,rf=JSON.parse(JSON.stringify(RF));
+  $('#rv').classList.remove('on');XRVSH=null;rtab=k;RF=rf;
+  try{xStSave()}catch(e){}
+  xRepPre();
+}
+try{const _crX=closeRV;closeRV=function(){XRVSH=null;const r=_crX.apply(this,arguments);if(view!=='reports'){rtab='';go('reports')}return r}}catch(e){}
 /* نهاية fix.js */
