@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.27',XVBUILD='14/10/2026 - 04:55 م';
+      const XVER='2.21.28',XVBUILD='15/10/2026 - 09:45 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -1963,4 +1963,194 @@ try{const _hbF=handleBack;handleBack=function(){if($('#view')&&$('#view').classL
 #view>.warn{padding:6px 10px!important;font-size:12px!important;border-radius:10px!important;margin-bottom:8px!important}
 #view .ptbl table td,#view .ptbl table th{font-size:11.5px!important;padding:5px 5px!important}
 `;document.head.appendChild(s)})();
+/* ========== 2.21.28: زرار ➕ + اللي مستنيك + البحث + الترتيب + التقارير + البنود + الكروت + الأنواع ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+body:has(#sheet.open) #xfw,body:has(.xpk) #xfw,body:has(.dlg) #xfw,body:has(#viewer.on) #xfw,body:has(#dlg.on) #xfw{display:none!important}
+body #view#view [style*="display: none"],body #view#view [style*="display:none"]{display:none!important}
+body[data-sdir=asc] #view .sortbar .sseg button.on::after{content:' ▲';font-size:9px}
+body[data-sdir=desc] #view .sortbar .sseg button.on::after{content:' ▼';font-size:9px}
+.rtb thead th{cursor:pointer;user-select:none}
+.rtb thead th[data-sd=asc]::after{content:' ▲';font-size:9px}
+.rtb thead th[data-sd=desc]::after{content:' ▼';font-size:9px}
+.rtb.xw5 th.t{width:30%!important}
+.rtb.xw5 td,.rtb.xw5 th{padding:8px 4px!important;font-size:11.5px!important}
+.ccard .cc-t b,.ccard .cc-t span,.ccard .cc-n,.ccard .cc-b>span,.ccard .cc-b>b{background:rgba(15,23,42,.68)!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.5)!important;padding:2px 10px!important;border-radius:9px!important;width:fit-content;box-shadow:0 2px 8px rgba(0,0,0,.25);opacity:1!important}
+.ccard .cc-n{align-self:flex-end;font-size:17px!important}
+.ccard .cc-b{align-items:center;gap:6px}.ccard .cc-b>span{display:inline-flex;align-items:center;gap:4px}
+#view .rbtn{position:relative}
+.xrb{position:absolute;top:6px;left:6px;min-width:20px;height:20px;border-radius:10px;background:#dc2626;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 2px 6px rgba(220,38,38,.45)}
+.xwl .row{border-inline-start:4px solid #d97706!important}.xwl .row.late{border-inline-start-color:#dc2626!important}
+`;document.head.appendChild(s)})();
+
+/* زرار ➕ بيختفي لما أي حاجة تتفتح فوقه */
+function xFabVis(){
+  const w=$('#xfw');if(!w)return;
+  const h=view==='reports'||$('#rv').classList.contains('on')||$('#lock').classList.contains('on')||$('#sheet').classList.contains('open')||!!document.querySelector('#pwv,#scan,.xpk,.dlg,#viewer.on,#dlg.on');
+  w.classList.toggle('xh',h);if(h)w.classList.remove('on');
+}
+
+/* ========== الزرار اللي عليه رقم: بيوريك الحاجات اللي مستنياك ========== */
+function xFabBuild(){
+  const w=$('#xfw');if(!w)return;const ks=xFabList(),box=w.querySelector('.xfis'),n=ks.length,pos=[];
+  const arc=(m,R)=>{for(let j=0;j<m;j++){const a=(m===1?45:90-j*90/(m-1))*Math.PI/180;pos.push([-Math.round(Math.cos(a)*R),-Math.round(Math.sin(a)*R)])}};
+  if(n<=6)arc(n,n<=3?120:175);
+  else{const inner=Math.min(6,Math.round(n*175/(175+245)));arc(inner,175);arc(n-inner,245)}
+  box.innerHTML=ks.map((k,i)=>{const[ic,l,,col]=XFC[k],c=xFabRel(k);
+    return `<button type="button" class="xfi" style="--x:${pos[i][0]}px;--y:${pos[i][1]}px;--d:${i*40}ms;background:linear-gradient(135deg,${col})" onclick="xFab(0);xFabGo('${k}')"><span>${ic}</span><small>${esc(l)}</small>${c?`<b class="xfb">${c}</b>`:''}</button>`}).join('');
+  if(!n)toast('مفيش زراير · ظبطها من ⚙️ الإعدادات ← أزرار ➕');
+}
+function xFabGo(k){if(xFabRel(k)>0&&XFC[k][5])return xWait(k);try{Function(XFC[k][2])()}catch(e){}}
+function xWait(k){
+  const[ic,l,js]=XFC[k],td=today(),R=[];
+  const row=(i,t,s,amt,click,late)=>R.push(`<div class="row ${late?'late':''}" onclick="${click}"><span class="ic" style="background:${late?'#fee2e2':'#fef3c7'}">${i}</span><div class="grow"><b>${esc(t)}</b><small class="${late?'neg':''}">${s}</small></div>${amt!=null?`<div class="amt">${num(amt)}</div>`:''}</div>`);
+  let main=`${ic} ${esc(l)}`;
+  if(k==='inc'){main='💰 تحصيل جديد';
+    pendAll().sort((a,b)=>a.d.localeCompare(b.d)).forEach(x=>{const late=x.d<td;
+      if(x.o)row('📌',x.n,`${fdate(x.d)} · ${late?'⚠️ متأخر':'غير محصّل'}`,x.a,`occSheet('${x.o.r.id}',${x.o.k})`,late);
+      else row('⏳',x.n,`${fdate(x.d)} · ${late?'⚠️ متأخر':'غير محصّل'}${x.t.post?' · اتأجّل '+x.t.post+' مرة':''}`,x.a,`editTx('${x.t.id}')`,late)})}
+  else if(k==='exp'){main='💸 مصروف جديد';
+    dueList(NKM,'','exp').filter(o=>o.s.st==='wait'&&o.date<td).forEach(o=>row('📌',o.r.name,`${fdate(o.date)} · ⚠️ متأخر`,o.amt,`occSheet('${o.r.id}',${o.k})`,true));
+    pendTx('exp',NKM).forEach(t=>{const late=t.date<td;row('⏳',C(t.cat)?.name||'—',`${fdate(t.date)} · ${late?'⚠️ متأخر':'غير مدفوع'}`,t.amount,`editTx('${t.id}')`,late)})}
+  else if(k==='inst')instDue().forEach(o=>row('🏦',o.p.name,`${fdate(o.it.due)} · ${o.left<0?'⚠️ ':''}${leftTxt(o.left)}`,+o.it.amount||0,`payStart('${o.p.id}','${o.it.id}')`,o.left<0));
+  else if(k==='loans')xLoans().filter(t=>t.loan.due&&daysBetween(t.loan.due,td)<=3&&t.amount-xLoanPaid(t)>0).forEach(t=>{const left=daysBetween(t.loan.due,td);row('🤝',C(t.cat)?.name||'—',`السداد ${fdate(t.loan.due)} · ${left<0?'⚠️ ':''}${leftTxt(left)}`,r2(t.amount-xLoanPaid(t)),`xLoanPay('${t.id}')`,left<0)});
+  else if(k==='annual')annualDue().forEach(o=>row('📆',o.r.name,`${fdate(o.d)} · ${o.left<0?'⚠️ ':''}${leftTxt(o.left)}`,o.amt,`occSheet('${o.r.id}',${o.k})`,o.left<0));
+  else if(k==='wallet')renDue().forEach(x=>row((REN[x.r.type]||REN.other)[0],x.r.name,x.left<0?`⚠️ منتهي من ${-x.left} يوم`:`بينتهي ${fdate(x.r.exp)} · باقي ${x.left} يوم`,null,`renForm('${x.r.id}')`,x.left<0));
+  else if(k==='months'){const pk=prevKey(NKM);row('🔓',mName(pk)+' لسه مفتوح','دوس هنا عشان تقفله وأرقامه تتثبت',null,`closeSheet();closeMonth('${pk}')`,false)}
+  else if(k==='set'){const lb=localStorage.getItem(BKEY);row('💾','وقت النسخة الاحتياطية',lb?'آخر نسخة: '+lb:'لسه معملتش نسخة احتياطية',null,`closeSheet();driveBackup()`,!lb);main='💾 النسخ الاحتياطي';js="stab='data';go('settings')"}
+  sheet(`<div class="phead"><h2>${ic} ${esc(l)} · مستنيك</h2><span class="badge late">${R.length}</span></div>
+  <p class="muted">دي الحاجات اللي واقفة ومحتاجة منك حاجة. دوس على أي واحدة عشان تخلّصها</p>
+  ${R.length?`<div class="list xwl">${R.join('')}</div>`:'<div class="nempty"><div>✅</div><b>مفيش حاجة مستنياك</b></div>'}
+  <button class="btn" onclick="closeSheet();${js.replace(/"/g,'&quot;')}">${main}</button>`);
+}
+/* الأرقام جوه شاشة المزيد والإعدادات */
+function xBadges(){
+  const v=$('#view');if(!v)return;
+  const add=(sel,n)=>{const b=v.querySelector(sel);if(b&&n&&!b.querySelector('.xrb'))b.insertAdjacentHTML('beforeend',`<b class="xrb">${n}</b>`)};
+  if(view==='more')[['inst','inst'],['loans','loans'],['annual','annual'],['wallet','wallet'],['months','months'],['set','settings']].forEach(([k,g])=>add(`.rbtn[onclick*="go('${g}')"]`,xFabRel(k)));
+  if(view==='settings'&&!stab)add(`.rbtn[onclick*="stab='data'"]`,xFabRel('set'));
+}
+
+/* البحث: بيخفي اللي مش مطابق، وبيفتح القوايم اللي فيها نتايج */
+addEventListener('toggle',e=>{const d=e.target;if(d&&d.matches&&d.matches('#view details.grp')&&qn(GQ[view]||''))e.stopPropagation()},true);
+function gfApply(){
+  const q=qn(GQ[view]||''),v=$('#view');if(!v)return;
+  v.querySelectorAll('details.grp').forEach(g=>{
+    let n=0;
+    g.querySelectorAll(':scope>.ckx,:scope>.list>*').forEach(r=>{const ok=!q||qn(r.textContent).includes(q);r.style.display=ok?'':'none';if(ok)n++});
+    if(q){g.style.display=n?'':'none';if(n&&!g.open){g.dataset.xso='1';g.open=true}}
+    else{g.style.display='';if(g.dataset.xso){delete g.dataset.xso;g.open=false}}
+  });
+  v.querySelectorAll('.list>*,.pcard').forEach(r=>{if(r.closest('details.grp'))return;r.style.display=!q||qn(r.textContent).includes(q)?'':'none'});
+}
+
+/* الترتيب: دوسة = الأحدث / الأعلى، ودوسة تانية = بالعكس */
+function xSortDef(k){return k==='name'?'asc':'desc'}
+function sortList(arr){
+  const m=sortMode(),f=(S.settings.sdir||xSortDef(m))==='asc'?1:-1;
+  return [...arr].sort((x,y)=>(m==='amt'?(x.a||0)-(y.a||0):m==='date'?String(x.d).localeCompare(String(y.d)):String(x.n).localeCompare(String(y.n),'ar'))*f);
+}
+function setSort(k){
+  if(sortMode()===k)S.settings.sdir=(S.settings.sdir||xSortDef(k))==='asc'?'desc':'asc';
+  else{S.settings.sort=k;S.settings.sdir=xSortDef(k)}
+  save();render();
+  const d=S.settings.sdir;toast(k==='date'?(d==='desc'?'📅 الأحدث الأول':'📅 الأقدم الأول'):k==='amt'?(d==='desc'?'💰 الأعلى الأول':'💰 الأقل الأول'):(d==='asc'?'🔤 أ ← ي':'🔤 ي ← أ'));
+}
+/* أي جدول: دوس على العنوان يترتب بيه */
+document.addEventListener('click',e=>{
+  const th=e.target.closest('.rtb thead th');if(!th)return;
+  const table=th.closest('table'),tb=table&&table.tBodies[0];if(!tb||tb.rows.length<2)return;
+  const idx=[...th.parentNode.children].indexOf(th),dir=th.dataset.sd==='desc'?'asc':'desc';
+  th.parentNode.querySelectorAll('th').forEach(x=>{delete x.dataset.sd});th.dataset.sd=dir;
+  const val=td=>td?cellVal({textContent:(td.querySelector('b')||td).textContent}):'';
+  [...tb.rows].sort((a,b)=>{const x=val(a.children[idx]),y=val(b.children[idx]);const c=typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y),'ar');return dir==='asc'?c:-c}).forEach(r=>tb.appendChild(r));
+});
+
+/* البنود: التكرار عمود، ومن غير "سنوي" تحت كل بند */
+function itRows(){
+  const k=ITAB.k,G=IG[k],q=qn(ITAB.q),ex=k==='exp';
+  const base=S.cats.filter(c=>c.kind===k&&(ITAB.off||c.active!==false)&&(!q||qn([c.name,c.amount||'',num(+c.amount||0),c.prevAmt||'',...(c.alias||[])].join(' ')).includes(q)));
+  const gs=(ITAB.g==='all'?Object.keys(G):[ITAB.g]).map(g=>({g,l:base.filter(c=>catGrp(c)===g).sort((a,b)=>a.name.localeCompare(b.name,'ar'))})).filter(x=>x.l.length);
+  if(!gs.length)return '<p class="empty">لا يوجد</p>';
+  const yr=id=>{const l=S.txs.filter(t=>t.cat===id&&!t.pend&&t.date.startsWith(NY+'-'));return[l.length,l.reduce((a,t)=>a+t.amount,0)]};
+  return gs.map(({g,l})=>{
+    const fx=g!=='var',evc=fx&&(g!=='ann'||l.some(c=>+c.every!==12));
+    const rows=l.map(c=>{
+      const sub=c.active===false?'⏸ موقوف':'';
+      if(fx){const pc=c.prevAmt&&c.incPct!=null?c.incPct:null;
+        return `<tr class="clk" onclick="catForm('${c.id}')">${cT(esc(c.name),sub)}${evc?cC(esc(everyTxt(c.every))):''}${cN(c.amount?num(+c.amount):'—',k)}${cN(c.prevAmt?num(c.prevAmt):'—','',c.amtAt?nm(dmy(c.amtAt)):'')}${ex?'':cN(pc!=null?(pc>=0?'▲ ':'▼ ')+Math.abs(pc)+'%':'—',pc!=null?(pc>=0?'inc':'exp'):'')}</tr>`}
+      const[n,s]=yr(c.id);return `<tr class="clk" onclick="catForm('${c.id}')">${cT(esc(c.name),sub)}${cC(nm(n))}${cN(num(s),k)}</tr>`;
+    });
+    const head=fx?['البند'].concat(evc?['التكرار|c']:[],['المبلغ|n','السابق|n'],ex?[]:['الزيادة|n']):['البند',`عمليات ${NY}|c`,`إجمالي ${NY}|n`];
+    let t=rtbl(head,rows);if(head.length>=5)t=t.replace('class="rtb"','class="rtb xw5"');
+    return `<details class="grp xig" ${q?'open':''}><summary><span>${G[g][0]} ${esc(G[g][1])}</span><span class="badge soon">${l.length}</span></summary>${t}</details>`;
+  }).join('');
+}
+
+/* المشتروات: لما تخرج منها وترجع، بتلاقيها على قايمة المحلات */
+try{const _goB=go;go=function(v){if(view==='buy'&&v!=='buy')BSTORE='';return _goB.apply(this,arguments)}}catch(e){}
+
+/* الأنواع والطرق في شاشة المزيد */
+(()=>{const i=SETS.findIndex(x=>x[0]==='types');if(i>=0)SETS.splice(i,1)})();
+var XVW={types:()=>`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏷️ الأنواع والطرق</h3></div>`+spTypes()};
+function vMore(){
+  const B=[['items','📋',L('items')],['pmv','🏦',L('pm')],['types','🏷️','الأنواع والطرق'],['inst','🏦',L('inst')],['loans','🤝','السلف'],['buy','🛒',L('buy')],['wallet','💳',L('wallet')],['annual','📆',L('contracts')],['cash','🏧',L('cash')],['months','🔒','قفل الشهور'],['contacts','📇',L('contacts')],['docs','📎',L('docs')],['pw','🔐','الباسوردات'],['settings','⚙️',L('settings')]];
+  return `<h3>☰ ${esc(L('more'))}</h3><div class="rgrid">${B.map(([v,ic,l])=>`<button class="rbtn" onclick="${v==='pw'?'pwScreen()':(v==='settings'?"stab='';":'')+`go('${v}')`}"><span>${ic}</span>${esc(l)}</button>`).join('')}</div>`;
+}
+try{const _emT2=editMethod;editMethod=function(){const r=_emT2.apply(this,arguments);try{const b=$('#xt-go');if(b)b.onclick=()=>{TXBACK=false;closeSheet();go('types')}}catch(e){}return r}}catch(e){}
+
+/* التقارير: فلاتر ظاهرة برا لكل تقرير */
+var XRBC={month:{t:1,m:1,k:'all'},year:{t:1,m:1,k:'all'},pmr:{t:1,k:'all'},cols:{k:'inc'},contracts:{k:'ann'},cnext:{k:'ann'},cash:{m:1}};
+function xRfC(id){const s=new Set(RF.xc||[]);s.has(id)?s.delete(id):s.add(id);RF.xc=[...s];rvUp()}
+function xRepBar(){
+  const c=XRBC[rtab];if(!c)return '';
+  const sel=new Set(RF.xc||[]),ty=c.t?RF.xt||'':'',mt=RF.xm||'',g=[];
+  let cats=!c.k?[]:S.cats.filter(x=>c.k==='inc'?x.kind==='inc':c.k==='ann'?(x.fixed&&isA(x)):(!ty||x.kind===ty));
+  cats=cats.filter(x=>x.active!==false||sel.has(x.id)).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  if(c.t)g.push(rfG('النوع',[['','الكل'],['inc',L('inc')],['exp',L('exp')]].map(([k,l])=>chip(ty===k,esc(l),`RF.xt='${k}';RF.xc=[];rvUp()`)).join('')));
+  if(c.m)g.push(rfG('الحساب',chip(!mt,'الكل',`RF.xm='';rvUp()`)+S.methods.map(m=>chip(mt===m.id,esc(m.name),`RF.xm='${m.id}';rvUp()`)).join('')));
+  if(cats.length)g.push(rfG('البنود'+(sel.size?` (${sel.size})`:''),chip(!sel.size,'كل البنود',`RF.xc=[];rvUp()`)+cats.map(x=>chip(sel.has(x.id),esc(x.name),`xRfC('${x.id}')`,x.kind==='inc'?'i':'e')).join(''),'',true));
+  return g.length?`<div class="rfl noprint">${g.join('')}</div>`:'';
+}
+function xRepSum(){
+  const c=XRBC[rtab];if(!c)return '';const p=[];
+  if(c.t&&RF.xt)p.push(RF.xt==='inc'?L('inc'):L('exp'));
+  if(c.m&&RF.xm&&M(RF.xm))p.push(M(RF.xm).name);
+  const xs=(RF.xc||[]).map(id=>C(id)&&C(id).name).filter(Boolean);
+  if(xs.length)p.push(xs.length>3?xs.slice(0,3).join('، ')+' +'+(xs.length-3):xs.join('، '));
+  return p.join(' · ');
+}
+function xRepScope(fn){
+  const c=XRBC[rtab];if(!c)return fn();
+  const sel=new Set(RF.xc||[]),mt=c.m?RF.xm||'':'',ty=c.t?RF.xt||'':'';
+  if(!sel.size&&!mt&&!ty)return fn();
+  const T=S.txs,Cs=S.cats,Ca=S.cash,P=S.plans;
+  try{
+    S.txs=T.filter(t=>(!sel.size||sel.has(t.cat))&&(!mt||t.method===mt||t.to===mt)&&(!ty||t.type===ty));
+    if(sel.size||ty)S.cats=Cs.filter(x=>(!sel.size||sel.has(x.id))&&(!ty||x.kind===ty));
+    S.cash=sel.size||ty==='inc'?[]:Ca.filter(x=>!mt||x.method===mt);
+    if(sel.size)S.plans=P.filter(p=>sel.has(p.catId));
+    return fn();
+  }finally{S.txs=T;S.cats=Cs;S.cash=Ca;S.plans=P}
+}
+function openRV(keep){
+  const Rp=REPS[rtab];if(!Rp)return;
+  if(!keep){RVST=[];RFOPEN=true}
+  const fl=(Rp.f?Rp.f():'')+xRepBar(),r=xRepScope(()=>Rp.b()),fs=xRepSum();
+  if(fs)r.sub=(r.sub?r.sub+' · ':'')+fs;
+  RVCSV=r.csv||null;RVTITLE=r.title;
+  $('#rvt').textContent='';$('#rvdoc').innerHTML=paper(r.title,r.sub,r.body,fl);
+  $('#rvcsv').style.display=RVCSV?'':'none';
+  $('#rv').classList.add('on');if(!keep||keep==='nav')$('#rvbody').scrollTop=0;
+}
+
+/* شاشات زيادة (الأنواع والطرق) + سهم الترتيب + الأرقام في المزيد والإعدادات */
+try{const _rT=render;render=function(){
+  if(XVW[view]){const v0=view,vh=vHome;vHome=XVW[v0];view='home';
+    try{_rT.apply(this,arguments)}finally{view=v0;vHome=vh}
+    try{$('nav').innerHTML=navHTML();xHomeCls();xStSave();xFabVis()}catch(e){}}
+  else _rT.apply(this,arguments);
+  try{document.body.dataset.sdir=S.settings.sdir||xSortDef(sortMode())}catch(e){}
+  try{xBadges()}catch(e){}
+}}catch(e){}
+render();
 /* نهاية fix.js */
