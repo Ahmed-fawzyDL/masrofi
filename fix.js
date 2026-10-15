@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-   const XVER='2.21.28',XVBUILD='15/10/2026 - 10:15 ص';
+      const XVER='2.21.29',XVBUILD='15/10/2026 - 10:30 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -2087,4 +2087,75 @@ try{const _rT=render;render=function(){
     $('#view').classList.toggle('xsq',!!(i&&(i.value||'').trim()))}catch(e){}
 }}catch(e){}
 render();
+/* ========== 2.21.29: فلاتر التقرير في قوايم منسدلة قبل ما يتفتح ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xpre .xpf{background:var(--soft2);border:1px solid var(--bd);border-radius:14px;padding:2px 12px 12px;margin:0 0 10px}
+.xpre .xpf label{margin:10px 0 0!important}
+.xpre .xpm{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.xpre .xpm button{border:1px solid var(--p);background:color-mix(in srgb,var(--p) 14%,transparent);color:inherit;border-radius:16px;padding:5px 12px;font:inherit;font-size:12px;cursor:pointer}
+`;document.head.appendChild(s)})();
+function xOptL(arr,cur){return arr.map(([v,l])=>`<option value="${esc(String(v))}" ${String(v)===String(cur??'')?'selected':''}>${esc(l)}</option>`).join('')}
+function xSel(lbl,key,html){return `<label>${lbl}<select onchange="xPF('${key}',this.value)">${html}</select></label>`}
+function xCatOptsH(cur,mode,ty,first){
+  const srt=l=>l.filter(c=>c.active!==false||c.id===cur).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  const grp=(lab,l)=>l.length?`<optgroup label="${esc(lab)}">${l.map(c=>`<option value="${c.id}" ${c.id===cur?'selected':''}>${esc(c.name)}</option>`).join('')}</optgroup>`:'';
+  let h=first!=null?`<option value="" ${!cur?'selected':''}>${esc(first)}</option>`:'';
+  if(mode==='ann')return h+grp('📄 سنوي',srt(S.cats.filter(c=>c.fixed&&isA(c))));
+  if(mode!=='exp'&&ty!=='exp')h+=grp('💰 '+L('inc'),srt(S.cats.filter(c=>c.kind==='inc')));
+  if(mode!=='inc'&&ty!=='inc')h+=grp('💸 '+L('exp'),srt(S.cats.filter(c=>c.kind==='exp')));
+  return h;
+}
+function xPreFields(){
+  const k=rtab,R=RF,f=[],two=(a,b)=>`<div class="two">${a}${b}</div>`;
+  const meth=(key,cur)=>xSel('🏦 الحساب',key,xOptL([['','كل الحسابات']].concat(S.methods.map(m=>[m.id,m.name])),cur));
+  const month=(key,lbl,val)=>`<label>${lbl}<input type="month" value="${val||NKM}" onchange="xPF('${key}',this.value)"></label>`;
+  const year=()=>xSel('📅 السنة','year',xOptL(yearsList().map(y=>[y,String(y)]),R.year));
+  const xty=()=>xSel('🔀 النوع','xt',xOptL([['','الكل'],['inc',L('inc')],['exp',L('exp')]],R.xt||''));
+  const xc=mode=>xSel('📋 البند','xc',xCatOptsH((R.xc||[])[0]||'',mode,R.xt||'','كل البنود'));
+  if(k==='stmt'||k==='ops'){
+    if(R.period==='custom'&&!R.from){R.from=NKM+'-01';R.to=today()}
+    f.push(two(xSel('🔀 النوع','type',xOptL([['all','الكل'],['inc',L('inc')],['exp',L('exp')]],R.type)),meth('method',R.method||'')));
+    f.push(xSel('📋 البند','cat',xCatOptsH(R.cat||'','all',R.type==='all'?'':R.type,'كل البنود')));
+    f.push(xSel('📆 الفترة','period',xOptL(PERIODS,R.period)));
+    if(R.period==='custom')f.push(two(`<label>من<input type="date" value="${R.from||''}" onchange="xPF('from',this.value)"></label>`,`<label>إلى<input type="date" value="${R.to||''}" onchange="xPF('to',this.value)"></label>`));
+  }
+  else if(k==='month')f.push(month('month','📅 الشهر',R.month),two(xty(),meth('xm',R.xm||'')),xc('all'));
+  else if(k==='year')f.push(year(),two(xty(),meth('xm',R.xm||'')),xc('all'));
+  else if(k==='pmr')f.push(month('month','📅 الشهر',R.month),xty(),xc('all'));
+  else if(k==='cols')f.push(month('month','📅 الشهر',R.month),xc('inc'));
+  else if(k==='contracts')f.push(year(),xc('ann'));
+  else if(k==='cnext')f.push(xc('ann'));
+  else if(k==='cash')f.push(year(),meth('xm',R.xm||''));
+  else if(k==='cmp'){
+    f.push(xSel('📋 البند','ccat',`<option value="ALL_EXP" ${R.ccat==='ALL_EXP'?'selected':''}>كل ${esc(L('exp'))}</option><option value="ALL_INC" ${R.ccat==='ALL_INC'?'selected':''}>كل ${esc(L('inc'))}</option>`+xCatOptsH(R.ccat,'all','',null)));
+    f.push(xSel('📆 الفترة','crange',xOptL(CMPR(),R.crange)));
+    if(R.crange==='c')f.push(two(month('cf','من شهر',R.cf||prevKey(NKM)),month('ct','إلى شهر',R.ct||NKM)));
+    if(R.crange==='p')f.push(`<div class="xpm">${(R.cms||[]).slice().sort().map(m=>`<button type="button" onclick="xPF('delm','${m}')">${esc(mName(m))} ✕</button>`).join('')}</div><label>➕ ضيف شهر<input type="month" value="" onchange="xPF('addm',this.value)"></label>`);
+  }
+  else if(k==='inst')f.push(xSel('🏦 القسط','plan',xOptL([['','كل الأقساط']].concat(S.plans.map(p=>[p.id,p.name])),R.plan||'')));
+  return f.join('');
+}
+function xPF(k,v){
+  const R=RF;
+  if(k==='type'){R.type=v;R.cat=''}
+  else if(k==='xt'){R.xt=v;R.xc=[]}
+  else if(k==='xc')R.xc=v?[v]:[];
+  else if(k==='year')R.year=+v;
+  else if(k==='period'){R.period=v;if(v==='custom'&&!R.from){R.from=NKM+'-01';R.to=today()}}
+  else if(k==='crange'){R.crange=v;if(v==='c'){R.cf=R.cf||prevKey(NKM);R.ct=R.ct||NKM}if(v==='p'&&!(R.cms&&R.cms.length))R.cms=[prevKey(NKM),NKM]}
+  else if(k==='addm'){if(v)R.cms=[...new Set([...(R.cms||[]),v])].sort()}
+  else if(k==='delm')R.cms=(R.cms||[]).filter(x=>x!==v);
+  else R[k]=v;
+  xPreDraw(true);
+}
+function xPreDraw(keep){
+  const Rp=REPS[rtab];if(!Rp)return;
+  XPRDRAW=true;
+  let f='';try{f=xPreFields()}catch(e){}
+  try{sheet(`<div class="xpre"><h2>${Rp.ic} ${esc(Rp.t)}</h2><p class="muted">اختار من القوايم، وبعدين اعرض التقرير</p>
+    ${f?`<div class="xpf">${f}</div>`:'<p class="muted">التقرير ده مالوش فلاتر</p>'}
+    <button class="btn ghost" onclick="xPreReset()">↺ رجّع الافتراضي</button>
+    <button class="btn xpgo" onclick="xPreGo()">📄 اعرض التقرير</button></div>`,keep)}
+  finally{XPRDRAW=false}
+}
 /* نهاية fix.js */
