@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-         const XVER='2.21.33',XVBUILD='16/10/2026 - 03:40 م';
+                  const XVER='2.21.34',XVBUILD='16/10/2026 - 03:50 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -2849,4 +2849,94 @@ body.xhome .xbx .xv{font-size:14.5px!important;min-height:30px!important}
 body.xhome .dash .tile .tth{font-size:11.5px!important}
 body.xhome .tile .xv{font-size:13px!important;min-height:26px!important}
 `;document.head.appendChild(s)})();
+/* ========== 2.21.34 ========== */
+/* --- أرصدة الحسابات: بصمة + باسورد --- */
+var XBALOK=false;
+async function xBalUnlock(after){
+  if(XBALOK){if(after)after();return true}
+  if(LK.bio){try{await bioVerify()}catch(e){toast('البصمة ما اتعرفتش');return false}}
+  if(!S.settings.balPw){
+    const a=await dlg({title:'باسورد الأرصدة',msg:'اعمل باسورد مخصوص لأرصدة البنوك (4 حروف على الأقل)',icon:'🔐',input:true,pw:true,ok:'التالي',cancel:'إلغاء'});if(!a)return false;
+    if(a.length<4){toast('4 حروف على الأقل');return false}
+    const b=await dlg({title:'اكتبه تاني',icon:'🔐',input:true,pw:true,ok:'حفظ',cancel:'إلغاء'});if(b!==a){toast('الباسوردين مش زي بعض');return false}
+    S.settings.balPw=await hash('bal:'+a);save();toast('اتعمل باسورد الأرصدة ✓');
+  }else{
+    const v=await dlg({title:'باسورد الأرصدة',icon:'🔐',input:true,pw:true,ok:'افتح',cancel:'إلغاء'});if(v==null)return false;
+    if(await hash('bal:'+v)!==S.settings.balPw&&await hash('bal:'+latD(v).trim())!==S.settings.balPw){toast('الباسورد غلط');return false}
+  }
+  XBALOK=true;render();if(after)after();return true;
+}
+async function xBalForgot(){
+  if(LK.pin){const v=await dlg({title:'الرقم السري بتاع البرنامج',icon:'🔒',input:true,pw:true,num:true,ok:'تأكيد',cancel:'إلغاء'});if(v==null)return;if(await hash(v)!==LK.pin)return toast('الرقم السري غلط')}
+  else if(!await ask('مسح باسورد الأرصدة؟','هتعمل باسورد جديد',{icon:'🔐',ok:'امسح'}))return;
+  delete S.settings.balPw;save();toast('اتمسح · اعمل باسورد جديد');xBalUnlock();
+}
+try{const _goB=go;go=function(v){if(v!=='pmv')XBALOK=false;return _goB.apply(this,arguments)}}catch(e){}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')XBALOK=false});
+function vPmv(){
+  const ml=keyTx(NKM),trs=S.txs.filter(t=>t.type==='tr'&&t.date.startsWith(NKM)).sort(byDesc),MB=v=>XBALOK?v:'••••••';let mine=0,debt=0;
+  const rows=S.methods.map(m=>{const b=xBal(m.id),cr=xIsCr(m.id);if(cr)debt+=Math.min(0,b);else mine+=b;
+    let i=0,o=0;ml.forEach(t=>{if(t.method!==m.id||t.pend)return;if(t.type==='inc')i+=t.amount;else if(t.type==='exp')o+=t.amount});
+    const bc=cr?xC((b<0?'💳 عليك ':'💳 ليك ')+MB(num(Math.abs(b))),'#ea580c'):xC('💰 الرصيد '+MB((b<0?'-':'')+num(Math.abs(b))),b<0?'#dc2626':'#16a34a');
+    return `<div class="row ${m.active?'':'off'}" style="cursor:default"><span class="pmlg">${xMIc(m)}</span><div class="grow"><b>${esc(m.name)}${cr?' <span class="tag wait">💳 كريديت</span>':''}${m.active?'':' <span class="badge rej">موقوف</span>'}</b>${xChips([bc,xC('⬇ '+num(i),'#16a34a'),xC('⬆ '+num(o),'#dc2626')])}</div><div class="acts"><button class="mini" onclick="xRecon('${m.id}')">⚖️</button><button class="mini" onclick="editMethod('${m.id}')">✏️</button><button class="mini danger" onclick="delMethod('${m.id}')">🗑</button></div></div>`});
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏦 ${esc(L('pm'))}</h3><button class="mini" onclick="${XBALOK?'XBALOK=false;render()':'xBalUnlock()'}">${XBALOK?'🙈':'👁️'}</button><button class="mini" onclick="xNewTr()">🔁 تحويل</button><button class="mini pri" onclick="editMethod()">+ حساب</button></div>`
+    +kpis([['💰 فلوسك في الحسابات',MB(fmt(mine)),'inc'],['💳 مديونية الكريديت',MB(fmt(Math.abs(debt))),'exp']])
+    +`<p class="muted" style="font-size:11.5px;margin:0 2px 8px">⬇ دخل · ⬆ اتصرف في ${MONTHS[NM-1]} · ⚖️ قارن الرصيد بالبنك${XBALOK?'':' · 👁️ عشان تظهر الأرصدة'}</p><div class="list">${rows.join('')}</div>`;
+  if(!XBALOK&&S.settings.balPw)h+=`<button class="btn ghost" style="margin-bottom:8px" onclick="xBalForgot()">🔑 نسيت باسورد الأرصدة؟</button>`;
+  h+=`<h3>🔁 التحويلات · ${MONTHS[NM-1]}</h3>`+(trs.length?`<div class="list">${trs.map(t=>`<div class="row" onclick="editTx('${t.id}')"><span class="ic" style="background:#dbeafe">🔁</span><div class="grow"><b>من ${esc(M(t.method)?.name||'—')} إلى ${esc(M(t.to)?.name||'—')}</b><small>${fdate(t.date)}${t.via?' · '+viaTxt(t.via):''}${t.note?' · '+esc(t.note):''}</small></div><div class="amt" style="color:var(--tr)">${num(t.amount)}</div></div>`).join('')}</div>`:'<p class="empty">لا يوجد</p>');
+  return h;
+}
+try{const _xrB=xRecon;xRecon=function(id){if(!XBALOK)return xBalUnlock(()=>_xrB(id));return _xrB(id)}}catch(e){}
+
+/* --- سداد الكريديت --- */
+function xCcDue(id){
+  const st=NKM+'-01',m=M(id);let b=+(m&&m.open)||0;
+  S.txs.forEach(t=>{if(t.pend||t.date>=st)return;if(t.type==='tr'){if(t.method===id)b-=t.amount;if(t.to===id)b+=t.amount}else if(t.method===id)b+=t.type==='inc'?t.amount:-t.amount});
+  const paid=S.txs.filter(t=>!t.pend&&t.date>=st&&((t.type==='tr'&&t.to===id)||(t.type==='inc'&&t.method===id))).reduce((a,t)=>a+t.amount,0);
+  return r2(Math.max(0,Math.max(0,-b)-paid));
+}
+function xCcList(){return S.methods.filter(m=>m.active!==false&&xIsCr(m.id)).map(m=>({m,due:xCcDue(m.id)})).filter(x=>x.due>.009)}
+var XCC=null;
+function xCcOpen(){const l=xCcList();if(!l.length)return toast('مفيش مديونية كريديت ✓');if(l.length===1)return xCcPay(l[0].m.id);
+  sheet(`<h2>💳 سداد الكريديت</h2><div class="list">${l.map(x=>`<div class="row" onclick="xCcPay('${x.m.id}')"><span class="pmlg">${xMIc(x.m)}</span><div class="grow"><b>${esc(x.m.name)}</b></div><div class="amt exp">${num(x.due)}</div></div>`).join('')}</div>`)}
+function xCcPay(id){
+  const m=M(id),due=xCcDue(id),cfg=(S.settings.ccpay||{})[id]||{},debits=S.methods.filter(x=>x.active!==false&&!xIsCr(x.id));
+  const from=cfg.from&&M(cfg.from)?cfg.from:(debits.find(x=>xMLogo(x)&&xMLogo(x)===xMLogo(m))||debits.find(x=>x.type==='bank')||debits[0]||{}).id||'';
+  const src=cfg.src&&M(cfg.src)?cfg.src:(debits.find(x=>x.id!==from&&x.type==='bank')||debits.find(x=>x.id!==from)||{}).id||'';
+  XCC={id,mode:cfg.mode||'debit',from,src,amt:amtStr(due),tamt:amtStr(due),date:today(),due};xCcSheet();
+}
+function xCcGrab(){const v=s=>$(s)?$(s).value:null;if(!XCC)return;['from','src','amt','tamt','date'].forEach(k=>{const x=v('#cc-'+k);if(x!==null)XCC[k]=x})}
+function xCcSheet(){
+  const c=XCC,m=M(c.id),opts=S.methods.filter(x=>x.active!==false&&!xIsCr(x.id)),tr=c.mode==='tr';
+  const rest=tr?r2((parseNum(c.tamt)||0)-(parseNum(c.amt)||0)):0;
+  sheet(`<h2>💳 سداد ${esc(m.name)}</h2>
+  <div class="kv"><span>مديونية الشهر اللي فات</span><b class="neg">${fmt(c.due)}</b></div>
+  <div class="seg"><button type="button" class="${tr?'':'on'}" onclick="xCcGrab();XCC.mode='debit';xCcSheet()">💳 سداد من الـ Debit</button><button type="button" class="${tr?'on':''}" onclick="xCcGrab();XCC.mode='tr';xCcSheet()">🔁 تحويل + سداد</button></div>
+  ${tr?`<div class="two"><label>حولت من<select id="cc-src">${opt(opts,c.src)}</select></label><label>إلى<select id="cc-from">${opt(opts,c.from)}</select></label></div>
+  <label>المبلغ اللي اتحول<input id="cc-tamt" class="amt-in" inputmode="decimal" dir="ltr" value="${esc(c.tamt)}" oninput="xCcGrab();xCcRest()"></label>
+  <label>مبلغ السداد<input id="cc-amt" inputmode="decimal" dir="ltr" value="${esc(c.amt)}" oninput="xCcGrab();xCcRest()"></label>
+  <div id="cc-rest" class="kv"><span>الباقي في ${esc(M(c.from)?.name||'')}</span><b class="pos">${fmt(Math.max(0,rest))}</b></div>`
+  :`<label>السداد من حساب<select id="cc-from">${opt(opts,c.from)}</select></label>
+  <label>مبلغ السداد<input id="cc-amt" class="amt-in" inputmode="decimal" dir="ltr" value="${esc(c.amt)}"></label>`}
+  <label>التاريخ<input id="cc-date" type="date" value="${c.date}"></label>
+  <button class="btn" onclick="xCcSave()">✅ ${tr?'سجّل التحويل والسداد':'سدد'}</button>`);
+}
+function xCcRest(){const el=$('#cc-rest b');if(el&&XCC)el.textContent=fmt(Math.max(0,r2((parseNum(XCC.tamt)||0)-(parseNum(XCC.amt)||0))))}
+function xCcSave(){
+  xCcGrab();const c=XCC;if(!c)return;const a=parseNum(c.amt),tr=c.mode==='tr',ta=parseNum(c.tamt);
+  if(!(a>0))return toast('اكتب مبلغ السداد');if(!c.from)return toast('اختار الحساب');if(!c.date)return toast('اختار التاريخ');
+  if(isClosed(c.date))return toast(`شهر ${mName(c.date.slice(0,7))} مقفول`);
+  if(tr){if(!(ta>0))return toast('اكتب المبلغ اللي اتحول');if(!c.src||c.src===c.from)return toast('اختار حسابين مختلفين')}
+  const now=Date.now();
+  if(tr)S.txs.push({id:uid(),type:'tr',amount:ta,method:c.src,to:c.from,via:'transfer',date:c.date,note:'🔁 تحويل لسداد الكريديت',files:[],created:now});
+  S.txs.push({id:uid(),type:'tr',amount:a,method:c.from,to:c.id,via:'',date:c.date,note:'💳 سداد الكريديت',files:[],created:now+1});
+  S.settings.ccpay=Object.assign({},S.settings.ccpay,{[c.id]:{from:c.from,src:c.src,mode:c.mode}});
+  XCC=null;save();closeSheet();render();toast(tr?`✅ اتحول ${fmt(ta)} واتسدد ${fmt(a)}`:`✅ اتسدد ${fmt(a)}`);
+}
+try{const _vhC=vHome;vHome=function(){let h=_vhC.apply(this,arguments);try{
+  const t=xCcList().map(x=>tileHTML({ic:'💳',label:'سداد الكريديت',val:fmt(x.due),sub:esc(x.m.name),cls:'hot',go:`xCcPay('${x.m.id}')`})).join('');
+  if(t)h=h.includes('<div class="dash">')?h.replace('<div class="dash">','<div class="dash">'+t):h+`<div class="dash">${t}</div>`;
+}catch(e){}return h}}catch(e){}
+XFC.cc=['💳','سداد الكريديت','xCcOpen()','#f97316,#9a3412',()=>xCcList().length,'لما يكون عليك مديونية كريديت الشهر اللي فات'];
+try{render()}catch(e){}
 /* نهاية fix.js */
