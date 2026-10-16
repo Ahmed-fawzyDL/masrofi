@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-                           const XVER='2.21.32',XVBUILD='16/10/2026 - 03:30 م';
+         const XVER='2.21.33',XVBUILD='16/10/2026 - 03:40 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -2833,4 +2833,20 @@ function xShareTo(id){const t=S.txs.find(x=>x.id===id);if(!t)return;t.files=[...
 /* --- شاشة التحميل بتختفي لما كل حاجة تحمّل --- */
 (function(){try{const b=document.getElementById('xboot');if(b)b.remove()}catch(e){}})();
 try{render()}catch(e){}
+/* ========== 2.21.33 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+html,body{overscroll-behavior-y:auto!important}
+html{overscroll-behavior-y:none!important}
+*,*::before,*::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.brand::before{display:none!important}
+.appbox{background:rgba(255,255,255,.16)!important}
+.brand .pill{background:var(--card,#fff)!important}
+#view .mini,#view .rbtn,#view .tile:not(.on),#sheet .mini,#sheet .btn.ghost,.xchip:not(.on),.cbt{background:var(--card,#fff)!important}
+.hero .xbx{background:rgba(255,255,255,.14)!important}
+body.xhome main{zoom:calc(var(--z) * 1)!important}
+body.xhome .hero{padding:10px 12px!important}
+body.xhome .xbx .xv{font-size:14.5px!important;min-height:30px!important}
+body.xhome .dash .tile .tth{font-size:11.5px!important}
+body.xhome .tile .xv{font-size:13px!important;min-height:26px!important}
+`;document.head.appendChild(s)})();
 /* نهاية fix.js */
