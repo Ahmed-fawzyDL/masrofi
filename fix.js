@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-                  const XVER='2.21.34',XVBUILD='16/10/2026 - 03:50 م';
+                           const XVER='2.21.35',XVBUILD='16/10/2026 - 04:10 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -2938,5 +2938,53 @@ try{const _vhC=vHome;vHome=function(){let h=_vhC.apply(this,arguments);try{
   if(t)h=h.includes('<div class="dash">')?h.replace('<div class="dash">','<div class="dash">'+t):h+`<div class="dash">${t}</div>`;
 }catch(e){}return h}}catch(e){}
 XFC.cc=['💳','سداد الكريديت','xCcOpen()','#f97316,#9a3412',()=>xCcList().length,'لما يكون عليك مديونية كريديت الشهر اللي فات'];
+try{render()}catch(e){}
+/* ========== 2.21.35 ========== */
+/* --- سداد الكريديت: المبلغ مفتوح، والزيادة بتروح مصاريف الكريديت --- */
+function xCcFeeShow(){if(!XCC)return;const a=parseNum(($('#cc-amt')||{}).value)||0,d=r2(a-XCC.due),el=$('#cc-fee');if(el)el.innerHTML=d>.009?`<div class="kv"><span>➕ هيتسجل في مصاريف الكريديت</span><b class="neg">${fmt(d)}</b></div>`:''}
+try{const _ccS=xCcSheet;xCcSheet=function(){const r=_ccS.apply(this,arguments);try{const a=$('#cc-amt');if(a&&!$('#cc-fee')){const l=a.closest('label');(l||a).insertAdjacentHTML('afterend','<div id="cc-fee"></div><p class="muted" style="font-size:11.5px;margin:2px 0 6px">✏️ اكتب المبلغ الحقيقي اللي اتخصم. لو أكبر من حساب البرنامج، الفرق بيتسجل لوحده في مصاريف الكريديت.</p>');a.addEventListener('input',xCcFeeShow);xCcFeeShow()}}catch(e){}return r}}catch(e){}
+try{const _ccV=xCcSave;xCcSave=function(){
+  xCcGrab();const c=XCC;
+  try{const a=parseNum(c&&c.amt),okTr=c&&(c.mode!=='tr'||(parseNum(c.tamt)>0&&c.src&&c.src!==c.from));
+    if(c&&a>0&&c.from&&c.date&&!isClosed(c.date)&&okTr){const d=r2(a-c.due);
+      if(d>.009){const pe=mRange(prevKey(NKM))[1],dt=isClosed(pe)?c.date:pe,cat=ensureCat('مصاريف الكريديت','exp');cat.active=true;
+        S.txs.push({id:uid(),type:'exp',amount:d,cat:cat.id,method:c.id,via:'card',date:dt,note:'🧾 فرق سداد الكريديت',files:[],created:Date.now()})}}}catch(e){}
+  return _ccV.apply(this,arguments)}}catch(e){}
+
+/* --- أقساط بتتخصم من الكريديت --- */
+function xCcAccts(){return S.methods.filter(m=>m.active!==false&&xIsCr(m.id))}
+function xCcPlanPost(){
+  let n=0;const td=today();
+  S.plans.forEach(p=>{if(!p.cc||!p.acct||!M(p.acct))return;const from=p.ccFrom||'0000';let cat=null;
+    p.items.forEach(it=>{if(itTx(it)||it.noAuto||!it.due||it.due>td||it.due<from||isClosed(it.due)||!(+it.amount>0))return;
+      cat=cat||C(p.catId)||ensureCat(p.name,'exp');
+      const t={id:uid(),type:'exp',amount:+it.amount,cat:cat.id,method:p.acct,via:'card',date:it.due,note:`💳 قسط ${fdate(it.due)} على الكريديت`,files:[],created:Date.now(),src:{k:'i',id:p.id,p:it.id}};
+      S.txs.push(t);it.txId=t.id;n++})});
+  if(n)save();return n;
+}
+try{const _apC=autoPostFixed;autoPostFixed=function(){const n=_apC.apply(this,arguments);return n+xCcPlanPost()}}catch(e){}
+try{const _pfC=planForm;planForm=function(){
+  if(PF&&PF.cc&&!PF.cca)PF.cca=PF.acct;
+  const r=_pfC.apply(this,arguments);
+  try{const cr=xCcAccts(),q5=$('#q5'),row=q5&&q5.closest('label')&&q5.closest('label').parentElement;
+    if(row&&cr.length&&!$('#q-cc')){const on=!!PF.cc,ca=PF.cca&&M(PF.cca)?PF.cca:cr[0].id;
+      row.insertAdjacentHTML('beforebegin',`<label class="chk fxbox"><input type="checkbox" id="q-cc" ${on?'checked':''} onchange="grabPF();PF.cc=this.checked;planForm()"> 💳 بيتخصم من الكريديت</label>${on?`<div class="fxin">${cr.length>1?`<label>من كارت<select id="q-cca">${opt(cr,ca)}</select></label>`:`<p class="muted" style="margin:8px 0 0">💳 ${esc(cr[0].name)}</p>`}<p class="muted" style="font-size:11.5px;margin:6px 0 0">كل قسط بيتسجل لوحده مصروف على الكريديت يوم ميعاده، وبيدخل في سداد الكريديت أول الشهر.</p></div>`:''}`);
+      if(on)row.style.display='none'}}catch(e){}
+  return r}}catch(e){}
+try{const _gpC=grabPF;grabPF=function(){_gpC.apply(this,arguments);if($('#q-cc'))PF.cc=$('#q-cc').checked;if($('#q-cca'))PF.cca=$('#q-cca').value}}catch(e){}
+try{const _psC=planSave;planSave=function(){
+  grabPF();const cc=!!PF.cc,ca=(PF.cca&&M(PF.cca))?PF.cca:(xCcAccts()[0]||{}).id;
+  const r=_psC.apply(this,arguments);
+  try{if(!$('#sheet').classList.contains('open')){const p=plan(instPlan);
+    if(p&&cc&&ca){p.cc=true;p.acct=ca;p.via='card';if(!p.ccFrom)p.ccFrom=NKM+'-01'}
+    else if(p&&!cc&&p.cc){delete p.cc;delete p.ccFrom}
+    xCcPlanPost();save();render()}}catch(e){}
+  return r}}catch(e){}
+try{const _upC=unpay;unpay=async function(pid,iid){await _upC(pid,iid);const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(p&&p.cc&&it&&!it.txId){it.noAuto=true;save()}}}catch(e){}
+try{const _idC=instDue;instDue=function(){return _idC.apply(this,arguments).filter(o=>!o.p.cc)}}catch(e){}
+try{const _xidC=xInstDue;xInstDue=function(){return _xidC.apply(this,arguments).filter(o=>!o.p.cc)}}catch(e){}
+try{const _alC=alerts;alerts=function(){const cc=S.plans.filter(p=>p.cc).map(p=>'i-'+p.id+'-');return _alC.apply(this,arguments).filter(a=>!cc.some(k=>String(a.id).startsWith(k)))}}catch(e){}
+try{const _vpC=vPlan;vPlan=function(){let h=_vpC.apply(this,arguments);try{const p=plan(instPlan);if(p&&p.cc){const i=h.indexOf('</div>');if(i>0)h=h.slice(0,i+6)+`<p class="muted" style="margin:0 2px 8px">💳 بيتخصم لوحده من ${esc(M(p.acct)?.name||'الكريديت')} يوم الميعاد</p>`+h.slice(i+6)}}catch(e){}return h}}catch(e){}
+xCcPlanPost();
 try{render()}catch(e){}
 /* نهاية fix.js */
