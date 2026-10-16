@@ -362,8 +362,14 @@ body .paper .ptbl tfoot td{background:#e3f1e8;color:#1f2937}
 <div id="toast"></div>
 <div id="printArea"></div>
 <input type="file" id="restoreFile" accept=".json,application/json" onchange="restore(this)">
-<script src="app.js?v=2.9.0"></script>
-<script src="more.js?v=2.9.0"></script>
-<script>document.write('<script src="fix.js?t='+Date.now()+'"><\/script>')</script>
+<div id="xboot"><b>⏳ Centric</b><small>جاري التحميل...</small><div class="xbb"><button onclick="xRescue()">🔄 علق؟ حمّل من جديد</button><button onclick="document.getElementById('xboot').remove()">افتح على أي حال</button></div></div>
+<style>#xboot{position:fixed;inset:0;z-index:99999;background:#0b1220;color:#e5e7eb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:system-ui,sans-serif;text-align:center}#xboot b{font-size:20px}#xboot small{opacity:.7}#xboot .xbb{display:none;flex-direction:column;gap:8px;margin-top:14px}#xboot.slow .xbb{display:flex}#xboot button{border:0;border-radius:12px;padding:11px 18px;font:inherit;font-weight:700;background:#14b8a6;color:#fff}#xboot button+button{background:#334155}</style>
+<script>
+setTimeout(function(){var b=document.getElementById('xboot');if(b)b.className='slow'},6000);
+async function xRescue(){try{var ks=await caches.keys();await Promise.all(ks.filter(function(k){return k!=='centric-share'}).map(function(k){return caches.delete(k)}));var rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(function(r){return r.unregister()}))}catch(e){}location.reload()}
+</script>
+<script src="app.js"></script>
+<script src="more.js"></script>
+<script src="fix.js"></script>
 </body>
 </html>

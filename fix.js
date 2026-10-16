@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-                  const XVER='2.21.31',XVBUILD='16/10/2026 - 02:30 م';
+                           const XVER='2.21.32',XVBUILD='16/10/2026 - 03:30 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -2776,5 +2776,61 @@ if(navigator.serviceWorker)navigator.serviceWorker.addEventListener('message',e=
   if(d.type==='locked'){location.reload();return}
   if(d.type==='update'&&!XUPD){XUPD=true;setTimeout(xUpdShow,1200)}
 });
+try{render()}catch(e){}
+/* ========== 2.21.32 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+html,body{overscroll-behavior-y:none!important}
+header,main,nav,.sz,.dbox,#banner,.paper{zoom:calc(var(--z) * .93)!important}
+.mbar button,.xch button{direction:ltr!important;unicode-bidi:isolate!important}
+.xsel{overflow:hidden}
+#sheet .two .xsel .xl{display:flex!important;flex-direction:column;align-items:flex-start;line-height:1.15!important}
+#sheet .two .xsel .xl small{margin:0!important;font-size:10px!important}
+#sheet .sz h2{font-size:15px!important;margin:0 0 8px!important}
+#sheet .amt-in{font-size:19px!important;min-height:42px!important;padding:4px 10px!important;margin-top:4px!important}
+#sheet .xsel{min-height:36px!important;padding:3px 9px!important;font-size:12.5px!important}
+#sheet label{margin:6px 0!important}
+#sheet .xchip{padding:4px 10px!important;font-size:11.5px!important}
+#sheet .xchips{margin:2px 0 6px!important}
+#sheet .xipb{padding:6px 8px!important;margin-bottom:6px!important}
+#sheet .btn{padding:8px!important;font-size:13px!important;margin-top:6px!important}
+#sheet .inl .mini{padding:0 10px!important}
+#sheet .shbar{padding-block:5px!important;margin-bottom:6px!important}
+`;document.head.appendChild(s)})();
+
+/* --- Enter بيقفل الكيبورد في كل البرنامج --- */
+document.addEventListener('focusin',e=>{const t=e.target;if(t&&t.tagName==='INPUT'&&!/^(checkbox|radio|range|file)$/.test(t.type)&&!t.hasAttribute('enterkeyhint'))t.setAttribute('enterkeyhint','done')});
+document.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.keyCode!==13)return;const t=e.target;if(!t||t.tagName!=='INPUT')return;setTimeout(()=>{try{t.blur()}catch(_){}},0)});
+
+/* --- الفاتورة: من غير "حولت على إنستاباي لـ" --- */
+try{const _tfB=txForm;txForm=function(){
+  let ib=false;
+  try{if(F){const o=F.id&&S.txs.find(t=>t.id===F.id);ib=F.isBill==null?!!(o&&o.bill):!!F.isBill;if(ib)F.ip={k:'phone',v:''}}}catch(e){}
+  const r=_tfB.apply(this,arguments);
+  try{if(ib){const b=document.querySelector('#sheet .xipb');if(b)b.remove()}}catch(e){}
+  return r}}catch(e){}
+
+/* --- التقارير: الفواتير قسم لوحدها --- */
+if(!XEXPG.bill){const v0=XEXPG.var;delete XEXPG.var;XEXPG.bill=['🧾 فواتير','فواتير','#db2777'];XEXPG.var=v0}
+try{const _gbB=grpBlock;grpBlock=function(list,kind,G,fn,click){if(G===XEXPG){const f0=fn;fn=t=>t.bill?'bill':t.payFeeOf?'inst':f0(t)}return _gbB.call(this,list,kind,G,fn,click)}}catch(e){}
+
+/* --- Share: مصروف جديد / تحصيل جديد / أرفقه على عملية متسجلة --- */
+var XSHIDS=[];
+XSQS+=',#sheet #shq';
+function xShareAsk(ids){
+  XSHIDS=ids;const lim=addMonths(today(),-2);
+  const l=S.txs.filter(t=>t.type!=='tr'&&!t.feeOf&&!t.payFeeOf&&t.date>=lim).sort(byDesc).slice(0,80);
+  sheet(`<h2>📎 إيصال جديد</h2>
+  <div class="files">${ids.map(id=>fileThumb(id,'view')).join('')}</div>
+  <div class="two"><button class="btn" onclick="xShareNew('exp')">💸 مصروف جديد</button><button class="btn ghost" onclick="xShareNew('inc')">💰 تحصيل جديد</button></div>
+  <h3>📂 أو أرفقه على عملية متسجلة</h3>
+  <input id="shq" placeholder="🔍 اسم البند أو المبلغ" oninput="xShFilt(this.value)">
+  <div class="list" id="shl" style="margin-top:8px">${l.map(t=>`<div class="row" data-q="${esc(xqn([C(t.cat)?.name,t.note,t.amount,num(t.amount),dmy(t.date)].join(' ')))}" onclick="xShareTo('${t.id}')"><span class="ic" style="background:var(--soft)">${t.type==='inc'?'💰':t.bill?'🧾':'💸'}</span><div class="grow"><b>${esc(C(t.cat)?.name||'—')}</b><small>${dmy(t.date)}${(t.files||[]).length?' · 📎 '+t.files.length:''}${t.pend?' · ⏳':''}</small></div><div class="amt ${t.type}">${num(t.amount)}</div></div>`).join('')||'<p class="empty">مفيش عمليات</p>'}</div>`);
+}
+function xShFilt(v){const q=xqn(v);document.querySelectorAll('#shl .row').forEach(r=>r.style.display=!q||r.dataset.q.includes(q)?'':'none')}
+function xShareNew(k){const ids=XSHIDS;closeSheet();newTx(k);if(F){F.files=(F.files||[]).concat(ids);if(k==='exp')F.via='instapay';SHKEEP=1;txForm()}}
+function xShareTo(id){const t=S.txs.find(x=>x.id===id);if(!t)return;t.files=[...(t.files||[]),...XSHIDS];save();closeSheet();render();toast('📎 اترفق ✓');setTimeout(()=>editTx(id),300)}
+
+/* --- شاشة التحميل بتختفي لما كل حاجة تحمّل --- */
+(function(){try{const b=document.getElementById('xboot');if(b)b.remove()}catch(e){}})();
 try{render()}catch(e){}
 /* نهاية fix.js */
