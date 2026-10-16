@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-                                             const XVER='2.21.38',XVBUILD='16/10/2026 - 04:20 م';
+          const XVER='2.21.38',XVBUILD='16/10/2026 - 04:20 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -3044,6 +3044,14 @@ try{render()}catch(e){}
 main{padding-bottom:calc(var(--navh,70px) + 30px + env(safe-area-inset-bottom))!important}
 body.xhome main{padding-bottom:calc(var(--navh,70px) + 90px + env(safe-area-inset-bottom))!important}
 body #view.xsq{padding-bottom:75vh!important}
+`;document.head.appendChild(s)})();
+try{fixNav()}catch(e){}
+/* ========== 2.21.38 ========== */
+/* --- آخر الشاشة مبيستخباش ورا الشريط اللي تحت --- */
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view#view{padding-bottom:calc(var(--navh,70px) + 30px + env(safe-area-inset-bottom))!important}
+body.xhome #view#view{padding-bottom:calc(var(--navh,70px) + 90px + env(safe-area-inset-bottom))!important}
+body #view#view.xsq{padding-bottom:75vh!important}
 `;document.head.appendChild(s)})();
 try{fixNav()}catch(e){}
 /* نهاية fix.js */
