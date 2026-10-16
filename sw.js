@@ -43,22 +43,23 @@ async function fromNet(r,key){
 // الإيصال اللي جاي من Share (إنستاباي وغيره)
 async function shareIn(req){
   try{
-    const fd=await req.formData(),fs=fd.getAll('files').filter(f=>f&&f.size),c=await caches.open(SHARE);let i=0;
-    for(const f of fs)await c.put(new Request('./__share/'+Date.now()+'-'+(i++)),new Response(f,{headers:{'Content-Type':f.type||'application/octet-stream','X-Name':encodeURIComponent(f.name||'receipt')}}));
+    const fd=await req.formData(),fs=fd.getAll('files').filter(f=>f&&f.size),c=await caches.open(SHARE),t=Date.now();
+    await Promise.all(fs.map((f,i)=>c.put(new Request('./__share/'+t+'-'+i),new Response(f,{headers:{'Content-Type':f.type||'application/octet-stream','X-Name':encodeURIComponent(f.name||'receipt')}}))));
   }catch(e){}
   return Response.redirect(new URL('./?share=1',self.registration.scope).href,303);
 }
 
 // النسخة المحفوظة الأول (فتح فوري)، والتحديث في الخلفية
+// اللي جاي من Share بيفتح من النسخة المحفوظة بس، من غير تشييك ولا reload وهو بيحمّل
 self.addEventListener('fetch',e=>{
   const r=e.request,u=new URL(r.url);
   if(u.origin!==location.origin)return;
   if(r.method==='POST'&&u.pathname.endsWith('/share-target')){e.respondWith(shareIn(r));return}
   if(r.method!=='GET')return;
-  const key=u.origin+u.pathname;
+  const key=u.origin+u.pathname,share=r.mode==='navigate'&&u.searchParams.has('share');
   e.respondWith((async()=>{
     const hit=await caches.match(key)||(r.mode==='navigate'?await caches.match(u.origin+u.pathname.replace(/[^/]*$/,'')):null);
-    if(hit){e.waitUntil(refresh(r,key,hit.clone()));return hit}
+    if(hit){if(!share)e.waitUntil(refresh(r,key,hit.clone()));return hit}
     return fromNet(r,key);
   })());
 });
