@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-                                        const XVER='2.21.39',XVBUILD='16/10/2026 - 11:30 م';
+const XVER='2.21.40',XVBUILD='17/10/2026 - 01:45 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -3307,4 +3307,6 @@ try{const _rbH=xReconBase;xReconBase=function(id){const r=_rbH.apply(this,argume
 try{render()}catch(e){}
 /* --- اسم اختيار الكريديت في القسط أوضح --- */
 try{const _pfL=planForm;planForm=function(){const r=_pfL.apply(this,arguments);try{const c=$('#q-cc'),l=c&&c.closest('label');if(l&&l.lastChild&&l.lastChild.nodeType===3)l.lastChild.nodeValue=' 💳 بيتضاف على كشف الكريديت (ويتسدد من الـ Debit)'}catch(e){}return r}}catch(e){}
+/* --- تصليح: البرنامج كان بيقف لو آخر شاشة كانت المصروفات --- */
+function xFeeName(n){n=String(n||'');const p='مصاريف إنستاباي · ';return n.indexOf(p)===0?n.slice(p.length):''}
 /* نهاية fix.js */
