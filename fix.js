@@ -3305,4 +3305,6 @@ try{const _rbH=xReconBase;xReconBase=function(id){const r=_rbH.apply(this,argume
   if(p)p.innerHTML='📌 اكتب رصيد <b>النهارده</b> مش رصيد يوم 1، بعد ما تسجل كل عمليات الحساب ده. البرنامج بيرجع لورا ويحسب رصيد البداية لوحده.<br>🏁 أول مرة بس: <b>اظبط رصيد البداية</b>.<br>💸 بعد كده لو طلع فرق: يتسجل مصاريف بنكية، أو تحصيل لو البنك أكتر.';
 }catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* --- اسم اختيار الكريديت في القسط أوضح --- */
+try{const _pfL=planForm;planForm=function(){const r=_pfL.apply(this,arguments);try{const c=$('#q-cc'),l=c&&c.closest('label');if(l&&l.lastChild&&l.lastChild.nodeType===3)l.lastChild.nodeValue=' 💳 بيتضاف على كشف الكريديت (ويتسدد من الـ Debit)'}catch(e){}return r}}catch(e){}
 /* نهاية fix.js */
