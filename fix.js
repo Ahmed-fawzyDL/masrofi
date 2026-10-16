@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-                           const XVER='2.21.35',XVBUILD='16/10/2026 - 04:10 م';
+                                    const XVER='2.21.37',XVBUILD='16/10/2026 - 04:30 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -2986,5 +2986,56 @@ try{const _xidC=xInstDue;xInstDue=function(){return _xidC.apply(this,arguments).
 try{const _alC=alerts;alerts=function(){const cc=S.plans.filter(p=>p.cc).map(p=>'i-'+p.id+'-');return _alC.apply(this,arguments).filter(a=>!cc.some(k=>String(a.id).startsWith(k)))}}catch(e){}
 try{const _vpC=vPlan;vPlan=function(){let h=_vpC.apply(this,arguments);try{const p=plan(instPlan);if(p&&p.cc){const i=h.indexOf('</div>');if(i>0)h=h.slice(0,i+6)+`<p class="muted" style="margin:0 2px 8px">💳 بيتخصم لوحده من ${esc(M(p.acct)?.name||'الكريديت')} يوم الميعاد</p>`+h.slice(i+6)}}catch(e){}return h}}catch(e){}
 xCcPlanPost();
+try{render()}catch(e){}
+/* ========== 2.21.36 + 2.21.37 ========== */
+/* --- المطابقة: الزرار بيقولك الفرق، والفرق بيتسجل مصاريف البنك --- */
+function xReconBtn(id){const b=document.querySelector('#sheet .btn[onclick^="xReconAdj"]');if(!b)return;const a=xReconVal(id),d=a==null?null:r2(a-xBal(id));
+  b.textContent=d==null||!d?'💸 سجّل الفرق مصاريف بنكية':d<0?`💸 سجّل ${fmt(-d)} مصاريف بنكية`:`💰 سجّل ${fmt(d)} تحصيل`}
+function xReconBase(id){
+  const m=M(id);if(!m)return;const b=xBal(id),cr=xIsCr(id);
+  sheet(`<h2>⚖️ مطابقة: ${esc(m.name)}</h2>
+  <div class="kv"><span>${cr?'المديونية في البرنامج':'الرصيد في البرنامج'}</span><b>${fmt(cr?Math.max(0,-b):b)}</b></div>
+  <label>${cr?'المديونية الحقيقية من كشف البنك':'الرصيد الحقيقي (من البنك أو اللي في إيدك)'}<input id="rc-v" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" oninput="xReconDiff('${id}');xReconBtn('${id}')"></label>
+  <div id="rc-d"></div>
+  <button class="btn" onclick="xReconOpen('${id}')">🏁 أول مرة؟ اظبط رصيد البداية</button>
+  <button class="btn ghost" onclick="xReconAdj('${id}')">💸 سجّل الفرق مصاريف بنكية</button>
+  <p class="muted" style="font-size:11.5px">أول مرة: اكتب رصيدك الحقيقي ودوس "رصيد البداية"، ودي مبتأثرش على المصروفات. بعد كده لو طلع فرق، الزرار التاني بيسجله مصاريف بنكية.</p>`);
+}
+xRecon=function(id){if(!XBALOK)return xBalUnlock(()=>xReconBase(id));xReconBase(id)};
+async function xReconAdj(id){
+  const a=xReconVal(id);if(a==null)return toast('اكتب الرصيد');const d=r2(a-xBal(id));if(!d)return toast('مفيش فرق ✓');
+  if(isClosed(today()))return toast('الشهر الحالي مقفول');
+  const inc=d>0,nm0=inc?'تسوية رصيد':(xIsCr(id)?'مصاريف الكريديت':'مصاريف البنك');
+  if(!await ask(inc?'تسجيل تحصيل؟':'تسجيل مصاريف؟',`${fmt(Math.abs(d))} في بند "${nm0}" على ${M(id)?.name||''}`,{icon:inc?'💰':'💸',ok:'سجّل'}))return;
+  const c=ensureCat(nm0,inc?'inc':'exp');c.active=true;
+  S.txs.push({id:uid(),type:inc?'inc':'exp',amount:Math.abs(d),cat:c.id,method:id,via:'',date:today(),note:'⚖️ فرق المطابقة مع البنك',files:[],created:Date.now(),adj:true});
+  save();closeSheet();render();toast('اتسجل ✓');
+}
+
+/* --- زرار مصاريف البنك في المصروفات --- */
+(()=>{const s=document.createElement('style');s.textContent=`#view .xqb{grid-template-columns:1fr 1fr 1fr!important}`;document.head.appendChild(s)})();
+var XBF=null;
+function xBfAccts(){return S.methods.filter(m=>m.active!==false&&m.type!=='cash')}
+function xBfGrab(){if(!XBF||!$('#bk-a'))return;XBF.a=$('#bk-a').value;XBF.d=$('#bk-d').value;XBF.n=$('#bk-n').value}
+function xBankFee(mid){
+  const ac=xBfAccts();if(!ac.length)return toast('ضيف حساب بنك الأول');
+  if(!XBF)XBF={m:(ac.find(x=>!xIsCr(x.id))||ac[0]).id,a:'',d:today(),n:''};if(mid)XBF.m=mid;
+  sheet(`<h2>🏦 مصاريف البنك</h2>
+  <div class="fl">من أنهي حساب؟</div>
+  <div class="xchips">${ac.map(m=>`<button type="button" class="xchip ${XBF.m===m.id?'on':''}" onclick="xBfGrab();XBF.m='${m.id}';SHKEEP=1;xBankFee()">${xMIc(m,1)} ${esc(m.name)}</button>`).join('')}</div>
+  <input id="bk-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" value="${esc(XBF.a)}">
+  <div class="two"><label>التاريخ<input id="bk-d" type="date" value="${XBF.d}"></label><label>ملاحظة<input id="bk-n" value="${esc(XBF.n)}" placeholder="رسايل، كشف حساب..."></label></div>
+  <button class="btn" onclick="xBfSave()">سجّل</button>`);
+}
+function xBfSave(){
+  xBfGrab();const x=XBF;if(!x)return;const a=parseNum(x.a);
+  if(!(a>0))return toast('اكتب المبلغ');if(!x.d)return toast('اختار التاريخ');if(!M(x.m))return toast('اختار الحساب');
+  if(isClosed(x.d))return toast(`شهر ${mName(x.d.slice(0,7))} مقفول`);
+  const c=ensureCat(xIsCr(x.m)?'مصاريف الكريديت':'مصاريف البنك','exp');c.active=true;
+  S.txs.push({id:uid(),type:'exp',amount:a,cat:c.id,method:x.m,via:xIsCr(x.m)?'card':'',date:x.d,note:(x.n||'').trim(),files:[],created:Date.now()});
+  const nm0=M(x.m).name;XBF=null;save();closeSheet();render();toast(`✅ ${fmt(a)} مصاريف على ${nm0}`);
+}
+try{const _veB=vExps;vExps=function(){let h=_veB.apply(this,arguments);return h.replace('<div class="xqb">','<div class="xqb"><button class="mini" onclick="xBankFee()">🏦 مصاريف البنك</button>')}}catch(e){}
+XFC.bfee=['🏦','مصاريف البنك','xBankFee()','#64748b,#0f172a',()=>0,''];
 try{render()}catch(e){}
 /* نهاية fix.js */
