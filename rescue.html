@@ -1,0 +1,32 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Centric · إنقاذ</title>
+<style>body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:16px}h1{font-size:20px}.c{background:#1e293b;border-radius:14px;padding:12px;margin:0 0 12px}button{display:block;width:100%;padding:14px;margin:8px 0;border:0;border-radius:12px;background:#0f766e;color:#fff;font-size:16px;font-weight:700}pre{white-space:pre-wrap;word-break:break-all;font-size:12px;direction:ltr;text-align:left;margin:6px 0 0}</style></head><body>
+<h1>🛟 Centric · صفحة الإنقاذ</h1>
+<button onclick="dlLS()">⬇️ نزّل كل البيانات</button>
+<button onclick="dlSnap()">⬇️ نزّل آخر نسخة تلقائية</button>
+<div class="c"><b>📦 المحفوظ على الموبايل</b><pre id="ls">⏳</pre></div>
+<div class="c"><b>🔎 الفحص</b><pre id="chk">⏳</pre></div>
+<script>
+function save(n,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'application/json'}));a.download=n;document.body.appendChild(a);a.click();a.remove()}
+const stamp=()=>new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+function lsAll(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);o[k]=localStorage.getItem(k)}return o}
+function dlLS(){save('centric-data-'+stamp()+'.json',JSON.stringify(lsAll()))}
+function snaps(){return new Promise(res=>{let r;try{r=indexedDB.open('centric-bk',1)}catch(e){return res([])}
+  r.onupgradeneeded=()=>{try{r.transaction.abort()}catch(e){}res([])};r.onerror=()=>res([]);
+  r.onsuccess=()=>{const db=r.result;if(!db.objectStoreNames.contains('snaps'))return res([]);const q=db.transaction('snaps').objectStore('snaps').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([])}})}
+async function dlSnap(){const l=(await snaps()).sort((a,b)=>b.d.localeCompare(a.d));if(!l.length)return alert('مفيش نسخ تلقائية');const x=l[0];save('centric-snap-'+x.d+'.json',JSON.stringify({data:JSON.parse(x.data),files:[],exported:new Date(x.at).toISOString()}))}
+(async()=>{
+  const o=lsAll();let tot=0;
+  document.getElementById('ls').textContent=Object.keys(o).map(k=>{const n=(o[k]||'').length;tot+=n;return k+' · '+(n/1024).toFixed(1)+' KB'}).join('\n')+'\n— الإجمالي '+(tot/1024).toFixed(0)+' KB';
+  const out=[];let S=null,key='';
+  for(const k in o){try{const v=JSON.parse(o[k]);if(v&&Array.isArray(v.txs)){S=v;key=k;break}}catch(e){}}
+  if(S){
+    out.push('المفتاح: '+key,'العمليات: '+S.txs.length,'البنود: '+(S.cats||[]).length,'الحسابات: '+(S.methods||[]).length,'الأقساط: '+(S.plans||[]).length);
+    out.push('عمليات تاريخها أو مبلغها غلط: '+S.txs.filter(t=>!t||!/^\d{4}-\d{2}-\d{2}$/.test(t.date||'')||!(+t.amount>=0)).length);
+    const ids={};let dup=0;S.txs.forEach(t=>{if(t&&ids[t.id])dup++;if(t)ids[t.id]=1});out.push('عمليات مكررة: '+dup);
+    out.push('آخر عملية: '+(S.txs.map(t=>t&&t.date).filter(Boolean).sort().pop()||'—'));
+  }else out.push('⚠️ مش لاقي البيانات الأساسية');
+  const sn=await snaps();out.push('نسخ تلقائية: '+sn.length+(sn.length?' · آخرها '+sn.map(x=>x.d).sort().pop():''));
+  try{const e=await navigator.storage.estimate();out.push('المساحة: '+Math.round(e.usage/1048576)+' MB من '+Math.round(e.quota/1048576)+' MB')}catch(e){}
+  document.getElementById('chk').textContent=out.join('\n');
+})().catch(e=>document.getElementById('chk').textContent='خطأ: '+e.message);
+</script></body></html>
