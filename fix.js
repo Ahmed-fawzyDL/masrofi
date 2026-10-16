@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.40',XVBUILD='17/10/2026 - 01:45 ص';
+const XVER='2.21.41',XVBUILD='17/10/2026 - 03:00 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -3309,4 +3309,19 @@ try{render()}catch(e){}
 try{const _pfL=planForm;planForm=function(){const r=_pfL.apply(this,arguments);try{const c=$('#q-cc'),l=c&&c.closest('label');if(l&&l.lastChild&&l.lastChild.nodeType===3)l.lastChild.nodeValue=' 💳 بيتضاف على كشف الكريديت (ويتسدد من الـ Debit)'}catch(e){}return r}}catch(e){}
 /* --- تصليح: البرنامج كان بيقف لو آخر شاشة كانت المصروفات --- */
 function xFeeName(n){n=String(n||'');const p='مصاريف إنستاباي · ';return n.indexOf(p)===0?n.slice(p.length):''}
+/* ========== 2.21.41 ========== */
+/* --- البنود: الدوسة على بند بتفتح عملياته، و✏️ لتعديل البند --- */
+function xCatTxs(id){
+  const c=C(id);if(!c)return;
+  const l=S.txs.filter(t=>t.cat===id&&t.date.startsWith(NY+'-')).sort(byDesc),tot=l.filter(t=>!t.pend).reduce((a,t)=>a+t.amount,0);
+  sheet(`<div class="phead"><h2>${c.kind==='inc'?'💰':'💸'} ${esc(c.name)}</h2><span class="badge soon">${l.length}</span></div>
+  <div class="kv"><span>إجمالي ${NY}</span><b class="${c.kind==='inc'?'pos':'neg'}">${fmt(tot)}</b></div>
+  ${l.length?`<div class="list">${l.map(t=>{const m=M(t.method);return `<div class="row" onclick="editTx('${t.id}')"><div class="grow"><b>${dmy(t.date)}${t.pend?' · ⏳':''}</b><small>${m?esc(m.name):'—'}${t.via?' · '+esc(viaTxt(t.via)):''}${t.note&&!/^🧾/.test(t.note)?' · '+esc(t.note):''}</small></div><div class="amt ${c.kind}">${num(t.amount)}</div></div>`}).join('')}</div>`:'<p class="empty">مفيش عمليات السنة دي</p>'}
+  <button class="btn ghost" onclick="catForm('${id}')">✏️ تعديل البند</button>`);
+}
+try{const _irT=itRows;itRows=function(){return _irT.apply(this,arguments).replace(/onclick="catForm\('([^']+)'\)"/g,'onclick="xCatTxs(\'$1\')"')}}catch(e){}
+
+/* --- طريقة جديدة: البنك نفسه (فوايد، مصاريف، أي حاجة البنك بيعملها لوحده) --- */
+if(!XV0.some(x=>x[0]==='bankop')){XV0.push(['bankop','البنك نفسه']);XVIA0.bankop=['🏛️','#0f766e']}
+try{xApplyTypes();render()}catch(e){}
 /* نهاية fix.js */
