@@ -1,16 +1,24 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Centric · إنقاذ</title>
-<style>body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:16px}h1{font-size:20px}.c{background:#1e293b;border-radius:14px;padding:12px;margin:0 0 12px}button{display:block;width:100%;padding:14px;margin:8px 0;border:0;border-radius:12px;background:#0f766e;color:#fff;font-size:16px;font-weight:700}button.o{background:#b45309}pre{white-space:pre-wrap;word-break:break-all;font-size:12px;direction:ltr;text-align:left;margin:6px 0 0}iframe{width:100%;height:55vh;border:1px solid #334155;border-radius:12px;background:#fff;display:none}</style></head><body>
+<style>body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:16px}h1{font-size:20px}.c{background:#1e293b;border-radius:14px;padding:12px;margin:0 0 12px}button{display:block;width:100%;padding:14px;margin:8px 0;border:0;border-radius:12px;background:#0f766e;color:#fff;font-size:16px;font-weight:700}button.o{background:#b45309}button.b{background:#1d4ed8}pre{white-space:pre-wrap;word-break:break-all;font-size:12px;direction:ltr;text-align:left;margin:6px 0 0}iframe{width:100%;height:55vh;border:1px solid #334155;border-radius:12px;background:#fff;display:none}</style></head><body>
 <h1>🛟 Centric · صفحة الإنقاذ</h1>
-<button onclick="dbg()">🔍 1) شغّل البرنامج هنا وورّيني الخطأ</button>
+<button class="b" onclick="force()">🔄 حدّث البرنامج بالعافية</button>
+<button onclick="dbg()">🔍 شغّل البرنامج هنا وورّيني الخطأ</button>
 <div class="c"><b>📋 النتيجة</b><pre id="out">لسه</pre></div>
 <iframe id="fr"></iframe>
-<button class="o" onclick="home()">🧹 2) افتح البرنامج على الرئيسية</button>
+<button class="o" onclick="home()">🧹 افتح البرنامج على الرئيسية</button>
 <button onclick="dlLS()">⬇️ نزّل كل البيانات</button>
 <script>
 const out=document.getElementById('out'),log=t=>{out.textContent=(out.textContent==='لسه'?'':out.textContent+'\n')+t};
 function save(n,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'application/json'}));a.download=n;document.body.appendChild(a);a.click();a.remove()}
 function dlLS(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);o[k]=localStorage.getItem(k)}save('centric-data-'+new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')+'.json',JSON.stringify(o))}
 function home(){localStorage.removeItem('centric-state');location.href='/'}
+async function force(){
+  out.textContent='⏳ بحدّث...';
+  try{const rs=await navigator.serviceWorker.getRegistrations();for(const r of rs)await r.unregister();log('✔ Service worker اتشال ('+rs.length+')')}catch(e){log('❌ '+e.message)}
+  try{const ks=await caches.keys();let n=0;for(const k of ks)if(/^centric-v/.test(k)){await caches.delete(k);n++}log('✔ ملفات البرنامج القديمة اتمسحت ('+n+')')}catch(e){log('❌ '+e.message)}
+  try{const t=await (await fetch('fix.js?n='+Date.now(),{cache:'no-store'})).text(),m=t.match(/XVER='([^']+)'/);log('الإصدار على السيرفر: '+(m?m[1]:'؟'))}catch(e){log('❌ '+e.message)}
+  log('✅ دلوقتي اقفل Chrome وCentric خالص، وافتح Centric');
+}
 addEventListener('message',e=>{const d=e.data||{};if(!d.t)return;if(/serviceworker/i.test(d.m+d.st))return;log((d.t==='err'?'❌ ':'ℹ️ ')+d.m+(d.s?' @ '+d.s+':'+d.l+':'+d.c:'')+(d.st?'\n'+d.st:''))});
 async function dbg(){
   out.textContent='⏳ بشغّل البرنامج... استنى 10 ثواني';
