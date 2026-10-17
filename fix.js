@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.53',XVBUILD='17/10/2026 - 08:08 م';
+const XVER='2.21.54',XVBUILD='17/10/2026 - 08:10 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -4524,4 +4524,8 @@ try{const _cs=xCashSave;xCashSave=function(){const s=$('#xcw-r'),v=s?s.value:'';
   try{if(cid){if(S.txs.length>n0){const t=S.txs.slice(n0).find(x=>x.xdep);if(t){t.xrefc=cid;save()}}else if(s)s.value=v}}catch(e){}return r}}catch(e){}
 try{const _lgC=xLedger;xLedger=function(){const g=_lgC.apply(this,arguments);try{const T=XTALL||S.txs;g.ev.forEach(e=>{if(!e.id)return;const t=T.find(x=>x.id===e.id);
   if(t&&t.xrefc){const c=C(t.xrefc);if(c)e.s=(e.s?e.s+' · ':'')+'🔗 من بند '+c.name}})}catch(e){}return g}}catch(e){}
+/* ========== 2.21.54 ========== */
+/* شيل زرار سحب وإيداع كاش من شاشة الحسابات */
+try{const _rnP=render;render=function(){const r=_rnP.apply(this,arguments);try{if(view==='pmv'){const el=$('#view');if(el)el.querySelectorAll('button.btn[onclick*="xCashSheet"]').forEach(b=>b.remove())}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
