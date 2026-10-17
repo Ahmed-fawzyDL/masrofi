@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.41',XVBUILD='17/10/2026 - 03:00 ص';
+const XVER='2.21.42',XVBUILD='17/10/2026 - 03:20 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -3324,4 +3324,14 @@ try{const _irT=itRows;itRows=function(){return _irT.apply(this,arguments).replac
 /* --- طريقة جديدة: البنك نفسه (فوايد، مصاريف، أي حاجة البنك بيعملها لوحده) --- */
 if(!XV0.some(x=>x[0]==='bankop')){XV0.push(['bankop','البنك نفسه']);XVIA0.bankop=['🏛️','#0f766e']}
 try{xApplyTypes();render()}catch(e){}
+/* ========== 2.21.42 ========== */
+/* --- الرئيسية من غير سكرول زيادة: مسافة الشريط اللي تحت مرة واحدة بس --- */
+(()=>{const s=document.createElement('style');s.textContent=`
+main{padding-bottom:calc(var(--navh,70px) + 6px)!important}
+body #view#view{padding-bottom:12px!important}
+body.xhome #view#view{padding-bottom:76px!important}
+body.xhome main,body.xhome #view#view{min-height:0!important}
+body #view#view.xsq{padding-bottom:75vh!important}
+`;document.head.appendChild(s)})();
+try{fixNav()}catch(e){}
 /* نهاية fix.js */
