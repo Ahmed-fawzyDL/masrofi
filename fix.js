@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.46',XVBUILD='17/10/2026 - 06:25 م';
+const XVER='2.21.47',XVBUILD='17/10/2026 - 07:00 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -3812,5 +3812,172 @@ xLoanPost=function(id){const t=S.txs.find(x=>x.id===id);if(!t||!t.loan)return;
   if(t.loan.sched&&t.loan.sched.length){t.loan.sched.forEach(s=>{s.d=addMonths(s.d,1)});xLoanNext(t)}
   else{let d=t.loan.due||today();do{d=addMonths(d,1)}while(d<today());t.loan.due=d}
   t.loan.post=(t.loan.post||0)+1;save();closeSheet();render();toast('⏭ اترحّلت لـ '+dmy(t.loan.due))};
+try{render()}catch(e){}
+/* ========== 2.21.47 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xln{background:var(--card,#fff);border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:12px;margin:8px 0;cursor:pointer}
+.xln.late{border-color:#dc2626}
+.xlnh{display:flex;justify-content:space-between;gap:8px;font-size:16px}
+.xln small{display:block;opacity:.75;margin-top:4px}
+.xbar{height:6px;background:#e5e7eb;border-radius:4px;margin-top:8px;overflow:hidden}.xbar i{display:block;height:100%;background:#16a34a}
+.xlnal{background:#fef3c7;color:#92400e;border-radius:12px;padding:10px 12px;margin:8px 0;font-weight:700;cursor:pointer}
+.xwarn{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:13px;line-height:1.8}
+.xnote{font-size:12px;opacity:.7;margin:4px 2px 8px}
+`;document.head.appendChild(s)})();
+
+/* ================= السلف: نظام منفصل ================= */
+function XLN(){S.settings.xln=S.settings.xln||[];return S.settings.xln}
+function xLnL(id){return XLN().find(x=>x.id===id)}
+function xLnPaid(l,real){return r2((l.pays||[]).filter(p=>!real||!p.wo).reduce((s,x)=>s+x.a,0))}
+function xLnRem(l){return r2(l.amt-xLnPaid(l))}
+function xLnAlloc(l){let p=xLnPaid(l);const td=today();
+  return(l.sch||[]).slice().sort((a,b)=>a.d.localeCompare(b.d)).map(s=>{const u=Math.min(s.a,Math.max(0,p));p=r2(p-u);const rem=r2(s.a-u);
+    return{...s,pd:u,rem,st:rem<=0.009?'ok':s.d<td?'late':s.d===td?'today':u>0?'part':'up'}})}
+function xLnNext(l){return xLnAlloc(l).find(s=>s.rem>0.009)}
+function xLnDelta(id,before){let s=0;XLN().forEach(l=>{if(l.m===id&&l.d<before)s-=l.amt;(l.pays||[]).forEach(p=>{if(p.m===id&&p.d<before)s+=p.a})});return r2(s)}
+function xLnMoves(id,f,t){const ev=[];XLN().forEach(l=>{
+  if(l.m===id&&l.d>=f&&l.d<=t)ev.push({d:l.d,c:l.c||0,k:'lno',a:-l.amt,l:'🤝 سلفة لـ '+l.who,s:l.note||'',ln:l.id});
+  (l.pays||[]).forEach(p=>{if(p.m===id&&p.d>=f&&p.d<=t)ev.push(p.wo?{d:p.d,c:p.c||0,k:'lnw',a:p.a,l:'🚫 إعدام سلفة '+l.who,s:'اتحولت مصروف "سلف معدومة"',ln:l.id}:{d:p.d,c:p.c||0,k:'lni',a:p.a,l:'🤝 سداد سلفة · '+l.who,s:p.note||'',ln:l.id})})});return ev}
+/* الرصيد بيشمل حركة السلف */
+try{if(String(xBalAt).indexOf('xBal(')<0){const _xbaL=xBalAt;xBalAt=function(id,d){return r2(_xbaL.apply(this,arguments)+xLnDelta(id,d))}}}catch(e){}
+try{if(String(xBal).indexOf('xBalAt')<0){const _xbL=xBal;xBal=function(id){return r2(_xbL.apply(this,arguments)+xLnDelta(id,'9999-12-31'))}}}catch(e){}
+try{const _lgL=xLedger;xLedger=function(id,f,t){const g=_lgL.apply(this,arguments),ex=xLnMoves(id,f,t);
+  if(ex.length){g.ev=g.ev.concat(ex).sort((a,b)=>a.d.localeCompare(b.d)||a.c-b.c);let run=g.o;g.sum={};g.ev.forEach(e=>{run=r2(run+e.a);e.r=run;g.sum[e.k]=r2((g.sum[e.k]||0)+e.a)});g.e=run}return g}}catch(e){}
+
+/* نقل السلف القديمة */
+function xLnMig(){const old=S.txs.filter(t=>t.loan&&t.type==='exp');if(!old.length)return;
+  old.forEach(t=>{const pays=S.txs.filter(x=>x.loanOf===t.id&&!x.pend),paid=r2(pays.reduce((s,p)=>s+p.amount,0)),rem=r2(t.amount-paid);
+    let who=(C(t.cat)?.name||'').replace(/^سلف(ة|ه)?\s*(لـ|ل)?\s*/,'').trim()||(C(t.cat)?.name||'سلفة');
+    const sch=[];if(paid>0)sch.push({id:uid(),d:t.date,a:paid});
+    let fut=[];try{if(typeof xLoanSched==='function')fut=xLoanSched(t)}catch(e){}
+    if(rem>0){if(fut.length&&Math.abs(r2(fut.reduce((s,x)=>s+x.a,0))-rem)<0.02)fut.forEach(x=>sch.push({id:uid(),d:x.d,a:x.a}));else sch.push({id:uid(),d:t.loan.due||addMonths(t.date,1),a:rem})}
+    XLN().push({id:uid(),who,amt:t.amount,m:t.method,d:t.date,note:t.note&&!/^🤝/.test(t.note)?t.note:'',sch,pays:pays.map(p=>({id:uid(),d:p.date,a:p.amount,m:p.method,note:'',c:p.created||0})),c:t.created||Date.now()});
+    for(let i=S.txs.length-1;i>=0;i--){const x=S.txs[i];if(x===t||x.loanOf===t.id)S.txs.splice(i,1)}});
+  save()}
+
+/* شاشة السلف */
+function xLnView(){
+  const ls=XLN(),td=today(),mk=td.slice(0,7),op=ls.filter(l=>l.st!=='wo'&&xLnRem(l)>0.009),cl=ls.filter(l=>!op.includes(l));let out=0,late=0,mo=0;
+  op.forEach(l=>{out+=xLnRem(l);xLnAlloc(l).forEach(s=>{if(s.rem>0){if(s.d<td)late+=s.rem;if(s.d.startsWith(mk))mo+=s.rem}})});
+  const card=l=>{const rem=xLnRem(l),pd=xLnPaid(l,1),nx=xLnNext(l),pc=Math.min(100,Math.round(pd/l.amt*100)),lt=nx&&nx.d<td&&l.st!=='wo';
+    return `<div class="xln ${lt?'late':''}" onclick="xLnOpen('${l.id}')"><div class="xlnh"><b>👤 ${esc(l.who)}</b><b dir="ltr">${num(l.st==='wo'?0:rem)}</b></div><small>${l.st==='wo'?'🚫 اتعدمت':rem<=0.009?'✅ اتسددت':nx?(lt?'⚠️ متأخر · ':'📅 ')+'القسط الجاي '+num(nx.rem)+' يوم '+dmy(nx.d):''} · من ${num(l.amt)} · اتصرفت ${dmy(l.d)}</small><div class="xbar"><i style="width:${pc}%"></i></div></div>`};
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🤝 السلف</h3><button class="mini pri" onclick="xLnNew()">+ سلفة</button></div>`
+   +kpis([['💼 فلوسك عند الناس',fmt(r2(out)),'net'],['⚠️ متأخر',fmt(r2(late)),'exp'],['📅 مستحق الشهر ده',fmt(r2(mo)),'inc']])
+   +(op.length?op.map(card).join(''):'<p class="muted" style="text-align:center">مفيش سلف مفتوحة</p>')
+   +(cl.length?`<details class="gen"><summary>📁 السلف المقفولة (${cl.length})</summary>${cl.map(card).join('')}</details>`:'')
+   +'<p class="xnote">السلف مش بتتحسب مصروف ولا تحصيل. بتأثر بس على رصيد الحساب اللي طلعت منه أو دخلت فيه. ولو حد مسددش، دوس 🚫 إعدام فالباقي يتسجل مصروف.</p>';
+}
+/* سلفة جديدة */
+var XLNM=1;
+function xSchRows(total,n,f){const each=Math.floor(total/n*100)/100;let h='';for(let i=0;i<n;i++){const v=i===n-1?r2(total-each*(n-1)):each;h+=`<div class="xlps"><label>قسط ${i+1}<input type="date" data-sd="${i}" value="${addMonths(f,i)}"></label><label>المبلغ<input data-sa="${i}" inputmode="decimal" dir="ltr" value="${amtStr(v)}"></label></div>`}return h}
+function xSchRead(sel){return[...document.querySelectorAll(sel+' [data-sd]')].map(x=>({id:uid(),d:x.value,a:parseNum((document.querySelector(sel+' [data-sa="'+x.dataset.sd+'"]')||{}).value)||0}))}
+function xSchChk(rows,total){if(!rows.length||rows.some(x=>!x.d||!(x.a>0))){toast('كمّل تواريخ ومبالغ الأقساط');return false}const sm=r2(rows.reduce((s,x)=>s+x.a,0));if(Math.abs(sm-total)>0.01){toast('مجموع الأقساط '+fmt(sm)+' لازم يساوي '+fmt(total));return false}rows.sort((a,b)=>a.d.localeCompare(b.d));return true}
+function xLnNew(){XLNM=1;const nm=[...new Set(XLN().map(l=>l.who))],nd=addMonths(today(),1);
+  sheet(`<h2>🤝 سلفة جديدة</h2>
+  <label>👤 لمين<input id="ln-w" list="ln-wl" placeholder="الاسم"><datalist id="ln-wl">${nm.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></label>
+  <label>المبلغ<input id="ln-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" oninput="xLnGen()"></label>
+  <div class="two"><label>طلعت من حساب<select id="ln-m">${opt(S.methods.filter(m=>m.active&&!xIsCr(m.id)),defMethod())}</select></label><label>التاريخ<input id="ln-d" type="date" value="${today()}"></label></div>
+  <label>ملاحظة<input id="ln-n" placeholder="اختياري"></label>
+  <div class="fl">هيرجعها إزاي؟</div>
+  <div class="seg" id="ln-sg"><button type="button" class="on" data-m="1" onclick="xLnMode(1)">📅 مرة واحدة</button><button type="button" data-m="2" onclick="xLnMode(2)">🧾 على أقساط</button></div>
+  <div id="ln-o1"><label>📅 هيرجعها يوم<input id="ln-1" type="date" value="${nd}"></label></div>
+  <div id="ln-o2" style="display:none"><div class="two"><label>عدد الأقساط<input id="ln-c" inputmode="numeric" value="3" oninput="xLnGen()"></label><label>أول قسط<input id="ln-f" type="date" value="${nd}" onchange="xLnGen()"></label></div><div id="ln-s"></div></div>
+  <button class="btn" onclick="xLnSave()">✅ سجّل السلفة</button>`)}
+function xLnMode(m){XLNM=m;document.querySelectorAll('#ln-sg button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m));$('#ln-o1').style.display=m===1?'':'none';$('#ln-o2').style.display=m===2?'':'none';xLnGen()}
+function xLnGen(){if(XLNM!==2)return;const a=parseNum(($('#ln-a')||{}).value)||0,n=Math.max(1,Math.min(60,Math.round(parseNum(($('#ln-c')||{}).value)||1))),f=($('#ln-f')||{}).value||addMonths(today(),1),el=$('#ln-s');if(el)el.innerHTML=a>0?xSchRows(a,n,f):''}
+function xLnSave(){const w=($('#ln-w').value||'').trim(),a=parseNum($('#ln-a').value),m=$('#ln-m').value,d=$('#ln-d').value;
+  if(!w)return toast('اكتب الاسم');if(!(a>0))return toast('اكتب المبلغ');if(!d)return toast('اختار التاريخ');if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
+  let sch;if(XLNM===1){const d1=$('#ln-1').value;if(!d1)return toast('اختار ميعاد الرجوع');sch=[{id:uid(),d:d1,a}]}else{sch=xSchRead('#ln-s');if(!xSchChk(sch,a))return}
+  XLN().push({id:uid(),who:w,amt:a,m,d,note:($('#ln-n').value||'').trim(),sch,pays:[],c:Date.now()});save();closeSheet();go('xln');toast('✅ اتسجلت السلفة')}
+/* ملف السلفة */
+function xLnOpen(id){const l=xLnL(id);if(!l)return;const al=xLnAlloc(l),rem=xLnRem(l),pd=xLnPaid(l,1),wo=l.st==='wo',SL={ok:'✅ اتسدد',part:'🟡 اتدفع جزء',late:'⚠️ متأخر',today:'🔔 النهارده',up:'⏳ جاي'};
+  sheet(`<h2>🤝 ${esc(l.who)}</h2><p class="muted">اتصرفت ${dmy(l.d)} من ${esc(M(l.m)?.name||'—')}${l.note?' · '+esc(l.note):''}</p>
+  <div class="kv"><span>المبلغ</span><b>${fmt(l.amt)}</b></div><div class="kv"><span>اتسدد</span><b class="pos">${fmt(pd)}</b></div><div class="kv"><span>${wo?'🚫 اتعدم':'الباقي'}</span><b class="neg">${fmt(wo?r2(l.amt-pd):rem)}</b></div>
+  <div class="fl">📆 جدول السداد</div>
+  <div class="list">${al.map((s,i)=>`<div class="row"><div class="grow"><b>${al.length>1?'قسط '+(i+1)+' · ':''}${dmy(s.d)}</b><small>${wo&&s.rem<=0.009&&s.pd&&!pd?'🚫':SL[s.st]}${s.pd>0&&s.rem>0?' · اتدفع '+num(s.pd)+' وفاضل '+num(s.rem):''}</small></div><div class="amt">${num(s.a)}</div>${s.rem>0.009&&!wo?`<button class="mini" title="تأجيل" onclick="xLnDefer('${id}','${s.id}')">⏭</button>`:''}</div>`).join('')}</div>
+  ${(l.pays||[]).length?`<div class="fl">💵 الدفعات</div><div class="list">${l.pays.map(p=>`<div class="row"><div class="grow"><b>${dmy(p.d)}</b><small>${p.wo?'🚫 إعدام (اتحول مصروف)':esc(M(p.m)?.name||'')}${p.note?' · '+esc(p.note):''}</small></div><div class="amt ${p.wo?'':'pos'}">${num(p.a)}</div>${p.wo?'':`<button class="mini ic danger" onclick="xLnPayDel('${id}','${p.id}')">🗑</button>`}</div>`).join('')}</div>`:''}
+  ${rem>0.009&&!wo?`<button class="btn" onclick="xLnPay('${id}')">💵 سجّل دفعة</button><button class="btn ghost" onclick="xLnResch('${id}')">🗓 إعادة جدولة الباقي</button><button class="btn ghost danger" onclick="xLnWo('${id}')">🚫 مش هيسدد (إعدام)</button>`:''}
+  ${wo?`<button class="btn ghost" onclick="xLnUnWo('${id}')">↩️ إلغاء الإعدام</button>`:''}
+  <button class="btn ghost" onclick="xLnEdit('${id}')">✏️ تعديل البيانات</button><button class="btn ghost danger" onclick="xLnDel('${id}')">🗑 حذف السلفة</button>`)}
+/* دفعة */
+function xLnPay(id){const l=xLnL(id);if(!l)return;const nx=xLnNext(l),rem=xLnRem(l);
+  sheet(`<h2>💵 دفعة من ${esc(l.who)}</h2><div class="kv"><span>الباقي كله</span><b class="neg">${fmt(rem)}</b></div>${nx?`<div class="kv"><span>القسط الجاي · ${dmy(nx.d)}</span><b>${fmt(nx.rem)}</b></div>`:''}
+  <label>المبلغ اللي استلمته<input id="lp-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" oninput="xLnPR('${id}')"></label><small id="lp-w" class="muted"></small>
+  <div class="two"><label>استلمت في حساب<select id="lp-m">${opt(S.methods.filter(m=>m.active&&!xIsCr(m.id)),l.m)}</select></label><label>التاريخ<input id="lp-d" type="date" value="${today()}"></label></div>
+  <label>ملاحظة<input id="lp-t" placeholder="اختياري"></label>
+  <div id="lp-p" class="xccb" style="display:none"><div id="lp-r"></div><label>📅 باقي القسط ده هيدفعه يوم<input id="lp-n" type="date" value="${nx?(nx.d<today()?today():nx.d):today()}"></label><p class="xnote">لو سبت نفس التاريخ، الباقي يفضل على ميعاده</p></div>
+  <button class="btn" onclick="xLnPaySv('${id}')">✅ سجّل</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`)}
+function xLnPR(id){const l=xLnL(id);if(!l)return;const a=parseNum(($('#lp-a')||{}).value)||0,nx=xLnNext(l),rem=xLnRem(l),part=nx&&a>0&&a<nx.rem-0.009,p=$('#lp-p'),el=$('#lp-r'),w=$('#lp-w');
+  if(p)p.style.display=part?'':'none';if(el)el.innerHTML=part?`<div class="kv"><span>فاضل من القسط ده</span><b class="neg">${fmt(r2(nx.rem-a))}</b></div>`:'';
+  if(w)w.textContent=a>rem+0.009?'⚠️ المبلغ أكبر من الباقي ('+fmt(rem)+')':a>0?'هيفضل عليه بعد كده: '+fmt(r2(rem-a)):''}
+function xLnPaySv(id){const l=xLnL(id);if(!l)return;const a=parseNum($('#lp-a').value),d=$('#lp-d').value,m=$('#lp-m').value,rem=xLnRem(l),nx=xLnNext(l);
+  if(!(a>0))return toast('اكتب المبلغ');if(a>rem+0.009)return toast('المبلغ أكبر من الباقي ('+fmt(rem)+')');if(!d)return toast('اختار التاريخ');if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
+  const part=nx&&a<nx.rem-0.009,nd=part?($('#lp-n')||{}).value:'';
+  l.pays=l.pays||[];l.pays.push({id:uid(),d,a,m,note:($('#lp-t').value||'').trim(),c:Date.now()});
+  if(part&&nd&&nd!==nx.d){const it=l.sch.find(x=>x.id===nx.id);if(it){const r=r2(nx.rem-a);it.a=r2(it.a-r);l.sch.push({id:uid(),d:nd,a:r})}}
+  save();render();xLnOpen(id);const left=xLnRem(l);toast(left>0.009?`✅ ${fmt(a)} · فاضل ${fmt(left)}`:'✅ اتسددت بالكامل')}
+async function xLnPayDel(id,pid){const l=xLnL(id);if(!l)return;if(!await dlg({title:'مسح الدفعة',msg:'الدفعة دي هتتمسح والمبلغ يرجع على السلفة.',icon:'🗑',ok:'امسح',cancel:'لا'}))return;l.pays=l.pays.filter(p=>p.id!==pid);save();render();xLnOpen(id);toast('اتمسحت')}
+/* تأجيل قسط */
+function xLnDefer(id,sid){const l=xLnL(id),s=l&&xLnAlloc(l).find(x=>x.id===sid);if(!s)return;
+  sheet(`<h2>⏭ تأجيل · ${esc(l.who)}</h2><div class="kv"><span>ميعاده</span><b>${dmy(s.d)}</b></div><div class="kv"><span>المبلغ</span><b>${fmt(s.rem)}</b></div>
+  <label>📅 الميعاد الجديد<input id="lf-d" type="date" value="${addMonths(s.d<today()?today():s.d,1)}"></label>
+  <button class="btn" onclick="xLnDefSv('${id}','${sid}')">✅ أجّل</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`)}
+function xLnDefSv(id,sid){const l=xLnL(id);if(!l)return;const it=l.sch.find(x=>x.id===sid),s=xLnAlloc(l).find(x=>x.id===sid),nd=$('#lf-d').value;if(!it||!s||!nd)return toast('اختار التاريخ');
+  if(s.pd>0){it.a=r2(it.a-s.rem);l.sch.push({id:uid(),d:nd,a:s.rem})}else it.d=nd;l.defs=(l.defs||0)+1;save();render();xLnOpen(id);toast('⏭ اتأجل لـ '+dmy(nd))}
+/* إعادة جدولة */
+function xLnResch(id){const l=xLnL(id);if(!l)return;
+  sheet(`<h2>🗓 إعادة جدولة · ${esc(l.who)}</h2><div class="kv"><span>الباقي</span><b class="neg">${fmt(xLnRem(l))}</b></div>
+  <div class="two"><label>عدد الأقساط<input id="rs-c" inputmode="numeric" value="1" oninput="xLnRG('${id}')"></label><label>أول قسط<input id="rs-f" type="date" value="${addMonths(today(),1)}" onchange="xLnRG('${id}')"></label></div><div id="rs-s"></div>
+  <button class="btn" onclick="xLnRSv('${id}')">✅ احفظ الجدول</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`);xLnRG(id)}
+function xLnRG(id){const l=xLnL(id),el=$('#rs-s');if(!l||!el)return;const n=Math.max(1,Math.min(60,Math.round(parseNum(($('#rs-c')||{}).value)||1)));el.innerHTML=xSchRows(xLnRem(l),n,($('#rs-f')||{}).value||addMonths(today(),1))}
+function xLnRSv(id){const l=xLnL(id);if(!l)return;const rows=xSchRead('#rs-s');if(!xSchChk(rows,xLnRem(l)))return;
+  l.sch=xLnAlloc(l).filter(s=>s.pd>0).map(s=>({id:s.id,d:s.d,a:s.pd})).concat(rows);save();render();xLnOpen(id);toast('✅ اتعمل جدول جديد')}
+/* إعدام */
+async function xLnWo(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l);if(!(rem>0))return;
+  if(!await dlg({title:'إعدام السلفة',msg:`الباقي ${fmt(rem)} هيتسجل مصروف "سلف معدومة" النهارده، والسلفة تتقفل. رصيد الحساب مش هيتغير.`,icon:'🚫',ok:'أيوه',cancel:'لا'}))return;
+  const d=today();if(isClosed(d))return toast('الشهر مقفول');const c=ensureCat('سلف معدومة','exp');c.active=true;
+  const tx={id:uid(),type:'exp',amount:rem,cat:c.id,method:l.m,date:d,note:'🚫 سلفة '+l.who+' مش هتترد',files:[],created:Date.now(),xlnwo:l.id};S.txs.push(tx);
+  const pid=uid();l.pays.push({id:pid,d,a:rem,m:l.m,wo:1,note:'',c:Date.now()});l.st='wo';l.wo={tx:tx.id,pay:pid};save();render();xLnOpen(id);toast('🚫 اتقفلت واتسجلت مصروف')}
+function xLnUnWo(id){const l=xLnL(id);if(!l||!l.wo)return;const i=S.txs.findIndex(t=>t.id===l.wo.tx);if(i>=0)S.txs.splice(i,1);l.pays=l.pays.filter(p=>p.id!==l.wo.pay);delete l.wo;delete l.st;save();render();xLnOpen(id);toast('↩️ رجعت مفتوحة')}
+/* تعديل وحذف */
+function xLnEdit(id){const l=xLnL(id);if(!l)return;
+  sheet(`<h2>✏️ تعديل السلفة</h2><label>👤 لمين<input id="le-w" value="${esc(l.who)}"></label><label>المبلغ<input id="le-a" class="amt-in" inputmode="decimal" dir="ltr" value="${amtStr(l.amt)}"></label>
+  <div class="two"><label>طلعت من حساب<select id="le-m">${opt(S.methods.filter(m=>!xIsCr(m.id)),l.m)}</select></label><label>التاريخ<input id="le-d" type="date" value="${l.d}"></label></div>
+  <label>ملاحظة<input id="le-n" value="${esc(l.note||'')}"></label><button class="btn" onclick="xLnEdSv('${id}')">💾 حفظ</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`)}
+function xLnEdSv(id){const l=xLnL(id);if(!l)return;const w=($('#le-w').value||'').trim(),a=parseNum($('#le-a').value),d=$('#le-d').value;if(!w||!(a>0)||!d)return toast('كمّل البيانات');
+  if(a<xLnPaid(l)-0.009)return toast('المبلغ أقل من اللي اتسدد');const df=r2(a-l.amt);
+  if(df){const al=xLnAlloc(l),last=al.filter(s=>s.rem>0.009).pop();if(df>0){if(last)l.sch.find(x=>x.id===last.id).a=r2(last.a+df);else l.sch.push({id:uid(),d:addMonths(today(),1),a:df})}else{if(!last||last.rem<-df-0.009)return toast('غيّر المبلغ وبعدين اعمل 🗓 إعادة جدولة');l.sch.find(x=>x.id===last.id).a=r2(last.a+df)}}
+  Object.assign(l,{who:w,amt:a,m:$('#le-m').value,d,note:($('#le-n').value||'').trim()});save();render();xLnOpen(id);toast('✅ اتحفظ')}
+async function xLnDel(id){const l=xLnL(id);if(!l)return;if(!await dlg({title:'حذف السلفة',msg:'السلفة وكل دفعاتها هتتمسح، ورصيد الحساب هيرجع زي ما كان.',icon:'🗑',ok:'امسح',cancel:'لا'}))return;
+  if(l.wo){const i=S.txs.findIndex(t=>t.id===l.wo.tx);if(i>=0)S.txs.splice(i,1)}S.settings.xln=XLN().filter(x=>x.id!==id);save();closeSheet();render();toast('اتمسحت')}
+/* تنبيه الرئيسية + مدخل في المزيد */
+function xLnInject(){const el=$('#view');if(!el)return;
+  if(view==='home'&&!el.querySelector('.xlnal')){const td=today();let n=0,s=0;XLN().forEach(l=>{if(l.st==='wo')return;xLnAlloc(l).forEach(x=>{if(x.rem>0.009&&x.d<=td){n++;s+=x.rem}})});
+    if(n){const b=`<div class="xlnal" onclick="go('xln')">🤝 ${n===1?'سلفة مستحقة':n+' أقساط سلف مستحقة'} · ${num(r2(s))} · دوس للتفاصيل</div>`,h=el.querySelector('.phead');h?h.insertAdjacentHTML('afterend',b):el.insertAdjacentHTML('afterbegin',b)}}
+  if(view==='more'&&!el.querySelector('[onclick*="xln"]')){const n=XLN().filter(l=>l.st!=='wo'&&xLnRem(l)>0.009).length,b=`<button class="btn ghost" onclick="go('xln')">🤝 السلف والمديونيات${n?' · '+n+' مفتوحة':''}</button>`,h=el.querySelector('.phead');h?h.insertAdjacentHTML('afterend',b):el.insertAdjacentHTML('afterbegin',b)}}
+try{const _goL=go;go=function(v){if(typeof v==='string'&&/^loans?$/i.test(v))v='xln';if(v==='xln'){try{XBSHOW.clear()}catch(e){}view='xln';render();try{window.scrollTo(0,0)}catch(e){}return}return _goL.apply(this,arguments)}}catch(e){}
+try{const _rnL=render;render=function(){
+  try{if(S.txs.some(t=>t.loan&&t.type==='exp'))xLnMig()}catch(e){}
+  if(view!=='xln'){const r=_rnL.apply(this,arguments);try{xLnInject()}catch(e){}return r}
+  view='more';let r;try{r=_rnL.apply(this,arguments)}finally{view='xln'}
+  const el=$('#view')||document.querySelector('main');if(el)el.innerHTML=xLnView();return r}}catch(e){}
+
+/* ================= كشف الحساب: رصيد أول الفترة جه منين + تنبيه السالب ================= */
+function xPvD(d){const x=new Date(d+'T12:00:00');x.setDate(x.getDate()-1);return x.toISOString().slice(0,10)}
+xLedgerHTML=function(id,f,t,kp){
+  const L=XTALL||S.txs,Cs=XCALL||S.cash,g=xLedger(id,f,t,L,Cs),s=g.sum,cr=xIsCr(id),ca=id===xCashAcct();
+  const sg=v=>(v<0?'-':'+')+num(Math.abs(v)),N=v=>(v<0?'-':'')+num(Math.abs(v)),rw=(l,v,c)=>`<tr>${cT(l)}${cN(v,c||'')}</tr>`;
+  const KN=[['inc','💰 التحصيلات'],['ccr','💳 تحصيل لحساب الكريديت'],['exp','💸 المصروفات'],['tri','🔁 تحويلات داخلة'],['tro','🔁 تحويلات خارجة'],['cc','💳 سداد الكريديت'],['cash',ca?'🏧 سحب من البنوك للكاش':'🏧 سحب كاش'],['lno','🤝 سلف اتصرفت'],['lni','🤝 سداد سلف'],['lnw','🚫 سلف اتعدمت']];
+  let h=kp?rkp([['رصيد أول الفترة',g.o,'net'],['داخل',r2(g.ev.filter(e=>e.a>0).reduce((a,e)=>a+e.a,0)),'inc'],['خارج',r2(-g.ev.filter(e=>e.a<0).reduce((a,e)=>a+e.a,0)),'exp'],['رصيد آخر الفترة',g.e,g.e<0?'exp':'inc']]):'';
+  if(!cr){const ng=g.o<0?{d:f,r:g.o}:g.ev.find(e=>e.r<0);if(ng)h+=`<div class="xwarn">⚠️ الرصيد نزل تحت الصفر يوم <b>${dmy(ng.d)}</b> (<b dir="ltr">${N(ng.r)}</b>).<br>الحساب مايقدرش يبقى بالسالب، فده معناه واحد من دول: فيه فلوس دخلت قبل كده ومتسجلتش، أو حركة متسجلة بتاريخ متأخر عن الحقيقي، أو رصيد البداية أقل من الحقيقي.</div>`}
+  if(f>'1900-01-02'){const b0=xBalAt(id,'1900-01-01',L,Cs),pre=xLedger(id,'1900-01-01',xPvD(f),L,Cs),ps=pre.sum,sm=r2(pre.ev.reduce((a,e)=>a+e.a,0)),df=r2(g.o-b0-sm),rows=[rw('رصيد البداية المتسجل للحساب',N(b0))];
+    KN.forEach(([k,l])=>{if(ps[k])rows.push(rw(l+' · قبل '+dmy(f),sg(ps[k]),ps[k]<0?'exp':'inc'))});if(Math.abs(df)>0.009)rows.push(rw('⚖️ تسوية رصيد البداية',sg(df),df<0?'exp':'inc'));
+    h+=rsec('🔎 رصيد أول الفترة جه منين',String(pre.ev.length)+' حركة')+rtbl(['البيان','المبلغ|n'],rows,`<tr><td class="t"><b>= رصيد أول الفترة · ${dmy(f)}</b></td><td class="n"><b>${nm(N(g.o))}</b></td></tr>`)+(pre.ev.length?'<p class="xnote">عشان تشوف الحركات دي واحدة واحدة، اختار الفترة: كل الفترات</p>':'')}
+  const rows=[rw('رصيد أول الفترة · '+dmy(f),N(g.o))];KN.forEach(([k,l])=>{if(s[k])rows.push(rw(l,sg(s[k]),s[k]<0?'exp':'inc'))});
+  h+=rsec('🧮 الملخص')+rtbl(['البيان','المبلغ|n'],rows,`<tr><td class="t"><b>= رصيد آخر الفترة · ${dmy(t)}</b></td><td class="n"><b>${nm(N(g.e))}</b></td></tr>`);
+  h+=rsec('📋 كل الحركات',String(g.ev.length))+'<p class="xnote">الرصيد في كل سطر = الرصيد اللي قبله + المبلغ · الأخضر داخل والأحمر خارج · الرصيد بالأحمر يعني بالسالب</p>'
+    +(g.ev.length?rtbl(['التاريخ|c','البيان','المبلغ|n','الرصيد|n'],g.ev.map(e=>`<tr ${e.id?`class="clk" onclick="editTx('${e.id}')"`:e.ln?`class="clk" onclick="xLnOpen('${e.ln}')"`:''}>${cD(e.d)}${cT(esc(e.l),esc(e.s||''))}${cN(sg(e.a),e.a<0?'exp':'inc')}${cN(N(e.r),e.r<0&&!cr?'exp':'')}</tr>`)):NONE);
+  return h;
+};
 try{render()}catch(e){}
 /* نهاية fix.js */
