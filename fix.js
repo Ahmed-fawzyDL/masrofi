@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.49',XVBUILD='17/10/2026 - 07:05 م';
+const XVER='2.21.50',XVBUILD='17/10/2026 - 07:46 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -4335,5 +4335,92 @@ xLnView=function(){
    +(cl.length?`<details class="gen"><summary>📁 السلف المقفولة (${cl.length})</summary>${cl.map(card).join('')}</details>`:'')
    +'<p class="xnote">السلفة نفسها مش بتتحسب مصروف. السداد بيتسجل تحصيل في بند "سداد سلف". ولو حد مش هيرجعها، دوس 🧾 شطب فالباقي يتسجل مصروف.</p>';
 };
+try{render()}catch(e){}
+/* ========== 2.21.50 ========== */
+
+/* ================= السلفة: مصروف لما تطلع · تحصيل لما ترجع ================= */
+var XLNED=null;
+function xLnECat(){const c=ensureCat('سلف','exp');c.active=true;return c}
+function xLnOutTx(l){const t={id:uid(),type:'exp',amount:l.amt,cat:xLnECat().id,method:l.m,via:'',date:l.d,note:'🤝 سلفة لـ '+l.who,files:[],created:Date.now(),xlno:l.id};S.txs.push(t);l.tx=t.id;return t}
+xLnDelta=function(id,before){let s=0;XLN().forEach(l=>{if(!l.tx&&l.m===id&&l.d<before)s-=l.amt;(l.pays||[]).forEach(p=>{if(!p.tx&&!p.off&&!p.wo&&p.m===id&&p.d<before)s+=p.a})});return r2(s)};
+xLnMoves=function(id,f,t){const ev=[];XLN().forEach(l=>{if(!l.tx&&l.m===id&&l.d>=f&&l.d<=t)ev.push({d:l.d,c:l.c||0,k:'lno',a:-l.amt,l:'🤝 سلفة لـ '+l.who,s:l.note||'',ln:l.id})});return ev};
+try{const _sy=xLnSync;xLnSync=function(){let ch=0;try{XLN().forEach(l=>{
+  if(l.wo&&l.wo.tx){const i=S.txs.findIndex(t=>t.id===l.wo.tx);if(i>=0)S.txs.splice(i,1);delete l.wo.tx;ch=1}
+  if(!l.tx){xLnOutTx(l);xLnLog(l,'💸 السلفة اتسجلت مصروف في بند "سلف"');ch=1;return}
+  const t=S.txs.find(x=>x.id===l.tx);
+  if(!t){xLnOutTx(l);xLnLog(l,'💸 مصروف السلفة اتمسح فاتسجل تاني. عشان تمسح السلفة امسحها من 🤝 السلف');ch=1;return}
+  if(XLNED===l.id){t.date=l.d;t.method=l.m;t.amount=l.amt;t.note='🤝 سلفة لـ '+l.who;ch=1;return}
+  if(t.date!==l.d||t.method!==l.m){if(t.date!==l.d)xLnLog(l,'✏️ التاريخ اتغير من المصروفات لـ '+dmy(t.date));if(t.method!==l.m)xLnLog(l,'✏️ الحساب اتغير من المصروفات لـ '+xLnAcc(t.method));l.d=t.date;l.m=t.method;ch=1}
+  if(t.amount!==l.amt){const df=r2(t.amount-l.amt),last=xLnAlloc(l).filter(s=>s.rem>0.009).pop();
+    if(t.amount>=xLnPaid(l)-0.009&&(df>0||(last&&last.rem>=-df-0.009))){if(last)l.sch.find(x=>x.id===last.id).a=r2(last.a+df);else l.sch.push({id:uid(),d:addMonths(today(),1),a:df});xLnLog(l,'✏️ المبلغ اتغير من المصروفات من '+num(l.amt)+' لـ '+num(t.amount));l.amt=t.amount}
+    else{t.amount=l.amt;toast('مبلغ السلفة مايتغيرش كده، غيّره من 🤝 السلف')}ch=1}
+  if(t.pend){t.pend=false;ch=1}
+  if(t.note!=='🤝 سلفة لـ '+l.who){t.note='🤝 سلفة لـ '+l.who;ch=1}
+})}catch(e){}if(ch)save();return _sy.apply(this,arguments)}}catch(e){}
+try{const _w=xLnEdSv;xLnEdSv=function(id){XLNED=id;try{return _w.apply(this,arguments)}finally{XLNED=null}}}catch(e){}
+try{const _w=xLnDel;xLnDel=async function(id){const l=xLnL(id),tx=l&&l.tx,r=await _w.apply(this,arguments);try{if(tx&&!xLnL(id)){const i=S.txs.findIndex(t=>t.id===tx);if(i>=0){S.txs.splice(i,1);save();render()}}}catch(e){}return r}}catch(e){}
+xLnWo=async function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l);if(!(rem>0))return;
+  if(!await dlg({title:'شطب السلفة',msg:`الباقي ${fmt(rem)} مش هيترد والسلفة هتتقفل. السلفة متسجلة مصروف من الأول، فمش هيتسجل حاجة تانية.`,icon:'🧾',ok:'أيوه، اشطبها',cancel:'لا'}))return;
+  const pid=uid();l.pays.push({id:pid,d:today(),a:rem,m:l.m,wo:1,note:'',c:Date.now()});l.st='wo';l.wo={pay:pid};xLnLog(l,'🧾 اتشطب الباقي '+num(rem)+' · مش هيترد');save();render();xLnOpen(id);toast('🧾 اتشطبت')};
+try{const _w=xLnOpen;xLnOpen=function(){const r=_w.apply(this,arguments);try{($('#sheet')||document).querySelectorAll('small').forEach(s=>{if(s.textContent.indexOf('شطب · اتسجل مصروف')>=0)s.textContent=s.textContent.replace('شطب · اتسجل مصروف','شطب · مش هيترد')})}catch(e){}return r}}catch(e){}
+try{const _w=xLnView;xLnView=function(){const h=_w.apply(this,arguments);return typeof h==='string'?h.replace(/<p class="xnote">السلفة نفسها[\s\S]*?<\/p>/,'<p class="xnote">السلفة بتتسجل مصروف في بند "سلف"، والسداد بيتسجل تحصيل في بند "سداد سلف". ولو حد مش هيرجعها، دوس 🧾 شطب والسلفة تتقفل.</p>'):h}}catch(e){}
+
+/* ================= تحصيل عادي / تحصيل عميل: اختيار ================= */
+xClInjForm=function(){if($('#f-cl'))return;const sh=$('#sheet');if(!sh)return;const e=XCLE?S.txs.find(t=>t.id===XCLE):null,h2=(sh.querySelector('h2')||{}).textContent||'';
+  const inc=e?(e.type==='inc'&&!e.xlnp):(/لسداد الكريديت/.test(sh.textContent)||/تحصيل|دخل/.test(h2));if(!inc)return;
+  const cl=e&&e.cl||'',k=e&&e.clk||'m',L=XCL().filter(c=>!c.off||c.id===cl).sort((a,b)=>(+a.no||0)-(+b.no||0));XCLFK=k;
+  const h=`<div class="xclf"><div class="seg" id="f-clm"><button type="button" data-m="0" class="${cl?'':'on'}" onclick="xClFM(0)">💵 تحصيل عادي</button><button type="button" data-m="1" class="${cl?'on':''}" onclick="xClFM(1)">👥 تحصيل عميل</button></div>
+  <div id="f-clw" style="${cl?'':'display:none'}">${L.length?`<label>👥 العميل<select id="f-cl" onchange="xClFC()"><option value="">— اختار العميل —</option>${L.map(c=>`<option value="${c.id}" ${c.id===cl?'selected':''}>#${esc(String(c.no))} · ${esc(c.name)}</option>`).join('')}</select></label><div class="seg" id="f-clk" style="${cl?'':'display:none'}">${['m','y','o'].map(x=>`<button type="button" data-k="${x}" class="${x===k?'on':''}" onclick="xClFK('${x}')">${XCLK[x]}</button>`).join('')}</div>`:`<input type="hidden" id="f-cl" value=""><p class="xnote">مفيش عملاء لسه. ضيفهم من المزيد ← 👥 العملاء</p>`}</div></div>`;
+  const a=sh.querySelector('.amt-in'),lb=a&&a.closest('label'),hh=sh.querySelector('h2');if(lb)lb.insertAdjacentHTML('afterend',h);else if(hh)hh.insertAdjacentHTML('afterend',h)};
+function xClFM(m){document.querySelectorAll('#f-clm button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m));const w=$('#f-clw'),s=$('#f-cl');if(w)w.style.display=m?'':'none';
+  if(!m&&s){s.value='';const k=$('#f-clk');if(k)k.style.display='none'}}
+
+/* ================= 🏧 سحب وإيداع كاش ================= */
+var XCWT='m';
+function xTrNew(f,to,a,d,note){return{id:uid(),type:'tr',amount:a,method:f,to,cat:'',via:'',date:d,note,files:[],created:Date.now()}}
+function xCwOpts(sel,fl){return opt(S.methods.filter(m=>m.active&&!xIsCr(m.id)&&(!fl||fl(m))),sel)}
+function xCwNames(){const s=new Set();S.txs.forEach(t=>{if(t.xwho)s.add(t.xwho)});XLN().forEach(l=>s.add(l.who));return[...s].map(n=>`<option value="${esc(n)}">`).join('')}
+function xCashSheet(t){const keep=($('#xcw-a')||{}).value||'';XCWT=t||XCWT||'m';const ca=xCashAcct(),nonCa=m=>m.id!==ca,ok=id=>id&&M(id)&&id!==ca;
+  const firstB=(S.methods.find(m=>m.active&&!xIsCr(m.id)&&m.id!==ca)||{}).id,src=ok(S.settings.xcwSrc)?S.settings.xcwSrc:firstB,bank=ok(S.settings.xcwBank)?S.settings.xcwBank:src,dep=ok(S.settings.xcwDep)?S.settings.xcwDep:src;
+  const tabs=`<div class="seg" id="xcw-t">${[['m','🏧 من الماكينة'],['p','🙋 من شخص'],['d','🏦 إيداع']].map(([k,l])=>`<button type="button" class="${k===XCWT?'on':''}" onclick="xCashSheet('${k}')">${l}</button>`).join('')}</div>`;
+  const amt=l=>`<label>${l}<input id="xcw-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" value="${esc(keep)}"></label>`,dt=`<label>التاريخ<input id="xcw-d" type="date" value="${today()}"></label>`;
+  let b='';
+  if(XCWT==='m')b=`<p class="xnote">سحبت من الماكينة والفلوس بقت معاك كاش</p>
+    <div class="two"><label>سحبت من حساب<select id="xcw-s">${xCwOpts(src,nonCa)}</select></label><label>الفلوس راحت لـ<select id="xcw-to">${xCwOpts(ca)}</select></label></div>
+    ${amt('المبلغ')}<div class="two"><label>رسوم السحب (لو فيه)<input id="xcw-f" inputmode="decimal" dir="ltr" placeholder="0"></label>${dt}</div>`;
+  if(XCWT==='p')b=`<p class="xnote">أخدت كاش من حد وحوّلتله من البنك. مش بيتحسب تحصيل ولا مصروف، ومصاريف التحويل بس هي اللي بتتسجل مصروف</p>
+    <label>👤 أخدت من مين<input id="xcw-w" placeholder="الاسم" list="xcw-wl"><datalist id="xcw-wl">${xCwNames()}</datalist></label>
+    ${amt('المبلغ اللي أخدته كاش')}
+    <div class="two"><label>حوّلتله من حساب<select id="xcw-s">${xCwOpts(bank,nonCa)}</select></label><label>الكاش راح لـ<select id="xcw-to">${xCwOpts(ca)}</select></label></div>
+    <div class="two"><label>مصاريف التحويل<input id="xcw-f" inputmode="decimal" dir="ltr" placeholder="0"></label>${dt}</div>`;
+  if(XCWT==='d'){const cut=new Date(Date.now()-120*864e5).toISOString().slice(0,10),dep0={};S.txs.forEach(x=>{if(x.xref)dep0[x.xref]=r2((dep0[x.xref]||0)+x.amount)});
+    const refs=S.txs.filter(x=>x.type==='inc'&&!x.pend&&x.method===ca&&x.date>=cut).sort((a,b)=>b.date.localeCompare(a.date));
+    b=`<p class="xnote">صاحبك أخد منك كاش وحوّلك على البنك. مش بيتحسب تحصيل، بيتسجل نقل فلوس من الكاش للبنك</p>
+    <div class="two"><label>من<select id="xcw-s">${xCwOpts(ca)}</select></label><label>وصلت على حساب<select id="xcw-to">${xCwOpts(dep,nonCa)}</select></label></div>
+    ${amt('المبلغ')}
+    <label>👤 مين حوّل<input id="xcw-w" placeholder="الاسم (اختياري)" list="xcw-wl"><datalist id="xcw-wl">${xCwNames()}</datalist></label>
+    <label>🔗 الفلوس دي من تحصيل (للعلم بس)<select id="xcw-r"><option value="">— مش مربوطة —</option>${refs.map(x=>{const c=x.cl&&xClL(x.cl);return `<option value="${x.id}">${dmy(x.date)} · ${esc(C(x.cat)?.name||'')}${c?' · '+esc(c.name):''} · ${num(x.amount)}${dep0[x.id]?' · اتودع منه '+num(dep0[x.id]):''}</option>`}).join('')}</select></label>${dt}`}
+  sheet(`<h2>🏧 سحب وإيداع كاش</h2>${tabs}${b}<label>ملاحظة<input id="xcw-n" placeholder="اختياري"></label><button class="btn" onclick="xCashSave()">✅ سجّل</button>`)}
+function xCashSave(){const g=k=>(($('#xcw-'+k)||{}).value||'').trim(),a=parseNum(g('a')),d=g('d'),s=g('s'),to=g('to'),f=parseNum(g('f'))||0,w=g('w'),n=g('n'),ca=xCashAcct(),now=Date.now();
+  if(!(a>0))return toast('اكتب المبلغ');if(!d)return toast('اختار التاريخ');if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
+  if(!s||!to)return toast('اختار الحسابات');if(s===to)return toast('الحسابين واحد');if(XCWT==='p'&&!w)return toast('اكتب أخدت من مين');
+  let msg='';
+  if(XCWT==='m'){if(to===ca)S.cash.push({id:uid(),date:d,method:s,amount:a,note:n,created:now});else S.txs.push(xTrNew(s,to,a,d,'🏧 سحب من الماكينة'+(n?' · '+n:'')));
+    if(f>0){const c=ensureCat('رسوم سحب كاش','exp');c.active=true;S.txs.push({id:uid(),type:'exp',amount:f,cat:c.id,method:s,via:'',date:d,note:'🏧 رسوم سحب '+num(a),files:[],created:now})}
+    S.settings.xcwSrc=s;msg='🏧 اتسحب '+fmt(a)+' من '+M(s).name+' لـ '+M(to).name}
+  if(XCWT==='p'){const t=xTrNew(s,to,a,d,'🙋 كاش من '+w+' واتحوّلّه'+(n?' · '+n:''));t.xwho=w;S.txs.push(t);
+    if(f>0){const c=ensureCat('مصاريف إنستاباي','exp');c.active=true;S.txs.push({id:uid(),type:'exp',amount:f,cat:c.id,method:s,via:'',date:d,note:'🙋 تحويل لـ '+w,files:[],created:now,feeOf:t.id})}
+    S.settings.xcwBank=s;msg='🙋 '+fmt(a)+' كاش من '+w+' · اتخصم من '+M(s).name}
+  if(XCWT==='d'){const r=g('r'),t=xTrNew(s,to,a,d,'🏦 إيداع'+(w?' من '+w:'')+(n?' · '+n:''));if(w)t.xwho=w;if(r)t.xref=r;t.xdep=1;S.txs.push(t);S.settings.xcwDep=to;msg='🏦 اتودع '+fmt(a)+' في '+M(to).name}
+  save();closeSheet();render();toast(msg)}
+xDrWrap('xCashSheet');
+/* سحب كاش القديم يفتح الجديد (التعديل يفضل زي ما هو) */
+try{const _shH=sheet;sheet=function(h){try{if(typeof h==='string'&&h.indexOf('xcw-')<0){const m=h.match(/<h2[^>]*>([\s\S]*?)<\/h2>/);
+  if(m&&/سحب/.test(m[1])&&/كاش|ATM|🏧/.test(m[1])&&!/تعديل/.test(m[1])&&!/حذف|🗑/.test(h)&&/<input/.test(h))return xCashSheet('m')}}catch(e){}return _shH.apply(this,arguments)}}catch(e){}
+/* الإيداع المربوط بتحصيل يبان في كشف الحساب */
+try{const _lgX=xLedger;xLedger=function(){const g=_lgX.apply(this,arguments);try{const T=XTALL||S.txs;g.ev.forEach(e=>{if(!e.id)return;const t=T.find(x=>x.id===e.id);
+  if(t&&t.xref){const r=T.find(x=>x.id===t.xref);if(r){const c=r.cl&&xClL(r.cl);e.s=(e.s?e.s+' · ':'')+'🔗 من تحصيل '+(C(r.cat)?.name||'')+(c?' · '+c.name:'')+' '+num(r.amount)+' ('+dmy(r.date)+')'}}})}catch(e){}return g}}catch(e){}
+/* زرار في الحسابات والمزيد */
+try{const _rnW=render;render=function(){const r=_rnW.apply(this,arguments);try{const el=$('#view');if(el&&(view==='pmv'||view==='more')&&!el.querySelector('[onclick*="xCashSheet"]')){const b=`<button class="btn ghost" onclick="xCashSheet('m')">🏧 سحب وإيداع كاش</button>`,h=el.querySelector('.phead');h?h.insertAdjacentHTML('afterend',b):el.insertAdjacentHTML('afterbegin',b)}}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
