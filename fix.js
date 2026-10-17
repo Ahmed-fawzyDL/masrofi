@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.45',XVBUILD='17/10/2026 - 06:05 م';
+const XVER='2.21.46',XVBUILD='17/10/2026 - 06:25 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -3639,5 +3639,178 @@ xCcMiss=function(d){
   F.method=c.id;F.via='card';F.amount=amtStr(d);F.date=isClosed(k.we)?today():k.we;SHKEEP=1;txForm();
   toast('سجّل المصروف الناقص على الكريديت، وبعدها هرجعك للسداد');
 };
+try{render()}catch(e){}
+/* ========== 2.21.46 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xlps{display:flex;gap:6px;align-items:flex-end}.xlps label{flex:1;min-width:0;margin:6px 0 0!important}
+.xaa .mini{white-space:nowrap}
+`;document.head.appendChild(s)})();
+
+/* --- كشف الحساب: زي كشف البنك، من الرصيد للرصيد، وكل حركة بتفاصيلها --- */
+function xCcIncl(x){const T=S.txs;try{if(XTALL)S.txs=XTALL;const id=x.to,mk=x.date.slice(0,7),k=xCcCalc(id,mk),p=[];
+  if(k.A)p.push('مشتريات '+dmy(k.ws)+' – '+dmy(k.we)+': '+num(k.A));
+  S.txs.filter(t=>t.method===id&&t.type==='exp'&&!t.pend&&t.date.startsWith(mk)&&xCcCyc(t)).forEach(t=>p.push((C(t.cat)?.name||'—')+': '+num(t.amount)));
+  return p.length?'يشمل: '+p.join(' · '):(x.note||'')}catch(e){return x.note||''}finally{S.txs=T}}
+function xLedger(id,f,t,L,Cs){
+  const ca=xCashAcct(),o=xBalAt(id,f,L,Cs),ev=[];
+  L.forEach(x=>{if(x.pend||x.date<f||x.date>t)return;
+    if(x.type==='tr'){
+      if(x.to===id)ev.push({d:x.date,c:x.created||0,k:'tri',a:x.amount,l:'🔁 تحويل من '+(M(x.method)?.name||'—'),s:x.note||'',id:x.id});
+      if(x.method===id){const cc=xIsCr(x.to);ev.push({d:x.date,c:x.created||0,k:cc?'cc':'tro',a:-x.amount,l:cc?'💳 سداد '+(M(x.to)?.name||'الكريديت'):'🔁 تحويل لـ '+(M(x.to)?.name||'—'),s:cc?xCcIncl(x):(x.note||''),id:x.id})}
+    }else if(x.method===id){const inc=x.type==='inc';ev.push({d:x.date,c:x.created||0,k:inc?(x.ccr?'ccr':'inc'):'exp',a:inc?x.amount:-x.amount,l:(inc?'💰 ':'💸 ')+(C(x.cat)?.name||'—'),s:[x.via?viaTxt(x.via):'',x.note&&!/^🧾/.test(x.note)?x.note:''].filter(Boolean).join(' · '),id:x.id})}
+  });
+  Cs.forEach(c=>{if(c.date<f||c.date>t)return;if(c.method===id&&id!==ca)ev.push({d:c.date,c:0,k:'cash',a:-c.amount,l:'🏧 سحب كاش',s:c.note||''});else if(id===ca&&c.method!==ca)ev.push({d:c.date,c:0,k:'cash',a:c.amount,l:'🏧 سحب من '+(M(c.method)?.name||'—'),s:c.note||''})});
+  ev.sort((a,b)=>a.d.localeCompare(b.d)||a.c-b.c);
+  let run=o;const sum={};ev.forEach(e=>{run=r2(run+e.a);e.r=run;sum[e.k]=r2((sum[e.k]||0)+e.a)});
+  return{o,e:run,ev,sum};
+}
+function xLedgerHTML(id,f,t,kp){
+  const g=xLedger(id,f,t,XTALL||S.txs,XCALL||S.cash),s=g.sum,sg=v=>(v<0?'-':'+')+num(Math.abs(v)),rw=(l,v,c)=>`<tr>${cT(l)}${cN(v,c||'')}</tr>`;
+  const rows=[rw('رصيد أول الفترة · '+dmy(f),num(g.o))];
+  [['inc','💰 التحصيلات'],['ccr','💳 تحصيل لحساب الكريديت'],['exp','💸 المصروفات'],['tri','🔁 تحويلات داخلة'],['tro','🔁 تحويلات خارجة'],['cc','💳 سداد الكريديت'],['cash','🏧 سحب كاش']].forEach(([k,l])=>{if(s[k])rows.push(rw(l,sg(s[k]),s[k]<0?'exp':'inc'))});
+  let h=kp?rkp([['رصيد أول الفترة',g.o,'net'],['داخل',r2(g.ev.filter(e=>e.a>0).reduce((a,e)=>a+e.a,0)),'inc'],['خارج',r2(-g.ev.filter(e=>e.a<0).reduce((a,e)=>a+e.a,0)),'exp'],['رصيد آخر الفترة',g.e,g.e<0?'exp':'inc']]):'';
+  h+=rsec('🧮 الملخص')+rtbl(['البيان','المبلغ|n'],rows,`<tr><td class="t"><b>رصيد آخر الفترة · ${dmy(t)}</b></td><td class="n"><b class="${g.e<0?'exp':'inc'}">${nm(num(g.e))}</b></td></tr>`);
+  h+=rsec('📋 كل الحركات',String(g.ev.length))+(g.ev.length?rtbl(['التاريخ|c','البيان','المبلغ|n','الرصيد|n'],g.ev.map(e=>`<tr ${e.id?`class="clk" onclick="editTx('${e.id}')"`:''}>${cD(e.d)}${cT(esc(e.l),esc(e.s||''))}${cN(sg(e.a),e.a<0?'exp':'inc')}${cN(num(e.r),e.r<0?'exp':'')}</tr>`)):NONE);
+  return h;
+}
+XPD.acct='m';
+function xBAcct(){xLegacy('acct');const id=(RF.xms||[]).filter(Boolean)[0],m=M(id),p=xPer('acct'),t=p.t>today()?today():p.t;
+  return{title:'كشف حساب'+(m?' · '+m.name:''),sub:xRngTxt(p.f,t),body:m?xLedgerHTML(id,p.f,t,true):NONE}}
+if(!REPS.acct){const tmp={...REPS};Object.keys(REPS).forEach(k=>delete REPS[k]);Object.entries(tmp).forEach(([k,v])=>{REPS[k]=v;if(k==='stmt')REPS.acct={ic:'🏦',t:'كشف حساب بنكي',b:xBAcct}});if(!REPS.acct)REPS.acct={ic:'🏦',t:'كشف حساب بنكي',b:xBAcct}}
+try{const _xpfA=xPreFields;xPreFields=function(){if(rtab!=='acct')return _xpfA.apply(this,arguments);xLegacy('acct');const R=RF;
+  if(!(R.xms&&R.xms[0]))R.xms=[(S.methods.find(m=>!xIsCr(m.id))||S.methods[0]||{}).id];
+  const PO=[['m','الشهر الحالي'],['pm','الشهر اللي فات'],['mon','شهر معيّن'],['y','السنة الحالية'],['yr','سنة معيّنة'],['all','كل الفترات'],['custom','📅 من تاريخ إلى تاريخ']];
+  let h=xSel('🏦 الحساب','xms1',xOptL(S.methods.map(m=>[m.id,m.name]),R.xms[0]))+xSel('📆 الفترة','xp',xOptL(PO,R.xp));
+  if(R.xp==='mon')h+=`<label>📅 الشهر<input type="month" value="${R.month||NKM}" onchange="xPF('month',this.value)"></label>`;
+  if(R.xp==='yr')h+=xSel('📅 السنة','year',xOptL(yearsList().map(y=>[y,String(y)]),R.year));
+  if(R.xp==='custom')h+=`<div class="two"><label>📅 من تاريخ<input type="date" value="${R.xf||NKM+'-01'}" onchange="xPF('xf',this.value)"></label><label>📅 إلى تاريخ<input type="date" value="${R.xto||today()}" onchange="xPF('xto',this.value)"></label></div>`;
+  return h}}catch(e){}
+try{const _pfX=xPF;xPF=function(k,v){if(k==='xms1'){RF.xms=[v];return xPreDraw(true)}return _pfX.apply(this,arguments)}}catch(e){}
+/* كشف حساب حسب البند لحساب واحد: نفس التفاصيل تحت، بدل جدول 2.21.45 */
+try{const _xrrL=xRepRun;xRepRun=function(k){const r=_xrrL.apply(this,arguments);try{
+  if(r&&typeof r.body==='string'){const mk=rsec('🏦 حركة الحساب'),i=r.body.lastIndexOf(mk);if(i>=0)r.body=r.body.slice(0,i)}
+  const ms=(RF.xms||[]).filter(Boolean);
+  if((k==='stmt'||k==='ops')&&!RF.xt&&!(RF.xc||[]).filter(Boolean).length&&ms.length===1&&!xIsCr(ms[0])&&r&&r.body!=null){const p=xPer(k);r.body+=rsec('🏦 الرصيد والحركات')+xLedgerHTML(ms[0],p.f,p.t>today()?today():p.t,false)}
+}catch(e){}return r}}catch(e){}
+/* كشف الحساب من شاشة الحسابات، ولما تقفله يرجعك لها */
+var XRVBACK='';
+function xAcctRep(id){rtab='acct';RF={...RFDEF,xp:'m',xms:[id]};RVST=[];XRVBACK=view;openRV()}
+try{const _crB=closeRV;closeRV=function(){const b=XRVBACK;XRVBACK='';const r=_crB.apply(this,arguments);if(b&&b!=='reports')go(b);return r}}catch(e){}
+
+/* --- الحسابات: رصيد كل حساب لوحده، والمطابقة من غير ما تكشف الباقي --- */
+var XBAUTH=0,XBSHOW=new Set(),XBT={};
+async function xBalAuth(){
+  if(XBALOK||Date.now()-XBAUTH<60000)return true;
+  if(LK.bio){try{await bioVerify()}catch(e){toast('البصمة ما اتعرفتش');return false}}
+  if(!S.settings.balPw){
+    const a=await dlg({title:'باسورد الأرصدة',msg:'اعمل باسورد مخصوص لأرصدة البنوك (4 حروف على الأقل)',icon:'🔐',input:true,pw:true,ok:'التالي',cancel:'إلغاء'});if(!a)return false;
+    if(a.length<4){toast('4 حروف على الأقل');return false}
+    const b=await dlg({title:'اكتبه تاني',icon:'🔐',input:true,pw:true,ok:'حفظ',cancel:'إلغاء'});if(b!==a){toast('الباسوردين مش زي بعض');return false}
+    S.settings.balPw=await hash('bal:'+a);save();toast('اتعمل باسورد الأرصدة ✓');
+  }else{
+    const v=await dlg({title:'باسورد الأرصدة',icon:'🔐',input:true,pw:true,ok:'افتح',cancel:'إلغاء'});if(v==null)return false;
+    if(await hash('bal:'+v)!==S.settings.balPw&&await hash('bal:'+latD(v).trim())!==S.settings.balPw){toast('الباسورد غلط');return false}
+  }
+  XBAUTH=Date.now();return true;
+}
+async function xBalOne(id){
+  if(XBSHOW.has(id)&&!XBALOK){XBSHOW.delete(id);clearTimeout(XBT[id]);return render()}
+  if(!await xBalAuth())return;XBSHOW.add(id);render();clearTimeout(XBT[id]);
+  XBT[id]=setTimeout(()=>{XBSHOW.delete(id);if(view==='pmv'&&!$('#sheet').classList.contains('open'))render()},20000);
+}
+xRecon=function(id){if(XBALOK||Date.now()-XBAUTH<60000)return xReconBase(id);xBalAuth().then(ok=>{if(ok)xReconBase(id)})};
+try{const _goS=go;go=function(v){if(v!=='pmv')XBSHOW.clear();return _goS.apply(this,arguments)}}catch(e){}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){XBSHOW.clear();XBAUTH=0}});
+vPmv=function(){
+  const MB=v=>XBALOK?v:'••••••';let mine=0,debt=0;
+  const rows=S.methods.map(m=>{const b=xBal(m.id),cr=xIsCr(m.id),vis=XBALOK||XBSHOW.has(m.id);if(cr)debt+=Math.min(0,b);else mine+=b;
+    const lbl=cr?(b<0?'عليك':'ليك'):'الرصيد',cls=cr?'cr':b<0?'neg':'pos';
+    return `<div class="xac ${m.active?'':'off'}"><div class="xah"><span class="pmlg">${xMIc(m)}</span><div class="xan"><b>${esc(m.name)}</b><small>${cr?'💳 كريديت':esc(TYPES[m.type]||'')}${m.active?'':' · ⏸ موقوف'}</small></div><div class="xab ${cls}"><small>${lbl}</small><b dir="ltr">${vis?(!cr&&b<0?'-':'')+num(Math.abs(b)):'••••••'}</b></div></div>
+    <div class="xaa"><button class="mini" onclick="xBalOne('${m.id}')">${vis&&!XBALOK?'🙈 إخفاء':'👁️ الرصيد'}</button>${cr?`<button class="mini pri" onclick="xCcPay('${m.id}')">💳 سدد</button>`:`<button class="mini" onclick="xRecon('${m.id}')">⚖️ مطابقة</button>`}<button class="mini" onclick="xAcctRep('${m.id}')">📄 كشف</button><button class="mini ic" onclick="editMethod('${m.id}')">✏️</button><button class="mini ic danger" onclick="delMethod('${m.id}')">🗑</button></div></div>`});
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏦 ${esc(L('pm'))}</h3><button class="mini" onclick="${XBALOK?'XBALOK=false;render()':'xBalUnlock()'}">${XBALOK?'🙈 الكل':'👁️ الكل'}</button><button class="mini pri" onclick="editMethod()">+ حساب</button></div>`
+    +kpis([['💰 فلوسك في الحسابات',MB(fmt(mine)),'inc'],['💳 مديونية الكريديت',MB(fmt(Math.abs(debt))),'exp']])
+    +`<div class="xacs">${rows.join('')}</div>`;
+  if(!XBALOK&&S.settings.balPw)h+=`<button class="btn ghost" onclick="xBalForgot()">🔑 نسيت باسورد الأرصدة؟</button>`;
+  return h;
+};
+
+/* --- سداد الكريديت: زرار بدل الكلمة الزرقا --- */
+try{const _ccQ=xCcSheet;xCcSheet=function(){const r=_ccQ.apply(this,arguments);try{const a=document.querySelector('#sheet a[onclick*="xCcCfgEdit"]');if(a){const b=document.createElement('button');b.type='button';b.className='mini';b.style.cssText='display:block;margin-top:8px';b.setAttribute('onclick',a.getAttribute('onclick').replace('event.preventDefault();',''));b.textContent='⚙️ مواعيد الكشف والحد الائتماني';a.replaceWith(b)}}catch(e){}return r}}catch(e){}
+
+/* --- جزء من المبلغ: والباقي على ميعاد تختاره --- */
+xPartial=function(id){
+  const t=S.txs.find(x=>x.id===id);if(!t||!t.pend)return;const inc=t.type==='inc',nd=t.date<today()?today():t.date;
+  sheet(`<h2>${inc?'💵 اتحصّل جزء':'💸 اتدفع جزء'} · ${esc(C(t.cat)?.name||'')}</h2>
+  <div class="kv"><span>المبلغ كله</span><b>${fmt(t.amount)}</b></div>
+  <label>${inc?'المبلغ اللي اتحصّل':'المبلغ اللي اتدفع'}<input id="pp-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" oninput="xPpRest(${t.amount})"></label>
+  <div id="pp-r"></div>
+  <label id="pp-nl" style="display:none">📅 ميعاد الباقي<input id="pp-n" type="date" value="${nd}"></label>
+  <div class="two"><label>${inc?'استلمت في حساب':'دفعت من حساب'}<select id="pp-m">${opt(S.methods.filter(m=>m.active),t.method)}</select></label><label>الطريقة<select id="pp-v">${viaOpts(t.via)}</select></label></div>
+  <label>التاريخ<input id="pp-d" type="date" value="${today()}"></label>
+  <button class="btn" onclick="xPartialSave('${id}')">✅ سجّل</button>`);
+};
+xPpRest=function(all){const a=parseNum(($('#pp-a')||{}).value)||0,part=a>0&&a<all,el=$('#pp-r'),nl=$('#pp-nl');if(el)el.innerHTML=part?`<div class="kv"><span>هيفضل معلّق</span><b class="neg">${fmt(r2(all-a))}</b></div>`:'';if(nl)nl.style.display=part?'':'none'};
+xPartialSave=function(id){
+  const t=S.txs.find(x=>x.id===id);if(!t)return;const a=parseNum($('#pp-a').value),d=$('#pp-d').value,nd=($('#pp-n')||{}).value;
+  if(!(a>0))return toast('اكتب المبلغ');if(!d)return toast('اختار التاريخ');if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
+  if(a>=t.amount-0.009)return toast('ده المبلغ كله، علّم عليه ✅ بدل كده');
+  S.txs.push({id:uid(),type:t.type,amount:a,cat:t.cat,method:$('#pp-m').value,via:$('#pp-v').value,date:d,note:(t.note?t.note+' · ':'')+'جزء من '+num(t.amount),files:[],created:Date.now()});
+  t.amount=r2(t.amount-a);if(nd)t.date=nd;save();closeSheet();render();refreshRV();toast(`✅ ${fmt(a)} · الباقي ${fmt(t.amount)} يوم ${dmy(t.date)}`);
+};
+
+/* --- السلف: سداد جزئي، والباقي مرة واحدة أو على دفعات --- */
+var XLPM=1;
+function xLoanSched(t){const s=t.loan&&t.loan.sched;if(!s||!s.length)return[];let p=r2(xLoanPaid(t)-(+t.loan.sp||0));return s.map(x=>{const u=Math.min(x.a,Math.max(0,p));p=r2(p-u);return{d:x.d,a:r2(x.a-u)}}).filter(x=>x.a>0.009)}
+function xLoanNext(t){const s=xLoanSched(t);if(s.length)t.loan.due=s[0].d;else{delete t.loan.sched;delete t.loan.sp}}
+xLoanPay=function(id){
+  const t=S.txs.find(x=>x.id===id);if(!t)return;const pd=xLoanPaid(t),rem=r2(t.amount-pd),due=t.loan.due||'',sc=xLoanSched(t),nd=due&&due>today()?due:addMonths(today(),1);
+  sheet(`<h2>🤝 سداد: ${esc(C(t.cat)?.name||'')}</h2><p class="muted">اتصرفت ${fdate(t.date)} · ${fmt(t.amount)}${pd?' · اتسدد '+fmt(pd):''}${due?' · الميعاد '+fdate(due):''}</p>
+  <div class="kv"><span>الباقي</span><b class="neg">${fmt(rem)}</b></div>
+  ${sc.length?`<details class="gen" open><summary>📆 الدفعات الجاية (${sc.length})</summary><div class="list" style="margin-top:6px">${sc.map((s,i)=>`<div class="row"><div class="grow"><b>دفعة ${i+1}</b><small>${fdate(s.d)}</small></div><div class="amt">${num(s.a)}</div></div>`).join('')}</div></details>`:''}
+  <label>المبلغ اللي اتسدد<input id="lp-a" class="amt-in" type="text" inputmode="decimal" dir="ltr" value="${amtStr(sc.length?sc[0].a:rem)}" oninput="xLpRest(${rem})"></label>
+  <div class="two"><label>استلمت في حساب<select id="lp-m">${opt(S.methods.filter(m=>m.active),t.method&&!xIsCr(t.method)?t.method:defMethod())}</select></label><label>الطريقة<select id="lp-v">${viaOpts(t.via)}</select></label></div>
+  <label>تاريخ السداد<input id="lp-d" type="date" value="${today()}"></label>
+  <div id="lp-p" class="xccb" style="display:none">
+    <div id="lp-r"></div>
+    <div class="fl">الباقي هيتسدد إزاي؟</div>
+    <div class="seg">${sc.length?`<button type="button" data-m="0" onclick="xLpMode(0,${rem})">📆 على الدفعات</button>`:''}<button type="button" data-m="1" onclick="xLpMode(1,${rem})">📅 مرة واحدة</button><button type="button" data-m="2" onclick="xLpMode(2,${rem})">🧾 دفعات جديدة</button></div>
+    <div id="lp-o1"><label>📅 هيسدد الباقي يوم<input id="lp-n" type="date" value="${nd}"></label></div>
+    <div id="lp-o2"><div class="two"><label>عدد الدفعات<input id="lp-c" inputmode="numeric" value="2" oninput="xLpGen(${rem})"></label><label>أول دفعة<input id="lp-f" type="date" value="${nd}" onchange="xLpGen(${rem})"></label></div><div id="lp-s"></div></div>
+  </div>
+  <button class="btn" onclick="xLoanPaySave('${id}')">✅ سجّل السداد</button>
+  <button class="btn ghost" onclick="xLoanPost('${id}')">⏭ رحّلها للشهر الجاي</button>
+  <button class="btn ghost" onclick="editTx('${id}')">✏️ تعديل السلفة</button>`);
+  xLpMode(sc.length?0:1,rem);
+};
+function xLpMode(m,rem){XLPM=m;document.querySelectorAll('#lp-p .seg button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m));const o1=$('#lp-o1'),o2=$('#lp-o2');if(o1)o1.style.display=m===1?'':'none';if(o2)o2.style.display=m===2?'':'none';xLpRest(rem)}
+function xLpGen(rem){const a=parseNum(($('#lp-a')||{}).value)||0,left=r2(rem-a),n=Math.max(1,Math.min(60,Math.round(parseNum(($('#lp-c')||{}).value)||1))),f=($('#lp-f')||{}).value||addMonths(today(),1),el=$('#lp-s');if(!el)return;if(!(left>0)){el.innerHTML='';return}
+  const each=Math.floor(left/n*100)/100;let h='';
+  for(let i=0;i<n;i++){const v=i===n-1?r2(left-each*(n-1)):each;h+=`<div class="xlps"><label>دفعة ${i+1}<input type="date" data-ld="${i}" value="${addMonths(f,i)}"></label><label>المبلغ<input data-la="${i}" inputmode="decimal" dir="ltr" value="${amtStr(v)}"></label></div>`}
+  el.innerHTML=h}
+function xLpRest(rem){const a=parseNum(($('#lp-a')||{}).value)||0,r=r2(rem-a),part=a>0&&r>0.009,p=$('#lp-p'),el=$('#lp-r');
+  if(p)p.style.display=part?'':'none';if(el)el.innerHTML=part?`<div class="kv"><span>هيفضل باقي</span><b class="neg">${fmt(r)}</b></div>`:'';
+  if(part&&XLPM===2)xLpGen(rem)}
+xLoanPaySave=function(id){
+  const t=S.txs.find(x=>x.id===id);if(!t)return;const a=parseNum($('#lp-a').value),d=$('#lp-d').value,rem=r2(t.amount-xLoanPaid(t)),left=r2(rem-a);
+  if(!(a>0))return toast('اكتب المبلغ');if(!d)return toast('اختار التاريخ');if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
+  if(left<-0.009)return toast('المبلغ أكبر من الباقي ('+fmt(rem)+')');
+  let rows=null,nd='';
+  if(left>0.009){
+    if(XLPM===1){nd=($('#lp-n')||{}).value;if(!nd)return toast('اختار ميعاد الباقي')}
+    else if(XLPM===2){rows=[...document.querySelectorAll('#lp-s [data-ld]')].map(x=>({d:x.value,a:parseNum((document.querySelector('#lp-s [data-la="'+x.dataset.ld+'"]')||{}).value)||0}));
+      if(!rows.length||rows.some(x=>!x.d||!(x.a>0)))return toast('كمّل تواريخ ومبالغ الدفعات');
+      const sm=r2(rows.reduce((s,x)=>s+x.a,0));if(Math.abs(sm-left)>0.01)return toast('مجموع الدفعات '+fmt(sm)+' لازم يساوي الباقي '+fmt(left));
+      rows.sort((x,y)=>x.d.localeCompare(y.d))}
+  }
+  const n=C(t.cat)?.name||'',c=ensureCat(/^سلف/.test(n)?'سداد '+n:'سداد سلفة '+n,'inc');c.active=true;
+  S.txs.push({id:uid(),type:'inc',amount:a,cat:c.id,method:$('#lp-m').value,via:$('#lp-v').value,date:d,note:'🤝 سداد سلفة',files:[],created:Date.now(),loanOf:t.id});
+  if(left>0.009){if(XLPM===1){t.loan.due=nd;delete t.loan.sched;delete t.loan.sp}else if(XLPM===2){t.loan.sched=rows;t.loan.sp=r2(xLoanPaid(t));t.loan.due=rows[0].d}else xLoanNext(t)}
+  else{delete t.loan.sched;delete t.loan.sp}
+  save();closeSheet();render();toast(left>0.009?`✅ اتسدد ${fmt(a)} · الباقي ${fmt(left)} · الميعاد الجاي ${dmy(t.loan.due)}`:'✅ اتسددت بالكامل');
+};
+xLoanPost=function(id){const t=S.txs.find(x=>x.id===id);if(!t||!t.loan)return;
+  if(t.loan.sched&&t.loan.sched.length){t.loan.sched.forEach(s=>{s.d=addMonths(s.d,1)});xLoanNext(t)}
+  else{let d=t.loan.due||today();do{d=addMonths(d,1)}while(d<today());t.loan.due=d}
+  t.loan.post=(t.loan.post||0)+1;save();closeSheet();render();toast('⏭ اترحّلت لـ '+dmy(t.loan.due))};
 try{render()}catch(e){}
 /* نهاية fix.js */
