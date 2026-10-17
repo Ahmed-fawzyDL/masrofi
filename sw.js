@@ -2,8 +2,19 @@ const CACHE='centric-v8',SHARE='centric-share';
 const ASSETS=['./','app.js','more.js','fix.js','manifest.json','icon-192.png','icon-512.png','icon-maskable-512.png','wa.png'];
 const TXT=/\.(js|html|json|css)$|\/$/;
 const ROOT=new URL('./',self.registration.scope).href;
+/* لو pages.dev مش واصل، بنجيب نفس الملفات من نسخة GitHub Pages */
+const MIRROR='https://ahmed-fawzydl.github.io/masrofi/';
 /* Cloudflare بيحوّل index.html لـ / ، والرد المحوَّل ميتحفظش زي ما هو */
 const clean=res=>res&&res.redirected?res.blob().then(b=>new Response(b,{status:res.status,statusText:res.statusText,headers:res.headers})):Promise.resolve(res);
+const tfetch=(u,o,ms)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),ms||10000);return fetch(u,Object.assign({},o,{signal:c.signal})).finally(()=>clearTimeout(t))};
+async function mirror(key){
+  const p=new URL(key).pathname.replace(/^\//,'');
+  if(!/\.(js|json|png|jpe?g|webp|svg)$/i.test(p)||p==='sw.js')throw new Error('no mirror');
+  const m=await tfetch(MIRROR+p+'?t='+Date.now(),{cache:'no-store',mode:'cors'},15000);
+  if(!m.ok)throw new Error('mirror '+m.status);
+  const b=await m.blob();
+  return new Response(b,{status:200,headers:{'Content-Type':m.headers.get('Content-Type')||'application/octet-stream'}});
+}
 
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>Promise.all(ASSETS.map(u=>fetch(new Request(u,{cache:'reload'})).then(clean).then(res=>{if(res.ok&&res.type==='basic')return c.put(new URL(u,self.registration.scope).href,res)}).catch(()=>{})))).then(()=>self.skipWaiting()));
@@ -17,12 +28,14 @@ async function tell(type){
   cs.forEach(c=>c.postMessage({type}));
 }
 
-// بيجيب النسخة الجديدة في الخلفية، ولو اتغيرت بيقول للبرنامج
+// بيجيب النسخة الجديدة في الخلفية (من pages.dev، ولو مردش من GitHub Pages)، ولو اتغيرت بيقول للبرنامج
 async function refresh(r,key,old){
   try{
-    let res=await fetch(r.url,{cache:'no-store'});
+    let res,mir=false;
+    try{res=await tfetch(r.url,{cache:'no-store'},10000)}
+    catch(e){if(r.mode==='navigate')return;res=await mirror(key);mir=true}
     if(r.mode==='navigate'&&(res.status===401||res.status===403)){await caches.delete(CACHE);return tell('locked')}
-    if(!res.ok||res.type!=='basic')return;
+    if(!res.ok||(!mir&&res.type!=='basic'))return;
     res=await clean(res);
     const c=await caches.open(CACHE);
     if(old&&TXT.test(new URL(key).pathname)){
@@ -34,13 +47,14 @@ async function refresh(r,key,old){
 }
 
 async function fromNet(r,key){
+  const nav=r.mode==='navigate';
   try{
-    const res=await fetch(r);
+    const res=nav?await fetch(r):await tfetch(r,{},15000);
     if(res.ok&&res.type==='basic')clean(res.clone()).then(cp=>caches.open(CACHE).then(c=>c.put(key,cp))).catch(()=>{});
     return res;
   }catch(e){
-    if(r.mode==='navigate'){const h=await caches.match(ROOT);if(h)return h}
-    return Response.error();
+    if(nav){const h=await caches.match(ROOT);return h||Response.error()}
+    try{const m=await mirror(key);caches.open(CACHE).then(c=>c.put(key,m.clone())).catch(()=>{});return m}catch(e2){return Response.error()}
   }
 }
 

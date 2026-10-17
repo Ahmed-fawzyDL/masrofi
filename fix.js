@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.42',XVBUILD='17/10/2026 - 03:20 ص';
+const XVER='2.21.44',XVBUILD='17/10/2026 - 05:41 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -3334,4 +3334,128 @@ body.xhome main,body.xhome #view#view{min-height:0!important}
 body #view#view.xsq{padding-bottom:75vh!important}
 `;document.head.appendChild(s)})();
 try{fixNav()}catch(e){}
+/* ========== 2.21.43 ========== */
+/* --- نسخة GitHub Pages: للتحديثات بس، مش للاستخدام --- */
+if(/github\.io$/i.test(location.hostname)){document.documentElement.innerHTML='<body style="font-family:sans-serif;background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center"><div><h2>Centric</h2><p>افتح البرنامج من اللينك الرسمي</p></div></body>'}
+/* ========== 2.21.44 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+main{padding-bottom:0!important}
+body #view#view{padding-bottom:calc(var(--navh,70px) + 24px)!important}
+body.xhome #view#view{padding-bottom:calc(var(--navh,70px) + 80px)!important}
+body.xhome main,body.xhome #view#view{min-height:0!important}
+body #view#view.xsq{padding-bottom:75vh!important}
+.xacs{display:flex;flex-direction:column;gap:8px;margin:0 0 10px}
+.xac{background:linear-gradient(180deg,color-mix(in srgb,var(--card,#fff) 90%,rgba(255,255,255,.05)),color-mix(in srgb,var(--card,#fff) 78%,transparent));border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:10px 12px}
+.xac.off{opacity:.55}
+.xah{display:flex;align-items:center;gap:10px}
+.xan{flex:1;min-width:0}.xan b{display:block;font-size:15px;font-weight:800;line-height:1.3}.xan small{display:block;font-size:11.5px;color:var(--tx2);font-weight:600;margin-top:2px}
+.xab{text-align:left;white-space:nowrap}.xab small{display:block;font-size:10.5px;color:var(--tx2);font-weight:700}.xab b{font-size:17px;font-weight:800}
+.xab.pos b{color:#16a34a}.xab.neg b{color:#dc2626}.xab.cr b{color:#ea580c}
+.xaa{display:flex;gap:6px;margin-top:9px;padding-top:8px;border-top:1px dashed rgba(148,163,184,.25)}
+.xaa .mini{flex:1;height:32px;padding:0 6px!important;font-size:12px!important;border-radius:10px!important}
+.xaa .mini.ic{flex:0 0 40px}
+.xstc{display:flex;margin:4px 0 -2px}
+.xemo{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:4px 0 10px}
+.xemo button{aspect-ratio:1;border-radius:10px;border:1px solid rgba(148,163,184,.3);background:var(--card,#fff);font-size:18px;cursor:pointer;padding:0}
+.xemo button.on{border-color:var(--p);box-shadow:0 0 0 2px var(--p)}
+`;document.head.appendChild(s)})();
+try{fixNav()}catch(e){}
+
+/* --- الحسابات: الرصيد بس، بشكل أوضح --- */
+vPmv=function(){
+  const MB=v=>XBALOK?v:'••••••';let mine=0,debt=0;
+  const rows=S.methods.map(m=>{const b=xBal(m.id),cr=xIsCr(m.id);if(cr)debt+=Math.min(0,b);else mine+=b;
+    const lbl=cr?(b<0?'عليك':'ليك'):'الرصيد',cls=cr?'cr':b<0?'neg':'pos';
+    return `<div class="xac ${m.active?'':'off'}"><div class="xah"><span class="pmlg">${xMIc(m)}</span><div class="xan"><b>${esc(m.name)}</b><small>${cr?'💳 كريديت':esc(TYPES[m.type]||'')}${m.active?'':' · ⏸ موقوف'}</small></div><div class="xab ${cls}"><small>${lbl}</small><b dir="ltr">${MB((!cr&&b<0?'-':'')+num(Math.abs(b)))}</b></div></div>
+    <div class="xaa">${cr?`<button class="mini pri" onclick="xCcPay('${m.id}')">💳 سدد</button>`:''}<button class="mini" onclick="xRecon('${m.id}')">⚖️ مطابقة</button><button class="mini ic" onclick="editMethod('${m.id}')">✏️</button><button class="mini ic danger" onclick="delMethod('${m.id}')">🗑</button></div></div>`});
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏦 ${esc(L('pm'))}</h3><button class="mini" onclick="${XBALOK?'XBALOK=false;render()':'xBalUnlock()'}">${XBALOK?'🙈':'👁️'}</button><button class="mini pri" onclick="editMethod()">+ حساب</button></div>`
+    +kpis([['💰 فلوسك في الحسابات',MB(fmt(mine)),'inc'],['💳 مديونية الكريديت',MB(fmt(Math.abs(debt))),'exp']])
+    +`<div class="xacs">${rows.join('')}</div>`;
+  if(!XBALOK&&S.settings.balPw)h+=`<button class="btn ghost" onclick="xBalForgot()">🔑 نسيت باسورد الأرصدة؟</button>`;
+  return h;
+};
+
+/* --- فورم التسجيل: إلغاء تغيير الحالة · "حولت على" قايمة · من غير "حولت على" في الأقساط · مصاريف التحويل --- */
+try{const _tfY=txForm;txForm=function(){
+  try{if(F&&F.type==='tr'&&F.tfeeOn==null){const ft=F.id&&xFeeTx(F.id);F.tfeeOn=!!ft;F.tfee=ft?amtStr(ft.amount):''}}catch(e){}
+  const r=_tfY.apply(this,arguments);
+  try{const sz=document.querySelector('#sheet .sz');if(!sz||!F)return r;
+    const o=F.id&&S.txs.find(t=>t.id===F.id);
+    const b0=sz.querySelector('button[onclick="txSetSt(0)"]'),row=b0&&b0.parentElement;
+    if(row&&!sz.querySelector('.xstc'))row.insertAdjacentHTML('beforebegin','<div class="xstc"><button type="button" class="mini" onclick="grab();F._st=0;SHKEEP=1;txForm()">✕ إلغاء</button></div>');
+    const ip=sz.querySelector('.xipb');
+    if(ip&&o&&o.src&&o.src.k==='i')ip.remove();
+    else if(ip){const ch=ip.querySelector('.xchips');if(ch&&!$('#f-ipk')){const k=(F.ip&&F.ip.k)||'phone';ch.outerHTML=`<label>⚡ حولت على<select id="f-ipk" onchange="grab();F.ip=F.ip||{};F.ip.k=this.value;SHKEEP=1;txForm()">${XIPK.map(([v,l])=>`<option value="${v}" ${v===k?'selected':''}>${l}</option>`).join('')}</select></label>`;const fl=ip.querySelector('.fl');if(fl)fl.remove()}}
+    if(F.type==='tr'&&!$('#f-tfeeon')){const v=$('#f-v'),lab=v&&v.closest('label');if(lab){const w=document.createElement('div');w.className='xfee';
+      w.innerHTML=`<label class="chk"><input type="checkbox" id="f-tfeeon" ${F.tfeeOn?'checked':''} onchange="grab();F.tfeeOn=this.checked;if(this.checked&&!parseNum(F.tfee))F.tfee=amtStr(xFeeCalc(parseNum(F.amount)));SHKEEP=1;txForm()"> 💸 مصاريف التحويل (إنستاباي)</label>${F.tfeeOn?`<div class="inl"><input id="f-tfee" inputmode="decimal" dir="ltr" value="${esc(F.tfee||'')}"><button type="button" class="mini" onclick="$('#f-tfee').value=amtStr(xFeeCalc(parseNum(($('#f-amt')||{}).value)))">↺</button></div><small class="muted">بتتسجل مصروف على الحساب اللي حولت منه</small>`:''}`;
+      lab.after(w)}}
+  }catch(e){}return r}}catch(e){}
+try{const _gbY=grab;grab=function(){_gbY.apply(this,arguments);if($('#f-tfeeon'))F.tfeeOn=$('#f-tfeeon').checked;if($('#f-tfee'))F.tfee=$('#f-tfee').value;if($('#f-ipk')){F.ip=F.ip||{};F.ip.k=$('#f-ipk').value}}}catch(e){}
+try{const _stT=saveTx;saveTx=async function(){
+  grab();const tr=!!(F&&F.type==='tr'),fid=F&&F.id,on=!!(F&&F.tfeeOn),fee=parseNum(F&&F.tfee),before=new Set(S.txs.map(t=>t.id));
+  const r=await _stT.apply(this,arguments);
+  try{if(!tr||$('#sheet').classList.contains('open'))return r;
+    const id=fid||(S.txs.find(t=>!before.has(t.id)&&t.type==='tr')||{}).id,t=id&&S.txs.find(x=>x.id===id);if(!t)return r;
+    const old=xFeeTx(t.id);
+    if(on&&fee>0&&!isClosed(t.date)){const nt='🔁 مصاريف تحويل من '+(M(t.method)?.name||'')+' لـ '+(M(t.to)?.name||'')+' · '+num(t.amount);
+      if(old)Object.assign(old,{amount:fee,method:t.method,date:t.date,note:nt});
+      else{const c=ensureCat(XFEEN+' · '+(M(t.method)?.name||'—'),'exp');c.active=true;S.txs.push({id:uid(),type:'exp',amount:fee,cat:c.id,method:t.method,via:'instapay',date:t.date,note:nt,files:[],created:Date.now(),feeOf:t.id})}
+      save();render()}
+    else if(old&&!on&&!isClosed(old.date)){S.txs=S.txs.filter(x=>x!==old);save();render()}
+  }catch(e){}return r}}catch(e){}
+try{const _xeR=xExpRow;xExpRow=function(){return _xeR.apply(this,arguments).replace('↩ لـ —','↩ 🔁 تحويل')}}catch(e){}
+try{const _xlR=xLine;xLine=function(){return _xlR.apply(this,arguments).replace('↩ لـ —','↩ 🔁 تحويل')}}catch(e){}
+
+/* --- الأنواع والطرق: قوايم بتفتح وتتقفل + اختيار أيقونة --- */
+var XEMO=['💵','🏦','🏛️','💳','📱','⚡','🏧','🧾','👛','💰','🪙','📲','🌐','🔁','🛒','🏠','🚗','⛽','🎓','🩺','🎁','✈️','📦','🔹'];
+function spTypes(){
+  const cfg=xTCfg(),tl=Object.entries(TYPES),vl=VIA.filter(x=>x[0]);
+  const row=(kind,k,n)=>{const ic=XVIA[k]||['🔹','#475569'],cu=cfg[kind][k]&&cfg[kind][k].x;
+    return `<div class="row" onclick="xTypeForm('${kind}','${k}')"><span class="ic" style="background:${ic[1]};color:#fff;overflow:hidden">${XLG[k]?`<img src="${XLG[k]}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:ic[0]}</span><div class="grow"><b>${esc(n)}</b><small>${cu?'من عندك':'أساسي'}${cfg[kind][k]&&!cu?' · متعدّل':''}</small></div><span class="mini">✏️</span></div>`};
+  return `<p class="muted">دوس على أي واحد عشان تغيّر اسمه أو أيقونته أو لونه.</p>
+  <details class="grp" open><summary><span>🏦 أنواع الحسابات</span><span class="badge soon">${tl.length}</span></summary><div class="list">${tl.map(([k,n])=>row('t',k,n)).join('')}</div><div style="padding:8px 12px"><button class="mini pri" onclick="xTypeForm('t')">+ نوع حساب جديد</button></div></details>
+  <details class="grp"><summary><span>💳 طرق الدفع</span><span class="badge soon">${vl.length}</span></summary><div class="list">${vl.map(([k,n])=>row('v',k,n)).join('')}</div><div style="padding:8px 12px"><button class="mini pri" onclick="xTypeForm('v')">+ طريقة دفع جديدة</button></div></details>`;
+}
+function xTypeForm(kind,key){
+  const cfg=xTCfg(),o=key?(cfg[kind][key]||{}):{},cu=!key||o.x;
+  const name=key?(kind==='t'?TYPES[key]:viaTxt(key)):'',ic=key?(XVIA[key]||['🔹'])[0]:'🔹',col=key?(XVIA[key]||['','#475569'])[1]:COLORS[S.methods.length%COLORS.length];
+  sheet(`<h2>${key?'✏️ تعديل':'➕ إضافة'} ${kind==='t'?'نوع حساب':'طريقة دفع'}</h2>
+  <label>الاسم<input id="xt-n" value="${esc(name)}" placeholder="${kind==='t'?'مثلاً: شهادات، ذهب':'مثلاً: Valu، فوري، Vodafone Cash'}"></label>
+  <div class="fl">الأيقونة</div>
+  <div class="xemo">${XEMO.map(e=>`<button type="button" class="${e===ic?'on':''}" onclick="document.querySelectorAll('#sheet .xemo button').forEach(x=>x.classList.remove('on'));this.classList.add('on');$('#xt-i').value=this.textContent">${e}</button>`).join('')}</div>
+  <label>أو اكتب إيموجي تاني<input id="xt-i" value="${esc(ic)}" maxlength="6"></label>
+  <div class="fl">اللون</div>
+  <div class="colors">${COLORS.map(c=>`<button type="button" class="sw ${c===col?'on':''}" style="background:${c}" onclick="document.querySelectorAll('#sheet .sw').forEach(x=>x.classList.remove('on'));this.classList.add('on');$('#xt-c').value='${c}'"></button>`).join('')}</div>
+  <input type="hidden" id="xt-c" value="${col}">
+  <button class="btn" onclick="xTypeSave('${kind}','${key||''}')">حفظ</button>
+  ${key&&cu?`<button class="btn ghost danger" onclick="xTypeDel('${kind}','${key}')">🗑 حذف</button>`:''}
+  ${key&&!cu&&cfg[kind][key]?`<button class="btn ghost" onclick="xTypeReset('${kind}','${key}')">↺ رجّع الأصلي</button>`:''}`);
+}
+
+/* --- آخر شاشة: بترجع لو فتحت خلال دقيقة، وبعدها الرئيسية --- */
+(()=>{const h=+localStorage.getItem('centric-hid')||0;window.XSTALE=!h||Date.now()-h>60000;
+  if(window.XSTALE&&view!=='home'){try{$('#rv').classList.remove('on')}catch(e){}rtab='';view='home';try{render();scrollTo(0,0)}catch(e){}}
+  setTimeout(()=>{window.XSTALE=false},3000);
+})();
+try{const _doD=draftOpen;draftOpen=function(){if(window.XSTALE)return;return _doD.apply(this,arguments)}}catch(e){}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')localStorage.setItem('centric-hid',String(Date.now()))});
+addEventListener('pagehide',()=>localStorage.setItem('centric-hid',String(Date.now())));
+
+/* --- إيصال متكرر من Share --- */
+function xKillTx(t){
+  if(t.src&&t.src.k==='r'){const c=C(t.src.id);if(c&&c.st)delete c.st[t.src.p]}
+  if(t.src&&t.src.k==='i'){const p=plan(t.src.id),it=p&&p.items.find(x=>x.id===t.src.p);if(it)it.txId=null}
+  const ids=new Set([t.id]);S.txs.forEach(x=>{if(x.feeOf===t.id||x.payFeeOf===t.id)ids.add(x.id)});
+  S.txs=S.txs.filter(x=>!ids.has(x.id));S.buys=S.buys.filter(b=>b.txId!==t.id);
+}
+try{const _saD=xShareAsk;xShareAsk=async function(ids){
+  try{const fm=S.fmeta||{},dup=[];
+    ids.forEach(id=>{const a=fm[id];if(!a)return;Object.keys(fm).forEach(k=>{if(ids.includes(k))return;const b=fm[k];if(b&&b.size===a.size&&b.name===a.name){const t=S.txs.find(x=>(x.files||[]).includes(k));if(t&&!dup.includes(t))dup.push(t)}})});
+    if(dup.length){const t=dup[0];
+      const r=await ask('⚠️ الإيصال ده متسجل قبل كده',`على «${C(t.cat)?.name||'—'}» · ${fmt(t.amount)} · ${dmy(t.date)}\nتلغي القديم وتسجل الجديد، ولا تسجله تاني؟`,{icon:'📎',ok:'🔁 الغي القديم وسجّل الجديد',cancel:'➕ سجّله تاني'});
+      if(r===null)return;
+      if(r){if(isClosed(t.date))return toast('شهر العملية القديمة مقفول');xKillTx(t);save();render();toast('اتلغت العملية القديمة')}}
+  }catch(e){}
+  return _saD.apply(this,arguments)}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
