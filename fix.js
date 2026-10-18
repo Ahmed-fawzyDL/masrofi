@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.61',XVBUILD='18/10/2026 - 02:35 م';
+const XVER='2.21.62',XVBUILD='18/10/2026 - 02:50 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5579,5 +5579,99 @@ try{const _tfK=txForm;txForm=function(){const r=_tfK.apply(this,arguments);try{
   const k=$('#f-clk');if(k){const cur=F&&F.cat&&F.cat!=='__new'&&C(F.cat);XCLFK=cur&&cur.fixed?(isAnn(cur)?'y':'m'):'o';
     k.outerHTML=`<div class="kv" id="f-clinf"><span>🔁 التكرار</span><b>${cur&&cur.fixed?esc(everyTxt(cur.every)):'غير ثابت'}</b></div>`}
 }catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.62 ========== */
+/* --- Undo: فوق الشاشة، ويختفي تمامًا --- */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xub{top:calc(env(safe-area-inset-top) + 10px)!important;bottom:auto!important;transform:translate(-50%,-260%)!important;opacity:0!important;pointer-events:none!important;transition:transform .3s,opacity .3s!important}
+.xub.on{transform:translate(-50%,0)!important;opacity:1!important;pointer-events:auto!important}
+`;document.head.appendChild(s)})();
+
+/* --- الأقساط: مقسمة حسب النوع في قوايم --- */
+var XPLO={},XINO={};
+function xPType(p){return p.ptype||(p.cc?'cc':xIsAppPlan(p)?'app':'norm')}
+var XPTN={norm:['🏦','أقساط عادية'],cc:['💳','أقساط كريديت كارد'],app:['📱','أقساط أبلكيشن'],prop:['🏠','عقارات ووحدات']};
+vInst=function(){
+  const td=today();let rem=0,mo=0,late=0;
+  S.plans.forEach(p=>{const s=planStats(p);rem+=s.total-s.paid;late+=s.late;p.items.forEach(it=>{if(!itTx(it)&&it.due&&it.due.startsWith(NKM)&&it.k!=='mnt')mo+=+it.amount||0})});
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏦 ${esc(L('inst'))}</h3></div><button class="btn" onclick="planNew()">➕ قسط جديد</button>`
+    +kpis([['💳 المتبقي عليك',fmt(r2(rem)),'exp'],['📅 هذا الشهر',fmt(r2(mo)),'warn'],['⚠️ متأخر',String(late),'net']]);
+  if(!S.plans.length)return h+'<p class="empty">لا توجد أقساط</p>';
+  const card=p=>{const s=planStats(p),nx=s.next,pc=s.total?Math.min(100,Math.round(s.paid/s.total*100)):0;
+    return `<div class="xlnc" onclick="instPlan='${p.id}';go('plan')"><div class="xlnr"><b>${esc(p.name)}</b><span class="xlnbig" dir="ltr">${num(r2(s.total-s.paid))}</span></div>
+    <div class="xlnr xsm"><span>${s.paidN}/${s.n} قسط · المتبقي من ${num(s.total)}</span></div><div class="xbar"><i style="width:${pc}%"></i></div>
+    <div class="xlnn">${nx?(s.late?xCh('late','⚠️ '+s.late+' متأخر'):nx.due===td?xCh('tdy','🔔 اليوم'):xCh('up','⏳ القادم'))+` <b>${num(+nx.amount||0)}</b> · <b>${xDW(nx.due)}</b>`:xCh('ok','✅ انتهت')}</div>
+    ${nx?`<div class="xlna"><button class="btn" onclick="event.stopPropagation();${p.cc?`xCcPay('${p.acct}')`:`payStart('${p.id}','${nx.id}')`}">✓ ادفع القسط</button><button class="btn ghost" onclick="event.stopPropagation();instPlan='${p.id}';go('plan')">📄 التفاصيل</button></div>`:''}</div>`};
+  Object.keys(XPTN).forEach(k=>{
+    const Lp=S.plans.filter(p=>xPType(p)===k).sort((a,b)=>{const x=planStats(a).next,y=planStats(b).next;return(x?x.due:'9')<(y?y.due:'9')?-1:1});if(!Lp.length)return;
+    const r=r2(Lp.reduce((a,p)=>{const s=planStats(p);return a+s.total-s.paid},0));
+    h+=`<details class="grp" ${XINO[k]?'open':''} ontoggle="XINO['${k}']=this.open"><summary><span>${XPTN[k][0]} ${XPTN[k][1]}</span><span class="badge soon">${Lp.length}</span><b class="gs neg">${num(r)}</b></summary>${Lp.map(card).join('')}</details>`;
+  });
+  return h;
+};
+/* تفاصيل القسط: الجدول مقفول، وزرارين للتعديل والحذف */
+try{const _vpC2=vPlan;vPlan=function(){let h=_vpC2.apply(this,arguments);
+  return h.replace('<details class="grp" open>',`<details class="grp" ${XPLO[instPlan]?'open':''} ontoggle="XPLO[instPlan]=this.open">`)
+    .replace('</summary><div class="list">',`</summary><div class="xlna"><button class="btn ghost" onclick="planEdit(instPlan);xInstAmt()">✏️ تعديل قيمة القسط</button><button class="btn ghost danger" onclick="planEdit(instPlan);xInstDelAll()">🗑 حذف الأقساط</button></div><div class="list">`)}}catch(e){}
+
+/* --- حذف الأقساط من الجدول --- */
+async function xInstDelAll(){
+  grabPF();const reg=PF.items.filter(i=>!i.k),paid=reg.filter(i=>i.txId);if(!reg.length)return toast('لا توجد أقساط');let delPaid=false;
+  if(paid.length){const r=await ask('يوجد قسط مدفوع',`يوجد ${paid.length} قسط مدفوع. هل تريد حذفها أيضًا؟\n(المصروفات المدفوعة فعلًا ستبقى مسجلة)`,{icon:'⚠️',ok:'Yes',cancel:'No',danger:true});if(r===null)return;delPaid=!!r}
+  else if(!await ask('حذف الأقساط؟',`سيتم حذف ${reg.length} قسط من الجدول.`,{icon:'🗑',ok:'حذف',danger:true}))return;
+  PF.items=PF.items.filter(i=>i.k||(i.txId&&!delPaid));PF._open=true;planForm();
+  toast('تم الحذف من الجدول · ولّد الأقساط من جديد ثم اضغط حفظ');
+}
+/* بعد الحفظ: مسح علامات "مدفوع سابقًا" للأقساط المحذوفة */
+try{const _psZ=planSave;planSave=function(){const r=_psZ.apply(this,arguments);try{if(!$('#sheet').classList.contains('open')){const p=plan(instPlan);if(p){const ids=new Set(p.items.map(i=>i.id)),n=S.txs.length;
+  S.txs=S.txs.filter(t=>!(t.xpre&&t.src&&t.src.k==='i'&&t.src.id===p.id&&!ids.has(t.src.p)));if(S.txs.length!==n){save();render()}}}}catch(e){}return r}}catch(e){}
+
+/* --- تعديل قيمة القسط: الكل / شهر معين / أكثر من شهر --- */
+var XIAM={v:'',mode:'all',sel:{},one:''};
+function xIaUn(){return PF.items.filter(i=>!i.txId&&!i.k&&i.due).sort((a,b)=>a.due.localeCompare(b.due))}
+function xInstAmt(){grabPF();if(!xIaUn().length)return toast('لا توجد أقساط غير مدفوعة');XIAM={v:'',mode:'all',sel:{},one:''};xInstAmtSheet()}
+function xIaGrab(){if($('#ia-v'))XIAM.v=$('#ia-v').value;if($('#ia-one'))XIAM.one=$('#ia-one').value;document.querySelectorAll('#sheet [data-ia]').forEach(c=>{XIAM.sel[c.dataset.ia]=c.checked})}
+function xInstAmtSheet(){const un=xIaUn();
+  sheet(`<h2>✏️ تعديل قيمة القسط</h2>
+  <label>القيمة الجديدة<input id="ia-v" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" value="${esc(XIAM.v)}"></label>
+  <div class="seg">${[['all','على الكل'],['one','شهر معين'],['many','أكثر من شهر']].map(([k,l])=>`<button type="button" class="${XIAM.mode===k?'on':''}" onclick="xIaGrab();XIAM.mode='${k}';xInstAmtSheet()">${l}</button>`).join('')}</div>
+  ${XIAM.mode==='one'?`<label>الشهر<select id="ia-one">${un.map(i=>`<option value="${i.id}" ${XIAM.one===i.id?'selected':''}>${xDW(i.due)} · ${num(+i.amount||0)}</option>`).join('')}</select></label>`:''}
+  ${XIAM.mode==='many'?`<div class="list">${un.map(i=>`<label class="row" style="cursor:pointer"><input type="checkbox" data-ia="${i.id}" ${XIAM.sel[i.id]?'checked':''} style="width:22px;height:22px;margin:0"><div class="grow"><b>${xDW(i.due)}</b><small>القيمة الحالية ${num(+i.amount||0)}</small></div></label>`).join('')}</div>`:''}
+  <p class="muted">التعديل يُطبق على الأقساط غير المدفوعة فقط</p>
+  <button class="btn" onclick="xInstAmtSv()">✅ تطبيق</button><button class="btn ghost" onclick="planForm()">رجوع</button>`)}
+function xInstAmtSv(){xIaGrab();const v=parseNum(XIAM.v);if(!(v>0))return toast('اكتب القيمة');const un=xIaUn();let ids;
+  if(XIAM.mode==='all')ids=un.map(i=>i.id);else if(XIAM.mode==='one')ids=[XIAM.one||(un[0]||{}).id];else ids=Object.keys(XIAM.sel).filter(k=>XIAM.sel[k]);
+  if(!ids.length)return toast('اختر شهرًا واحدًا على الأقل');
+  PF.items.forEach(i=>{if(ids.includes(i.id))i.amount=amtStr(v)});PF._open=true;planForm();toast(`تم تعديل ${ids.length} قسط · اضغط حفظ`)}
+/* الزرارين جوه جدول الأقساط في شاشة التعديل */
+try{const _xpq=xPfPost;xPfPost=function(){_xpq.apply(this,arguments);try{const e=document.querySelector('#q-sch .etbar');if(e&&!e.querySelector('.xiab'))e.insertAdjacentHTML('beforeend',`<button class="mini xiab" onclick="xInstAmt()">✏️ تعديل قيمة القسط</button><button class="mini danger" onclick="xInstDelAll()">🗑 حذف الأقساط</button>`)}catch(e){}}}catch(e){}
+
+/* --- الرجوع لآخر حاجة كنت بتعدلها (خلال دقيقتين) --- */
+function xCfRe(c){CF=c;catSheet()}
+function xPfRe(p){PF=p;planForm()}
+function xPayRe(p){PAY=p;paySheet()}
+function xCcRe(c){XCC=c;xCcSheet()}
+var XDRS={xTxRe:()=>{grab();return F},xCfRe:()=>{grabCF();return CF},xPfRe:()=>{grabPF();return PF},xPayRe:()=>{grabPay();return PAY},xCcRe:()=>{xCcGrab();return XCC}};
+function xDrState(n,fnName,get){try{const f=window[fnName];window[fnName]=function(){const r=f.apply(this,arguments);try{const v=get();if(v&&$('#sheet').classList.contains('open'))XDR={n,a:[JSON.parse(JSON.stringify(v))]}}catch(e){}return r}}catch(e){}}
+xDrState('xTxRe','txForm',()=>F);xDrState('xCfRe','catSheet',()=>CF);xDrState('xPfRe','planForm',()=>PF);xDrState('xPayRe','paySheet',()=>PAY);xDrState('xCcRe','xCcSheet',()=>XCC);
+function xDrPost(n){try{const f=window[n];if(typeof f!=='function')return;window[n]=function(){const a=[...arguments],r=f.apply(this,arguments);try{if($('#sheet').classList.contains('open')){JSON.stringify(a);XDR={n,a}}}catch(e){}return r}}catch(e){}}
+['editMethod','xReconBase','cashForm','xClForm','xClDet','xClPay','xClPrice','xLnNew','xLnPay','xLnEdit','xLnDefer','xLnResch','xLnEx','xRemForm','xTypeForm','xBankFee','xCashSheet','xPost','xColSheet','xPartial','xInstAmtSheet','occSheet','xCcOpenTot','cardForm','renForm','ctForm','docForm'].forEach(xDrPost);
+/* لما تخرج: يحفظ آخر حاجة لمدة دقيقتين */
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='hidden')return;try{
+  const sh=$('#sheet'),open=sh&&sh.classList.contains('open');let d=null;try{d=JSON.parse(localStorage.getItem('centric-xdr')||'null')}catch(e){}d=d||{};
+  if(open&&XDR&&XDRS[XDR.n]){try{XDR.a=[JSON.parse(JSON.stringify(XDRS[XDR.n]()))]}catch(e){}d.dr=XDR;d.vals=null}
+  d.t=Date.now()+60000;localStorage.setItem('centric-xdr',JSON.stringify(d));
+}catch(e){}});
+/* البصمة: بعد ما تفتح، يرجعك للي كنت فيه */
+var XLOCKDR=null;
+try{const _slX=showLock;showLock=function(){try{const sh=$('#sheet');if(LK.pin&&sh&&sh.classList.contains('open')&&XDR){let dr=XDR,vals=null;
+  if(XDRS[dr.n])dr={n:dr.n,a:[JSON.parse(JSON.stringify(XDRS[dr.n]()))]};
+  else vals=[...sh.querySelectorAll('input,select,textarea')].map(e=>e.type==='checkbox'||e.type==='radio'?e.checked:e.type==='file'?null:e.value);
+  XLOCKDR={dr,vals,t:Date.now()}}}catch(e){}return _slX.apply(this,arguments)}}catch(e){}
+try{const _ulX=unlock;unlock=function(){const r=_ulX.apply(this,arguments);const x=XLOCKDR;XLOCKDR=null;
+  if(x&&Date.now()-x.t<36e5)setTimeout(()=>{try{if($('#sheet').classList.contains('open'))return;const f=window[x.dr.n];if(typeof f==='function'){f.apply(null,x.dr.a);if(x.vals)setTimeout(()=>xDrFill(x.vals),80)}}catch(e){}},700);
+  return r}}catch(e){}
+/* المسودة القديمة (أكتر من دقيقتين) ما تفتحش */
+try{const _doX=draftOpen;draftOpen=function(){const x=draftGet();if(x&&Date.now()-x.t>120000){draftClear();return}return _doX.apply(this,arguments)}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
