@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.64',XVBUILD='18/10/2026 - 03:10 م';
+const XVER='2.21.65',XVBUILD='18/10/2026 - 04:23 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5722,4 +5722,14 @@ function xInstSync(){let ch=0;
   if(ch)save();}
 try{const _rnIS=render;render=function(){try{xInstSync()}catch(e){}return _rnIS.apply(this,arguments)}}catch(e){}
 try{xInstSync();render()}catch(e){}
+/* ========== 2.21.65 ========== */
+/* أي خروج من الشاشة:
+   - الأرصدة تتقفل والباسورد يتطلب تاني
+   - كل القوايم المنسدلة ترجع مقفولة */
+try{const _goBA=go;go=function(v){
+  if(v!==view){
+    XBAUTH=0;XBALOK=false;try{XBSHOW.clear()}catch(e){}
+    XINO={};XPLO={};GOPEN={};
+  }
+  return _goBA.apply(this,arguments)}}catch(e){}
 /* نهاية fix.js */
