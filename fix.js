@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.67',XVBUILD='18/10/2026 - 04:59 م';
+const XVER='2.21.68',XVBUILD='18/10/2026 - 05:05 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5760,5 +5760,36 @@ try{const _ies=xItEditSv;xItEditSv=function(pid,iid){const r=_ies.apply(this,arg
 try{const _idl=xItDel;xItDel=async function(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid),tid=it&&it.txId;
   const r=await _idl.apply(this,arguments);try{
   if(tid&&plan(pid)&&!plan(pid).items.some(x=>x.id===iid)){const t=S.txs.find(x=>x.id===tid);if(t&&t.xpre){S.txs=S.txs.filter(x=>x!==t);save();render()}}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.68 ========== */
+/* دفع قسط قبل الشهر الحالي: يسأل مدفوع سابقًا ولا دفع فعلي */
+try{const _psB=payStart;payStart=async function(pid,iid){
+  const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);
+  if(it&&it.due&&it.due<NKM+'-01'&&!itTx(it)){
+    const r=await ask('قسط قبل الشهر الحالي',`ميعاده ${xDW(it.due)}.\nهل تم دفعه قبل بدء التسجيل في البرنامج؟`,{icon:'🏦',ok:'✔ مدفوع سابقًا (بدون مصروف)',cancel:'💸 تسجيل دفع فعلي'});
+    if(r===null)return;if(r)return xInstPre(pid,iid);
+  }
+  return _psB.apply(this,arguments)}}catch(e){}
+
+/* تحويل قسط مدفوع فعليًا إلى "مدفوع سابقًا" (زي قسط يوليو) */
+async function xToPre(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid),t=it&&itTx(it);if(!t||t.xpre)return;
+  if(!await ask('تحويله إلى مدفوع سابقًا؟',`سيتم حذف المصروف المسجل (${fmt(t.amount)} · ${dmy(t.date)}) ومصاريفه، ويبقى القسط مدفوعًا بدون تأثير على الحسابات.`,{icon:'✔',ok:'تحويل'}))return;
+  S.txs=S.txs.filter(x=>x.feeOf!==t.id&&x.payFeeOf!==t.id);
+  Object.assign(t,{xpre:1,method:'',via:'',date:it.due,note:'✔ مدفوع سابقًا'});
+  save();render();toast('تم التحويل إلى مدفوع سابقًا')}
+try{const _vpT=vPlan;vPlan=function(){let h=_vpT.apply(this,arguments);try{const p=plan(instPlan);if(p)p.items.forEach(it=>{const t=itTx(it);
+  if(t&&!t.xpre&&it.due&&it.due<NKM+'-01'){const s=`onclick="unpay('${p.id}','${it.id}')">↩</button>`;h=h.replace(s,s+`<button class="mini" title="مدفوع سابقًا" onclick="xToPre('${p.id}','${it.id}')">✔</button>`)}})}catch(e){}return h}}catch(e){}
+
+/* قفل الشهور: علامة "مدفوع سابقًا" مش حركة في الشهر */
+try{const _vmX=vMonths;vMonths=function(){const T=S.txs;S.txs=T.filter(t=>!t.xpre);try{return _vmX.apply(this,arguments)}finally{S.txs=T}}}catch(e){}
+
+/* إشعارات الموبايل اللي حالتها اتحلّت بتتمسح لوحدها */
+var XNCT=0;
+function xNClean(){clearTimeout(XNCT);XNCT=setTimeout(()=>{try{if(!navigator.serviceWorker)return;
+  navigator.serviceWorker.ready.then(reg=>reg.getNotifications?reg.getNotifications():[]).then(ns=>{
+    const al=unread(),ids=new Set(al.map(a=>a.id));
+    ns.forEach(n=>{const g=n.tag||'';if(g.startsWith('test-'))return;if(g==='masrofi-sum'?!al.length:!ids.has(g))n.close()})}).catch(()=>{})}catch(e){}},1000)}
+try{const _rnN=render;render=function(){const r=_rnN.apply(this,arguments);xNClean();return r}}catch(e){}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')xNClean()});
 try{render()}catch(e){}
 /* نهاية fix.js */
