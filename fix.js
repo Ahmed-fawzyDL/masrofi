@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.71',XVBUILD='18/10/2026 - 05:45 م';
+const XVER='2.21.72',XVBUILD='18/10/2026 - 05:48 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5885,6 +5885,24 @@ try{const _vsB=vSettings;vSettings=function(){
   if(i>=0)d=d.slice(0,i)+sch+d.slice(i);else d+=sch;
   return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>💾 النسخ الاحتياطي</h3></div>
   <h3>☁️ Google Drive</h3>${d}<h3>📱 نسخة يدوية</h3>${spData()}`;
+}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.72 ========== */
+/* النسخ الاحتياطي: كل قسم قايمة مقفولة وانت اللي تفتحها */
+var XBKO={},XBKSTAB='';
+try{const _vsC=vSettings;vSettings=function(){
+  const was=XBKSTAB;XBKSTAB=stab==='drive'?'data':stab;
+  if(XBKSTAB!=='data')return _vsC.apply(this,arguments);
+  stab='data';if(was!=='data')XBKO={};
+  let d='';try{d=spDrive()}catch(e){}
+  d=d.replace(/<label class="chk fxbox"[^>]*><input type="checkbox"[^>]*GD\.auto[^>]*>[^<]*<\/label>/,'');
+  let m=spData(),loc='';const i=m.indexOf('<h3>🕒');if(i>=0){loc=m.slice(i).replace(/^<h3>[^<]*<\/h3>/,'');m=m.slice(0,i)}
+  const sec=(k,t,body)=>`<details class="grp" ${XBKO[k]?'open':''} ontoggle="XBKO['${k}']=this.open"><summary><span>${t}</span></summary><div style="padding:4px 2px 10px">${body}</div></details>`;
+  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>💾 النسخ الاحتياطي</h3></div>`
+    +sec('dr','☁️ Google Drive',d)
+    +(GD.linked?sec('sc','⏰ وقت النسخ على Drive',spBkSched().replace(/^<h3>[^<]*<\/h3>/,'')):'')
+    +sec('mn','📱 نسخة يدوية',m)
+    +(loc?sec('lc','🕒 نسخ تلقائية على الموبايل',loc):'');
 }}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
