@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.69',XVBUILD='18/10/2026 - 05:18 م';
+const XVER='2.21.70',XVBUILD='18/10/2026 - 05:24 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5813,5 +5813,34 @@ try{const _vcX=vCol;vCol=function(){
   try{const k=ym(cur.y,cur.m),l=S.txs.filter(t=>t.ccr&&t.type==='inc'&&!t.pend&&t.date.startsWith(k+'-')).sort(byDesc);
     if(l.length)h+=grp('ccr','تحصيل مقابل دفع كريديت',l.length,r2(l.reduce((a,t)=>a+t.amount,0)),'pos',l.map(txRow).join(''))}catch(e){}
   return h}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.70 ========== */
+/* كل نوع عملية له شاشة لوحده: من غير اختيارات الأنواع التانية */
+var XTYL={exp:{fix:'📌 مصروف ثابت',bill:'🧾 فاتورة',other:'🛒 أخرى',loan:'🤝 سلفة',inst:'🏦 قسط'},inc:{fix:'📌 تحصيل ثابت',cl:'👥 تحصيل عميل',other:'💵 أخرى',ccr:'💳 مقابل دفع كريديت',loan:'🤝 سداد سلفة'}};
+xNewPick=function(type,k){
+  if(k==='loan'){closeSheet();return xLnNew()}
+  newTx(type,1);if(!F)return;F.xtype=k;
+  if(k==='fix')F.fix=true;if(k==='bill'){F.isBill=true;F.feeOn=false}if(k==='ccr')F.ccr=true;
+  SHKEEP=1;txForm();if(k==='cl')try{xClFM(1)}catch(e){}
+};
+function xTxType(){
+  if(!F||F.type==='tr')return '';if(F.xtype)return F.xtype;
+  const o=F.id&&S.txs.find(t=>t.id===F.id),cur=F.cat&&F.cat!=='__new'&&C(F.cat);if(!o)return '';
+  if(F.type==='inc'){if(o.ccr)return 'ccr';if(o.xlnp)return 'loan';if(o.cl)return 'cl';if((cur&&cur.fixed)||(o.src&&o.src.k==='r'))return 'fix';return 'other'}
+  if(o.src&&o.src.k==='i')return 'inst';if(o.xlno)return 'loan';if(o.bill)return 'bill';if((cur&&cur.fixed)||(o.src&&o.src.k==='r'))return 'fix';return 'other';
+}
+try{const _tfT=txForm;txForm=function(){const r=_tfT.apply(this,arguments);try{
+  const sz=$('#sheet .sz'),t=xTxType();if(!sz||!t)return r;F.xtype=t;
+  /* شيل أزرار الأنواع */
+  sz.querySelectorAll(':scope > .xchips').forEach(e=>e.remove());
+  /* اسم النوع تحت العنوان */
+  const h2=sz.querySelector('h2');if(h2&&!$('#xtyp'))h2.insertAdjacentHTML('afterend',`<div class="kv" id="xtyp"><span>نوع العملية</span><b>${(XTYL[F.type]||{})[t]||''}</b></div>`);
+  /* Receipt Scan للفاتورة وأخرى بس */
+  if(!(F.type==='exp'&&(t==='bill'||t==='other'))){const b=sz.querySelector(':scope > .btn[onclick="scanReceipt()"]');if(b)b.remove()}
+  /* التحصيل: العميل يظهر في "تحصيل عميل" بس */
+  if(F.type==='inc'){const cm=$('#f-clm');
+    if(t==='cl'){if(cm)cm.remove();const w=$('#f-clw');if(w)w.style.display=''}
+    else{const cf=sz.querySelector('.xclf');if(cf)cf.remove()}}
+}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
