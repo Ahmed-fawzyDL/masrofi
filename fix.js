@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.60',XVBUILD='18/10/2026 - 02:15 م';
+const XVER='2.21.61',XVBUILD='18/10/2026 - 02:35 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5484,5 +5484,100 @@ function xDueEdit(cid,tid){const c=C(cid);if(!c||!c.start)return;
   <label>يوم السداد في الشهر<select id="xd-d">${Array.from({length:28},(_,i)=>i+1).map(d=>`<option value="${d}" ${+c.start.slice(8)===d?'selected':''}>${d}</option>`).join('')}</select></label>
   <button class="btn" onclick="xDueSv('${cid}','${tid}')">💾 حفظ</button><button class="btn ghost" onclick="editTx('${tid}')">رجوع</button>`)}
 function xDueSv(cid,tid){const c=C(cid),d=+(($('#xd-d')||{}).value);if(!c||!d)return;c.start=c.start.slice(0,8)+pad(d);save();render();toast('تم تعديل موعد السداد إلى يوم '+d);editTx(tid)}
+try{render()}catch(e){}
+/* ========== 2.21.61 ========== */
+/* --- Undo: يظهر بعد ما انت تعمل حاجة بس، ويختفي بعد 4 ثواني، وبيسأل مرة واحدة --- */
+var XLASTTAP=0,XUCONF=false,XUPT=0;
+document.addEventListener('pointerdown',()=>{XLASTTAP=Date.now()},true);
+xAfterSave=function(){
+  const now=localStorage.getItem(KEY);if(now==null||now===XLAST)return;
+  const prev=XLAST;XLAST=now;
+  if(XUNDOING||prev==null){XIDS=xIdsOf(S);return}
+  const cur=xIdsOf(S);
+  if(XIDS&&!XTRSKIP){const gone=[];Object.keys(cur).forEach(k=>XIDS[k].forEach(id=>{if(id&&!cur[k].has(id))gone.push([k,id])}));
+    if(gone.length){let o=null;try{o=JSON.parse(prev)}catch(e){}
+      if(o){const tr=xTrGet(),at=Date.now();gone.forEach(([k,id])=>{const x=xArr(o,k).find(y=>y&&y.id===id);if(!x)return;if(k==='cats'&&/^مصاريف إنستاباي/.test(x.name||''))return;tr.push({k,o:x,at,l:xTrLbl(k,x,o)})});xTrSet(tr)}}}
+  XIDS=cur;
+  if(Date.now()-XLASTTAP<4000){if(Date.now()-XUPT>1500){XUND.push(prev);if(XUND.length>20)XUND.shift()}XUPT=Date.now();XUCONF=false;xUndoBar()}
+};
+function xUbHide(){const b=$('#xub');if(b)b.classList.remove('on');XUCONF=false}
+xUndoBar=function(){
+  if($('#lock').classList.contains('on')||!XUND.length)return;
+  let b=$('#xub');if(!b){b=document.createElement('div');b.id='xub';b.className='xub';document.body.appendChild(b)}
+  b.innerHTML=`<span>تم الحفظ</span><button onclick="xUndo()">↩️ Undo${XUND.length>1?' ('+XUND.length+')':''}</button><button class="x" onclick="xUbHide()">✕</button>`;
+  b.classList.add('on');clearTimeout(XUBT);XUBT=setTimeout(xUbHide,4000);
+};
+try{const _xu0=xUndo;xUndo=async function(){
+  if(!XUND.length)return toast('لا توجد خطوات للتراجع');clearTimeout(XUBT);
+  if(!XUCONF){const ok=await ask('التراجع عن آخر خطوة؟','سيتم إرجاع البيانات كما كانت قبل آخر حفظ.',{icon:'↩️',ok:'Yes',cancel:'No'});
+    if(!ok){XUBT=setTimeout(xUbHide,4000);return}XUCONF=true}
+  _xu0();
+}}catch(e){}
+
+/* --- الريسيت: تعديل الاسم يبحث في البنود الموجودة --- */
+var XNMTOP='';
+askStore=function(rc){
+  const o=[],add=s=>{s=(s||'').trim();if(s&&!o.some(x=>normAr(x)===normAr(s)))o.push(s)};
+  if(rc.match)add(rc.match.name);(rc.names||[]).slice(0,5).forEach(add);
+  NMO=o.slice(0,6);const top=NMO[0]||'',star=!!rc.match;
+  return new Promise(res=>{
+    sheet(`<h2>🧾 اسم المكان أو البند</h2>
+    ${top?`<div class="xnmc" id="nm-card" onclick="xNmEdit()"><small>${star?'⭐ مسجل لديك من قبل':'🔎 تمت القراءة'}</small><b>${esc(top)}</b><small>اضغط على الاسم لتعديله أو للبحث عن بند موجود</small></div>`:''}
+    <div id="nm-ed" style="${top?'display:none':''}"><label>ابحث عن بند موجود أو اكتب اسمًا جديدًا<input id="nm-in" autocomplete="off" value="${esc(top)}" placeholder="مثال: بنزين" oninput="xNmFind(this.value)" onkeydown="if(event.key==='Enter')xNmYes()"></label><div id="nm-res" class="list"></div></div>
+    <div class="xlna"><button class="btn" onclick="xNmYes()">✅ Yes</button><button class="btn ghost" onclick="xNmEdit()">✏️ تعديل</button></div>
+    ${NMO.length>1?`<div class="fl">أو ربما يكون</div><div class="xnmo">${NMO.slice(1).map((s,i)=>`<button type="button" class="rch" onclick="xNmSet(${i+1})">${esc(s)}</button>`).join('')}</div>`:''}
+    <button class="btn ghost" onclick="closeSheet()">إلغاء</button>`);
+    NMR=res;XNMTOP=top;
+  });
+};
+function xNmFind(q){const el=$('#nm-res');if(!el)return;const v=qn(q);if(!v){el.innerHTML='';return}
+  const L=S.cats.filter(c=>c.kind==='exp'&&c.active!==false&&!/^مصاريف إنستاباي/.test(c.name)&&qn([c.name,...(c.alias||[])].join(' ')).includes(v)).slice(0,8);
+  el.innerHTML=L.map(c=>`<div class="row" onclick="xNmPickCat('${c.id}')"><span class="ic" style="background:var(--soft)">${c.fixed?'📌':'🏷️'}</span><div class="grow"><b>${esc(c.name)}</b><small>بند موجود · اضغط للتسجيل عليه</small></div></div>`).join('')
+    ||'<p class="muted" style="margin:6px 0">لا يوجد بند بهذا الاسم، وسيتم إنشاء بند جديد</p>'}
+function xNmPickCat(id){const c=C(id);if(!c)return;
+  /* البرنامج يحفظ الاسم اللي قراه علشان المرة الجاية يعرف إنه نفس البند */
+  if(XNMTOP&&normAr(XNMTOP)!==normAr(c.name)&&normAr(XNMTOP).replace(/\s/g,'').length>=4)c.alias=[...new Set([...(c.alias||[]),XNMTOP])].slice(-8);
+  $('#nm-in').value=c.name;xNmYes()}
+
+/* --- الريسيت: يسأل قبل إضافة رقم المحل --- */
+try{const _cfr=contactFromReceipt;contactFromReceipt=async function(rc,cat){
+  const ph=(rc&&rc.phones)||[];if(!ph.length)return;
+  const nw=ph.filter(p=>!findPhone([p]));if(!nw.length)return _cfr.apply(this,arguments);
+  await new Promise(r=>setTimeout(r,700));
+  const ok=await ask('إضافة رقم المحل؟',`${cat.name}\n${nw.join('\n')}\nهل تريد إضافته إلى Contacts؟`,{icon:'📇',ok:'نعم',cancel:'لا'});
+  if(ok)return _cfr.apply(this,arguments);
+}}catch(e){}
+
+/* --- الريسيت: يسأل قبل تسجيل الأصناف --- */
+xRcFinish=async function(){const x=XRC2;XRC2=null;if(!x)return;closeSheet();
+  const a=parseNum(x.a),tip=x.bill?0:(parseNum(x.tip)||0),tot=r2(a+tip);
+  let items=[];
+  if((x.rc.items||[]).length){const want=await ask('الأصناف',`تمت قراءة ${x.rc.items.length} صنف من الريسيت.\nهل تريد تسجيل الأصناف؟`,{icon:'🧾',ok:'نعم',cancel:'لا'});
+    if(want){const r=await biReview(x.rc.items,a);items=r===null?[]:r}}
+  if(tip>0)items.push({n:'🎁 إكرامية',q:1,p:tip,v:tip});
+  const t={id:uid(),type:'exp',amount:tot,cat:x.cat.id,method:x.method,via:x.via,date:x.date,note:'🧾'+(x.deliv?' 🛵':'')+(x.card?' •••• '+x.card.last4:''),files:x.fid?[x.fid]:[],created:Date.now()};
+  if(x.bill){t.bill=true;x.cat.xbill=1}if(tip>0)t.tip=tip;S.txs.push(t);
+  const b={id:uid(),date:x.date,time:x.rc.time||(x.date===today()?nowTime():''),rt:x.rc.time||'',no:x.rc.no||'',txId:t.id,catId:x.cat.id,store:x.cat.name,items,total:tot,method:x.method,via:x.via,card:x.card?x.card.last4:'',deliv:x.deliv,fid:x.fid,ph:x.rc.ph||''};
+  S.buys.push(b);save();render();if(x.rc.raw)ocrSave(b.id,x.rc.raw);contactFromReceipt(x.rc,x.cat);
+  banner('🧾','تم تسجيل '+fmt(tot),x.cat.name,()=>buySheet(b.id),'ok');
+};
+
+/* --- الأقساط: تصليح تواريخ الدفعات السنوية --- */
+try{const _psY=planSave;planSave=function(){
+  grabPF();document.querySelectorAll('#sheet .pt tbody tr').forEach(tr=>tr.remove());
+  const r=_psY.apply(this,arguments);
+  try{if($('#sheet').classList.contains('open')&&$('#q1'))planForm()}catch(e){}return r}}catch(e){}
+
+/* --- الأقساط: "نوع القسط" قايمة فوق، وكل الأقسام مقفولة لحد ما تفتحها --- */
+try{const _xpp=xPfPost;xPfPost=function(){_xpp.apply(this,arguments);try{
+  const seg=$('#q-pt');if(seg)seg.outerHTML=`<label id="q-ptl">نوع القسط<select id="q-ptsel" onchange="grabPF();PF.ptype=this.value;planForm()">${[['norm','🏦 قسط عادي'],['cc','💳 قسط كريديت كارد'],['app','📱 قسط أبلكيشن'],['prop','🏠 عقار / وحدة']].map(([k,l])=>`<option value="${k}" ${PF.ptype===k?'selected':''}>${l}</option>`).join('')}</select></label>`;
+  document.querySelectorAll('#q-sec details').forEach((d,i)=>{const key=i?'_om':'_oa';d.open=!!PF[key];d.ontoggle=()=>{PF[key]=d.open}});
+}catch(e){}}}catch(e){}
+
+/* --- تحصيل العميل: التكرار للمعرفة فقط --- */
+try{const _tfK=txForm;txForm=function(){const r=_tfK.apply(this,arguments);try{
+  const k=$('#f-clk');if(k){const cur=F&&F.cat&&F.cat!=='__new'&&C(F.cat);XCLFK=cur&&cur.fixed?(isAnn(cur)?'y':'m'):'o';
+    k.outerHTML=`<div class="kv" id="f-clinf"><span>🔁 التكرار</span><b>${cur&&cur.fixed?esc(everyTxt(cur.every)):'غير ثابت'}</b></div>`}
+}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
