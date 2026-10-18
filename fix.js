@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.65',XVBUILD='18/10/2026 - 04:23 م';
+const XVER='2.21.66',XVBUILD='18/10/2026 - 04:33 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5732,4 +5732,19 @@ try{const _goBA=go;go=function(v){
     XINO={};XPLO={};GOPEN={};
   }
   return _goBA.apply(this,arguments)}}catch(e){}
+/* ========== 2.21.66 ========== */
+/* إنشاء الأقساط: الشهر المدفوع بالفعل ما يتعملش تاني، وبيتحسب من العدد */
+try{const _giX=genItems;genItems=async function(){
+  grabPF();const before=new Set(PF.items.map(i=>i.id));
+  await _giX.apply(this,arguments);
+  const paidM=new Set(PF.items.filter(i=>i.txId&&!i.k&&i.due).map(i=>i.due.slice(0,7)));
+  const n0=PF.items.length;
+  PF.items=PF.items.filter(i=>before.has(i.id)||!paidM.has((i.due||'').slice(0,7)));
+  if(PF.items.length!==n0){planForm();toast('تم إنشاء الأقساط · تم تخطي '+(n0-PF.items.length)+' شهر مدفوع بالفعل')}
+}}catch(e){}
+
+/* "توليد" بقت "إنشاء" في كل البرنامج */
+(()=>{const run=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){const v=n.nodeValue;if(v&&(v.indexOf('توليد')>-1||v.indexOf('اتولّد')>-1)){const x=v.replace(/اتولّد/g,'تم إنشاء').replace(/توليد/g,'إنشاء');if(x!==v)n.nodeValue=x}}};
+  let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{run()}catch(e){}})}).observe(document.body,{childList:true,subtree:true,characterData:true});run()})();
 /* نهاية fix.js */
