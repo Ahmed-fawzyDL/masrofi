@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.59',XVBUILD='18/10/2026 - 01:00 م';
+const XVER='2.21.60',XVBUILD='18/10/2026 - 02:15 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5402,4 +5402,87 @@ try{render()}catch(e){}
 #view details.grp>div[style*="padding"]{padding:0 0 10px!important}
 #view details.grp>div[style*="padding"] .mini{height:42px!important;border-radius:14px!important;font-size:14px!important}
 `;document.head.appendChild(s)})();
+/* ========== 2.21.60 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .grow>b,#sheet .list .grow>b,#view .pcard b{font-size:13.5px!important}
+#view .grow>small,#sheet .list .grow>small{font-size:11.5px!important}
+#view .amt,#sheet .list .amt{font-size:17px!important}
+#view details.grp>summary{font-size:13.5px!important;padding:10px 12px!important}
+#view details.grp>summary .gs{font-size:14px!important}
+.xlnc .xlnr>b{font-size:14px!important}.xlnbig{font-size:19px!important}
+.xclb{font-size:10.5px!important;padding:1px 7px!important}
+.xccrc{border-color:#ea580c!important;background:color-mix(in srgb,#ea580c 9%,var(--card,#fff))!important}
+.xccrc .amt{color:#ea580c!important}
+.xccrc .xclb{background:#ffedd5!important;color:#c2410c!important}
+.xah .xed{display:flex;gap:6px;flex:0 0 auto}
+.xah .xed .mini{width:34px!important;height:34px!important;padding:0!important;border-radius:10px!important;display:flex;align-items:center;justify-content:center}
+.xaa{flex-wrap:wrap}.xaa .mini{min-width:0!important;flex:1 1 0!important}
+`;document.head.appendChild(s)})();
+
+/* القلب يتشال من كل البرنامج */
+(()=>{const run=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const v=n.nodeValue;if(v&&v.indexOf('💜')>-1){const x=v.replace(/💜\s+/g,'').replace(/💜/g,'💳');if(x!==v)n.nodeValue=x}}};
+  let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{run()}catch(e){}})}).observe(document.body,{childList:true,subtree:true,characterData:true});run()})();
+
+/* اختيار نوع العملية: من غير Receipt Scan */
+try{const _ntR=newTx;newTx=function(){const r=_ntR.apply(this,arguments);try{if($('#sheet .xtype')){const b=$('#sheet .sz > .btn[onclick="scanReceipt()"]');if(b)b.remove()}}catch(e){}return r}}catch(e){}
+
+/* الحسابات: التعديل والحذف جنب الاسم */
+try{const _rnA=render;render=function(){const r=_rnA.apply(this,arguments);try{if(view==='pmv')document.querySelectorAll('#view .xac').forEach(c=>{if(c.querySelector('.xed'))return;const bs=[...c.querySelectorAll('.xaa .mini.ic')];if(!bs.length)return;const d=document.createElement('div');d.className='xed';bs.forEach(b=>d.appendChild(b));const an=c.querySelector('.xan');if(an)an.after(d)})}catch(e){}return r}}catch(e){}
+
+/* البحث في البنود: لو اخترت "ثابت" يظهر الثابت فقط */
+try{const _xcoF=xCatOpen;xCatOpen=function(){if(F&&F.fix){const Cs=S.cats;S.cats=Cs.filter(c=>c.fixed||c.id===F.cat);try{return _xcoF.apply(this,arguments)}finally{S.cats=Cs}}return _xcoF.apply(this,arguments)}}catch(e){}
+
+/* ========== مصاريف إنستاباي: في الفواتير والأقساط ودفع القسط ========== */
+function xIsAppPlan(p){return !!p&&(p.ptype==='app'||(!p.ptype&&/valu|فاليو|tru|ترو|sohoula|souhoola|سهول|contact|كونتكت|aman|أمان|halan|حالا|forsa|فرصة|premium|بريميوم|mogo|موجو/i.test(p.name||'')))}
+function xAddIpFee(t,fee){const c=ensureCat(XFEEN+' · '+(M(t.method)?.name||'—'),'exp');c.active=true;S.txs.push({id:uid(),type:'exp',amount:fee,cat:c.id,method:t.method,via:'instapay',date:t.date,note:'💸 مصاريف تحويل',files:[],created:Date.now(),feeOf:t.id})}
+function xIpFeeBox(){
+  if(!F||F.type!=='exp'||F.via!=='instapay'||$('#f-feeon')||$('#f-ifee'))return;
+  const o=F.id&&S.txs.find(t=>t.id===F.id);if(o&&(o.feeOf||o.payFeeOf))return;
+  if(F.ifee==null){const ft=F.id&&xFeeTx(F.id);F.ifee=ft?amtStr(ft.amount):amtStr(xFeeCalc(parseNum(F.amount)));F.ifeeMan=!!ft}
+  const v=$('#f-v'),l=v&&v.closest('label'),row=l&&l.parentElement;if(!row)return;
+  row.insertAdjacentHTML('afterend',`<label>💸 مصاريف إنستاباي<div class="inl"><input id="f-ifee" inputmode="decimal" dir="ltr" value="${esc(F.ifee||'')}" oninput="F.ifeeMan=1"><button type="button" class="mini" onclick="F.ifeeMan=0;$('#f-ifee').value=amtStr(xFeeCalc(parseNum(($('#f-amt')||{}).value)))">↺</button></div></label>`);
+  const a=$('#f-amt');if(a)a.addEventListener('input',()=>{if(!F.ifeeMan&&$('#f-ifee'))$('#f-ifee').value=amtStr(xFeeCalc(parseNum(a.value)))});
+}
+try{const _tfI2=txForm;txForm=function(){const r=_tfI2.apply(this,arguments);try{
+  xIpFeeBox();
+  const o=F&&F.id&&S.txs.find(t=>t.id===F.id);
+  /* مصاريف الدفع للأقساط بتاعة الأبلكيشنز بس */
+  if(o&&o.src&&o.src.k==='i'&&!xIsAppPlan(plan(o.src.id))){const pf=$('#f-pfee');if(pf){const l=pf.closest('label');if(l)l.remove()}}
+  /* موعد السداد للبند الثابت + زرار تعديله */
+  if(o&&o.src&&o.src.k==='r'&&C(o.src.id)&&o.type!=='tr'){const c=C(o.src.id),due=occDate(c,o.src.p);
+    if(!$('#xdue')){const d=$('#f-d'),dl=d&&d.closest('label');if(dl)dl.parentElement.insertAdjacentHTML('beforebegin',`<div class="kv" id="xdue"><span>📅 موعد السداد</span><b>${xDW(due)}</b></div>`)}
+    const k=$('#xdue');if(k&&!k.querySelector('button'))k.querySelector('b').insertAdjacentHTML('beforeend',` <button type="button" class="mini" onclick="xDueEdit('${c.id}','${o.id}')">✏️</button>`)}
+}catch(e){}return r}}catch(e){}
+try{const _gbI2=grab;grab=function(){_gbI2.apply(this,arguments);if(F&&$('#f-ifee'))F.ifee=$('#f-ifee').value}}catch(e){}
+try{const _stI2=saveTx;saveTx=async function(){
+  grab();const use=!!$('#f-ifee'),fee=parseNum(F&&F.ifee),fid=F&&F.id,before=new Set(S.txs.map(t=>t.id));
+  XTRSKIP=true;let r;try{r=await _stI2.apply(this,arguments)}finally{XTRSKIP=false}
+  try{if(use&&!$('#sheet').classList.contains('open')){const id=fid||(S.txs.find(t=>!before.has(t.id)&&t.type==='exp'&&!t.feeOf&&!t.payFeeOf)||{}).id,t=id&&S.txs.find(x=>x.id===id);
+    if(t&&t.via==='instapay'&&!t.pend&&!isClosed(t.date)){const old=xFeeTx(t.id);if(fee>0){if(old)Object.assign(old,{amount:fee,method:t.method,date:t.date});else xAddIpFee(t,fee)}else if(old)S.txs=S.txs.filter(x=>x!==old);save();render()}}}catch(e){}
+  return r}}catch(e){}
+/* شاشة دفع القسط */
+try{const _psA=paySheet;paySheet=function(){
+  const p=PAY&&plan(PAY.pid),app=xIsAppPlan(p),fee0=PAY?PAY.fee:'';if(PAY&&!app)PAY.fee='';
+  const r=_psA.apply(this,arguments);try{
+    const f=$('#y-fee');if(f){if(!app){const l=f.closest('label');if(l)l.remove()}else{f.value=fee0||'';f.dataset.v0=f.value;f.addEventListener('input',()=>{f.dataset.v0=f.value})}}
+    const v=$('#y-v'),row=v&&v.closest('label')&&v.closest('label').parentElement;
+    if(row&&!$('#y-ifl'))row.insertAdjacentHTML('afterend',`<label id="y-ifl" style="${PAY.via==='instapay'?'':'display:none'}">💸 مصاريف إنستاباي<input id="y-ifee" inputmode="decimal" dir="ltr" value="${esc(PAY.ifee||amtStr(xFeeCalc(parseNum(PAY.amount))))}" oninput="PAY.ifeeMan=1"></label>`);
+    const a=$('#y-amt');if(a)a.addEventListener('input',()=>{const i=$('#y-ifee');if(i&&!PAY.ifeeMan)i.value=amtStr(xFeeCalc(parseNum(a.value)))});
+  }catch(e){}return r}}catch(e){}
+document.addEventListener('change',e=>{const s=e.target;if(!s||s.id!=='y-v')return;
+  const f=$('#y-fee');if(f&&f.dataset.v0!=null)f.value=f.dataset.v0;
+  const l=$('#y-ifl'),i=$('#y-ifee');if(l)l.style.display=s.value==='instapay'?'':'none';
+  if(i&&s.value==='instapay'&&!PAY.ifeeMan)i.value=amtStr(xFeeCalc(parseNum(($('#y-amt')||{}).value)))},true);
+try{const _gpI=grabPay;grabPay=function(){_gpI.apply(this,arguments);if($('#y-ifee'))PAY.ifee=$('#y-ifee').value}}catch(e){}
+try{const _dpI=doPay;doPay=function(){grabPay();const pid=PAY.pid,iid=PAY.iid,via=PAY.via,ifee=parseNum(PAY.ifee);const r=_dpI.apply(this,arguments);
+  try{if(via==='instapay'&&ifee>0){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid),t=it&&itTx(it);if(t&&!xFeeTx(t.id)){xAddIpFee(t,ifee);save();render()}}}catch(e){}return r}}catch(e){}
+
+/* ========== تعديل موعد السداد للبند الثابت ========== */
+function xDueEdit(cid,tid){const c=C(cid);if(!c||!c.start)return;
+  sheet(`<h2>📅 موعد السداد · ${esc(c.name)}</h2>
+  <p class="muted">موعد السداد هو اليوم الثابت الذي يجب أن يتم فيه السداد (${esc(everyTxt(c.every))}). تغييره يُطبق على كل المرات.</p>
+  <label>يوم السداد في الشهر<select id="xd-d">${Array.from({length:28},(_,i)=>i+1).map(d=>`<option value="${d}" ${+c.start.slice(8)===d?'selected':''}>${d}</option>`).join('')}</select></label>
+  <button class="btn" onclick="xDueSv('${cid}','${tid}')">💾 حفظ</button><button class="btn ghost" onclick="editTx('${tid}')">رجوع</button>`)}
+function xDueSv(cid,tid){const c=C(cid),d=+(($('#xd-d')||{}).value);if(!c||!d)return;c.start=c.start.slice(0,8)+pad(d);save();render();toast('تم تعديل موعد السداد إلى يوم '+d);editTx(tid)}
+try{render()}catch(e){}
 /* نهاية fix.js */
