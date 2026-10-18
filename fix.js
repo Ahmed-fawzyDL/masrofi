@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.58',XVBUILD='17/10/2026 - 08:30 م';
+const XVER='2.21.59',XVBUILD='18/10/2026 - 01:00 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -4868,4 +4868,538 @@ try{const _dsD=docSheet;docSheet=function(id){const r=_dsD.apply(this,arguments)
 try{const _rnDc=render;render=function(){const r=_rnDc.apply(this,arguments);try{if(view==='docs'&&dtab==='my'){const v=$('#view'),b=v&&v.querySelector('.etbar button[onclick="addInFold()"]'),t=v&&v.querySelector('.tabs.ctabs');
   if(b&&t){const bar=b.parentElement;b.className='';b.style.fontWeight='800';t.insertBefore(b,t.firstChild);if(bar&&!bar.children.length)bar.remove()}}}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.59 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xub{position:fixed;left:50%;bottom:calc(var(--navh,64px) + 12px);transform:translate(-50%,180%);z-index:3550;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:30px;background:#111827;color:#fff;font-size:13px;font-weight:700;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .3s;white-space:nowrap}
+.xub.on{transform:translate(-50%,0)}
+.xub button{border:0;border-radius:20px;padding:7px 14px;font:inherit;font-weight:800;background:var(--p);color:#fff;cursor:pointer}
+.xub .x{background:rgba(255,255,255,.15);padding:7px 10px}
+#toast{bottom:calc(var(--navh,64px) + 70px)!important}
+.xnb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;flex-basis:100%}.xnb .mini{flex:1;min-width:64px;height:32px}
+.xccrc{border:1px solid #a855f7!important;border-radius:12px;background:color-mix(in srgb,#a855f7 10%,var(--card,#fff))!important}
+.xccrc .amt{color:#a855f7!important}
+.xtype{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 10px}
+.xtype button{border:1px solid rgba(148,163,184,.3);border-radius:16px;padding:16px 8px;background:var(--card,#fff);color:inherit;font:inherit;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.xtype button span{font-size:28px}.xtype button small{font-weight:600;color:var(--tx2,#64748b);font-size:11px}
+#sheet .pt{table-layout:fixed;width:100%}#sheet .tbl{overflow-x:hidden!important}
+#sheet .pt td,#sheet .pt th{padding:4px 2px!important;white-space:normal}
+#sheet .pt th:first-child,#sheet .pt td:first-child{width:22px}
+#sheet .pt th:last-child,#sheet .pt td:last-child{width:34px}
+#sheet .pt input,#sheet .pt .xsel{min-width:0!important;width:100%;font-size:12px!important;padding:4px 6px!important;min-height:34px!important}
+#sheet .pt .xsel .xl small,#sheet .pt .xsel .xic0,#sheet .pt .xsel::after{display:none}
+.xccb .kv{flex-wrap:wrap}.xccb .kv>b{direction:ltr}
+.xcld>summary{list-style:none;cursor:pointer}.xcld>summary::-webkit-details-marker{display:none}
+.xcld[open]{border-color:var(--p)!important}
+`;document.head.appendChild(s)})();
+
+/* --- أدوات --- */
+function xDW(d){return d?(XWD[new Date(d+'T12:00:00').getDay()]+' '+dmy(d)):'—'}
+function xSegOn(b){b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b))}
+xStChip=function(d){const td=today();return d<td?xCh('late','⚠️ متأخر'):d===td?xCh('tdy','🔔 اليوم'):xCh('up','⏳ منتظر')};
+xOldBtn=function(){return ''};
+
+/* ========== Undo + سلة المحذوفات ========== */
+var XUND=[],XUNDOING=true,XLAST=null,XUBT=0,XIDS=null,XTRSKIP=false,XTRK='centric-trash';
+var XCOLS=['txs','cats','plans','contacts','docs','cards','renew','buys','methods','cash'];
+function xTrGet(){try{return JSON.parse(localStorage.getItem(XTRK)||'[]')}catch(e){return[]}}
+function xTrSet(a){try{localStorage.setItem(XTRK,JSON.stringify(a.slice(-300)))}catch(e){toast('سلة المحذوفات ممتلئة')}}
+function xArr(o,k){return k==='xln'||k==='xcl'?((o.settings||{})[k]||[]):(o[k]||[])}
+function xArrRef(k){if(k==='xln')return XLN();if(k==='xcl')return XCL();return S[k]=S[k]||[]}
+function xIdsOf(o){const m={};XCOLS.concat(['xln','xcl']).forEach(k=>{m[k]=new Set(xArr(o,k).map(x=>x&&x.id))});return m}
+function xTrLbl(k,x,o){
+  if(k==='txs'){const cn=((o.cats||[]).find(c=>c.id===x.cat)||{}).name;return(x.type==='tr'?'🔁 تحويل':x.type==='inc'?'💰 '+(cn||'تحصيل'):'💸 '+(cn||'مصروف'))+' · '+num(x.amount)+' · '+dmy(x.date)}
+  return({cats:'📋 بند: ',plans:'🏦 أقساط: ',contacts:'📇 ',docs:'📎 ',cards:'💳 ',renew:'🪪 ',methods:'🏦 حساب: ',xcl:'👥 عميل: '}[k]||'')+
+    (k==='buys'?'🧾 ريسيت '+(x.store||'')+' · '+num(x.total):k==='cash'?'🏧 سحب كاش '+num(x.amount)+' · '+dmy(x.date):k==='xln'?'🤝 سلفة '+x.who+' · '+num(x.amt):(x.name||''));
+}
+function xAfterSave(){
+  const now=localStorage.getItem(KEY);if(now==null||now===XLAST)return;
+  const prev=XLAST;XLAST=now;
+  if(XUNDOING||prev==null){XIDS=xIdsOf(S);return}
+  XUND.push(prev);if(XUND.length>20)XUND.shift();
+  const cur=xIdsOf(S);
+  if(XIDS&&!XTRSKIP){const gone=[];Object.keys(cur).forEach(k=>XIDS[k].forEach(id=>{if(id&&!cur[k].has(id))gone.push([k,id])}));
+    if(gone.length){let o=null;try{o=JSON.parse(prev)}catch(e){}
+      if(o){const tr=xTrGet(),at=Date.now();gone.forEach(([k,id])=>{const x=xArr(o,k).find(y=>y&&y.id===id);if(!x)return;if(k==='cats'&&/^مصاريف إنستاباي/.test(x.name||''))return;tr.push({k,o:x,at,l:xTrLbl(k,x,o)})});xTrSet(tr)}}}
+  XIDS=cur;xUndoBar();
+}
+try{const _svX=save;save=function(){const r=_svX.apply(this,arguments);try{xAfterSave()}catch(e){}return r}}catch(e){}
+function xUndoBar(){
+  if($('#lock').classList.contains('on'))return;
+  let b=$('#xub');if(!b){b=document.createElement('div');b.id='xub';b.className='xub';document.body.appendChild(b)}
+  b.innerHTML=`<span>تم الحفظ</span><button onclick="xUndo()">↩️ Undo${XUND.length>1?' ('+XUND.length+')':''}</button><button class="x" onclick="this.parentNode.classList.remove('on')">✕</button>`;
+  b.classList.add('on');clearTimeout(XUBT);XUBT=setTimeout(()=>b.classList.remove('on'),6000);
+}
+function xUndo(){
+  const p=XUND.pop();if(!p)return toast('لا توجد خطوات للتراجع');
+  XUNDOING=true;
+  try{S=normalize(JSON.parse(p));localStorage.setItem(KEY,p);XLAST=p;XIDS=xIdsOf(S);
+    try{AMTS=amtSnap()}catch(e){}try{TXIDS=new Set(S.txs.map(t=>t.id));TXSNAP=snapTx()}catch(e){}
+    const tr=xTrGet().filter(e=>!xArr(S,e.k).some(x=>x&&e.o&&x.id===e.o.id));xTrSet(tr);
+    closeSheet();try{$('#rv').classList.remove('on')}catch(e){}render();
+  }finally{XUNDOING=false}
+  toast('↩️ تم التراجع عن آخر خطوة');
+  if(XUND.length)xUndoBar();else{const b=$('#xub');if(b)b.classList.remove('on')}
+}
+function xRelink(k,o){
+  if(k!=='txs'||!o.src)return;const s=o.src;
+  if(s.k==='r'){const c=C(s.id);if(c){c.st=c.st||{};c.st[s.p]={st:'done',txId:o.id,at:Date.now()}}}
+  if(s.k==='i'){const p=plan(s.id),it=p&&p.items.find(x=>x.id===s.p);if(it&&!itTx(it))it.txId=o.id}
+}
+function xTrPut(e){const arr=xArrRef(e.k);if(!arr.some(x=>x&&x.id===e.o.id)){arr.push(e.o);xRelink(e.k,e.o)}}
+function xTrRestore(i){const tr=xTrGet(),e=tr[i];if(!e)return;xTrPut(e);tr.splice(i,1);xTrSet(tr);save();render();toast('♻️ تم الاسترجاع')}
+function xTrAll(){const tr=xTrGet();if(!tr.length)return;['methods','cats','plans','xcl','xln','txs','buys','contacts','docs','cards','renew','cash'].forEach(k=>tr.filter(e=>e.k===k).forEach(xTrPut));xTrSet([]);save();render();toast('♻️ تم استرجاع الكل')}
+function xTrDel(i){const tr=xTrGet();tr.splice(i,1);xTrSet(tr);render()}
+async function xTrEmpty(){if(!await ask('تفريغ سلة المحذوفات؟','سيتم حذف كل ما بها نهائيًا ولا يمكن استرجاعه.',{danger:true,icon:'🗑',ok:'Empty'}))return;xTrSet([]);gcFiles();render();toast('تم تفريغ السلة')}
+gcFiles=async function(){
+  if(DEMO)return;
+  try{const ref=new Set();
+    S.txs.forEach(t=>(t.files||[]).forEach(i=>ref.add(i)));S.docs.forEach(d=>(d.files||[]).forEach(i=>ref.add(i)));S.plans.forEach(p=>(p.files||[]).forEach(i=>ref.add(i)));
+    S.cats.forEach(c=>(c.files||[]).forEach(i=>ref.add(i)));S.renew.forEach(r=>(r.files||[]).forEach(i=>ref.add(i)));S.buys.forEach(b=>{if(b.fid)ref.add(b.fid)});
+    xTrGet().forEach(e=>{const o=e.o||{};(o.files||[]).forEach(i=>ref.add(i));if(o.fid)ref.add(o.fid)});
+    for(const k of await FDB.keys())if(!ref.has(k))await FDB.del(k);
+    Object.keys(S.fmeta).forEach(id=>{if(!ref.has(id))delete S.fmeta[id]});save();
+  }catch(e){}
+};
+XVW.xtr=()=>{const tr=xTrGet();
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🗑 سلة المحذوفات</h3></div>`+
+  (tr.length?`<div class="xlna"><button class="btn" onclick="xTrAll()">♻️ استرجاع الكل (${tr.length})</button><button class="btn ghost danger" onclick="xTrEmpty()">🗑 Empty</button></div>
+  <div class="list">${tr.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="row"><div class="grow"><b>${esc(e.l)}</b><small>تاريخ الحذف: ${xLnTs(e.at)}</small></div><button class="mini pri" onclick="xTrRestore(${i})">♻️ استرجاع</button><button class="mini ic danger" onclick="xTrDel(${i})">✕</button></div>`).join('')}</div>`
+  :'<div class="nempty"><div>🗑</div><b>السلة فارغة</b></div>');
+};
+
+/* ========== التحصيل الجزئي: يرجع للمبلغ الأصلي عند الحذف أو الإلغاء ========== */
+try{const _psP=xPartialSave;xPartialSave=function(id){const n0=S.txs.length,r=_psP.apply(this,arguments);try{if(S.txs.length>n0){const t=S.txs[S.txs.length-1];if(t&&!t.partOf){t.partOf=id;save()}}}catch(e){}return r}}catch(e){}
+function xPartSync(){let ch=0;S.txs.slice().forEach(t=>{if(!t.partOf||!t.pend)return;const p=S.txs.find(x=>x.id===t.partOf);if(!p||!p.pend)return;p.amount=r2(p.amount+t.amount);S.txs=S.txs.filter(x=>x!==t);ch=1});if(ch){XTRSKIP=true;try{save()}finally{XTRSKIP=false}}}
+try{const _rnP2=render;render=function(){try{xPartSync()}catch(e){}return _rnP2.apply(this,arguments)}}catch(e){}
+
+/* ========== حذف العملية يحذف كل ما يرتبط بها ========== */
+try{const _dtL=delTx;delTx=async function(){
+  const id=F&&F.id,t0=id&&S.txs.find(t=>t.id===id),cp=t0?{...t0}:null;const r=await _dtL.apply(this,arguments);
+  try{if(cp&&!S.txs.some(t=>t.id===id)){let ch=false;
+    const rel=S.txs.filter(t=>t.payFeeOf===id||t.feeOf===id);if(rel.length){S.txs=S.txs.filter(t=>!rel.includes(t));ch=true}
+    S.txs.forEach(t=>{if(t.xref===id){delete t.xref;ch=true}});
+    if(cp.partOf){const p=S.txs.find(t=>t.id===cp.partOf);if(p&&p.pend){p.amount=r2(p.amount+cp.amount);ch=true}}
+    if(cp.src&&cp.src.k==='r'&&cp.type==='inc'){const c=C(cp.src.id);if(c&&c.st&&c.st[cp.src.p]&&c.st[cp.src.p].txId===id){delete c.st[cp.src.p];ch=true}}
+    if(ch){save();render()}toast('تم الحذف · يمكنك استرجاعها من سلة المحذوفات')}}catch(e){}return r}}catch(e){}
+
+/* ========== تأكيد التحصيل / الدفع بتاريخ ========== */
+function xColSheet(id){const t=S.txs.find(x=>x.id===id);if(!t||!t.pend)return;const inc=t.type==='inc';
+  sheet(`<h2>${inc?'✅ تأكيد التحصيل':'✅ تأكيد الدفع'}</h2>
+  <div class="kv"><span>${esc(C(t.cat)?.name||'')}</span><b>${fmt(t.amount)}</b></div>
+  <div class="kv"><span>📅 موعد السداد</span><b>${xDW(t.date)}</b></div>
+  <label>${inc?'📅 تاريخ التحصيل':'📅 تاريخ الدفع'}<input id="xc-d" type="date" value="${today()}"></label>
+  <div class="two"><label>الحساب<select id="xc-m">${opt(S.methods.filter(m=>m.active||m.id===t.method),t.method)}</select></label><label>الطريقة<select id="xc-v">${viaOpts(t.via)}</select></label></div>
+  <button class="btn" onclick="xColSave('${id}')">✅ تأكيد</button><button class="btn ghost" onclick="closeSheet()">إلغاء</button>`)}
+function xColSave(id){const t=S.txs.find(x=>x.id===id);if(!t)return;const d=$('#xc-d').value;if(!d)return toast('اختر التاريخ');if(isClosed(d))return toast('هذا الشهر مقفول');
+  t.due=t.date;t.pend=false;t.date=d;t.method=$('#xc-m').value;t.via=$('#xc-v').value;save();closeSheet();render();refreshRV();toast((t.type==='inc'?'تم التحصيل ':'تم الدفع ')+fmt(t.amount))}
+try{const _tdX=txDone;txDone=function(id,el){const t=S.txs.find(x=>x.id===id);if(t&&t.pend){if(el)el.checked=false;return xColSheet(id)}return _tdX.apply(this,arguments)}}catch(e){}
+xQDone=function(id){xColSheet(id)};
+try{const _rtX=recToggle;recToggle=function(id,k,el){const r=C(id),s=r&&stOf(occRec(r,k));if(s&&s.st==='wait'){if(el)el.checked=false;return occSheet(id,k)}return _rtX.apply(this,arguments)}}catch(e){}
+try{const _osX=occSheet;occSheet=function(id,k){const r=_osX.apply(this,arguments);try{const rr=C(id),d=$('#k-d');
+  if(d&&rr){d.value=today();const l=d.closest('label');if(l&&l.firstChild&&l.firstChild.nodeType===3)l.firstChild.nodeValue=rr.kind==='exp'?'📅 تاريخ الدفع':'📅 تاريخ التحصيل';
+    const la=$('#k-amt')&&$('#k-amt').closest('label');if(la&&!$('#xk-due'))la.insertAdjacentHTML('beforebegin',`<div class="kv" id="xk-due"><span>📅 موعد السداد</span><b>${xDW(occDate(rr,k))}</b></div>`)}}catch(e){}return r}}catch(e){}
+
+/* ========== التأجيل بتأكيد وتاريخ ========== */
+function xPost(id){const t=S.txs.find(x=>x.id===id);if(!t)return;const nd=addMonths(t.date<today()?today():t.date,1);
+  sheet(`<h2>⏭ تأجيل ${esc(C(t.cat)?.name||'')}</h2><div class="kv"><span>الموعد الحالي</span><b>${xDW(t.date)}</b></div>
+  <label>📅 الموعد الجديد<input id="xp-d" type="date" value="${nd}"></label>
+  <button class="btn" onclick="xPostSv('${id}')">⏭ تأجيل</button><button class="btn ghost" onclick="closeSheet()">إلغاء</button>`)}
+function xPostSv(id){const t=S.txs.find(x=>x.id===id),d=($('#xp-d')||{}).value;if(!t||!d)return toast('اختر التاريخ');t.date=d;t.post=(t.post||0)+1;save();closeSheet();render();toast('تم التأجيل إلى '+xDW(d))}
+
+/* شاشة غير محصّل: بوكسات */
+pendingSheet=function(){const items=sortList(pendAll());
+  const card=x=>{if(x.o){const o=x.o;return xCard({ic:'📌',title:esc(o.r.name),amt:num(o.amt),sub:'موعد السداد '+xDW(o.date),chip:xStChip(o.date),btns:xB(`occSheet('${o.r.id}',${o.k})`,'✅ تم التحصيل')+xB(`catForm('${o.r.id}')`,'⚙️ البند',1)})}
+    const t=x.t;return xCard({ic:'⏳',title:esc(C(t.cat)?.name||'—')+xClTag(t),amt:num(t.amount),sub:'موعد السداد '+xDW(t.date)+(t.post?' · تم التأجيل '+t.post+' مرة':''),chip:xStChip(t.date),
+      btns:xB(`xColSheet('${t.id}')`,'✅ تم التحصيل')+xB(`xPartial('${t.id}')`,'💵 جزء',1)+xB(`xPost('${t.id}')`,'⏭ تأجيل',1)})};
+  sheet(`<div class="phead"><h2>💼 غير محصّل</h2><span class="badge ${items.length?'late':'done'}">${items.length||'✓'}</span></div>
+  ${items.length?items.map(card).join(''):'<div class="nempty"><div>✅</div><b>تم تحصيل كل المبالغ</b></div>'}
+  ${repBtn('تقرير التحصيلات',"openRep('cols',()=>RF.month=NKM)")}`)};
+
+/* ========== شاشتا التحصيلات والمصروفات: الترتيب القديم بالبوكسات ========== */
+vCol=function(){return XVOLD.col().replace('💳 تحصيل لحساب الكريديت','💜 تحصيل مقابل دفع كريديت')};
+vExps=function(){return XVOLD.exps()};
+delete S.settings.xoldv;
+try{const _xmD=xMeta;xMeta=function(t){const a=_xmD.apply(this,arguments);try{if(a[0]&&Array.isArray(a[0]))a[0][0]='📅 '+xDW(t.date)}catch(e){}return a}}catch(e){}
+try{const _frD=fixedRow;fixedRow=function(o){let h=_frD.apply(this,arguments);try{if(o.s.st==='done'&&o.s.t){const inc=o.r.kind==='inc',W=inc?'محصّل':'مدفوع';
+  h=h.replace(W+' '+dmy(o.s.t.date),(inc?'تاريخ التحصيل ':'تاريخ الدفع ')+xDW(o.s.t.date)+' · موعد السداد '+dmy(o.date))}}catch(e){}return h}}catch(e){}
+try{const _trC2=txRow;txRow=function(t){let h=_trC2.apply(this,arguments);try{
+  h=h.replace(/onclick="postpone\('([^']+)'\)">⏭ أجّل للشهر الجاي/g,'onclick="xPost(\'$1\')">⏭ تأجيل');
+  if(t&&t.ccr&&t.type==='inc')h=h.replace('<div class="ckx">','<div class="ckx xccrc">').replace('</b><small','</b><span class="xclb" style="background:#f3e8ff;color:#7e22ce">💜 تحصيل مقابل دفع كريديت</span><small')}catch(e){}return h}}catch(e){}
+
+/* الشهر يرجع للحالي عند فتح الشاشة من جديد */
+var XKM=false;
+gocol=function(k){XKM=true;if(k){const[y,m]=k.split('-').map(Number);cur.y=y;cur.m=m}go('col')};
+goexp=function(k){XKM=true;if(k){const[y,m]=k.split('-').map(Number);cur.y=y;cur.m=m}go('exps')};
+try{const _goM=go;go=function(v){if(v!==view&&!XKM&&['col','exps','cash','trs','annual','xcw'].includes(v)){cur.y=NY;cur.m=NM}XKM=false;return _goM.apply(this,arguments)}}catch(e){}
+
+/* ========== اختيار نوع العملية عند الإضافة ========== */
+try{const _ntT=newTx;newTx=function(type,skip){
+  if(skip||type==='tr')return _ntT.apply(this,[type]);
+  const inc=type==='inc';F=null;
+  const L=inc?[['fix','📌','ثابت','تحصيل متكرر'],['cl','👥','تحصيل عميل','مرتبط بالعميل'],['other','💵','أخرى','تحصيل لمرة واحدة'],['ccr','💜','مقابل دفع كريديت','لا يُحسب في التحصيلات']]
+    :[['fix','📌','ثابت','مصروف متكرر'],['bill','🧾','فاتورة','كهرباء، غاز، مياه...'],['other','🛒','أخرى','مشتريات وغيرها'],['loan','🤝','سلفة','تسجيل سلفة جديدة']];
+  sheet(`<h2>${inc?'💰 تحصيل جديد':'💸 مصروف جديد'}</h2><p class="muted">اختر نوع العملية</p>
+  <div class="xtype">${L.map(([k,ic,l,s])=>`<button type="button" onclick="xNewPick('${type}','${k}')"><span>${ic}</span>${l}<small>${s}</small></button>`).join('')}</div>
+  ${inc?'':'<button class="btn ghost" onclick="scanReceipt()">📷 Receipt Scan</button>'}`);
+}}catch(e){}
+function xNewPick(type,k){
+  if(k==='loan'){closeSheet();return xLnNew()}
+  newTx(type,1);if(!F)return;
+  if(k==='fix')F.fix=true;if(k==='bill'){F.isBill=true;F.feeOn=false}if(k==='ccr')F.ccr=true;
+  SHKEEP=1;txForm();if(k==='cl')try{xClFM(1)}catch(e){}
+}
+quickTx=function(id){const c=C(id);if(!c)return;newTx(c.kind,1);if(!F||F.type!==c.kind)return;F.cat=id;if(c.acct&&M(c.acct))F.method=c.acct;if(c.via)F.via=c.via;if(c.fixed)F.amount=c.amount?amtStr(c.amount):'';txForm()};
+xNewBill=function(){newTx('exp',1);if(F&&F.type==='exp'){F.isBill=true;F.feeOn=false;SHKEEP=1;txForm()}};
+xNewLoan=function(){xLnNew()};
+xShareNew=function(k){const ids=XSHIDS;closeSheet();newTx(k,1);if(F){F.files=(F.files||[]).concat(ids);if(k==='exp')F.via='instapay';SHKEEP=1;txForm()}};
+xCcMiss=function(d){const c=XCC,k=xCcCalc(c.id);closeSheet();XCCBACK={x:{...c}};newTx('exp',1);if(!F)return;F.method=c.id;F.via='card';F.amount=amtStr(d);F.date=isClosed(k.we)?today():k.we;SHKEEP=1;txForm()};
+
+/* شاشة العملية: الإكرامية في "أخرى" فقط، وإعدادات البند الثابت، وموعد السداد */
+try{const _tfV=txForm;txForm=function(){const r=_tfV.apply(this,arguments);try{xTfPost()}catch(e){}return r}}catch(e){}
+function xTfPost(){
+  const sz=$('#sheet .sz');if(!sz||!F)return;const o=F.id&&S.txs.find(t=>t.id===F.id),cur=F.cat&&F.cat!=='__new'&&C(F.cat);
+  const tp=$('#f-tip');if(tp&&(F.fix||F.isBill||(cur&&cur.fixed))){const l=tp.closest('label');if(l)l.remove()}
+  if(o&&o.src&&o.src.k==='r'&&C(o.src.id)&&!$('#xfx-b')){const xs=sz.querySelector('button.xsel[onclick="xCatOpen()"]'),a=xs&&(xs.closest('label')||xs);
+    if(a)a.insertAdjacentHTML('afterend',`<button type="button" id="xfx-b" class="btn ghost" onclick="grab();XCATBACK=true;catForm('${o.src.id}')">📌 إعدادات البند الثابت (التكرار، التقسيط للغير)</button>`)}
+  sz.querySelectorAll('button[onclick^="postpone("]').forEach(b=>{const m=b.getAttribute('onclick').match(/postpone\('([^']+)'\)/);if(m){b.setAttribute('onclick',`xPost('${m[1]}')`);b.textContent='⏭ تأجيل الموعد'}});
+  if(o&&!o.pend&&!$('#xdue')){let due=o.due;if(!due&&o.src&&o.src.k==='r'){const c=C(o.src.id);if(c)due=occDate(c,o.src.p)}
+    const d=$('#f-d'),l=d&&d.closest('label');if(l&&o.type!=='tr'){if(l.firstChild&&l.firstChild.nodeType===3)l.firstChild.nodeValue=o.type==='inc'?'📅 تاريخ التحصيل':'📅 تاريخ الدفع';
+      if(due&&due!==o.date)l.parentElement.insertAdjacentHTML('beforebegin',`<div class="kv" id="xdue"><span>📅 موعد السداد</span><b>${xDW(due)}</b></div>`)}}
+}
+
+/* البند الثابت: تقسيط للغير بتاريخ انتهاء + تعديل يوم الموعد */
+try{const _okE=occK;occK=function(r,key){const k=_okE.apply(this,arguments);if(k>=0&&r&&r.end&&occDate(r,k)>r.end)return -1;return k}}catch(e){}
+try{const _csP=catSheet;catSheet=function(){const r=_csP.apply(this,arguments);try{const c=CF;if(!c)return r;
+  if(c.kind==='inc'&&c.fixed&&!$('#cf-p3')){const ev=$('#cf-every'),l=ev&&ev.closest('label'),row=l&&l.parentElement;
+    if(row)row.insertAdjacentHTML('afterend',`<label class="chk fxbox"><input type="checkbox" id="cf-p3" ${c.p3?'checked':''} onchange="grabCF();catSheet()"> 🤝 تقسيط للغير (له تاريخ انتهاء)</label>${c.p3?`<label>📅 تاريخ الانتهاء<input id="cf-end" type="date" value="${c.end||''}"></label>`:''}`)}
+  const st=$('#cf-start');if(st&&st.disabled&&c.id){st.disabled=false;const l=st.closest('label');if(l)l.insertAdjacentHTML('beforeend','<small class="muted" style="display:block">يمكن تغيير يوم الموعد فقط</small>')}
+}catch(e){}return r}}catch(e){}
+try{const _gcP=grabCF;grabCF=function(){_gcP.apply(this,arguments);if(!CF)return;if($('#cf-p3'))CF.p3=$('#cf-p3').checked;if($('#cf-end'))CF.end=$('#cf-end').value}}catch(e){}
+try{const _cvM=catSave;catSave=function(){grabCF();
+  const o=CF&&CF.id&&C(CF.id);
+  if(o&&o.start&&Object.keys(o.st||{}).length&&CF.start&&CF.start.slice(0,7)!==o.start.slice(0,7)){CF.start=o.start;return toast('يمكن تغيير يوم الموعد فقط داخل نفس الشهر')}
+  if(CF&&CF.kind==='inc'&&CF.fixed&&CF.p3&&!CF.end)return toast('اختر تاريخ الانتهاء');
+  const p3=!!(CF&&CF.p3&&CF.fixed),end=CF&&CF.end||'',id0=CF&&CF.id,n0=S.cats.length,r=_cvM.apply(this,arguments);
+  try{const t=id0?C(id0):(S.cats.length>n0?S.cats[S.cats.length-1]:null);if(t&&t.kind==='inc'){if(p3){t.p3=true;t.end=end}else{delete t.p3;delete t.end}save()}}catch(e){}return r}}catch(e){}
+
+/* ========== الريسيت: شاشة واحدة فيها الفاتورة والإكرامية ========== */
+var XRC2=null;
+receiptFlow=async function(rc,fid){
+  rc=Object.assign(EMPTYRC(),rc||{});
+  if(rc.err)toast('⚠️ تعذرت القراءة، أكمل يدويًا');
+  const pick=await askStore(rc);if(!pick)return toast('تم الإلغاء');
+  const n=pick.name;
+  const cat=(rc.match&&normAr(rc.match.name)===normAr(n))?rc.match:(S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(n))||ensureCat(n,'exp'));
+  if(rc.match&&rc.match.id!==cat.id)unlearn(rc.match,rc.matchBy);learnAlias(cat,rc);cat.active=true;
+  const card=rc.card,cashM=S.methods.find(m=>m.active&&m.type==='cash');let method,via;
+  if(card&&M(card.acct)){method=card.acct;via='card'}else if(rc.cash&&cashM){method=cashM.id;via='cash'}else{method=cat.acct&&M(cat.acct)?cat.acct:defMethod();via=cat.via||''}
+  const bill=!!cat.xbill||/(غاز|كهرباء|مياه|مياة|انترنت|إنترنت|اتصالات|vodafone|orange|petrotrade|بتروتريد|تاون\s*جاس|town\s*gas|electric|water)/i.test(String(rc.raw||'')+' '+n);
+  XRC2={rc,fid,cat,method,via,card,bill,deliv:!!rc.deliv,tip:'',a:rc.total?amtStr(rc.total):'',date:(rc.date&&!isClosed(rc.date))?rc.date:today()};
+  xRcSheet();
+};
+function xRcSheet(){const x=XRC2;if(!x)return;
+  sheet(`<h2>🧾 ${esc(x.cat.name)}</h2>
+  ${x.fid?`<div class="files">${fileThumb(x.fid,'view')}</div>`:''}
+  <label>💰 المبلغ<input id="rc-a" class="amt-in" inputmode="decimal" dir="ltr" value="${esc(x.a)}"></label>
+  <div class="xchips"><button type="button" class="xchip ${x.bill?'on':''}" onclick="xRcGrab();XRC2.bill=!XRC2.bill;SHKEEP=1;xRcSheet()">🧾 فاتورة</button></div>
+  ${x.bill?'':`<label>🎁 إكرامية (اختياري)<input id="rc-t" inputmode="decimal" dir="ltr" placeholder="0" value="${esc(x.tip)}"></label>`}
+  <div class="seg"><button type="button" class="${x.deliv?'':'on'}" onclick="xRcGrab();XRC2.deliv=false;SHKEEP=1;xRcSheet()">🛍️ من المكان</button><button type="button" class="${x.deliv?'on':''}" onclick="xRcGrab();XRC2.deliv=true;SHKEEP=1;xRcSheet()">🛵 توصيل</button></div>
+  <div class="two"><label>الحساب<select id="rc-m">${opt(S.methods.filter(m=>m.active||m.id===x.method),x.method)}</select></label><label>الطريقة<select id="rc-v">${viaOpts(x.via)}</select></label></div>
+  <label>📅 التاريخ<input id="rc-d" type="date" value="${x.date}"></label>
+  <p class="muted">${(x.rc.items||[]).length?'🧾 تمت قراءة '+x.rc.items.length+' صنف، وستظهر للمراجعة بعد الحفظ':'لم تتم قراءة الأصناف، ويمكن إضافتها لاحقًا من صفحة الريسيت'}</p>
+  <button class="btn" onclick="xRcSave()">✅ حفظ</button><button class="btn ghost" onclick="XRC2=null;closeSheet()">إلغاء</button>`)}
+function xRcGrab(){const x=XRC2;if(!x||!$('#rc-a'))return;x.a=$('#rc-a').value;if($('#rc-t'))x.tip=$('#rc-t').value;x.method=$('#rc-m').value;x.via=$('#rc-v').value;x.date=$('#rc-d').value}
+function xRcSave(){xRcGrab();const x=XRC2;if(!x)return;const a=parseNum(x.a);
+  if(!(a>0))return toast('اكتب المبلغ');if(!x.date)return toast('اختر التاريخ');if(isClosed(x.date))return toast('هذا الشهر مقفول');if(!x.method)return toast('اختر الحساب');
+  const old=findDup(x.cat,a,x.date,x.rc);if(old){DUPX={old,go:xRcFinish};dupSheet(old);return}xRcFinish()}
+async function xRcFinish(){const x=XRC2;XRC2=null;if(!x)return;closeSheet();
+  const a=parseNum(x.a),tip=x.bill?0:(parseNum(x.tip)||0),tot=r2(a+tip);
+  let items=[];if((x.rc.items||[]).length){const r=await biReview(x.rc.items,a);items=r===null?x.rc.items.map(i=>({...i})):r}
+  if(tip>0)items.push({n:'🎁 إكرامية',q:1,p:tip,v:tip});
+  const t={id:uid(),type:'exp',amount:tot,cat:x.cat.id,method:x.method,via:x.via,date:x.date,note:'🧾'+(x.deliv?' 🛵':'')+(x.card?' •••• '+x.card.last4:''),files:x.fid?[x.fid]:[],created:Date.now()};
+  if(x.bill){t.bill=true;x.cat.xbill=1}if(tip>0)t.tip=tip;S.txs.push(t);
+  const b={id:uid(),date:x.date,time:x.rc.time||(x.date===today()?nowTime():''),rt:x.rc.time||'',no:x.rc.no||'',txId:t.id,catId:x.cat.id,store:x.cat.name,items,total:tot,method:x.method,via:x.via,card:x.card?x.card.last4:'',deliv:x.deliv,fid:x.fid,ph:x.rc.ph||''};
+  S.buys.push(b);save();render();if(x.rc.raw)ocrSave(b.id,x.rc.raw);contactFromReceipt(x.rc,x.cat);
+  banner('🧾','تم تسجيل '+fmt(tot),x.cat.name,()=>buySheet(b.id),'ok')}
+/* الأصناف: لو الطريقة الأساسية لم تجد شيئًا، يقرأ كل سطر فيه اسم ومبلغ */
+try{const _bpX=biParse;biParse=function(text){let r=[];try{r=_bpX.apply(this,arguments)}catch(e){}if(r&&r.length)return r;
+  try{const out=[];for(const l of splitLines(text)){if(BI_STOP.test(l))break;if(BI_META.test(l)||PHK.test(l)||ADRW.test(l)||VEND.test(l)||SKIPM.test(l))continue;
+    const cl=biClean(l),ns=(cl.match(/\d+(?:\.\d{1,2})?/g)||[]).map(Number).filter(x=>x>0&&x<100000),name=cl.replace(/[^A-Za-z\u0621-\u064A\s]/g,' ').replace(/\s+/g,' ').trim();
+    if(name.replace(/\s/g,'').length<3||!ns.length)continue;const v=ns[ns.length-1];if(!(v>=1))continue;let q=1,p=v;
+    if(ns.length>=2&&ns[0]>0&&ns[0]<100&&ns[0]!==v){q=ns[0];p=r2(v/q)}out.push({n:name,q,p,v})}return out.slice(0,40)}catch(e){return[]}}}catch(e){}
+
+/* ========== الإشعارات: كتم، تأجيل، حذف، تذكيرات، وتنبيه الكاش ========== */
+var XNKEY='centric-nctl';
+function xNC(){try{return JSON.parse(localStorage.getItem(XNKEY)||'{}')}catch(e){return{}}}
+function xNCset(o){localStorage.setItem(XNKEY,JSON.stringify(o))}
+function xNBase(id){const p=String(id).split('-');if(['cashlow','backup','close'].includes(p[0]))return p[0];return p.length>1?p[0]+'-'+p[1]:p[0]}
+function xRemNext(r){if(!r||!r.d)return null;let d=r.d;if(!r.last)return d;if((r.rep||'none')==='none')return null;let n=0;while(d<=r.last&&n++<600)d=addMonths(d,r.rep==='y'?12:1);return d}
+try{const _alN=alerts;alerts=function(){let out=_alN.apply(this,arguments);try{const td=today();
+  (S.settings.xrem||[]).forEach(r=>{if(r.off)return;const d=xRemNext(r);if(!d)return;const left=daysBetween(d,td);if(left>(+r.lead||0))return;
+    out.push({id:'u-'+r.id+'-'+d,ic:r.ic||'⏰',lv:left<0?'late':'soon',title:left<0?r.t+' · متأخر '+(-left)+' يوم':left===0?'اليوم: '+r.t:r.t+' · بعد '+left+' يوم',body:xDW(d)+(r.n?' · '+r.n:''),go:`xRemOpen('${r.id}','${d}')`})});
+  const ca=xCashAcct(),th=S.settings.cashLow==null?200:parseFloat(S.settings.cashLow);
+  if(ca&&th>=0&&!DEMO){const b=xBal(ca);if(b<=th)out.unshift({id:'cashlow-'+td,ic:'🚨',lv:'late',urgent:1,title:'عاجل: رصيد الكاش منخفض',body:b<=0?'لا يوجد معك كاش':'المتبقي '+fmt(b)+' فقط',go:`go('pmv')`})}
+  out=out.filter(a=>{const m=String(a.id).match(/^[fc]-(.+)-(\d+)$/);if(!m)return true;const c=C(m[1]);return !(c&&c.end&&occDate(c,+m[2])>c.end)});
+  const nc=xNC();out=out.filter(a=>{if(nc['m:'+xNBase(a.id)])return false;const x=nc[a.id];if(!x)return true;if(x.del)return false;if(x.until&&x.until>td)return false;return true});
+}catch(e){}return out}}catch(e){}
+openNotifs=function(){
+  const all=alerts(),un=all.filter(a=>!READ[a.id]),rd=all.filter(a=>READ[a.id]),nc=xNC(),td=today(),muted=Object.keys(nc).filter(k=>k.startsWith('m:')),sn=Object.entries(nc).filter(([k,v])=>v.until&&v.until>td),rem=S.settings.xrem||[];
+  const card=a=>`<div class="ncard ${a.lv||'info'} ${READ[a.id]?'dim':''}" style="flex-wrap:wrap"><div class="nic">${a.ic||'🔔'}</div><div class="grow" onclick="xNGo('${a.id}')"><b>${esc(a.title)}</b><small>${esc(a.body||'')}</small></div>
+    <div class="xnb"><button class="mini" onclick="xNGo('${a.id}')">فتح</button><button class="mini" onclick="xNSnooze('${a.id}')">⏰ تأجيل</button><button class="mini" onclick="xNMute('${a.id}')">🔕 كتم</button><button class="mini danger" onclick="xNDel('${a.id}')">🗑 حذف</button></div></div>`;
+  sheet(`<div class="phead"><h2>🔔 الإشعارات</h2><span class="badge ${un.length?'late':'done'}">${un.length?un.length+' جديد':'✓'}</span></div>
+  <button class="btn" onclick="xRemForm()">➕ تذكير جديد</button>
+  ${un.length?un.map(card).join('')+`<button class="btn ghost" onclick="readAll()">✓ تعليم الكل كمقروء</button>`:'<div class="nempty"><div>✅</div><b>لا توجد إشعارات جديدة</b></div>'}
+  ${rd.length?`<details class="gen"><summary>📭 المقروءة (${rd.length})</summary>${rd.map(card).join('')}</details>`:''}
+  ${rem.length?`<details class="gen"><summary>⏰ التذكيرات (${rem.length})</summary><div class="list">${rem.map(r=>`<div class="row" onclick="xRemForm('${r.id}')"><div class="grow"><b>${esc(r.ic||'⏰')} ${esc(r.t)}</b><small>${xDW(xRemNext(r)||r.d)} · ${{none:'مرة واحدة',m:'شهري',y:'سنوي'}[r.rep||'none']}${r.off?' · موقوف':''}</small></div></div>`).join('')}</div></details>`:''}
+  ${muted.length||sn.length?`<details class="gen"><summary>🔕 المكتومة والمؤجلة (${muted.length+sn.length})</summary><div class="list">${muted.map(k=>`<div class="row"><div class="grow"><b>${esc(nc[k].t||k)}</b><small>مكتوم</small></div><button class="mini" onclick="xNUn('${k}')">🔔 إلغاء الكتم</button></div>`).join('')}${sn.map(([k,v])=>`<div class="row"><div class="grow"><b>${esc(v.t||k)}</b><small>مؤجل حتى ${xDW(v.until)}</small></div><button class="mini" onclick="xNUn('${k}')">إلغاء التأجيل</button></div>`).join('')}</div></details>`:''}
+  <div class="box"><label>🚨 تنبيه عاجل عندما يصل رصيد الكاش إلى (اتركه فارغًا للإيقاف)<input inputmode="decimal" dir="ltr" value="${S.settings.cashLow==null?200:S.settings.cashLow}" onchange="S.settings.cashLow=this.value.trim()===''?'':parseNum(this.value);save();updateBell();toast('تم الحفظ')"></label>
+  <label>💜 إظهار "تحصيل مقابل دفع كريديت" في الرئيسية قبل موعد السداد بـ (يوم)<input inputmode="numeric" value="${S.settings.ccrLead==null?7:S.settings.ccrLead}" onchange="S.settings.ccrLead=parseNum(this.value)||0;save();toast('تم الحفظ')"></label></div>
+  <button class="btn ghost" onclick="notifSheet()">⚙️ فحص الإشعارات</button>`)};
+function xNGo(id){const a=alerts().find(x=>x.id===id);readAlert(id);closeSheet();if(a)try{new Function(a.go)()}catch(e){}}
+function xNMute(id){const a=alerts().find(x=>x.id===id),nc=xNC();nc['m:'+xNBase(id)]={t:a?a.title:id};xNCset(nc);updateBell();openNotifs();toast('🔕 تم كتم الإشعار')}
+function xNDel(id){const a=alerts().find(x=>x.id===id),nc=xNC();nc[id]={del:1,t:a?a.title:id};xNCset(nc);updateBell();openNotifs();toast('تم حذف الإشعار')}
+function xNUn(k){const nc=xNC();delete nc[k];xNCset(nc);updateBell();openNotifs()}
+function xNSnooze(id){const a=alerts().find(x=>x.id===id),t=new Date();t.setDate(t.getDate()+1);
+  sheet(`<h2>⏰ تأجيل الإشعار</h2><p class="muted">${esc(a?a.title:'')}</p><label>📅 يظهر مرة أخرى في<input id="ns-d" type="date" value="${isoD(t)}"></label>
+  <button class="btn" onclick="xNSnSv('${id}')">⏰ تأجيل</button><button class="btn ghost" onclick="openNotifs()">رجوع</button>`)}
+function xNSnSv(id){const d=($('#ns-d')||{}).value;if(!d||d<=today())return toast('اختر تاريخًا بعد اليوم');const a=alerts().find(x=>x.id===id),nc=xNC();nc[id]={until:d,t:a?a.title:id};xNCset(nc);delete READ[id];saveRead();updateBell();openNotifs();toast('تم التأجيل إلى '+xDW(d))}
+function xRemForm(id){const r=id?(S.settings.xrem||[]).find(x=>x.id===id):{t:'',d:today(),rep:'none',lead:0,n:'',ic:'⏰'};if(!r)return;
+  sheet(`<h2>⏰ ${id?'تعديل تذكير':'تذكير جديد'}</h2>
+  <label>العنوان<input id="rm-t" value="${esc(r.t)}" placeholder="مثال: تجديد اشتراك الإنترنت"></label>
+  <div class="xemo">${['⏰','📌','💳','🏠','🚗','🩺','🎓','🎁','📄','💡','📞','🔔'].map(e=>`<button type="button" class="${e===(r.ic||'⏰')?'on':''}" onclick="xSegOn(this)">${e}</button>`).join('')}</div>
+  <div class="two"><label>📅 التاريخ<input id="rm-d" type="date" value="${r.d}"></label><label>التنبيه قبلها بـ (يوم)<input id="rm-l" inputmode="numeric" value="${r.lead||0}"></label></div>
+  <div class="seg" id="rm-r">${[['none','مرة واحدة'],['m','شهري'],['y','سنوي']].map(([k,l])=>`<button type="button" data-k="${k}" class="${(r.rep||'none')===k?'on':''}" onclick="xSegOn(this)">${l}</button>`).join('')}</div>
+  <label>ملاحظة<input id="rm-n" value="${esc(r.n||'')}"></label>
+  ${id?`<label class="chk"><input type="checkbox" id="rm-off" ${r.off?'checked':''}> ⏸ موقوف</label>`:''}
+  <button class="btn" onclick="xRemSave('${id||''}')">💾 حفظ</button>${id?`<button class="btn ghost danger" onclick="xRemDel('${id}')">🗑 حذف</button>`:''}<button class="btn ghost" onclick="openNotifs()">رجوع</button>`)}
+function xRemSave(id){const t=($('#rm-t').value||'').trim(),d=$('#rm-d').value;if(!t)return toast('اكتب العنوان');if(!d)return toast('اختر التاريخ');
+  const L=S.settings.xrem=S.settings.xrem||[];let r=id&&L.find(x=>x.id===id);if(!r){r={id:uid()};L.push(r)}
+  Object.assign(r,{t,d,ic:(document.querySelector('#sheet .xemo button.on')||{}).textContent||'⏰',lead:Math.max(0,parseNum($('#rm-l').value)||0),rep:(document.querySelector('#rm-r .on')||{}).dataset.k||'none',n:($('#rm-n').value||'').trim(),off:$('#rm-off')?$('#rm-off').checked:false});
+  if(r.last&&r.last<d)delete r.last;save();updateBell();openNotifs();toast('تم الحفظ')}
+function xRemDel(id){S.settings.xrem=(S.settings.xrem||[]).filter(x=>x.id!==id);save();updateBell();openNotifs()}
+function xRemOpen(id,d){const r=(S.settings.xrem||[]).find(x=>x.id===id);if(!r)return;
+  sheet(`<h2>${esc(r.ic||'⏰')} ${esc(r.t)}</h2><div class="kv"><span>📅 الموعد</span><b>${xDW(d)}</b></div>${r.n?`<p class="muted">${esc(r.n)}</p>`:''}
+  <button class="btn" onclick="xRemDone('${id}','${d}')">✅ تم</button><button class="btn ghost" onclick="xRemForm('${id}')">✏️ تعديل</button>`)}
+function xRemDone(id,d){const r=(S.settings.xrem||[]).find(x=>x.id===id);if(!r)return;r.last=d;save();updateBell();closeSheet();toast('تم')}
+
+/* ========== المبالغ والتقارير بنفس باسورد الأرصدة ========== */
+xReveal=async function(el){if(!el||!el.dataset.v)return;if(!await xBalAuth())return;el.outerHTML='<b>'+decodeURIComponent(el.dataset.v)+'</b>'};
+revealAmts=async function(){if(!await xBalAuth())return;SHOWAMT=true;render();clearTimeout(amtT);amtT=setTimeout(()=>{SHOWAMT=false;if(view==='home')render()},60000)};
+try{const _orX=openRV;openRV=function(){const a=arguments;if(!XPRE&&!xBalOkR()){xBalAuth().then(ok=>{if(ok)_orX.apply(null,a);else if(view==='reports'){rtab='';render()}});return}return _orX.apply(this,a)}}catch(e){}
+
+/* ========== اسم التطبيق ثابت + المطوّر بباسورد واحد ========== */
+try{const i=SETS.findIndex(x=>x[0]==='name');if(i>=0)SETS.splice(i,1)}catch(e){}
+S.settings.appName=DEF_NAME;delete S.settings.devPw;
+var XDEVPW='P@ssw0rd101190101190AaA';
+xDevLock=function(){return `<div class="box" style="text-align:center"><div style="font-size:40px">🛠️</div><p class="muted">أدخل كلمة مرور المطوّر</p><input id="dv-p" type="password" dir="ltr" onkeydown="if(event.key==='Enter')xDevIn()"><button class="btn" onclick="xDevIn()">🔓 دخول</button></div>`};
+xDevIn=async function(){const a=($('#dv-p')||{}).value||'';if(a!==XDEVPW)return toast('كلمة المرور غير صحيحة');XDEVOK=true;render()};
+
+/* ========== الكريديت ========== */
+try{const _ccZ=xCcSheet;xCcSheet=function(){const r=_ccZ.apply(this,arguments);try{const sh=$('#sheet'),g=xCcCfg(XCC.id);
+  sh.querySelectorAll('.kv span').forEach(s=>{if(/اتجمع لحساب الكريديت/.test(s.textContent))s.textContent='💜 تحصيل مقابل دفع كريديت (من آخر سداد)';if(/اتسدد بعد قفل الكشف/.test(s.textContent))s.textContent='✅ تم سداده بعد إغلاق الكشف'});
+  sh.querySelectorAll('.xccb p').forEach(p=>{if(/الكشف بيقفل/.test(p.textContent)&&p.childNodes[0]&&p.childNodes[0].nodeType===3)p.childNodes[0].nodeValue='الكشف يُغلق يوم '+g.cut+' ويُسدد يوم '+g.due+' '});
+  const box=sh.querySelectorAll('.xccb')[1];if(box&&!$('#xcot'))box.insertAdjacentHTML('beforeend',`<button type="button" id="xcot" class="mini" style="display:block;margin-top:8px" onclick="xCcOpenTot('${XCC.id}')">🧾 إدخال إجمالي مشتريات فترة سابقة</button>`);
+}catch(e){}return r}}catch(e){}
+function xCcOpenTot(id){const m=M(id);if(!m)return;const g=xCcCfg(id),we=prevKey(NKM)+'-'+pad(g.cut);
+  sheet(`<h2>🧾 إجمالي مشتريات ${esc(m.name)}</h2><p class="muted">لإدخال إجمالي مشتريات فترة لم تُسجل عملياتها بالتفصيل، حتى يصبح الرصيد صحيحًا</p>
+  <label>💰 الإجمالي<input id="cot-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0"></label>
+  <label>📅 تاريخ إغلاق الكشف<input id="cot-d" type="date" value="${we}"></label>
+  <div class="seg" id="cot-k"><button type="button" class="on" data-k="exp" onclick="xSegOn(this)">💸 يُسجل كمصروف</button><button type="button" data-k="open" onclick="xSegOn(this)">⚖️ رصيد فقط</button></div>
+  <button class="btn" onclick="xCcOpenTotSv('${id}')">✅ حفظ</button><button class="btn ghost" onclick="xCcPay('${id}')">رجوع</button>`)}
+function xCcOpenTotSv(id){const a=parseNum($('#cot-a').value),d=$('#cot-d').value,k=(document.querySelector('#cot-k .on')||{}).dataset.k||'exp';
+  if(!(a>0))return toast('اكتب المبلغ');if(!d)return toast('اختر التاريخ');
+  if(k==='open'){const m=M(id);m.open=r2((+m.open||0)-a)}
+  else{if(isClosed(d))return toast('هذا الشهر مقفول');const c=ensureCat('مشتريات كريديت (إجمالي)','exp');c.active=true;S.txs.push({id:uid(),type:'exp',amount:a,cat:c.id,method:id,via:'card',date:d,note:'🧾 إجمالي مشتريات فترة',files:[],created:Date.now()})}
+  save();render();xCcPay(id);toast('تم الحفظ')}
+try{const _vhR=vHome;vHome=function(){let h=_vhR.apply(this,arguments);try{const td=today(),lead=S.settings.ccrLead==null?7:+S.settings.ccrLead;
+  const lp=S.txs.filter(t=>t.type==='tr'&&!t.pend&&xIsCr(t.to)).map(t=>t.date).sort().pop()||'';
+  const sum=r2(S.txs.filter(t=>t.ccr&&t.type==='inc'&&!t.pend&&(!lp||t.date>lp)).reduce((a,t)=>a+t.amount,0));
+  if(sum>0){let best=null;xCcAccts().forEach(m=>{const g=xCcCfg(m.id);let d=NKM+'-'+pad(g.due);if(d<td)d=addMonths(d,1);const left=daysBetween(d,td);if(!best||left<best.left)best={m,d,left}});
+    if(best&&best.left<=lead){const t=tileHTML({ic:'💜',label:'تحصيل مقابل دفع كريديت',val:fmt(sum),sub:'سداد '+esc(best.m.name)+' · '+xDW(best.d),cls:'soon',go:`gocol('${NKM}')`});
+      h=h.includes('<div class="dash">')?h.replace('<div class="dash">','<div class="dash">'+t):h+`<div class="dash">${t}</div>`}}
+  const al=alerts().find(a=>a.urgent);if(al)h=`<div class="warn" style="background:#fee2e2;color:#991b1b;font-weight:800" onclick="openNotifs()">🚨 ${esc(al.title)}${amtHidden()?'':' · '+esc(al.body)}</div>`+h;
+}catch(e){}return h}}catch(e){}
+
+/* ========== الأقساط: نظام كامل ========== */
+try{const _smP=sums;sums=function(l){return _smP.call(this,Array.isArray(l)?l.filter(t=>!(t&&t.xpre)):l)}}catch(e){}
+try{const _ktP=keyTx;keyTx=function(){const r=_ktP.apply(this,arguments);return Array.isArray(r)?r.filter(t=>!(t&&t.xpre)):r}}catch(e){}
+try{const _rsP=xRepScope;xRepScope=function(fn){const T=S.txs;S.txs=T.filter(t=>!t.xpre);try{return _rsP.call(this,fn)}finally{S.txs=T}}}catch(e){}
+try{const _psT=planStats;planStats=function(p){if(!p||!p.items||!p.items.some(i=>i.k==='mnt'))return _psT.apply(this,arguments);return _psT({...p,items:p.items.filter(i=>i.k!=='mnt')})}}catch(e){}
+function xInstPre(pid,iid,quiet){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(!it||itTx(it))return;
+  const t={id:uid(),type:'exp',amount:+it.amount||0,cat:p.catId,method:'',via:'',date:it.due,note:'✔ مدفوع سابقًا',files:[],created:Date.now(),src:{k:'i',id:pid,p:iid},xpre:1};
+  S.txs.push(t);it.txId=t.id;if(!quiet){save();render();toast('تم التعليم كمدفوع سابقًا (بدون مصروف)')}}
+async function xInstPreAll(pid){const p=plan(pid);if(!p)return;const l=p.items.filter(it=>!itTx(it)&&it.due&&it.due<NKM+'-01'&&it.k!=='mnt');if(!l.length)return;
+  if(!await ask('تعليم كمدفوع سابقًا؟',`${l.length} قسط قبل ${MONTHS[NM-1]}، بدون تسجيل مصروف، وسيُخصم من المتبقي.`,{icon:'✔',ok:'تأكيد'}))return;
+  l.forEach(it=>xInstPre(pid,it.id,1));save();render();toast('تم')}
+vPlan=function(){const p=plan(instPlan);if(!p){view='inst';return vInst()}
+  const st=planStats(p),td=today(),fOf=t=>{const f=t&&S.txs.find(x=>x.payFeeOf===t.id);return f?f.amount:0};
+  const items=[...p.items].sort((a,b)=>(a.due||'').localeCompare(b.due||'')),main=items.filter(i=>i.k!=='mnt'),mnt=items.filter(i=>i.k==='mnt');
+  const rem=r2(st.total-st.paid),end=main.map(i=>i.due).filter(Boolean).sort().pop()||'';
+  let h=`<div class="phead"><button class="mini" onclick="go('inst')">→</button><h3>${esc(p.name)}</h3><button class="mini" onclick="planEdit('${p.id}')">✏️ تعديل</button></div>`;
+  h+=kpis([['الإجمالي',fmt(st.total),'net'],['المدفوع',fmt(st.paid),'inc'],['المتبقي',fmt(rem),'exp']]);
+  const info=[['📊 الأقساط',`${st.paidN} مدفوع من ${st.n} · المتبقي ${st.n-st.paidN}`]];
+  if(end)info.push(['🏁 تاريخ الانتهاء',xDW(end)]);
+  if(st.next)info.push(['⏭ القسط القادم',`${num(+st.next.amount||0)} · ${xDW(st.next.due)}`]);
+  if(+p.price){info.push(['🏠 سعر الوحدة',fmt(+p.price)]);if(+p.down)info.push(['💵 المقدم',fmt(+p.down)]);info.push(['📉 المتبقي من سعر الوحدة',fmt(r2(+p.price-(+p.down||0)-st.paid))])}
+  if(p.ptype==='app'&&+p.limit){info.push(['📱 حد الائتمان',fmt(+p.limit)]);info.push(['🟢 المتاح',fmt(r2(+p.limit-rem))])}
+  if(p.cc)info.push(['💳 الكريديت','يُضاف إلى كشف '+esc(M(p.acct)?.name||'الكريديت')]);
+  h+=`<div class="box">${info.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</div>`;
+  if(p.note)h+=`<p class="muted">📝 ${esc(p.note)}</p>`;
+  if((p.files||[]).length)h+=`<div class="files">${p.files.map(id=>fileThumb(id,'view')).join('')}</div>`;
+  const pre=main.filter(it=>!itTx(it)&&it.due&&it.due<NKM+'-01');
+  if(pre.length)h+=`<button class="btn ghost" onclick="xInstPreAll('${p.id}')">✔ تعليم ${pre.length} قسط قبل ${MONTHS[NM-1]} كمدفوع سابقًا</button>`;
+  const row=it=>{const t=itTx(it),f=fOf(t),tag=it.k==='ann'?' <span class="tag ctr">دفعة سنوية</span>':it.k==='mnt'?' <span class="tag wait">صيانة</span>':'';
+    const acts=t?(t.xpre?'':`<button class="mini" onclick="editTx('${t.id}')">✏️</button>`)+`<button class="mini" onclick="unpay('${p.id}','${it.id}')">↩</button>`
+      :(p.cc&&it.due>=(p.ccFrom||'')?`<button class="mini" onclick="xCcPay('${p.acct}')">💳</button>`:`<button class="mini pri" onclick="payStart('${p.id}','${it.id}')">✓ دفع</button>`)+`<button class="mini" title="مدفوع سابقًا" onclick="xInstPre('${p.id}','${it.id}')">✔</button>`;
+    return `<div class="row" style="cursor:default"><div class="grow"><b>${xDW(it.due)}${tag}</b><small>${t?(t.xpre?'✔ مدفوع سابقًا':'✅ مدفوع '+dmy(t.date)+(f?' · مصاريف '+num(f):'')):it.due<td?'⚠️ متأخر':'⏳ لم يُدفع'}</small></div><div class="amt ${t?'inc':''}">${num(+it.amount||0)}</div><div class="acts">${acts}</div></div>`};
+  h+=`<details class="grp" open><summary><span>📅 جدول الأقساط</span><span class="badge soon">${main.length}</span></summary><div class="list">${main.map(row).join('')}</div></details>`;
+  if(mnt.length)h+=`<details class="grp"><summary><span>🛠 الصيانة (خارج الإجمالي)</span><span class="badge soon">${mnt.length}</span></summary><div class="list">${mnt.map(row).join('')}</div></details>`;
+  return h};
+/* شاشة إضافة الأقساط */
+try{const _pfS=planForm;planForm=function(){if(PF){if(!PF.ptype)PF.ptype=PF.cc?'cc':'norm';PF.cc=PF.ptype==='cc';if(!PF.ann)PF.ann=[];if(!PF.mnt)PF.mnt=[]}
+  const r=_pfS.apply(this,arguments);try{xPfPost()}catch(e){}return r}}catch(e){}
+function xPfPost(){const sz=$('#sheet .sz');if(!sz||!PF)return;const t=PF.ptype,h2=sz.querySelector('h2');
+  if(h2&&!$('#q-pt'))h2.insertAdjacentHTML('afterend',`<div class="seg" id="q-pt">${[['norm','🏦 عادي'],['cc','💳 كريديت'],['app','📱 أبلكيشن'],['prop','🏠 عقار']].map(([k,l])=>`<button type="button" class="${t===k?'on':''}" onclick="grabPF();PF.ptype='${k}';planForm()">${l}</button>`).join('')}</div>`);
+  const cc=$('#q-cc');if(cc){const l=cc.closest('label');if(l)l.style.display='none'}
+  const l1=$('#q1')&&$('#q1').closest('label');let ex='';
+  if(t==='app')ex=`<label>📱 حد الائتمان<input id="q-lim" inputmode="decimal" dir="ltr" value="${esc(PF.limit||'')}" placeholder="0"></label>`;
+  if(t==='prop')ex=`<div class="two"><label>🏠 سعر الوحدة<input id="q-pr" inputmode="decimal" dir="ltr" value="${esc(PF.price||'')}"></label><label>💵 المقدم<input id="q-dn" inputmode="decimal" dir="ltr" value="${esc(PF.down||'')}"></label></div>`;
+  if(l1&&ex&&!$('#q-x'))l1.insertAdjacentHTML('afterend',`<div id="q-x">${ex}</div>`);
+  const rowsH=(arr,key)=>arr.map((x,i)=>`<div class="two" style="align-items:flex-end"><label>التاريخ<input type="date" data-${key}d="${i}" value="${x.d||''}"></label><label>المبلغ<input inputmode="decimal" dir="ltr" data-${key}a="${i}" value="${esc(x.a||'')}"></label><button type="button" class="mini danger" style="flex:0 0 38px;height:38px" onclick="grabPF();PF.${key}.splice(${i},1);planForm()">✕</button></div>`).join('');
+  let sec=`<details class="gen" ${PF.ann.length?'open':''}><summary>📆 الدفعات السنوية / الإضافية (${PF.ann.length})</summary>${rowsH(PF.ann,'ann')}<button type="button" class="mini" onclick="grabPF();PF.ann.push({id:uid(),d:'',a:''});planForm()">+ دفعة</button></details>`;
+  if(t==='prop')sec+=`<details class="gen" ${PF.mnt.length?'open':''}><summary>🛠 دفعات الصيانة (خارج الإجمالي) (${PF.mnt.length})</summary>${rowsH(PF.mnt,'mnt')}<button type="button" class="mini" onclick="grabPF();PF.mnt.push({id:uid(),d:'',a:''});planForm()">+ دفعة صيانة</button></details>`;
+  const xs=sz.querySelector('.box.xseg');
+  if(xs&&!$('#q-gen')){const d=document.createElement('details');d.id='q-gen';d.className='gen';if(PF._g)d.open=true;d.ontoggle=()=>{PF._g=d.open};const s=document.createElement('summary');s.textContent='📅 توليد جدول الأقساط';d.appendChild(s);xs.replaceWith(d);d.appendChild(xs)}
+  const h3=[...sz.querySelectorAll('h3')].find(x=>/الأقساط/.test(x.textContent));
+  if(h3&&!$('#q-sec'))h3.insertAdjacentHTML('beforebegin',`<div id="q-sec">${sec}</div>`);
+  if(h3&&!$('#q-sch')){const d=document.createElement('details');d.id='q-sch';d.className='gen';if(PF._open)d.open=true;d.ontoggle=()=>{PF._open=d.open};
+    const s=document.createElement('summary');s.textContent='📋 '+h3.textContent;d.appendChild(s);let n=h3.nextElementSibling;h3.replaceWith(d);
+    while(n&&!(n.classList&&n.classList.contains('btn'))){const nx=n.nextElementSibling;d.appendChild(n);n=nx}}
+}
+try{const _gpX=grabPF;grabPF=function(){_gpX.apply(this,arguments);if(!PF)return;
+  if($('#q-lim'))PF.limit=$('#q-lim').value;if($('#q-pr'))PF.price=$('#q-pr').value;if($('#q-dn'))PF.down=$('#q-dn').value;
+  ['ann','mnt'].forEach(k=>{(PF[k]||[]).forEach((x,i)=>{const d=document.querySelector(`#sheet [data-${k}d="${i}"]`),a=document.querySelector(`#sheet [data-${k}a="${i}"]`);if(d)x.d=d.value;if(a)x.a=a.value})})}}catch(e){}
+try{const _psX=planSave;planSave=function(){grabPF();if(!PF)return _psX.apply(this,arguments);const keep=new Set();
+  ['ann','mnt'].forEach(k=>(PF[k]||[]).forEach(x=>{const a=parseNum(x.a);if(!x.d||!(a>0))return;keep.add(x.id);let it=PF.items.find(i=>i.id===x.id);if(!it){it={id:x.id};PF.items.push(it)}if(!it.txId){it.due=x.d;it.amount=String(a)}it.k=k}));
+  PF.items=PF.items.filter(i=>!(i.k&&!keep.has(i.id)&&!i.txId));PF.items.sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+  const kmap={};PF.items.forEach(i=>{if(i.k)kmap[i.id]=i.k});
+  const extra={ptype:PF.ptype,limit:parseNum(PF.limit)||0,price:parseNum(PF.price)||0,down:parseNum(PF.down)||0,ann:PF.ann,mnt:PF.mnt};
+  const r=_psX.apply(this,arguments);
+  try{if(!$('#sheet').classList.contains('open')){const p=plan(instPlan);if(p){Object.assign(p,extra);p.items.forEach(i=>{if(kmap[i.id])i.k=kmap[i.id]});save();render()}}}catch(e){}return r}}catch(e){}
+/* قراءة جدول الأقساط من صورة */
+ocrStart=function(){grabPF();openScanner({title:'📷 جدول الأقساط',hint:'📄 ضع جدول الأقساط داخل الإطار',maxW:2000,onCancel:planForm,
+  read:async(c,onP)=>{for(const[,fn,has]of CLOUD){if(!has())continue;try{onP(.3);const t=await fn(c);if(t&&t.trim())return t}catch(e){}}
+    try{prepCanvas(c);return await ocr('ara+eng',c,{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'},onP)}catch(e){return ''}},
+  onDone:async(blob,text)=>{const ids=await addFiles([new File([blob],'schedule-'+today()+'.jpg',{type:'image/jpeg'})]);PF.files=(PF.files||[]).concat(ids);
+    const rows=parseSchedule(String(text||''));if(rows.length){const ex=new Set(PF.items.map(i=>i.due+'|'+(+i.amount)));rows.forEach(x=>{if(!ex.has(x.due+'|'+(+x.amount)))PF.items.push(x)});PF.items.sort((a,b)=>(a.due||'').localeCompare(b.due||''));PF._open=true}
+    planForm();toast(rows.length?'تمت قراءة '+rows.length+' قسط، راجعها قبل الحفظ':'لم يتم التعرف على أقساط في الصورة')}})};
+/* مصاريف إنستاباي في دفع القسط */
+document.addEventListener('change',e=>{const s=e.target;if(!s||s.id!=='y-v')return;const f=$('#y-fee');if(f&&s.value==='instapay'&&!parseNum(f.value))f.value=amtStr(xFeeCalc(parseNum(($('#y-amt')||{}).value)))},true);
+try{const _psI=paySheet;paySheet=function(){const r=_psI.apply(this,arguments);try{const f=$('#y-fee');if(f&&PAY&&PAY.via==='instapay'&&!parseNum(f.value))f.value=amtStr(xFeeCalc(parseNum(PAY.amount)))}catch(e){}return r}}catch(e){}
+/* تقرير الأقساط بالتفصيل */
+function xBInst(){const plans=RF.plan?S.plans.filter(p=>p.id===RF.plan):S.plans;if(!plans.length)return{title:'تقرير الأقساط',sub:'',body:NONE};
+  let T=0,P=0,N=0,PN=0;const td=today();
+  const info=plans.map(p=>{const s=planStats(p),its=p.items.filter(i=>i.k!=='mnt').map(i=>i.due).filter(Boolean).sort();T+=s.total;P+=s.paid;N+=s.n;PN+=s.paidN;return{p,s,end:its[its.length-1]||'',rem:r2(s.total-s.paid)}});
+  let b=rkp([['الإجمالي',T,'net'],['المدفوع',P,'inc'],['المتبقي',r2(T-P),'exp'],['الأقساط المدفوعة',PN+' / '+N,'warn']]);
+  b+=donut([{label:'المدفوع',value:P,color:'#16a34a'},{label:'المتبقي',value:r2(T-P),color:'#dc2626'}],'الإجمالي',short(T));
+  b+=rsec('🏦 الأقساط',plans.length)+rtbl(['القسط','المدفوع|n','المتبقي|n'],info.map(x=>`<tr class="clk" onclick="drill(()=>{RF.plan='${x.p.id}'})">${cT(esc(x.p.name),`الإجمالي ${num(x.s.total)} · ينتهي ${x.end?dmy(x.end):'—'}${x.s.next?' · القادم '+dmy(x.s.next.due)+' ('+num(+x.s.next.amount||0)+')':''}${x.s.late?' · متأخر '+x.s.late:''}`)}${cN(num(x.s.paid),'inc',x.s.paidN+' قسط')}${cN(num(x.rem),'exp',(x.s.n-x.s.paidN)+' قسط')}</tr>`),ft('الإجمالي',1,fN(num(P)),fN(num(r2(T-P)))));
+  if(plans.length===1){const p=plans[0],x=info[0];
+    if(+p.price)b+=rsec('🏠 الوحدة')+rtbl(['البيان','المبلغ|n'],[`<tr>${cT('سعر الوحدة')}${cN(num(+p.price))}</tr>`,`<tr>${cT('المقدم')}${cN(num(+p.down||0))}</tr>`,`<tr>${cT('المدفوع من الأقساط')}${cN(num(x.s.paid),'inc')}</tr>`],`<tr><td class="t"><b>المتبقي من سعر الوحدة</b></td><td class="n"><b class="exp">${nm(num(r2(+p.price-(+p.down||0)-x.s.paid)))}</b></td></tr>`);
+    b+=rsec('📅 الجدول',p.items.length)+rtbl(['الموعد|c','المبلغ|n','الحالة|c'],[...p.items].sort((a,c)=>(a.due||'').localeCompare(c.due||'')).map(it=>{const t=itTx(it),tg=it.k==='ann'?'دفعة سنوية':it.k==='mnt'?'صيانة':'';
+      return `<tr>${cD(it.due)}${cN(num(+it.amount||0),'',tg)}${cC(t?(t.xpre?'<span class="rb ok">مدفوع سابقًا</span>':'<span class="rb ok">'+dmy(t.date)+'</span>'):it.due<td?'<span class="rb late">متأخر</span>':'<span class="rb wait">لم يُدفع</span>')}</tr>`}))}
+  return{title:'تقرير الأقساط',sub:plans.length===1?plans[0].name:'كل الأقساط',body:b}}
+if(window.XB0)window.XB0.inst=xBInst;
+
+/* ========== العملاء ========== */
+xClCards=function(){const q=XCLQ.trim().toLowerCase(),L=XCL().slice().sort((a,b)=>(+a.no||0)-(+b.no||0)).filter(c=>!q||[c.no,c.name,c.co,c.mob1,c.mob2,c.tel,c.addr].join(' ').toLowerCase().includes(q));
+  if(!L.length)return '<p class="muted" style="text-align:center;margin:20px 0">لا يوجد عملاء</p>';
+  return L.map(c=>{const it=xClItems(c.id),m=it.filter(r=>r.fixed&&!isAnn(r)).reduce((s,r)=>s+(+r.amount||0),0),pd=xClPend(c),tel=v=>v?`<a class="mini" href="tel:${esc(v)}" dir="ltr">📞 ${esc(v)}</a>`:'';
+    return `<details class="xlnc xcld ${c.off?'off':''}"><summary><div class="xlnr"><b>#${esc(String(c.no||''))} · ${esc(c.name)}</b>${pd?`<span class="xchip late">⏳ ${num(pd)}</span>`:'<span class="xchip ok">✓</span>'}</div><div class="xlnr xsm"><span>${esc(c.co||'')}</span><span>${m?'📌 شهري '+num(m):''}</span></div></summary>
+    <div class="xcltel">${tel(c.mob1)}${tel(c.mob2)}${tel(c.tel)}</div>
+    ${it.length?`<div class="list">${it.map(r=>{const n=xClNx(r);return `<div class="row" onclick="catForm('${r.id}')"><div class="grow"><b>${esc(r.name)}</b><small>${r.fixed?everyTxt(r.every)+' · '+num(+r.amount||0):'متغير'}${n?' · القادم '+dmy(n.d):''}</small></div></div>`}).join('')}</div>`:'<p class="xnote">لا توجد بنود مرتبطة</p>'}
+    <div class="xlna"><button class="btn" onclick="xClPay('${c.id}')">💵 تحصيل</button><button class="btn ghost" onclick="xClOpen('${c.id}')">📄 ملف العميل</button></div></details>`}).join('')};
+function xClItemsTbl(c){const it=xClItems(c.id);if(!it.length)return NONE;
+  return rtbl(['البند','المبلغ|n','القادم|c'],it.map(r=>{const n=xClNx(r);return `<tr>${cT(esc(r.name),[r.fixed?everyTxt(r.every):'متغير',r.prevAmt?'السابق '+num(r.prevAmt)+(r.incPct!=null?' ('+(r.incPct>0?'+':'')+r.incPct+'%)':''):''].filter(Boolean).join(' · '))}${cN(r.fixed?num(+r.amount||0):'—')}${n?cD(n.d):cC('—')}</tr>`}))}
+xClPrTbl=xClItemsTbl;
+function xBClSum2(){xLegacy('clsum');const p=xPer('clsum'),L=(XTALL||S.txs).filter(t=>t.cl&&t.type==='inc'&&t.date>=p.f&&t.date<=p.t),by={};
+  L.forEach(t=>{const b=by[t.cl]=by[t.cl]||{f:0,o:0,p:0};if(t.pend)b.p+=t.amount;else if(t.clf)b.f+=t.amount;else b.o+=t.amount});
+  const R=Object.entries(by).map(([id,v])=>({c:xClL(id),v})).filter(x=>x.c).sort((a,b)=>(+a.c.no||0)-(+b.c.no||0)),S3=k=>r2(R.reduce((s,x)=>s+x.v[k],0)),tf=S3('f'),to=S3('o'),tp=S3('p');
+  let h=rkp([['📌 ثابت',tf,'inc'],['💵 غير ثابت',to,'net'],['⏳ لم يُحصّل',tp,'exp'],['👥 العملاء',String(R.length),'net']]);
+  h+=rsec('👥 حسب العميل',String(R.length))+(R.length?rtbl(['العميل','ثابت|n','غير ثابت|n','لم يُحصّل|n'],R.map(({c,v})=>`<tr class="clk" onclick="xClRep('clst','${c.id}')">${cT('#'+esc(String(c.no))+' · '+esc(c.name),esc(c.co||''))}${cN(num(r2(v.f)),'inc')}${cN(num(r2(v.o)))}${cN(num(r2(v.p)),v.p?'exp':'')}</tr>`),
+    `<tr><td class="t"><b>الإجمالي</b></td><td class="n"><b>${nm(num(tf))}</b></td><td class="n"><b>${nm(num(to))}</b></td><td class="n"><b>${nm(num(tp))}</b></td></tr>`).replace('class="rtb"','class="rtb xw5"'):NONE);
+  return{title:'تقرير العملاء',sub:xRngTxt(p.f,p.t),body:h}}
+function xBClSt2(){xLegacy('clst');const c=xClL(RF.xcl);if(!c)return{title:'كشف حساب عميل',sub:'',body:NONE};
+  const p=xPer('clst'),L=(XTALL||S.txs).filter(t=>t.cl===c.id&&t.date>=p.f&&t.date<=p.t).sort((a,b)=>a.date.localeCompare(b.date));
+  const sm=f=>r2(L.filter(f).reduce((s,t)=>s+t.amount,0)),fx=sm(t=>!t.pend&&t.clf),ot=sm(t=>!t.pend&&!t.clf),pn=sm(t=>t.pend);
+  const due=xClDue(c).filter(o=>o.d>=p.f&&o.d<=p.t),dn=r2(due.reduce((s,o)=>s+o.amt,0));
+  let h=rkp([['📌 ثابت',fx,'inc'],['💵 غير ثابت',ot,'net'],['⏳ لم يُحصّل',r2(pn+dn),'exp']]);
+  const tb=l=>l.length?rtbl(['التاريخ|c','البند','المبلغ|n'],l.map(t=>`<tr class="clk" onclick="editTx('${t.id}')">${cD(t.date)}${cT(esc(C(t.cat)?.name||''),[t.pend?'⏳ لم يُحصّل':'✅ تم التحصيل',t.note?esc(t.note):''].filter(Boolean).join(' · '))}${cN(num(t.amount),t.pend?'exp':'inc')}</tr>`),l.length>1?ft('الإجمالي',2,fN(num(r2(l.reduce((s,t)=>s+t.amount,0))))):''):NONE;
+  h+=rsec('📌 التحصيل الثابت',num(fx))+tb(L.filter(t=>t.clf));
+  if(due.length)h+=rsec('⏳ مستحق من البنود الثابتة',num(dn))+rtbl(['موعد السداد|c','البند','المبلغ|n'],due.map(o=>`<tr>${cD(o.d)}${cT(esc(o.r.name),o.d<today()?'متأخر':'')}${cN(num(o.amt),'exp')}</tr>`));
+  h+=rsec('💵 التحصيل غير الثابت',num(ot))+tb(L.filter(t=>!t.clf));
+  h+=rsec('📌 البنود الثابتة')+xClItemsTbl(c);
+  return{title:'كشف حساب · '+c.name,sub:'عميل #'+c.no+' · '+xRngTxt(p.f,p.t),body:h}}
+if(REPS.clsum)REPS.clsum.b=xBClSum2;if(REPS.clst)REPS.clst.b=xBClSt2;
+
+/* ========== شاشة سحب وإيداع الكاش ========== */
+XVW.xcw=()=>{const k=ym(cur.y,cur.m),ca=xCashAcct(),rows=[];
+  S.cash.filter(c=>c.date.startsWith(k+'-')).forEach(c=>rows.push({d:c.date,c:c.created||0,ic:'🏧',t:'سحب من الماكينة · '+(M(c.method)?.name||''),s:c.note||'',a:c.amount,js:`cashForm('${c.id}')`}));
+  S.txs.filter(t=>t.type==='tr'&&!t.pend&&t.date.startsWith(k+'-')&&(t.xdep||t.xwho||t.to===ca||t.method===ca)).forEach(t=>rows.push({d:t.date,c:t.created||0,ic:t.xdep?'🏦':t.xwho?'🙋':'🏧',t:(t.xdep?'إيداع':t.xwho?'كاش من '+t.xwho:'سحب')+' · '+(M(t.method)?.name||'')+' ← '+(M(t.to)?.name||''),s:t.note||'',a:t.amount,js:`editTx('${t.id}')`}));
+  rows.sort((a,b)=>b.d.localeCompare(a.d)||b.c-a.c);
+  const out=r2(rows.filter(r=>r.ic!=='🏦').reduce((s,r)=>s+r.a,0)),inn=r2(rows.filter(r=>r.ic==='🏦').reduce((s,r)=>s+r.a,0));
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏧 سحب وإيداع كاش</h3></div>`+monthBar(true)
+    +`<div class="xlna"><button class="btn" onclick="xCashSheet('m')">🏧 سحب</button><button class="btn ghost" onclick="xCashSheet('d')">🏦 إيداع</button></div>`
+    +kpis([['🏧 السحب',fmt(out),'warn'],['🏦 الإيداع',fmt(inn),'inc'],['عدد الحركات',String(rows.length),'net']])
+    +(rows.length?rows.map(r=>xCard({ic:r.ic,title:esc(r.t),amt:num(r.a),sub:xDW(r.d),sub2:esc(r.s.slice(0,40)),click:r.js})).join(''):'<div class="nempty"><div>🏧</div><b>لا توجد حركات في هذا الشهر</b></div>')};
+XFC.xcw=['🏧','سحب وإيداع',"go('xcw')",'#eab308,#a16207',()=>0,''];
+XFC.trash=['🗑','المحذوفات',"go('xtr')",'#94a3b8,#334155',()=>0,''];
+try{const _rnT=render;render=function(){const r=_rnT.apply(this,arguments);try{if(view==='more'){const el=$('#view'),c=xTileFind(el,'سحب وإيداع كاش');
+  if(c){c.setAttribute('onclick',"go('xcw')");if(!el.querySelector('[onclick="go(\'xtr\')"]')){const t=c.cloneNode(true);xTileSet(t,'🗑','سلة المحذوفات',"go('xtr')");(el.querySelector('.rgrid')||el).appendChild(t)}}}}catch(e){}return r}}catch(e){}
+
+/* ========== الخروج من البرنامج: الرئيسية + البصمة ========== */
+var XHID2=0;
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){XHID2=Date.now();return}
+  if(!XHID2||Date.now()-XHID2<10000){XHID2=0;return}XHID2=0;
+  setTimeout(()=>{try{const sh=$('#sheet'),busy=sh&&sh.classList.contains('open')&&XDR;
+    if(!busy){try{XRVBACK='';$('#rv').classList.remove('on');RVST=[];rtab=''}catch(e){}try{closeSheet()}catch(e){}if(view!=='home')go('home')}
+    if(LK.pin&&!$('#lock').classList.contains('on'))showLock()}catch(e){}},60);
+});
+
+/* ========== لغة البرنامج: فصحى ========== */
+(()=>{const D=[['النهارده','اليوم'],['النهاردة','اليوم'],['امبارح','أمس'],['دلوقتي','الآن'],['مفيش','لا يوجد'],['اتسجّلت','تم تسجيلها'],['اتسجّل','تم التسجيل'],['اتسجل','تم التسجيل'],['اتحفظ','تم الحفظ'],['اتحذفت','تم حذفها'],['اتحذف','تم الحذف'],['اتمسحت','تم حذفها'],['اتمسح','تم الحذف'],['اتلغى','تم الإلغاء'],['اتعدّل','تم التعديل'],['اتدفع','تم الدفع'],['اتسددت','تم سدادها'],['اتسدد','تم السداد'],['اتأجّل','تم التأجيل'],['دوس','اضغط'],['عايز','تريد'],['إزاي','كيف'],['ازاي','كيف'],['اختار','اختر'],['ضيف','أضف'],['الجاي','القادم'],['الجاية','القادمة'],['اللي فاتت','السابقة'],['اللي فات','السابق'],['الشهر ده','هذا الشهر'],['السنة دي','هذا العام'],['من غير','بدون'],['عشان','لكي'],['كمان','أيضًا'],['تمام','موافق'],['لسه مفتوح','ما زال مفتوحًا'],['لسه ما اتدفعش','لم يُدفع بعد'],['بيتدفع','يُدفع'],['بيتحصّل','يُحصّل']];
+  const RX=D.map(([a,b])=>[new RegExp('(^|[^\\u0600-\\u06FF])'+a+'(?![\\u0600-\\u06FF])','g'),'$1'+b]);
+  const run=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode;return p&&/^(TEXTAREA|SCRIPT|STYLE)$/.test(p.nodeName)?2:1}});let n;
+    while((n=w.nextNode())){const v=n.nodeValue;if(!v||!/[\u0600-\u06FF]/.test(v))continue;let x=v;for(const[r,s]of RX)x=x.replace(r,s);if(x!==v)n.nodeValue=x}};
+  let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{run()}catch(e){}})}).observe(document.body,{childList:true,subtree:true,characterData:true});try{run()}catch(e){}
+})();
+
+/* تشغيل */
+try{save()}catch(e){}
+XLAST=localStorage.getItem(KEY);XIDS=xIdsOf(S);XUNDOING=false;
+try{render()}catch(e){}
+/* ========== شكل السلف على كل الشاشات ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .list,#sheet .list{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;overflow:visible!important}
+#view details.grp{background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+#view details.grp>summary{background:var(--card,#fff)!important;border:1px solid rgba(148,163,184,.25)!important;border-radius:14px!important;margin:0 0 10px!important;padding:12px 14px!important;font-size:15px!important}
+#view details.grp[open]>summary{border-color:var(--p)!important}
+#view .list>.row,#view .list>a.row,#view .list>.ckx,#view .list>details,#view details.grp>.ckx,#view details.grp .list>*,
+#sheet .list>.row,#sheet .list>a.row,#sheet .list>.ckx,
+#view .pcard,#view .ic2,#view .xac,#view .ncard,#sheet .ncard{
+ background:var(--card,#fff)!important;border:1px solid rgba(127,127,127,.25)!important;border-radius:16px!important;
+ padding:12px 14px!important;margin:0 0 10px!important;box-shadow:0 2px 10px rgba(15,23,42,.06)!important;min-height:0!important}
+#view .list>details,#view details.grp .list>details,#view details.grp>.ckx{padding:4px 14px!important}
+#view .list>details[open],#view details.grp>.ckx:has(details[open]),#view details.grp .list>details[open]{border-color:var(--p)!important}
+#view .grow>b,#sheet .list .grow>b,#view .pcard b{font-size:15px!important;font-weight:800!important;line-height:1.4!important}
+#view .amt,#sheet .list .amt{font-size:20px!important;font-weight:800!important;min-width:70px!important}
+#view .grow>small,#sheet .list .grow>small{font-size:12px!important;margin-top:4px!important}
+#view .list .ic,#view details.grp .ic{width:38px!important;height:38px!important;flex:0 0 38px!important;border-radius:12px!important;font-size:18px!important}
+#view .ckx>input[type=checkbox]{width:22px!important;height:22px!important;flex:0 0 22px!important}
+#view .acts,#view .ibar,#view .xnb{gap:8px!important}
+#view .acts .mini,#view .ibar .mini,#view .row>.mini,#view .xaa .mini{height:36px!important;border-radius:12px!important;font-size:13px!important;padding:0 12px!important}
+#view .xb .etbar .mini{height:38px!important;border-radius:12px!important}
+#view details.grp>div[style*="padding"]{padding:0 0 10px!important}
+#view details.grp>div[style*="padding"] .mini{height:42px!important;border-radius:14px!important;font-size:14px!important}
+`;document.head.appendChild(s)})();
 /* نهاية fix.js */
