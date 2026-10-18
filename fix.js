@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.62',XVBUILD='18/10/2026 - 02:50 م';
+const XVER='2.21.63',XVBUILD='18/10/2026 - 03:00 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5673,5 +5673,45 @@ try{const _ulX=unlock;unlock=function(){const r=_ulX.apply(this,arguments);const
   return r}}catch(e){}
 /* المسودة القديمة (أكتر من دقيقتين) ما تفتحش */
 try{const _doX=draftOpen;draftOpen=function(){const x=draftGet();if(x&&Date.now()-x.t>120000){draftClear();return}return _doX.apply(this,arguments)}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.63 ========== */
+/* --- حذف الأقساط: اختيارات واضحة + الدفعات السنوية --- */
+xInstDelAll=function(){
+  grabPF();const reg=PF.items.filter(i=>!i.k),paid=reg.filter(i=>i.txId),annRows=(PF.ann||[]).length;
+  if(!reg.length&&!annRows)return toast('لا توجد أقساط');
+  sheet(`<h2>🗑 حذف الأقساط</h2>
+  <div class="kv"><span>الأقساط</span><b>${reg.length}${paid.length?' · منها '+paid.length+' مدفوع':''}</b></div>
+  ${annRows?`<label class="chk fxbox"><input type="checkbox" id="xd-ann"> 📆 حذف الدفعات السنوية أيضًا (${annRows})</label>`:''}
+  ${paid.length?`<p class="warn">⚠️ يوجد ${paid.length} قسط مدفوع. المصروفات المدفوعة فعلًا ستبقى مسجلة.</p>
+  <button class="btn dz" onclick="xInstDelGo(1)">🗑 حذف الكل بما فيها المدفوعة</button>
+  <button class="btn ghost danger" onclick="xInstDelGo(0)">🗑 حذف غير المدفوعة فقط</button>`
+  :`<button class="btn dz" onclick="xInstDelGo(0)">🗑 حذف</button>`}
+  <button class="btn ghost" onclick="planForm()">إلغاء</button>`);
+};
+function xInstDelGo(all){
+  const da=!!($('#xd-ann')&&$('#xd-ann').checked);
+  PF.items=PF.items.filter(i=>{if(i.k==='mnt')return true;if(i.k==='ann'&&!da)return true;return !!(i.txId&&!all)});
+  if(da)PF.ann=(PF.ann||[]).filter(r=>PF.items.some(i=>i.id===r.id));
+  PF._open=true;planForm();toast('تم الحذف من الجدول · اضغط حفظ');
+}
+
+/* --- زرار تعديل قدام كل قسط ودفعة سنوية --- */
+try{const _vpE=vPlan;vPlan=function(){let h=_vpE.apply(this,arguments);
+  return h.replace(/onclick="xInstPre\('([^']+)','([^']+)'\)">✔<\/button>/g,`onclick="xInstPre('$1','$2')">✔</button><button class="mini" onclick="xItEdit('$1','$2')">✏️</button>`)}}catch(e){}
+function xItEdit(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(!it)return;
+  sheet(`<h2>✏️ تعديل ${it.k==='ann'?'الدفعة السنوية':it.k==='mnt'?'دفعة الصيانة':'القسط'}</h2><p class="muted">${esc(p.name)}</p>
+  <label>📅 الموعد<input id="ie-d" type="date" value="${it.due||''}"></label>
+  <label>💰 القيمة<input id="ie-a" class="amt-in" inputmode="decimal" dir="ltr" value="${amtStr(+it.amount||0)}"></label>
+  <button class="btn" onclick="xItEditSv('${pid}','${iid}')">💾 حفظ</button>
+  <button class="btn ghost danger" onclick="xItDel('${pid}','${iid}')">🗑 حذف هذا القسط</button>
+  <button class="btn ghost" onclick="closeSheet()">إلغاء</button>`)}
+function xItEditSv(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(!it)return;
+  const d=$('#ie-d').value,a=parseNum($('#ie-a').value);if(!d)return toast('اختر الموعد');if(!(a>0))return toast('اكتب القيمة');
+  it.due=d;it.amount=a;const row=(p.ann||[]).concat(p.mnt||[]).find(x=>x.id===iid);if(row){row.d=d;row.a=String(a)}
+  p.items.sort((x,y)=>(x.due||'').localeCompare(y.due||''));save();closeSheet();render();toast('تم الحفظ')}
+async function xItDel(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(!it)return;
+  if(!await ask('حذف هذا القسط؟',xDW(it.due)+' · '+num(+it.amount||0),{danger:true,icon:'🗑',ok:'حذف'}))return;
+  p.items=p.items.filter(x=>x.id!==iid);p.ann=(p.ann||[]).filter(x=>x.id!==iid);p.mnt=(p.mnt||[]).filter(x=>x.id!==iid);
+  save();closeSheet();render();toast('تم الحذف')}
 try{render()}catch(e){}
 /* نهاية fix.js */
