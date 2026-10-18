@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.63',XVBUILD='18/10/2026 - 03:00 م';
+const XVER='2.21.64',XVBUILD='18/10/2026 - 03:10 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5714,4 +5714,12 @@ async function xItDel(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===ii
   p.items=p.items.filter(x=>x.id!==iid);p.ann=(p.ann||[]).filter(x=>x.id!==iid);p.mnt=(p.mnt||[]).filter(x=>x.id!==iid);
   save();closeSheet();render();toast('تم الحذف')}
 try{render()}catch(e){}
+/* ========== 2.21.64 ========== */
+/* القسط المدفوع: قيمته في الجدول = المبلغ اللي اتدفع فعلًا */
+function xInstSync(){let ch=0;
+  S.plans.forEach(p=>p.items.forEach(it=>{const t=it.txId&&S.txs.find(x=>x.id===it.txId);
+    if(t&&!t.xpre&&Math.abs((+it.amount||0)-t.amount)>.001){it.amount=t.amount;ch=1}}));
+  if(ch)save();}
+try{const _rnIS=render;render=function(){try{xInstSync()}catch(e){}return _rnIS.apply(this,arguments)}}catch(e){}
+try{xInstSync();render()}catch(e){}
 /* نهاية fix.js */
