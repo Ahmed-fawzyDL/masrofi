@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.66',XVBUILD='18/10/2026 - 04:33 م';
+const XVER='2.21.67',XVBUILD='18/10/2026 - 04:59 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5747,4 +5747,18 @@ try{const _giX=genItems;genItems=async function(){
 (()=>{const run=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
   while((n=w.nextNode())){const v=n.nodeValue;if(v&&(v.indexOf('توليد')>-1||v.indexOf('اتولّد')>-1)){const x=v.replace(/اتولّد/g,'تم إنشاء').replace(/توليد/g,'إنشاء');if(x!==v)n.nodeValue=x}}};
   let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{run()}catch(e){}})}).observe(document.body,{childList:true,subtree:true,characterData:true});run()})();
+/* ========== 2.21.67 ========== */
+/* ✏️ للأقساط "المدفوعة سابقًا" */
+try{const _vpP=vPlan;vPlan=function(){let h=_vpP.apply(this,arguments);
+  return h.replace(/<div class="acts"><button class="mini" onclick="unpay\('([^']+)','([^']+)'\)">↩<\/button>/g,
+    `<div class="acts"><button class="mini" onclick="xItEdit('$1','$2')">✏️</button><button class="mini" onclick="unpay('$1','$2')">↩</button>`)}}catch(e){}
+/* تعديل قسط "مدفوع سابقًا": المبلغ والتاريخ يتعدلوا في الاتنين */
+try{const _ies=xItEditSv;xItEditSv=function(pid,iid){const r=_ies.apply(this,arguments);try{
+  const p=plan(pid),it=p&&p.items.find(x=>x.id===iid),t=it&&itTx(it);
+  if(t&&t.xpre&&(t.amount!==+it.amount||t.date!==it.due)){t.amount=+it.amount;t.date=it.due;save();render()}}catch(e){}return r}}catch(e){}
+/* حذف قسط "مدفوع سابقًا": العلامة تتشال معاه */
+try{const _idl=xItDel;xItDel=async function(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid),tid=it&&it.txId;
+  const r=await _idl.apply(this,arguments);try{
+  if(tid&&plan(pid)&&!plan(pid).items.some(x=>x.id===iid)){const t=S.txs.find(x=>x.id===tid);if(t&&t.xpre){S.txs=S.txs.filter(x=>x!==t);save();render()}}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
