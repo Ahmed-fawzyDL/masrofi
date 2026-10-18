@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.70',XVBUILD='18/10/2026 - 05:24 م';
+const XVER='2.21.71',XVBUILD='18/10/2026 - 05:45 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5842,5 +5842,49 @@ try{const _tfT=txForm;txForm=function(){const r=_tfT.apply(this,arguments);try{
     if(t==='cl'){if(cm)cm.remove();const w=$('#f-clw');if(w)w.style.display=''}
     else{const cf=sz.querySelector('.xclf');if(cf)cf.remove()}}
 }catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.71 ========== */
+/* --- وقت النسخ على Drive --- */
+function xBkS(){return Object.assign({mode:'change',h:21,wd:5},GD.sched||{})}
+function xBkLast(){return GD.last?new Date(GD.last).getTime():0}
+function xBkPrev(s){const n=new Date(),d=new Date(n);d.setMinutes(0,0,0);d.setHours(s.h);
+  if(s.mode==='day'){if(d>n)d.setDate(d.getDate()-1);return d.getTime()}
+  if(s.mode==='week'){d.setDate(d.getDate()-((d.getDay()-s.wd+7)%7));if(d>n)d.setDate(d.getDate()-7);return d.getTime()}
+  return 0}
+function xBkDue(){const s=xBkS();if(s.mode==='manual')return false;if(s.mode==='change')return true;
+  if(s.mode==='hour')return Date.now()-xBkLast()>=3600e3;return xBkLast()<xBkPrev(s)}
+function xBkNext(){const s=xBkS();if(s.mode==='manual')return 'يدوي فقط';if(s.mode==='change')return 'بعد أي تعديل';
+  const t=s.mode==='hour'?Math.max(Date.now(),xBkLast()+3600e3):xBkPrev(s)+(s.mode==='day'?864e5:7*864e5);
+  return new Date(t).toLocaleString('ar-EG',{weekday:'long',day:'numeric',month:'numeric',hour:'numeric',minute:'2-digit'})}
+function xBkSet(k,v){GD.sched=xBkS();GD.sched[k]=k==='mode'?v:+v;GD.auto=GD.sched.mode!=='manual';saveGD();render()}
+/* النسخ التلقائي بيمشي على الوقت اللي اخترته */
+try{const _duX=driveUpload;driveUpload=async function(interactive){if(!interactive&&!xBkDue())throw new Error('skip');return _duX.apply(this,arguments)}}catch(e){}
+setInterval(()=>{try{
+  if(DEMO||!GD.linked||!GD.cid||document.visibilityState!=='visible')return;
+  const s=xBkS();if(s.mode==='change'||s.mode==='manual'||!xBkDue())return;
+  if(strHash(JSON.stringify(S))===GD.hash)return;
+  driveUpload(false).then(()=>{toast('☁️ تم عمل نسخة احتياطية');try{render()}catch(e){}}).catch(()=>{});
+}catch(e){}},60000);
+
+/* --- شاشة واحدة للنسخ الاحتياطي --- */
+try{const i=SETS.findIndex(x=>x[0]==='drive');if(i>=0)SETS.splice(i,1)}catch(e){}
+function spBkSched(){const s=xBkS(),hrs=Array.from({length:24},(_,h)=>[h,(h%12||12)+':00 '+(h<12?'ص':'م')]);
+  return `<h3>⏰ وقت النسخ على Drive</h3><div class="box">
+  <label>النسخ يتم<select onchange="xBkSet('mode',this.value)">${[['change','تلقائيًا بعد أي تعديل'],['hour','كل ساعة'],['day','كل يوم'],['week','كل أسبوع'],['manual','يدويًا فقط']].map(([k,l])=>`<option value="${k}" ${s.mode===k?'selected':''}>${l}</option>`).join('')}</select></label>
+  ${s.mode==='week'?`<label>اليوم<select onchange="xBkSet('wd',this.value)">${XWD.map((n,i)=>`<option value="${i}" ${s.wd===i?'selected':''}>${n}</option>`).join('')}</select></label>`:''}
+  ${s.mode==='day'||s.mode==='week'?`<label>الساعة<select onchange="xBkSet('h',this.value)">${hrs.map(([h,l])=>`<option value="${h}" ${s.h===h?'selected':''}>${l}</option>`).join('')}</select></label>`:''}
+  <div class="kv"><span>📤 النسخة القادمة</span><b>${esc(xBkNext())}</b></div>
+  <p class="muted" style="font-size:11.5px;margin:6px 0 0">النسخ يتم والبرنامج مفتوح فقط. لو البرنامج كان مقفول في الميعاد، النسخة تتعمل أول ما تفتحه.</p></div>`}
+try{const _vsB=vSettings;vSettings=function(){
+  if(stab==='drive')stab='data';
+  if(stab!=='data')return _vsB.apply(this,arguments);
+  let d='';try{d=spDrive()}catch(e){}
+  d=d.replace(/<label class="chk fxbox"[^>]*><input type="checkbox"[^>]*GD\.auto[^>]*>[^<]*<\/label>/,'');
+  const sch=GD.linked?spBkSched():'';
+  const i=d.indexOf('<button class="btn ghost" onclick="driveNow()');
+  if(i>=0)d=d.slice(0,i)+sch+d.slice(i);else d+=sch;
+  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>💾 النسخ الاحتياطي</h3></div>
+  <h3>☁️ Google Drive</h3>${d}<h3>📱 نسخة يدوية</h3>${spData()}`;
+}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
