@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.68',XVBUILD='18/10/2026 - 05:05 م';
+const XVER='2.21.69',XVBUILD='18/10/2026 - 05:18 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -5791,5 +5791,27 @@ function xNClean(){clearTimeout(XNCT);XNCT=setTimeout(()=>{try{if(!navigator.ser
     ns.forEach(n=>{const g=n.tag||'';if(g.startsWith('test-'))return;if(g==='masrofi-sum'?!al.length:!ids.has(g))n.close()})}).catch(()=>{})}catch(e){}},1000)}
 try{const _rnN=render;render=function(){const r=_rnN.apply(this,arguments);xNClean();return r}}catch(e){}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')xNClean()});
+try{render()}catch(e){}
+/* ========== 2.21.69 ========== */
+/* keyTx في app.js معمولة const فمينفعش تتعدّل.
+   فبنصفّي العمليات عند الشاشات اللي بتستخدمها بدلها */
+function xHasReal(k){return S.txs.some(t=>!t.pend&&!t.xpre&&t.date.startsWith(k+'-'))}
+
+/* الرئيسية: تنبيه "الشهر اللي فات مفتوح" بس لو فيه حركات حقيقية */
+try{const _vhW=vHome;vHome=function(){let h=_vhW.apply(this,arguments);
+  try{if(!xHasReal(prevKey(NKM)))h=h.replace(/<div class="warn" onclick="go\('months'\)">[^<]*<\/div>/,'')}catch(e){}return h}}catch(e){}
+try{const _alC2=alerts;alerts=function(){const out=_alC2.apply(this,arguments);
+  try{const pk=prevKey(NKM);if(!xHasReal(pk))return out.filter(a=>a.id!=='close-'+pk)}catch(e){}return out}}catch(e){}
+
+/* المصروفات: من غير علامات "مدفوع سابقًا" */
+try{const _veX=vExps;vExps=function(){const T=S.txs;S.txs=T.filter(t=>!t.xpre);try{return _veX.apply(this,arguments)}finally{S.txs=T}}}catch(e){}
+
+/* التحصيلات: من غير "مدفوع سابقًا"، و"تحصيل مقابل دفع كريديت" في قسمه بس */
+try{const _vcX=vCol;vCol=function(){
+  const T=S.txs;S.txs=T.filter(t=>!t.xpre&&!(t.ccr&&t.type==='inc'));let h;
+  try{h=_vcX.apply(this,arguments)}finally{S.txs=T}
+  try{const k=ym(cur.y,cur.m),l=S.txs.filter(t=>t.ccr&&t.type==='inc'&&!t.pend&&t.date.startsWith(k+'-')).sort(byDesc);
+    if(l.length)h+=grp('ccr','تحصيل مقابل دفع كريديت',l.length,r2(l.reduce((a,t)=>a+t.amount,0)),'pos',l.map(txRow).join(''))}catch(e){}
+  return h}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
