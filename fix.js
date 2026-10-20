@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.104',XVBUILD='20/10/2026 - 02:23 م';
+const XVER='2.21.105',XVBUILD='20/10/2026 - 02:39 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7578,4 +7578,27 @@ setTimeout(()=>{try{const d=new Date().toDateString();if(localStorage.getItem('c
   if(n){localStorage.setItem('centric-mghint',d);toast('🧹 فيه '+n+' بنود شبه بعض · افتح توحيد البنود')}}catch(e){}},4000);
 (function(){const s=document.createElement('style');s.textContent=`.xmgc{padding:8px}.xmgr{display:flex;align-items:center;gap:8px;padding:6px 2px;border-bottom:1px solid rgba(128,128,128,.15)}
 .xmgr span:nth-child(2){flex:1;display:flex;flex-direction:column}.xmgr small{font-size:10px;opacity:.7}`;document.head.appendChild(s)})();
+/* ========== 2.21.105 · 🔁 التحويل مع السحب والإيداع ========== */
+function xTrType(){const t=S.txs.find(x=>x.to&&x.method&&x.type!=='exp'&&x.type!=='inc');return t?t.type:'tr'}
+function xIsCashM(id){const m=(id&&M(id))||{};return m.type==='cash'||m.kind==='cash'||id==='cash'||/كاش|cash|نقد/i.test(m.name||'')}
+function xTrList(){const tt=xTrType();return S.txs.filter(t=>t.type===tt&&t.to&&!t.del&&!t.feeOf&&!xIsCashM(t.method)&&!xIsCashM(t.to)).sort((a,b)=>(b.date||'').localeCompare(a.date||''))}
+function xTrFee(t){return S.txs.filter(x=>x.feeOf===t.id&&!x.del).reduce((s,x)=>s+Math.abs(+x.amount||0),0)}
+function xTrNew(){try{closeSheet()}catch(e){}try{newTx(xTrType())}catch(e){toast('افتح التحويل من ➕ عملية جديدة')}}
+function xTrSec(){const L=xTrList(),mk=xPpTd().slice(0,7),ML=L.filter(t=>(t.date||'').startsWith(mk));
+  const mTot=ML.reduce((s,t)=>s+Math.abs(+t.amount||0),0),mFee=ML.reduce((s,t)=>s+xTrFee(t),0);
+  const rows=L.map(t=>{const f=xTrFee(t),fm=(M(t.method)||{}).name||'',to=(M(t.to)||{}).name||'';
+    return `<details class="xr xtrr" data-q="${esc((fm+' '+to+' '+(t.note||'')+' '+t.amount).toLowerCase())}"><summary><span class="xppd">${xPpD(t.date)}</span><span class="xppn">${esc(fm)} ← ${esc(to)}${t.note?`<small>${esc(t.note)}</small>`:''}</span><span><b>${fmt(Math.abs(+t.amount||0))}</b>${f?`<small>💸 ${fmt(f)}</small>`:''}</span></summary><div class="xtrb">${(()=>{try{return txBody(t)}catch(e){return ''}})()}</div></details>`}).join('');
+  return `<details class="grp xtrg"><summary>🔁 تحويلات بين حساباتك <span class="xckh">(${L.length})</span></summary>
+    <button class="btn" onclick="xTrNew()">➕ تحويل جديد</button>
+    <div class="xppk"><div class="card">الشهر ده<br><b>${ML.length}</b> تحويل</div><div class="card">الإجمالي<br><b>${fmt(mTot)}</b></div><div class="card">💸 مصاريف<br><b>${fmt(r2(mFee))}</b></div></div>
+    <input class="xtrq" placeholder="🔍 دوّر بالحساب أو المبلغ" oninput="const q=this.value.trim().toLowerCase();this.closest('.xtrg').querySelectorAll('.xtrr').forEach(r=>r.style.display=!q||r.dataset.q.includes(q)?'':'none')">
+    ${rows||'<div class="xckh" style="padding:10px 0">مفيش تحويلات لسه</div>'}</details>`}
+try{const _xcwT=XVW.xcw;XVW.xcw=function(){let h=_xcwT.apply(this,arguments);try{if(typeof h==='string')h+=xTrSec()}catch(e){}return h}}catch(e){}
+function xTrTiles(){
+  document.querySelectorAll('button,.tile,[onclick]').forEach(x=>{if(x.closest('#sheet')||x.closest('.xtrg'))return;const tx=x.textContent.replace(/\s+/g,' ').trim();
+    if(/السحب والإيداع/.test(tx)&&!/التحويل/.test(tx)&&tx.length<40){const w=document.createTreeWalker(x,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode())n.nodeValue=n.nodeValue.replace('السحب والإيداع','السحب والإيداع والتحويل')}
+    else if(/^🔁?\s*(ال)?تحويل(ات)?(\s+بين\s+(ال)?حسابات(ك)?)?$/.test(tx)&&x.children.length<4)x.style.display='none'})}
+try{const _rnT=render;render=function(){const r=_rnT.apply(this,arguments);try{xTrTiles()}catch(e){}return r}}catch(e){}
+(function(){const s=document.createElement('style');s.textContent=`.xtrr summary{display:flex;gap:8px;align-items:center;padding:8px 2px;list-style:none;cursor:pointer}.xtrr summary::-webkit-details-marker{display:none}
+.xtrr summary>span:last-child{text-align:left;min-width:80px;display:flex;flex-direction:column}.xtrr small{font-size:10px;opacity:.7}.xtrq{margin:6px 0}.xtrb{padding:6px 0}`;document.head.appendChild(s)})();
 /* نهاية fix.js */
