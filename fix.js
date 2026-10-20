@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.77',XVBUILD='20/10/2026 - 10:40 ص';
+const XVER='2.21.78',XVBUILD='20/10/2026 - 10:48 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6540,4 +6540,75 @@ xDirFix=function(){
   const h=document.querySelector('#sheet .sz>h2:not([data-xd])');if(h){h.dataset.xd=1;if(xDirLtr(h.textContent)){h.setAttribute('dir','ltr');h.style.textAlign='left'}}
 };
 try{xDirFix()}catch(e){}
+/* ========== 2.21.78 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xlna>.btn:last-child:nth-child(odd){grid-column:1/-1}
+.xpmb{cursor:pointer}
+.xpmb small.xht{display:block;font-size:10px!important;opacity:.75;margin-top:2px}
+.xlnbig.xtap{cursor:pointer}
+.xdrw{display:flex;align-items:center;gap:8px}.xdrw span{flex:1}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🏦 الحسابات: الرصيد بيظهر لما تدوس عليه ---------- */
+vPmv=function(){
+  const MB=v=>XBALOK?v:'••••••',io={};
+  keyTx(NKM).forEach(t=>{if(t.pend)return;if(t.type==='tr'){(io[t.to]=io[t.to]||{i:0,o:0}).i+=t.amount;(io[t.method]=io[t.method]||{i:0,o:0}).o+=t.amount}else{const x=io[t.method]=io[t.method]||{i:0,o:0};if(t.type==='inc')x.i+=t.amount;else if(t.type==='exp')x.o+=t.amount}});
+  let mine=0,debt=0;S.methods.forEach(m=>{if(m.active===false)return;const b=xBal(m.id);if(xIsCr(m.id))debt+=Math.min(0,b);else mine+=b});
+  const cnt=k=>S.methods.filter(m=>k==='all'?m.active!==false:xPmGrp(m)===k).length;
+  if(XPMT!=='all'&&!cnt(XPMT))XPMT='all';
+  const list=S.methods.filter(m=>XPMT==='all'?m.active!==false:xPmGrp(m)===XPMT);
+  const card=m=>{const b=xBal(m.id),cr=xIsCr(m.id),vis=XBALOK||XBSHOW.has(m.id),x=io[m.id]||{i:0,o:0},g=cr?xCcCfg(m.id):null;
+    const cls=cr?'wrn':b<0?'neg':'pos';
+    const bar=cr&&g.lim>0&&vis?`<div class="xbar"><i style="width:${Math.min(100,Math.max(0,-b)/g.lim*100)}%;background:#ea580c"></i></div>`:'';
+    return `<div class="xpmc" data-q="${esc(qn([m.name,m.bank,TYPES[m.type]].join(' ')))}"><div class="xlnc" onclick="xPmOpen('${m.id}')">
+    <div class="xlnr"><span class="xpmn">${xMIc(m)}<b>${esc(m.name)}</b></span><span class="xlnbig xtap ${vis?cls:''}" dir="ltr" onclick="event.stopPropagation();${vis&&!XBALOK?'':`xBalOne('${m.id}')`}">${vis?(!cr&&b<0?'-':'')+num(Math.abs(b)):'••••••'}</span></div>
+    <div class="xlnr xsm"><span>${cr?'💳 كريديت':esc(TYPES[m.type]||'')}${m.bank?' · '+esc(m.bank):''}</span><span>${vis?(cr?(b<0?'عليك':'ليك'):'الرصيد'):'👆 اضغط للإظهار'}</span></div>${bar}
+    <div class="xlnn">${xCh('ok','⬇ '+num(r2(x.i)))} ${xCh('late','⬆ '+num(r2(x.o)))} <small class="muted">${MONTHS[NM-1]}</small></div>
+    <div class="xlna">${vis&&!XBALOK?`<button class="btn ghost" onclick="event.stopPropagation();xBalOne('${m.id}')">🙈 إخفاء</button>`:''}${cr?`<button class="btn" onclick="event.stopPropagation();xCcPay('${m.id}')">💳 سدد</button>`:`<button class="btn" onclick="event.stopPropagation();xPmOpen('${m.id}')">📄 التفاصيل</button>`}</div></div></div>`};
+  const tb=(k,l)=>`<button type="button" class="${XPMT===k?'on':''}" onclick="XPMT='${k}';render()">${l} (${cnt(k)})</button>`;
+  setTimeout(xPmF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏦 ${esc(L('pm'))}</h3><button class="mini" onclick="${XBALOK?'XBALOK=false;render()':'xBalUnlock()'}">${XBALOK?'🙈 الكل':'👁️ الكل'}</button></div>
+  <button class="btn" onclick="editMethod()">➕ حساب جديد</button>
+  ${kpis([['💰 فلوسك',MB(fmt(r2(mine))),'inc'],['💳 الكريديت',MB(fmt(Math.abs(r2(debt)))),'exp'],['🏦 الحسابات',String(cnt('all')),'net']])}
+  <div class="seg">${tb('all','الكل')}${cnt('bank')?tb('bank','🏦 بنوك'):''}${cnt('cash')?tb('cash','💵 كاش'):''}${cnt('cr')?tb('cr','💳 كريديت'):''}${cnt('off')?tb('off','⏸ موقوف'):''}</div>
+  <div class="gsr">${FIC}<input placeholder="اسم الحساب" value="${esc(XPMQ)}" oninput="XPMQ=this.value;xPmF()"></div>
+  ${list.length?list.map(card).join(''):'<p class="muted" style="text-align:center;margin:20px 0">لا يوجد</p>'}
+  ${!XBALOK&&S.settings.balPw?`<button class="btn ghost" onclick="xBalForgot()">🔑 نسيت باسورد الأرصدة؟</button>`:''}`;
+};
+xPmOpen=function(id){
+  const m=M(id);if(!m)return;const cr=xIsCr(id),un=XBALOK||XPMU===id,b=xBal(id);let i=0,o=0;
+  keyTx(NKM).forEach(t=>{if(t.pend)return;if(t.type==='tr'){if(t.to===id)i+=t.amount;if(t.method===id)o+=t.amount}else if(t.method===id){if(t.type==='inc')i+=t.amount;else if(t.type==='exp')o+=t.amount}});
+  const T=S.txs.filter(t=>!t.pend&&!t.xpre&&(t.method===id||t.to===id)).sort(byDesc).slice(0,8);
+  const ef=t=>t.type==='tr'?(t.to===id?t.amount:-t.amount):t.type==='inc'?t.amount:-t.amount;
+  sheet(`<h2>${xMIc(m,1)} ${esc(m.name)}</h2><p class="muted">${cr?'💳 كريديت':esc(TYPES[m.type]||'')}${m.bank?' · '+esc(m.bank):''}${m.active===false?' · ⏸ موقوف':''}</p>
+  <div class="xlns"><div class="xpmb" onclick="${un?'':`xPmShow('${id}')`}"><small>${cr?'المديونية':'الرصيد'}</small><b id="xpm-bal" data-id="${id}" class="${cr?'wrn':b<0?'neg':'pos'}" dir="ltr">${un?num(cr?Math.max(0,-b):b):'••••••'}</b>${un?'':'<small class="xht">👆 اضغط للإظهار</small>'}</div><div><small>⬇ داخل ${MONTHS[NM-1]}</small><b class="pos">${num(r2(i))}</b></div><div><small>⬆ خارج ${MONTHS[NM-1]}</small><b class="neg">${num(r2(o))}</b></div></div>
+  ${un&&!XBALOK?`<button class="btn ghost" onclick="xPmShow('${id}')">🙈 إخفاء الرصيد</button>`:''}
+  <div class="xlna">
+   ${cr?`<button class="btn" onclick="xCcPay('${id}')">💳 سدد</button>`:`<button class="btn ghost" onclick="xRecon('${id}')">⚖️ مطابقة</button>`}
+   <button class="btn ghost" onclick="xAcctRep('${id}')">📄 كشف حساب</button>
+   <button class="btn ghost" onclick="xAcctReviewGo('${id}')">🔍 مراجعة</button>
+   <button class="btn ghost" onclick="xPmTr('${id}')">🔁 تحويل منه</button>
+   <button class="btn ghost" onclick="editMethod('${id}')">✏️ تعديل</button>
+  </div>
+  ${T.length?`<details class="gen"><summary>🕒 آخر الحركات (${T.length})</summary><div class="list" style="margin-top:8px">${T.map(t=>{const e=ef(t);return `<div class="row clk" onclick="editTx('${t.id}')"><div class="grow"><b>${esc(t.type==='tr'?(t.to===id?'🔁 من '+(M(t.method)?.name||'—'):'🔁 لـ '+(M(t.to)?.name||'—')):(C(t.cat)?.name||'—'))}</b><small>${xDW(t.date)}${t.via?' · '+esc(viaTxt(t.via)):''}</small></div><div class="amt ${e<0?'exp':'inc'}" dir="ltr">${e<0?'-':'+'}${num(Math.abs(e))}</div></div>`}).join('')}</div></details>`:''}
+  <button class="btn ghost danger" onclick="closeSheet();delMethod('${id}')">🗑 حذف الحساب</button>`);
+};
+var XPMHT=0;
+xPmShow=async function(id){
+  if(XPMU===id){XPMU=null;clearTimeout(XPMHT);return xPmOpen(id)}
+  if(!await xPmAuth(id))return;xPmOpen(id);clearTimeout(XPMHT);
+  XPMHT=setTimeout(()=>{if(XPMU!==id)return;XPMU=null;const e=$('#xpm-bal');if(e&&e.dataset.id===id)xPmOpen(id)},20000);
+};
+
+/* ---------- ☁️ رسالة Drive: مرة في اليوم بالكتير ---------- */
+function xDrSnz(){GD.snz=Date.now();saveGD();render()}
+try{const _vhE=vHome;vHome=function(){let h=_vhE.apply(this,arguments);try{
+  h=h.replace(/<div class="warn" onclick="xDrNow\(\)">[\s\S]*?<\/div>/,'');
+  const mode=xBkS().mode,last=GD.last?new Date(GD.last).getTime():0,age=Date.now()-last,th=mode==='week'?7*864e5:864e5;
+  if(!DEMO&&GD.linked&&GD.cid&&mode!=='manual'&&!(gTok&&Date.now()<gExp-60000)&&age>=th&&(!GD.snz||Date.now()-GD.snz>=864e5)&&strHash(JSON.stringify(S))!==GD.hash){
+    const d=last?Math.floor(age/864e5):0;
+    h=`<div class="warn xdrw"><span onclick="xDrNow()">☁️ ${last?'آخر نسخة على Drive من '+d+' يوم':'لسه مفيش نسخة على Drive'} · اضغط للرفع</span><button class="mini" onclick="event.stopPropagation();xDrSnz()">✕</button></div>`+h}
+}catch(e){}return h}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
