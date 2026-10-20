@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.92',XVBUILD='20/10/2026 - 12:41 م';
+const XVER='2.21.94',XVBUILD='20/10/2026 - 12:50 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7068,6 +7068,61 @@ try{const _irF=xInstRowsX;xInstRowsX=function(){const r=_irF.apply(this,argument
     if(sm.classList.contains('xcs'))sm.insertAdjacentHTML('beforeend',chip);else sm.insertAdjacentHTML('beforeend',' · 💸 مصاريف '+num(f.amount));
   });
 }catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
+/* ========== 2.21.93 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view .rgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
+body #view .rbtn{padding:8px 2px!important;font-size:10.5px!important;line-height:1.25!important;gap:3px!important;border-radius:12px!important;min-height:64px!important;overflow-wrap:anywhere}
+body #view .rbtn span{font-size:19px!important;margin:0!important}
+body #view .rbtn .xrb{top:3px;left:3px;min-width:17px;height:17px;font-size:10px}
+body #view>h3:first-child,body #view>.phead:first-child{margin-top:2px!important}
+body.xhome #view{display:block!important}
+body #view>.brand{margin-top:10px!important}
+.brand small{display:block!important;font-size:10px!important;line-height:1.5!important;opacity:.8}
+`;document.head.appendChild(s)})();
+
+/* بوكس الشركة ينزل لآخر الشاشة من غير سكرول، في كل الشاشات */
+xHomeFit=function(){try{
+  const v=$('#view');if(!v)return;v.style.minHeight='';
+  const b=v.querySelector(':scope>.brand');if(!b)return;b.style.removeProperty('margin-top');
+  const sm=b.querySelector('small');if(sm&&!sm.dataset.x2){sm.dataset.x2=1;sm.innerHTML=sm.innerHTML.replace(/ · (?=[^·]*$)/,'<br>')}
+  const z=parseFloat(getComputedStyle(document.querySelector('main')).zoom)||1;
+  const r=v.getBoundingClientRect(),gap=innerHeight-(r.top+window.scrollY)-r.height;
+  if(gap>1)b.style.setProperty('margin-top',(parseFloat(getComputedStyle(b).marginTop)+gap/z)+'px','important');
+}catch(e){}};
+try{const _rnFt=render;render=function(){const r=_rnFt.apply(this,arguments);setTimeout(xHomeFit,300);return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.94 ========== */
+/* رصيد البداية ثابت: أي تغيير في عملية قبل تاريخه بيظبط رصيد البداية، والرصيد مبيتغيرش */
+function xAnchorFix(){
+  if(!XBSN)return;const cur=xBsnap(),prev=XBSN,ids=new Set([...Object.keys(prev),...Object.keys(cur)]);
+  S.methods.forEach(m=>{if(!m.openAt)return;const a=m.id,oa=m.openAt;let d=0;
+    ids.forEach(k=>{if(k.startsWith('o:'))return;const p=prev[k],c=cur[k];
+      const ep=p&&p[5]&&p[5]<oa?xEff(p,a):0,ec=c&&c[5]&&c[5]<oa?xEff(c,a):0;
+      if(Math.abs(ec-ep)>.0001)d+=ec-ep});
+    if(Math.abs(d)>.0001)m.open=r2((+m.open||0)-d)});
+}
+try{const _svA=save;save=function(){try{xAnchorFix()}catch(e){}return _svA.apply(this,arguments)}}catch(e){}
+/* أي استرجاع للبيانات يبدأ حساب جديد من غير تظبيط */
+try{const _xuA=xUndo;xUndo=async function(){const r=await _xuA.apply(this,arguments);try{XBSN=xBsnap()}catch(e){}return r}}catch(e){}
+try{const _cuA=xCheckUndo;xCheckUndo=async function(){const s=XBSN;XBSN=null;const r=await _cuA.apply(this,arguments);if(!XBSN)XBSN=s&&S?xBsnap():null;return r}}catch(e){}
+try{const _abA=applyBackup;applyBackup=async function(){XBSN=null;const r=await _abA.apply(this,arguments);try{XBSN=xBsnap()}catch(e){}return r}}catch(e){}
+
+/* شيل الكلام اللي ملوش لازمة: كل تحويل إنستاباي يتعامل عادي حتى لو قديم */
+xBeforeOpen=function(){return false};
+
+/* رجّع مصاريف إنستاباي للتحويلات القديمة بالمبلغ، من غير ما الرصيد يتغير */
+if(!S.settings.xanchor1){try{
+  let n=0;
+  S.txs.slice().forEach(t=>{
+    const m=M(t.method);if(!m||!m.openAt||t.date>=m.openAt)return;
+    if(t.pend||t.xpre||t.feeOf||t.payFeeOf||t.type==='inc'||t.via!=='instapay'||xIsBillTx(t)||xFeeTx(t.id)||isClosed(t.date))return;
+    delete t.nofee;xAddIpFee(t,xFeeCalc(t.amount));n++;
+  });
+  S.settings.xanchor1=1;save();
+  if(n)setTimeout(()=>{render();toast('💸 رجعت مصاريف إنستاباي لـ '+n+' تحويل · الرصيد زي ما هو')},1200);
+}catch(e){}}
 
 try{render()}catch(e){}
 /* نهاية fix.js */
