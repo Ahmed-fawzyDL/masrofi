@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.75',XVBUILD='20/10/2026 - 10:32 ص';
+const XVER='2.21.77',XVBUILD='20/10/2026 - 10:40 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6478,4 +6478,66 @@ document.addEventListener('input',e=>{try{
   if(t.id==='f-tfee'){F._tfM=1;return}
   if(t.id==='f-amt'&&!F._tfM){const i=$('#f-tfee');if(i){i.value=amtStr(xFeeCalc(parseNum(t.value)));F.tfee=i.value}}
 }catch(err){}},true);
+/* ========== 2.21.76 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+[dir=ltr]>.amt,[dir=ltr] .amt{text-align:right!important;align-items:flex-end}
+#view .list>.row[dir=ltr] .grow,#sheet .list>.row[dir=ltr] .grow,details.xr>summary[dir=ltr] .grow{text-align:left}
+.xlnr[dir=ltr] .xlnbig{text-align:right}
+#xpm-g{margin-top:4px}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🏦 قايمة الحسابات مقفولة ---------- */
+var XPMO=false;
+var XPMTN={all:'🏦 كل الحسابات',bank:'🏦 البنوك',cash:'💵 الكاش',cr:'💳 الكريديت',off:'⏸ الموقوف'};
+try{const _rnPm=render;render=function(){const r=_rnPm.apply(this,arguments);try{
+  if(view!=='pmv')return r;const el=$('#view');if(!el||el.querySelector('#xpm-g'))return r;
+  const cs=[...el.querySelectorAll(':scope>.xpmc')];if(!cs.length)return r;
+  const d=document.createElement('details');d.className='grp';d.id='xpm-g';
+  if(XPMO||XPMQ.trim()){d.dataset.xso='1';d.open=true}
+  d.addEventListener('toggle',()=>{XPMO=d.open});
+  d.innerHTML=`<summary><span>${XPMTN[XPMT]||XPMTN.all}</span><span class="badge soon">${cs.length}</span></summary>`;
+  cs[0].before(d);cs.forEach(c=>d.appendChild(c));
+}catch(e){}return r}}catch(e){}
+try{const _pmF=xPmF;xPmF=function(){const r=_pmF.apply(this,arguments);const g=$('#xpm-g');if(g&&XPMQ.trim()&&!g.open){g.dataset.xso='1';g.open=true}return r}}catch(e){}
+
+/* ---------- 🕒 آخر الحركات مقفولة ---------- */
+try{const _pmO=xPmOpen;xPmOpen=function(){const r=_pmO.apply(this,arguments);try{
+  const fl=[...document.querySelectorAll('#sheet .sz>.fl')].find(x=>/آخر الحركات/.test(x.textContent));if(!fl)return r;
+  const ls=fl.nextElementSibling;if(!ls||!ls.classList.contains('list'))return r;
+  const d=document.createElement('details');d.className='gen';
+  d.innerHTML=`<summary>🕒 آخر الحركات (${ls.children.length})</summary>`;
+  fl.replaceWith(d);ls.style.marginTop='8px';d.appendChild(ls);
+}catch(e){}return r}}catch(e){}
+
+/* ---------- الأسامي الإنجليزي: الاسم شمال والمبلغ يمين ---------- */
+function xDirLtr(s){return dirOf(String(s||''))==='ltr'}
+function xDirFix(){
+  document.querySelectorAll('#view .xlnc:not([data-xd]),#sheet .xlnc:not([data-xd])').forEach(c=>{c.dataset.xd=1;
+    const r=c.querySelector('.xlnr'),b=r&&r.querySelector('b');if(b&&xDirLtr(b.textContent))c.querySelectorAll('.xlnr').forEach(x=>x.setAttribute('dir','ltr'))});
+  document.querySelectorAll('#view .row:not([data-xd]),#sheet .row:not([data-xd])').forEach(r=>{r.dataset.xd=1;
+    const b=r.querySelector('.grow>b');if(b&&xDirLtr(b.textContent))r.setAttribute('dir','ltr')});
+  document.querySelectorAll('#view details.xr>summary:not([data-xd]),#sheet details.xr>summary:not([data-xd])').forEach(s=>{s.dataset.xd=1;
+    const b=s.querySelector('.grow>b');if(b&&xDirLtr(b.textContent))s.setAttribute('dir','ltr')});
+  const h=document.querySelector('#sheet .sz>h2:not([data-xd])');if(h){h.dataset.xd=1;if(xDirLtr(h.textContent)){h.setAttribute('dir','ltr');h.style.textAlign='left'}}
+}
+(()=>{let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xDirFix()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});try{xDirFix()}catch(e){}})();
+
+try{render()}catch(e){}
+/* ========== 2.21.77 ========== */
+/* اتجاه واحد لكل قايمة حسب أغلب الأسامي */
+xDirFix=function(){
+  const G=new Map(),add=(cont,txt,apply)=>{if(!cont)return;let g=G.get(cont);if(!g){g=[];G.set(cont,g)}g.push({l:xDirLtr(txt),apply})};
+  document.querySelectorAll('#view .xlnc,#sheet .xlnc').forEach(c=>{
+    const r=c.querySelector('.xlnr'),b=r&&r.querySelector('b');if(!b)return;
+    add(c.closest('details.grp')||c.closest('#view,#sheet'),b.textContent,on=>c.querySelectorAll('.xlnr').forEach(x=>on?x.setAttribute('dir','ltr'):x.removeAttribute('dir')))});
+  document.querySelectorAll('#view .row,#sheet .row').forEach(r=>{
+    const b=r.querySelector('.grow>b');if(!b)return;
+    add(r.closest('.list')||r.parentElement,b.textContent,on=>on?r.setAttribute('dir','ltr'):r.removeAttribute('dir'))});
+  document.querySelectorAll('#view details.xr>summary,#sheet details.xr>summary').forEach(s=>{
+    const b=s.querySelector('.grow>b');if(!b)return;
+    add(s.parentElement.closest('details.grp,.list,.xb')||s.parentElement.parentElement,b.textContent,on=>on?s.setAttribute('dir','ltr'):s.removeAttribute('dir'))});
+  G.forEach(g=>{const on=g.filter(x=>x.l).length*2>g.length;g.forEach(x=>x.apply(on))});
+  const h=document.querySelector('#sheet .sz>h2:not([data-xd])');if(h){h.dataset.xd=1;if(xDirLtr(h.textContent)){h.setAttribute('dir','ltr');h.style.textAlign='left'}}
+};
+try{xDirFix()}catch(e){}
 /* نهاية fix.js */
