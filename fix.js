@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.107',XVBUILD='20/10/2026 - 03:20 م';
+const XVER='2.21.109',XVBUILD='20/10/2026 - 03:26 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7640,4 +7640,73 @@ xPpCat=function(cid,on){const c=C(cid);if(on)XPPE.cats[cid]=c&&c.kind==='inc'?'p
 function xPpKSet(cid,k){XPPE.cats[cid]=k;const s=$('#pp-k-'+cid);if(s)s.innerHTML=xPpKHtml(C(cid))}
 try{const _psP=xPpSave;xPpSave=function(){try{if(XPPE){XPPE.phs=(XPPE.phs||[]).map(x=>String(x||'').trim()).filter(Boolean);XPPE.ph=XPPE.phs[0]||''}}catch(e){}return _psP.apply(this,arguments)}}catch(e){}
 (function(){const s=document.createElement('style');s.textContent=`.xppph{display:flex;gap:6px;align-items:center;margin-bottom:6px}.xppph input{flex:1;margin:0}`;document.head.appendChild(s)})();
+/* ========== 2.21.108 · شكل حسابات الأشخاص ========== */
+xPpList=function(){const P=XPP();let tot=0;
+  const rows=P.map(p=>{const s=xPpSum(xPpRows(p));tot+=s.bal;
+    return `<div class="xppli"><span class="xppnm"><b>👤 ${esc(p.name)}</b><small>${xPpBal(s.bal)}</small></span><button class="mini" onclick="xPpOpen('${p.id}')">📄 العمليات</button></div>`}).join('');
+  sheet(`<div class="xpph"><h3>👤 حسابات الأشخاص</h3><button class="mini" onclick="xPpEdit()">➕ شخص</button></div>
+    ${P.length?`<details class="grp xppgrp"><summary><span>👥 الأشخاص (${P.length})</span>${xPpBal(tot)}</summary>${rows}</details>`:''}`)};
+xPpOpen=function(id,per){const p=XPP().find(x=>x.id===id);if(!p)return xPpList();
+  if(per)XPPV.per=per;if(!XPPV.m)XPPV.m=xPpTd().slice(0,7);
+  const R=xPpRows(p);let from='',to='9999',lbl='';
+  if(XPPV.per==='m'){from=XPPV.m+'-01';to=XPPV.m+'-31';lbl=XPPV.m.split('-').reverse().join('/')}
+  else if(XPPV.per==='y'){from=XPPV.m.slice(0,4)+'-01-01';to=XPPV.m.slice(0,4)+'-12-31';lbl=XPPV.m.slice(0,4)}
+  const pre=xPpSum(R.filter(r=>(r.t.date||'')<from)),IN=R.filter(r=>(r.t.date||'')>=from&&(r.t.date||'')<=to),ps=xPpSum(IN),end=r2(pre.bal+ps.bal);
+  const rows=IN.map(r=>{const a=Math.abs(+r.t.amount||0),cn=(C(r.t.cat)||{}).name||'',ti=r.t.note||xPpNm(r.t);
+    const col=r.k==='owe'?'#e8833a':r.k==='paid'?'#2bb673':'#8a94a6',d=XPPV.per==='m'?xPpD(r.t.date).slice(0,5):xPpD(r.t.date);
+    return `<details class="xppr"><summary><span class="xppd">${d}</span><span class="xppn">${esc(ti)}<small>${cn&&normAr(cn)!==normAr(ti)?esc(cn)+' · ':''}${XPPKN[r.k]}</small></span><b style="color:${col}">${r.k==='paid'?'−':''}${fmt(a)}</b></summary>
+      <div class="xppb">${XPPK.map(([v,l])=>`<button class="mini${r.k===v?' xppon':''}" onclick="xPpSet('${r.t.id}','${p.id}','${v}')">${l}</button>`).join('')}<button class="mini" onclick="xPpSet('${r.t.id}','${p.id}','x')">✕ شيلها</button></div></details>`}).join('');
+  const sg=[['m','شهر'],['y','سنة'],['a','الكل']].map(([v,l])=>`<button class="mini${XPPV.per===v?' xppon':''}" onclick="xPpOpen('${p.id}','${v}')">${l}</button>`).join('');
+  sheet(`<div class="xpph"><h3>👤 ${esc(p.name)}</h3><span class="xppic"><button class="mini" onclick="xPpEdit('${p.id}')">✏️</button><button class="mini" onclick="xPpPrint('${p.id}')">🖨️</button><button class="mini" onclick="xPpShare('${p.id}')">📤</button></span></div>
+    <div class="xppper">${sg}</div>
+    ${XPPV.per!=='a'?`<div class="xppnav"><button class="mini" onclick="xPpMv('${p.id}',-1)">→</button><b>${lbl}</b><button class="mini" onclick="xPpMv('${p.id}',1)">←</button></div>`:''}
+    ${pre.bal?`<div class="xpppre"><span>الرصيد قبل الفترة</span><b>${fmt(pre.bal)}</b></div>`:''}
+    ${rows||'<div class="xckh" style="padding:14px 0;text-align:center">مفيش عمليات</div>'}
+    <div class="card xppsum"><div><span>🔴 عليه</span><b>${fmt(ps.owe)}</b></div><div><span>🟢 رجّع</span><b>${fmt(ps.paid)}</b></div><div><span>🎁 صرفت عليه</span><b>${fmt(ps.gift)}</b></div>
+      <div class="xppbal"><span>الرصيد</span>${xPpBal(end)}</div></div>
+    <button class="btn" onclick="xPpAdd('${p.id}')">➕ عملية</button>`)};
+function xPpAdd(id){const p=XPP().find(x=>x.id===id);if(!p)return;
+  sheet(`<h3>➕ عملية · ${esc(p.name)}</h3><div class="xppg">
+    <button class="btn" onclick="xPpNew('${id}','exp','owe')">🔴 عليه</button><button class="btn" onclick="xPpNew('${id}','inc','paid')">🟢 رجّع</button>
+    <button class="btn" onclick="xPpNew('${id}','exp','gift')">🎁 صرفت عليه</button><button class="btn" onclick="xPpLoan('${id}')">🤝 سلفة</button></div>`)}
+(function(){const s=document.createElement('style');s.textContent=`
+.xpph{display:flex;justify-content:space-between;align-items:center;gap:8px}.xpph h3{margin:0}.xppic{display:flex;gap:4px}
+.xppgrp>summary{display:flex;justify-content:space-between;align-items:center}.xppli{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid rgba(128,128,128,.15)}
+.xppnm{display:flex;flex-direction:column;gap:2px}.xppnm small{font-size:12px}
+.xppper{display:flex;justify-content:center;gap:6px;margin:10px 0 4px}.xppnav{display:flex;justify-content:center;align-items:center;gap:14px;margin:4px 0 8px}
+.xppr summary>b{min-width:70px;text-align:left}
+.xppsum{margin-top:12px;padding:10px 12px}.xppsum>div{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.xppsum .xppbal{border-top:1px solid rgba(128,128,128,.3);margin-top:6px;padding-top:8px;font-size:16px}`;document.head.appendChild(s)})();
+/* ========== 2.21.109 · حركات الشخص من غير أنواع ========== */
+XPPK=[];XPPKN={owe:'💸 مصروف',paid:'💰 تحصيل',gift:'💸 مصروف'};
+xPpMatch=function(t,p,L){
+  if(!t||t.del||t.pend||(t.date||'')>xPpTd()||!(t.type==='exp'||t.type==='inc'))return null;
+  const k=t.type==='inc'?'paid':'owe';
+  if(t.pp)return t.pp===p.id?k:null;
+  if(t.feeOf||t.payFeeOf||(t.ppx||[]).includes(p.id))return null;
+  const nm=normAr(p.name);
+  if(t.xlno){const l=L.find(l=>l.tx===t.id);if(l&&normAr(l.who||'')===nm)return k}
+  if(t.xlnp){const l=L.find(l=>l.id===t.xlnp||l.id===t.xlno);if(l&&normAr(l.who||'')===nm)return k}
+  return (p.cats||{})[t.cat]?k:null};
+xPpBal=function(b){return `<b>${fmt(b)}</b>`};
+xPpKHtml=function(){return ''};
+xPpFormK=function(){const b=$('#f-ppk');if(b)b.innerHTML='';if(F&&F.pp)F.ppk=F.type==='inc'?'paid':'owe'};
+xPpAdd=function(id){const p=XPP().find(x=>x.id===id);if(!p)return;
+  sheet(`<h3>➕ عملية · ${esc(p.name)}</h3><div class="xppg">
+    <button class="btn" onclick="xPpNew('${id}','exp','owe')">💸 مصروف</button><button class="btn" onclick="xPpNew('${id}','inc','paid')">💰 تحصيل</button>
+    <button class="btn" onclick="xPpLoan('${id}')">🤝 سلفة</button></div>`)};
+try{const _poK=xPpOpen;xPpOpen=function(){const r=_poK.apply(this,arguments);try{const s=$('#sheet .xppsum');if(s)[...s.children].forEach(d=>{const t=d.textContent;
+  if(/صرفت عليه/.test(t))d.remove();else if(/عليه/.test(t)&&!d.classList.contains('xppbal'))d.firstElementChild.textContent='💸 مصروفات';else if(/رجّع/.test(t))d.firstElementChild.textContent='💰 تحصيلات'})}catch(e){}return r}}catch(e){}
+xPpText=function(p){const R=xPpRows(p),s=xPpSum(R);
+  return `كشف حساب: ${p.name}\n`+R.map(r=>`${xPpD(r.t.date)} · ${r.t.note||xPpNm(r.t)} · ${XPPKN[r.k]} ${fmt(Math.abs(+r.t.amount||0))}`).join('\n')
+    +`\n————\nمصروفات: ${fmt(s.owe)} · تحصيلات: ${fmt(s.paid)}\nالرصيد: ${fmt(s.bal)}`};
+xPpPrint=function(pid){const p=XPP().find(x=>x.id===pid);if(!p)return;const R=xPpRows(p),s=xPpSum(R);let run=0;
+  const tr=R.map(r=>{const a=Math.abs(+r.t.amount||0);run+=r.k==='paid'?-a:a;
+    return `<tr><td>${xPpD(r.t.date)}</td><td>${esc(r.t.note||xPpNm(r.t))}</td><td>${r.k==='owe'?fmt(a):''}</td><td>${r.k==='paid'?fmt(a):''}</td><td>${fmt(r2(run))}</td></tr>`}).join('');
+  const w=window.open('','_blank');if(!w)return toast('افتح النوافذ المنبثقة للطباعة');
+  w.document.write(`<html dir="rtl"><head><meta charset="utf-8"><title>كشف ${esc(p.name)}</title><style>body{font-family:sans-serif;padding:16px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border:1px solid #999;padding:5px;text-align:center}th{background:#eee}</style></head><body>
+    <h2>كشف حساب: ${esc(p.name)}</h2><p>بتاريخ ${xPpD(xPpTd())}</p>
+    <table><tr><th>التاريخ</th><th>البيان</th><th>مصروف</th><th>تحصيل</th><th>الرصيد</th></tr>${tr}
+    <tr><th colspan="2">الإجمالي</th><th>${fmt(s.owe)}</th><th>${fmt(s.paid)}</th><th>${fmt(s.bal)}</th></tr></table>
+    <p style="color:#777">Centric · DeTech Solutions</p><script>setTimeout(()=>print(),300)<\/script></body></html>`);w.document.close()};
 /* نهاية fix.js */
