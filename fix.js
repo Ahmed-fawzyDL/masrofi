@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.114',XVBUILD='20/10/2026 - 04:30 م';
+const XVER='2.21.115',XVBUILD='20/10/2026 - 04:48 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7888,5 +7888,39 @@ xMgMan=function(){const a=$('#mg-a').value,b=$('#mg-b').value;if(!a||!b||a===b)r
   if(!confirm('تنقل كل عمليات «'+A.name+'» على «'+B.name+'»؟'))return;xMgSnap();xCatMerge(a,b);save();render();toast('🔗 اتدمج');xMgOpen()};
 try{const _mdU=xMgDo;xMgDo=function(i,quiet){const g=XMG[i];if(g){const to=C(g.to);if(to&&g.ids.some(id=>{const c=C(id);return id!==g.to&&c&&c.kind!==to.kind&&c.fixed})){
   const fx=g.ids.find(id=>{const c=C(id);return c&&c.fixed});if(fx)g.to=fx}}return _mdU.apply(this,arguments)}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.115 · شاشة واحدة للبنود ========== */
+/* "البنود" القديمة بتفتح بنود الحسابات */
+try{const _goI=go;go=function(v){if(v==='items')v='xacc';if(v==='xacc'&&view!=='xacc'){XACO={};XACQ=''}return _goI.apply(this,arguments)}}catch(e){}
+if(XFC.items)XFC.items[2]="go('xacc')";
+try{const _rnI=render;render=function(){const r=_rnI.apply(this,arguments);try{if(view==='more'){const el=$('#view'),t=el&&xTileFind(el,'البنود');if(t)t.remove()}}catch(e){}return r}}catch(e){}
+
+/* 📒 بنود الحسابات */
+XVW.xacc=()=>{
+  const st=xAccStats(),q=XACQ.trim(),td=today(),y=NY+'-';
+  let inc=0,exp=0;S.txs.forEach(t=>{if(t.pend||t.xpre||t.type==='tr'||!t.date.startsWith(y))return;if(t.type==='inc')inc+=t.amount;else if(t.type==='exp')exp+=t.amount});
+  const all=S.cats.filter(c=>!c.mrg&&!/^مصاريف إنستاباي ·/.test(c.name)&&(XACK==='all'||c.kind===XACK)),on=all.filter(c=>c.active!==false);
+  const G=[['if','📌 تحصيل ثابت شهري',c=>c.kind==='inc'&&c.fixed&&!isAnn(c),'pos'],['ia','📄 تحصيل سنوي',c=>c.kind==='inc'&&c.fixed&&isAnn(c),'pos'],['iv','💵 تحصيل متغير',c=>c.kind==='inc'&&!c.fixed,'pos'],
+    ['ef','📌 مصروف ثابت',c=>c.kind==='exp'&&c.fixed,'neg'],['ev','🛒 مصروف متغير',c=>c.kind==='exp'&&!c.fixed,'neg']];
+  const card=c=>{const x=st[c.id]||{n:0,s:0},cl=c.cl&&xClL(c.cl),nx=c.fixed&&c.active!==false?xClNx(c):null,ch=[];
+    if(c.fixed)ch.push(xCh('',esc(everyTxt(c.every))+' · '+num(+c.amount||0)));
+    if(c.prevAmt&&c.incPct!=null)ch.push(xCh(c.incPct>=0?'ok':'late',(c.incPct>=0?'▲ ':'▼ ')+Math.abs(c.incPct)+'%'));
+    if(nx)ch.push(xCh(nx.d<td?'late':'up',(nx.d<td?'⚠️ متأخر ':'⏳ الجاي ')+dmy(nx.d)));
+    if(cl)ch.push(xCh('','👥 '+esc(cl.name)));
+    const qq=qn([c.name,...(c.alias||[]),...(c.al||[]),c.amount||'',num(+c.amount||0),r2(x.s)].join(' '));
+    return `<div class="xacr" data-q="${esc(qq)}"><div class="xlnc" onclick="xAccOpen('${c.id}')"><div class="xlnr"><b>${c.fixed?(isAnn(c)?'📄':'📌'):c.kind==='inc'?'💵':'🏷️'} ${esc(c.name)}</b><span class="xlnbig ${c.kind==='inc'?'pos':'neg'}" dir="ltr">${num(r2(x.s))}</span></div>
+    <div class="xlnr xsm"><span>${x.n} عملية في ${NY}</span></div>${ch.length?`<div class="xlnn">${ch.join(' ')}</div>`:''}</div></div>`};
+  const sec=(k,t,L,cls)=>{if(!L.length)return '';const sum=r2(L.reduce((a,c)=>a+((st[c.id]||{}).s||0),0));
+    return `<details class="grp" ${XACO[k]||q?'open data-xso="1"':''} ontoggle="XACO['${k}']=this.open"><summary><span>${t}</span><span class="badge soon">${L.length}</span><b class="gs ${cls}">${num(sum)}</b></summary>${L.sort((a,b)=>a.name.localeCompare(b.name,'ar')).map(card).join('')}</details>`};
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
+  <button class="btn" onclick="catForm(null,XACK==='inc'?'inc':'exp')">➕ بند جديد</button>
+  ${kpis([['📋 البنود',String(on.length),'net'],['💰 اتحصّل '+NY,fmt(r2(inc)),'inc'],['💸 اتصرف '+NY,fmt(r2(exp)),'exp']])}
+  <div class="seg">${[['all','الكل'],['inc','💰 التحصيل'],['exp','💸 المصروف']].map(([k,l])=>`<button class="${XACK===k?'on':''}" onclick="XACK='${k}';XACO={};render()">${l}</button>`).join('')}</div>
+  <div class="gsr">${FIC}<input id="xac-q" placeholder="اسم البند أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>`;
+  G.forEach(([k,t,f,cls])=>{h+=sec(k,t,on.filter(f),cls)});
+  h+=sec('off','⏸ موقوف',all.filter(c=>c.active===false),'');
+  if(!all.length)h+='<p class="empty">لا توجد بنود</p>';
+  setTimeout(xAccF,0);return h;
+};
 try{render()}catch(e){}
 /* نهاية fix.js */
