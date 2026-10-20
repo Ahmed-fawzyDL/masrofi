@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.113',XVBUILD='20/10/2026 - 04:18 م';
+const XVER='2.21.114',XVBUILD='20/10/2026 - 04:30 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7802,4 +7802,91 @@ xTxLay=function(){const sz=$('#sheet .sz'),a=$('#f-amt');if(!sz||!a||!F||!(F.typ
 .xpayd>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;list-style:none;font-weight:700}
 .xpayd>summary::-webkit-details-marker{display:none}.xpayd>summary::after{content:'▾';opacity:.6;margin-inline-start:6px}
 .xpayd[open]>summary{margin-bottom:10px;color:#2dd4bf}.xpays{font-size:12px;font-weight:500;opacity:.75;flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}`;document.head.appendChild(s)})();
+/* ========== 2.21.114 · البند بند وبس: يتسجل عليه مصروف أو تحصيل ========== */
+/* اختيار البند: كل البنود، وبنود العملاء في "تحصيل عميل" بس */
+try{const _coU=xCatOpen;xCatOpen=function(){if(!F||F.type==='tr')return _coU.apply(this,arguments);
+  const kind=F.type==='inc'?'inc':'exp',cm=F.xtype==='cl',sel=($('#f-cl')||{}).value||'',Cs=S.cats;
+  S.cats=Cs.filter(c=>!c.mrg&&(c.id===F.cat||!c.cl||(cm&&(!sel||c.cl===sel)))).map(c=>c.kind===kind?c:Object.assign(Object.create(c),{kind}));
+  try{return _coU.apply(this,arguments)}finally{S.cats=Cs}}}catch(e){}
+/* اختيار بند من النوع التاني: من غير ما يكتب المبلغ الثابت أو يغيّر الحساب */
+try{const _cpU=catPick;catPick=function(id){const c=C(id);
+  if(!F||!c||F.type==='tr'||c.kind===F.type)return _cpU.apply(this,arguments);
+  grab();F.cat=id;F.cq=c.name;F.newCat='';F.fix=false;SHKEEP=1;txForm()}}catch(e){}
+try{const _tfU=txForm;txForm=function(){const r=_tfU.apply(this,arguments);try{
+  const c=F&&F.cat&&F.cat!=='__new'&&C(F.cat);if(!c||F.type==='tr'||c.kind===F.type)return r;
+  const sg=$('#xvseg');if(sg)sg.remove();
+  document.querySelectorAll('#sheet small.xhint').forEach(s=>{if(/ثابت|إضافي/.test(s.textContent))s.remove()});
+  const xs=document.querySelector('#sheet button.xsel[onclick="xCatOpen()"]'),lab=xs&&xs.closest('label');
+  if(lab&&!$('#xukn'))lab.insertAdjacentHTML('afterend',`<small class="muted xhint" id="xukn">${F.type==='inc'?'💰 هيتسجل تحصيل':'💸 هيتسجل مصروف'} على «${esc(c.name)}»${c.fixed?' · مبلغ إضافي':''}</small>`);
+}catch(e){}return r}}catch(e){}
+/* الحفظ: يقبل أي بند، وبند جديد باسم موجود يتسجل على الموجود */
+try{const _stU=saveTx;saveTx=async function(){
+  try{grab()}catch(e){}
+  if(F&&F.type!=='tr'&&F.cat==='__new'&&(F.newCat||'').trim()){const n=normAr(F.newCat.trim()),ex=S.cats.find(c=>!c.mrg&&!c.cl&&normAr(c.name)===n);if(ex){F.cat=ex.id;F.cq=ex.name;F.newCat=''}}
+  const c=F&&F.type!=='tr'&&F.cat&&F.cat!=='__new'&&C(F.cat);
+  if(!c||c.kind===F.type)return _stU.apply(this,arguments);
+  const k0=c.kind,f0=c.fixed,fid=F.id,before=new Set(S.txs.map(t=>t.id));F.fix=false;F.xvar=false;
+  c.kind=F.type;c.fixed=false;let r;
+  try{r=await _stU.apply(this,arguments)}finally{c.kind=k0;c.fixed=f0}
+  try{const t=fid?S.txs.find(x=>x.id===fid):S.txs.find(x=>!before.has(x.id)&&x.cat===c.id&&!x.feeOf&&!x.payFeeOf);if(t&&f0)t.xvar=1;save();render()}catch(e){}
+  return r}}catch(e){}
+
+/* 🤝 السلف: السلفة والسداد على بند الشخص */
+function xLnPCat(l){let c=l.cat&&C(l.cat);if(!c){c=S.cats.find(x=>!x.mrg&&!x.cl&&normAr(x.name)===normAr(l.who));if(c)l.cat=c.id}return c?c.id:''}
+xLnTx=function(l,p){const t={id:uid(),type:'inc',amount:p.a,cat:xLnPCat(l)||xLnCat().id,method:p.m,via:'',date:p.d,note:'🤝 '+l.who+(p.note?' · '+p.note:''),files:[],created:Date.now(),xlnp:l.id};S.txs.push(t);p.tx=t.id;return t};
+xLnWho=function(){const w=$('#ln-w'),x=$('#ln-wx');if(!w||!x)return;const v=w.value.trim();if(!v){x.innerHTML='';return}
+  const ex=S.cats.find(c=>!c.mrg&&!c.cl&&normAr(c.name)===normAr(v));
+  if(ex){x.innerHTML='✅ موجود في البنود · السلفة والسداد هيتسجلوا على «'+esc(ex.name)+'»';return}
+  const L=S.cats.filter(c=>!c.mrg&&!c.cl&&c.active!==false&&qn(c.name).includes(qn(v))).slice(0,4);
+  x.innerHTML=(L.length?'يمكن تقصد: '+L.map(c=>`<button type="button" class="mini" onclick="$('#ln-w').value=this.textContent;xLnWho()">${esc(c.name)}</button>`).join(' ')+'<br>':'')
+    +`⚠️ الاسم ده مش متكود في البنود <button type="button" class="mini" onclick="xLnCode()">➕ كوّده بند</button>`};
+try{const _lsU=xLnSave;xLnSave=function(){const n0=XLN().length,r=_lsU.apply(this,arguments);try{if(XLN().length>n0){const l=XLN()[XLN().length-1],cid=xLnPCat(l),t=cid&&l.tx&&S.txs.find(x=>x.id===l.tx);if(t&&t.cat!==cid){t.cat=cid;save();render()}}}catch(e){}return r}}catch(e){}
+if(!S.settings.xunif1){try{XLN().forEach(l=>{const cid=xLnPCat(l);if(!cid)return;
+  const t=l.tx&&S.txs.find(x=>x.id===l.tx);if(t&&!isClosed(t.date))t.cat=cid;
+  (l.pays||[]).forEach(p=>{const x=p.tx&&S.txs.find(y=>y.id===p.tx);if(x&&!isClosed(x.date))x.cat=cid})});
+  S.settings.xunif1=1;save()}catch(e){}}
+
+/* 📒 بنود الحسابات: الداخل والخارج والصافي */
+xAccStats=function(){const m={},y=NY+'-';S.txs.forEach(t=>{if(!t.cat||t.pend||t.xpre||t.type==='tr'||!t.date.startsWith(y))return;const c=C(t.cat);if(!c)return;
+  const x=m[t.cat]=m[t.cat]||{n:0,s:0};x.n++;x.s+=t.type===c.kind?t.amount:-t.amount});return m};
+xAccOpen=function(id,p){
+  const c=C(id);if(!c)return;if(p)XACP=p;
+  const rg={m:mRange(NKM),y:[NY+'-01-01',NY+'-12-31'],all:['0000','9999']}[XACP],tipAcc=c.name==='إكرامية'&&c.kind==='exp';
+  const L=S.txs.filter(t=>t.cat===id&&!t.xpre&&t.type!=='tr'&&t.date>=rg[0]&&t.date<=rg[1]).map(t=>({t,d:t.date,a:t.amount,sg:t.type===c.kind?1:-1}));
+  if(tipAcc)S.txs.forEach(t=>{if(+t.tip>0&&t.cat!==id&&!t.pend&&t.date>=rg[0]&&t.date<=rg[1])L.push({t,d:t.date,a:+t.tip,tip:1,sg:1})});
+  L.sort((a,b)=>a.d.localeCompare(b.d)||(a.t.created||0)-(b.t.created||0));
+  let run=0,inn=0,out=0;
+  const rows=L.map(x=>{const t=x.t;if(!t.pend){run=r2(run+x.sg*x.a);if(t.type==='inc')inn=r2(inn+x.a);else out=r2(out+x.a)}
+    const tag=x.tip?'🎁 ضمن مصروف '+(C(t.cat)?.name||''):(t.type==='inc'?'💰 تحصيل':'💸 مصروف')+(t.src&&t.src.k==='r'?' · 📌 ميعاد ثابت':t.src&&t.src.k==='i'?' · 🏦 قسط':t.xvar?' · ➕ إضافي':'')+(t.pend?' · ⏳ لسه':'');
+    return `<tr class="clk" onclick="editTx('${t.id}')">${cD(x.d)}${cT(esc(M(t.method)?.name||'—'),[tag,t.note&&!/^🧾/.test(t.note)?esc(t.note):''].filter(Boolean).join(' · '))}${cN((x.sg<0?'-':'')+num(x.a),t.pend?'wrn':t.type)}${cN(t.pend?'—':num(run))}</tr>`});
+  const pn=r2(L.filter(x=>x.t.pend).reduce((a,x)=>a+x.a,0)),nx=c.fixed?xClNx(c):null;
+  sheet(`<h2>📒 ${esc(c.name)}</h2><p class="muted">${c.fixed?'📌 ثابت · '+esc(everyTxt(c.every))+' · '+num(+c.amount||0):'متغير'}</p>
+  <div class="seg">${[['m','الشهر'],['y','السنة'],['all','الكل']].map(([k,l])=>`<button class="${XACP===k?'on':''}" onclick="xAccOpen('${id}','${k}')">${l}</button>`).join('')}</div>
+  <div class="xlns"><div><small>💸 خرج</small><b class="neg">${num(out)}</b></div><div><small>💰 دخل</small><b class="pos">${num(inn)}</b></div><div><small>الصافي</small><b>${num(run)}</b></div></div>
+  ${pn?`<div class="kv"><span>⏳ لسه</span><b class="neg">${num(pn)}</b></div>`:''}
+  ${nx?`<div class="kv"><span>📅 الميعاد الجاي</span><b>${xDW(nx.d)} · ${num(nx.amt)}</b></div>`:''}
+  <div class="xlna"><button class="btn" onclick="xAccAdd('${id}','exp')">💸 مصروف عليه</button><button class="btn" onclick="xAccAdd('${id}','inc')">💰 تحصيل عليه</button></div>
+  <button class="btn ghost" onclick="catForm('${id}')">✏️ تعديل البند</button>
+  ${rows.length?rtbl(['التاريخ|c','البيان','المبلغ|n','الرصيد|n'],rows):'<p class="empty">لا توجد معاملات في الفترة دي</p>'}`);
+};
+xAccAdd=function(id,type){const c=C(id);if(!c)return;type=type||c.kind;closeSheet();newTx(type,1);if(!F)return;
+  F.cat=id;F.cq=c.name;
+  if(type!==c.kind){F.xtype='other';SHKEEP=1;txForm();return}
+  F.xtype=c.name==='إكرامية'?'tip':c.fixed?'fix':'other';if(c.acct&&M(c.acct))F.method=c.acct;if(c.via)F.via=c.via;
+  if(c.fixed){const k=occK(c,NKM),w=k>=0&&stOf(occRec(c,k)).st==='wait';F.xvar=!w;if(w&&!parseNum(F.amount))F.amount=amtStr(occAmt(c,k))}
+  SHKEEP=1;txForm()};
+
+/* 🧹 الدمج: ينفع بين مصروف وتحصيل بنفس الاسم */
+xCatGroups=function(){const L=S.cats.filter(c=>(c.kind==='exp'||c.kind==='inc')&&c.active!==false&&!c.mrg),par={};
+  const f=x=>{if(par[x]===undefined)par[x]=x;if(par[x]!==x)par[x]=f(par[x]);return par[x]};
+  for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];
+    if((a.nodup||[]).includes(b.id)||(b.nodup||[]).includes(a.id))continue;
+    const s=xSimC(a,b);if(a.kind===b.kind?s>=.8:(s>=1&&!(a.fixed&&b.fixed)))par[f(a.id)]=f(b.id)}
+  const g={};L.forEach(c=>{const r=f(c.id);(g[r]=g[r]||[]).push(c)});return Object.values(g).filter(x=>x.length>1)};
+xMgMan=function(){const a=$('#mg-a').value,b=$('#mg-b').value;if(!a||!b||a===b)return toast('اختار بندين مختلفين');
+  const A=C(a),B=C(b);if(A.kind!==B.kind&&A.fixed)return toast('البند الثابت لازم يتدمج في بند من نفس نوعه');
+  if(!confirm('تنقل كل عمليات «'+A.name+'» على «'+B.name+'»؟'))return;xMgSnap();xCatMerge(a,b);save();render();toast('🔗 اتدمج');xMgOpen()};
+try{const _mdU=xMgDo;xMgDo=function(i,quiet){const g=XMG[i];if(g){const to=C(g.to);if(to&&g.ids.some(id=>{const c=C(id);return id!==g.to&&c&&c.kind!==to.kind&&c.fixed})){
+  const fx=g.ids.find(id=>{const c=C(id);return c&&c.fixed});if(fx)g.to=fx}}return _mdU.apply(this,arguments)}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
