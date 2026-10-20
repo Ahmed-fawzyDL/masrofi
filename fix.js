@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.112',XVBUILD='20/10/2026 - 04:12 م';
+const XVER='2.21.113',XVBUILD='20/10/2026 - 04:18 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7802,32 +7802,4 @@ xTxLay=function(){const sz=$('#sheet .sz'),a=$('#f-amt');if(!sz||!a||!F||!(F.typ
 .xpayd>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;list-style:none;font-weight:700}
 .xpayd>summary::-webkit-details-marker{display:none}.xpayd>summary::after{content:'▾';opacity:.6;margin-inline-start:6px}
 .xpayd[open]>summary{margin-bottom:10px;color:#2dd4bf}.xpays{font-size:12px;font-weight:500;opacity:.75;flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}`;document.head.appendChild(s)})();
-/* ========== 2.21.112 · الحساب بدل البند + الأشخاص حسابات عادية ========== */
-xPpForm=function(){};
-xPpOfTx=function(){return null};
-xLnWho=function(){const w=$('#ln-w'),x=$('#ln-wx');if(!w||!x)return;const v=w.value.trim();if(!v){x.innerHTML='';return}
-  const ex=S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(v));
-  if(ex){x.innerHTML='✅ حساب موجود · السلفة هتتسجل عليه';return}
-  const L=S.cats.filter(c=>c.kind==='exp'&&c.active!==false&&!c.mrg&&qn(c.name).includes(qn(v))).slice(0,4);
-  x.innerHTML=(L.length?'يمكن تقصد: '+L.map(c=>`<button type="button" class="mini" onclick="$('#ln-w').value=this.textContent;xLnWho()">${esc(c.name)}</button>`).join(' ')+'<br>':'')
-    +`⚠️ مش متكود <button type="button" class="mini" onclick="xLnCode()">➕ كوّده حساب</button>`};
-xLnCode=function(){const v=(($('#ln-w')||{}).value||'').trim();if(!v)return toast('اكتب الاسم');const c=ensureCat(v,'exp');c.active=true;save();xLnWho();toast('✅ اتكوّد حساب «'+v+'»')};
-
-var XRN_OUT={'بنود الحسابات':'الحسابات','الحسابات':'البنوك والكاش','البنود':'إعداد الحسابات','توحيد البنود':'دمج الحسابات'};
-var XRN_ANY={'— اختر البند —':'— اختر الحساب —','بند المصروف':'حساب المصروف','بند التحصيل':'حساب التحصيل','بند جديد بالتفاصيل':'حساب جديد بالتفاصيل',
-  'اكتب لكي تدوّر على بند، أو اكتب اسم بند جديد':'اكتب اسم الحساب، أو اسم حساب جديد','🧹 توحيد البنود':'🧹 دمج الحسابات'};
-var XRN_PH={'اسم البند أو المحل أو رقم الموبايل':'اسم الحساب أو المحل أو رقم الموبايل','🔍 دوّر على بند':'🔍 دوّر على حساب'};
-var XRN_PAY=['الحساب','دفعت من حساب','حصلت على حساب','حصّلت على حساب','استلمت على حساب'],XRNDONE=new WeakSet(),XRNT=0;
-function xRenAll(){const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
-  while(n=w.nextNode()){if(XRNDONE.has(n))continue;const v=n.nodeValue.trim();if(!v||v.length>60)continue;const p=n.parentElement;if(!p||p.closest('script,style'))continue;
-    const inS=!!p.closest('#sheet');let r=null;
-    if(XRN_ANY[v])r=XRN_ANY[v];
-    else if(inS&&v==='البند')r='📒 الحساب';
-    else if(inS&&p.closest('.xpayd')&&XRN_PAY.includes(v))r=F&&F.type==='inc'?'🏦 استلمت في':'🏦 دفعت من';
-    else if(!inS&&XRN_OUT[v])r=XRN_OUT[v];
-    if(r){n.nodeValue=n.nodeValue.replace(v,r);XRNDONE.add(n)}}
-  document.querySelectorAll('input[placeholder]').forEach(i=>{const r=XRN_PH[i.placeholder];if(r)i.placeholder=r})}
-try{new MutationObserver(()=>{if(XRNT)return;XRNT=requestAnimationFrame(()=>{XRNT=0;try{xRenAll()}catch(e){}})}).observe(document.body,{childList:true,subtree:true,characterData:true})}catch(e){}
-setTimeout(()=>{try{xRenAll()}catch(e){}},300);
-(function(){const s=document.createElement('style');s.textContent=`#xpp-tile{display:none!important}.xppl,.xppf{display:none!important}`;document.head.appendChild(s)})();
 /* نهاية fix.js */
