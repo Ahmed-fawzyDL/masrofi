@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.123',XVBUILD='20/10/2026 - 05:33 م';
+const XVER='2.21.125',XVBUILD='20/10/2026 - 05:50 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8175,5 +8175,95 @@ try{const _tfO=txForm;txForm=function(){const r=_tfO.apply(this,arguments);try{x
 .xoah{font-weight:800;margin-bottom:8px}
 .xoac{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(45,212,191,.08);margin-bottom:8px;min-height:38px}
 .xoal{max-height:45vh;overflow:auto;margin-top:6px}`;document.head.appendChild(s)})();
+try{render()}catch(e){}
+/* ========== 2.21.125 · البنود زي البرامج المحاسبية ========== */
+/* ➕ بند جديد: أساسي ولا متغير الأول */
+function xAcNew(){sheet(`<h2>➕ بند جديد</h2><p class="muted">نوع البند</p>
+  <div class="xtype"><button type="button" onclick="xAcForm(null,1)"><span>⭐</span>أساسي<small>إيجار، جراج، مصروف شهري...</small></button>
+  <button type="button" onclick="xAcForm(null,0)"><span>🛒</span>متغير<small>سوبر ماركت، مشتريات...</small></button></div>`)}
+function xAcCodeNext(){return Math.max(0,...S.cats.map(c=>parseInt(c.code)||0))+1}
+function xAcForm(id,core){const c=id?C(id):null;if(c)core=c.core?1:0;
+  sheet(`<h2>${c?'✏️ تعديل البند':(core?'⭐ بند أساسي جديد':'🛒 بند متغير جديد')}</h2>
+  <div class="two"><label>رقم البند<input id="af-c" inputmode="numeric" dir="ltr" value="${esc(c?(c.code||''):String(xAcCodeNext()))}"></label><label>اسم البند<input id="af-n" value="${esc(c?c.name:'')}"></label></div>
+  ${c?`<div class="seg" id="af-t"><button type="button" class="${core?'on':''}" data-v="1" onclick="xSegOn(this)">⭐ أساسي</button><button type="button" class="${core?'':'on'}" data-v="0" onclick="xSegOn(this)">🛒 متغير</button></div>
+  <label class="chk"><input type="checkbox" id="af-on" ${c.active!==false?'checked':''}> مفعّل</label>`:''}
+  <button class="btn" onclick="xAcSave('${id||''}',${core?1:0})">💾 حفظ</button><button class="btn ghost" onclick="closeSheet()">رجوع</button>`);
+  if(!c)setTimeout(()=>{const n=$('#af-n');if(n)n.focus()},80)}
+function xAcSave(id,core){const n=$('#af-n').value.trim(),code=latD($('#af-c').value.trim());if(!n)return toast('اكتب اسم البند');
+  if(S.cats.some(x=>x.id!==id&&!x.mrg&&!x.par&&normAr(x.name)===normAr(n)))return toast('فيه بند بالاسم ده');
+  if(code&&S.cats.some(x=>x.id!==id&&!x.mrg&&String(x.code||'')===code))return toast('رقم البند ده مستخدم');
+  let c=id?C(id):null;if(!c){c={id:uid(),kind:'exp',active:true,files:[],amt:{},st:{},every:1,pct:0};S.cats.push(c)}
+  c.name=n;c.code=code;const t=document.querySelector('#af-t .on');if(t)core=+t.dataset.v;
+  if(core)c.core=1;else delete c.core;if($('#af-on'))c.active=$('#af-on').checked;
+  XACT=core?'core':'var';save();closeSheet();if(!id){XACE=c.id;go('xace')}else render();toast('✅ اتحفظ')}
+
+/* 📌 المصروف الثابت الفرعي */
+function xSubForm(par,id){const p=C(par);if(!p)return;const k=id?C(id):null,has=!!(k&&(Object.keys(k.st||{}).length||S.txs.some(t=>t.cat===k.id)));
+  sheet(`<h2>${k?'✏️ تعديل مصروف ثابت':'➕ مصروف ثابت'}</h2><p class="muted">جوا بند: ${esc(p.name)}</p>
+  <label>الاسم<input id="sb-n" value="${esc(k?k.name:'')}" placeholder="مثلاً: مصروف شهري"></label>
+  <label>المبلغ<input id="sb-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" value="${k?amtStr(+k.amount||0):''}"></label>
+  <div class="two"><label>التكرار<select id="sb-e" ${has?'disabled':''}>${EVERY.map(([v,l])=>`<option value="${v}" ${+(k?k.every:1)===v?'selected':''}>${l}</option>`).join('')}</select></label>
+  <label>أول ميعاد<input id="sb-d" type="date" value="${k&&k.start?k.start:today()}" ${has?'disabled':''}></label></div>
+  <div class="two"><label>بيتدفع من حساب<select id="sb-m">${opt(S.methods.filter(m=>m.active||(k&&m.id===k.acct)),(k&&k.acct)||defMethod())}</select></label><label>الطريقة<select id="sb-v">${viaOpts(k?k.via:'')}</select></label></div>
+  <label class="chk fxbox"><input type="checkbox" id="sb-au" ${k&&k.noAuto?'':'checked'}> 🔄 بيتسجل لوحده في ميعاده</label>
+  ${k?`<label class="chk"><input type="checkbox" id="sb-on" ${k.active!==false?'checked':''}> مفعّل</label>`:''}
+  <button class="btn" onclick="xSubSave('${par}','${id||''}')">💾 حفظ</button><button class="btn ghost" onclick="closeSheet()">رجوع</button>`)}
+function xSubSave(par,id){const n=$('#sb-n').value.trim(),a=parseNum($('#sb-a').value);if(!n)return toast('اكتب الاسم');if(!(a>0))return toast('اكتب المبلغ');
+  const e=$('#sb-e'),d=$('#sb-d');let k=id?C(id):null;
+  if(!k){if(!d.value)return toast('اختار أول ميعاد');k={id:uid(),kind:'exp',fixed:true,par,amt:{},st:{},files:[],pct:0,active:true,autoFrom:NKM+'-01'};S.cats.push(k)}
+  Object.assign(k,{name:n,amount:a,acct:$('#sb-m').value,via:$('#sb-v').value,noAuto:!$('#sb-au').checked});
+  if(!e.disabled)k.every=+e.value||1;if(!d.disabled&&d.value)k.start=d.value;if($('#sb-on'))k.active=$('#sb-on').checked;
+  save();try{autoPostFixed()}catch(x){}closeSheet();render();toast('✅ اتحفظ')}
+async function xSubDel(id){const k=C(id);if(!k)return;
+  if(S.txs.some(t=>t.cat===id))return say('مينفعش يتحذف','عليه حركات متسجلة. تقدر توقفه من ✏️ تعديل وتشيل علامة "مفعّل".','📌');
+  if(!await ask('حذف «'+k.name+'»؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;S.cats=S.cats.filter(c=>c!==k);save();render();toast('اتحذف')}
+
+/* جوا البند */
+XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
+  const td=today(),K=xAcKids(c.id);
+  const row=x=>{const nx=x.fixed&&x.active!==false?xClNx(x):null;
+    return `<div class="xlnc" style="cursor:default"><div class="xlnr"><b>📌 ${esc(x.name)}</b><span class="xlnbig neg" dir="ltr">${num(+x.amount||0)}</span></div>
+    <div class="xlnn">${xCh('',esc(everyTxt(x.every)))} ${x.acct&&M(x.acct)?xCh('',esc(M(x.acct).name)):''} ${nx?xCh(nx.d<td?'late':'up',(nx.d<td?'⚠️ متأخر ':'⏳ الجاي ')+dmy(nx.d)):''} ${x.active===false?xCh('late','⏸ موقوف'):''}</div>
+    <div class="xlna"><button class="btn ghost" onclick="xSubForm('${c.id}','${x.id}')">✏️ تعديل</button><button class="btn ghost danger" onclick="xSubDel('${x.id}')">🗑 حذف</button></div></div>`};
+  return `<div class="phead"><button class="mini" onclick="go('xacc')">→</button><h3>${c.code?'#'+esc(c.code)+' · ':''}${esc(c.name)}</h3></div>
+  <div class="xlnn" style="margin:0 4px 10px">${c.core?xCh('up','⭐ أساسي'):xCh('','🛒 متغير')} ${c.active===false?xCh('late','⏸ موقوف'):''}</div>
+  <div class="xlna" style="grid-template-columns:repeat(3,1fr)"><button class="btn ghost" onclick="xAcForm('${c.id}')">✏️ تعديل</button><button class="btn ghost" onclick="xAcRep('${c.id}')">📄 العمليات</button><button class="btn ghost danger" onclick="xAcDel('${c.id}')">🗑 حذف</button></div>
+  <div style="margin:16px 4px 8px;font-weight:800">📌 المصروفات الثابتة</div>
+  ${c.fixed?`<div class="xlnc" onclick="catForm('${c.id}')"><div class="xlnr"><b>📌 مبلغ ثابت على البند نفسه</b><span class="xlnbig neg" dir="ltr">${num(+c.amount||0)}</span></div><div class="xlnn">${xCh('',esc(everyTxt(c.every)))}</div></div>`:''}
+  ${K.length?K.map(row).join(''):(c.fixed?'':'<p class="empty">مفيش مصروفات ثابتة لسه</p>')}
+  <button class="btn" onclick="xSubForm('${c.id}')">➕ إضافة مصروف ثابت</button>`};
+
+/* 📒 القايمة: رقم البند + ➕ بند جديد بالاختيار */
+XVW.xacc=()=>{
+  const y=NY+'-',I=xAcInst(),L=S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)&&!/^مصاريف إنستاباي ·/.test(c.name)).map(c=>{
+    let s=0,n=0;xAcTxs(c.id).forEach(t=>{if(!t.date.startsWith(y))return;n++;s+=t.type==='inc'?t.amount:-t.amount});
+    return {c,s:r2(s),n,f:c.fixed||xAcKids(c.id).some(k=>k.fixed)}})
+    .sort((a,b)=>(a.c.active===false)-(b.c.active===false)||((parseInt(a.c.code)||1e9)-(parseInt(b.c.code)||1e9))||a.c.name.localeCompare(b.c.name,'ar'));
+  const CO=L.filter(x=>x.c.core),VA=L.filter(x=>!x.c.core);
+  if(!XACT)XACT=CO.length?'core':'var';
+  const A=XACT==='core'?CO:VA,sum=r2(A.reduce((a,x)=>a+x.s,0)),em=xAcEmpty().length;
+  const row=({c,s,n,f})=>{const qq=qn([c.code||'',c.name,...(c.alias||[]),...(c.al||[]),...xAcKids(c.id).map(k=>k.name),Math.abs(s)].join(' '));
+    return `<div class="xacr" data-q="${esc(qq)}" style="${c.active===false?'opacity:.5':''}">
+    <div class="xlnc" style="padding:10px 12px" onclick="xAcGo('${c.id}')"><div class="xlnr" style="align-items:center;gap:8px">
+      <b style="flex:1">${c.code?'<span class="xsm">#'+esc(c.code)+'</span> ':''}${esc(c.name)}${f?' 📌':''}${c.active===false?' ⏸':''}</b>
+      <span class="${s>0?'pos':s<0?'neg':''}" style="font-weight:700" dir="ltr">${num(Math.abs(s))}</span>
+      <button class="mini" onclick="event.stopPropagation();xAcRep('${c.id}')">📄</button></div></div></div>`};
+  setTimeout(xAccF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
+  <div class="seg"><button class="${XACT==='core'?'on':''}" onclick="XACT='core';render()">⭐ الأساسي (${CO.length})</button><button class="${XACT==='var'?'on':''}" onclick="XACT='var';render()">🛒 المتغير (${VA.length})</button></div>
+  <button class="btn" onclick="xAcNew()">➕ بند جديد</button>
+  <div class="gsr">${FIC}<input id="xac-q" placeholder="رقم البند أو اسمه أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>
+  ${A.length?`<div class="xsm" style="margin:4px 4px 8px;display:flex;justify-content:space-between"><span>${A.length} بند</span><span class="${sum>0?'pos':sum<0?'neg':''}" dir="ltr">${num(Math.abs(sum))}</span></div>`+A.map(row).join('')
+    :`<p class="empty">${XACT==='core'?'مفيش بنود أساسية · افتح أي بند ← ✏️ تعديل ← ⭐ أساسي':'لا توجد بنود'}</p>`}
+  ${em?`<button class="btn ghost danger" style="margin-top:12px" onclick="xAcClean()">🧹 امسح البنود الفاضية (${em})</button>`:''}`;
+};
+
+/* "على حساب ← حساباتي": البند العام بس */
+xOaAccs=function(){const I=xAcInst();
+  return S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)&&c.active!==false&&!/^مصاريف إنستاباي/.test(c.name))
+    .sort((a,b)=>(b.core?1:0)-(a.core?1:0)||((parseInt(a.code)||1e9)-(parseInt(b.code)||1e9))||a.name.localeCompare(b.name,'ar')).map(c=>({c}))};
+try{const _olC=xOaList;xOaList=function(){const r=_olC.apply(this,arguments);try{
+  if(XOA.t==='acc')document.querySelectorAll('#xoa-l .xpo[onclick^="xOaAcc("]').forEach(b=>{const id=(b.getAttribute('onclick').match(/'([^']+)'/)||[])[1],c=C(id),l=b.querySelector('.xl');
+    if(c&&c.code&&l&&!l.dataset.cd){l.dataset.cd=1;l.insertAdjacentHTML('afterbegin','<small style="margin:0 0 0 6px">#'+esc(c.code)+'</small>')}})}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
