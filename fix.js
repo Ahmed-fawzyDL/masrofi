@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.120',XVBUILD='20/10/2026 - 05:16 م';
+const XVER='2.21.121',XVBUILD='20/10/2026 - 05:25 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8085,5 +8085,48 @@ XVW.xacc=()=>{
   <div class="gsr">${FIC}<input id="xac-q" placeholder="اسم البند أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>
   ${L.length?L.map(row).join(''):'<p class="empty">لا توجد بنود</p>'}`;
 };
+try{render()}catch(e){}
+/* ========== 2.21.121 · ⭐ بند أساسي + شيل "على حساب" ========== */
+var XCFID='';
+/* ⭐ check box في فورم البند */
+try{const _cfK=catForm;catForm=function(id){XCFID=id||'';const r=_cfK.apply(this,arguments);
+  setTimeout(()=>{try{const sz=$('#sheet .sz');if(!sz||XACPAR||sz.querySelector('#xcore'))return;const c=id&&C(id);if(c&&(c.par||c.cl))return;
+    const h=`<label style="display:flex;align-items:center;gap:10px;padding:12px;margin:10px 0;border:1px solid rgba(255,255,255,.12);border-radius:14px;font-weight:700"><input type="checkbox" id="xcore" ${c&&c.core?'checked':''} style="width:20px;height:20px">⭐ بند أساسي</label>`;
+    const bs=[...sz.querySelectorAll('button')].filter(b=>/حفظ|سجّل|سجل/.test(b.textContent)),b=bs[bs.length-1];
+    if(b)b.insertAdjacentHTML('beforebegin',h);else sz.insertAdjacentHTML('beforeend',h)}catch(e){}},30);
+  return r}}catch(e){}
+try{const _csK=catSave;catSave=function(){const cb=$('#xcore'),v=cb?cb.checked:null,ids=new Set(S.cats.map(c=>c.id)),id=XCFID;
+  const r=_csK.apply(this,arguments);
+  try{if(v!==null){const c=id?C(id):S.cats.find(c=>!ids.has(c.id));if(c){if(v)c.core=1;else delete c.core;if(typeof save==='function')save();render()}}}catch(e){}
+  return r}}catch(e){}
+
+/* 📒 القايمة: ⭐ أساسية / 🛒 متغيرة */
+XVW.xacc=()=>{
+  const y=NY+'-',I=xAcInst(),L=S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)&&!/^مصاريف إنستاباي ·/.test(c.name)).map(c=>{
+    let s=0,n=0;xAcTxs(c.id).forEach(t=>{if(!t.date.startsWith(y))return;n++;s+=t.type==='inc'?t.amount:-t.amount});
+    return {c,s:r2(s),n,f:c.fixed||xAcKids(c.id).some(k=>k.fixed)}})
+    .sort((a,b)=>(a.c.active===false)-(b.c.active===false)||(!a.n)-(!b.n)||a.c.name.localeCompare(b.c.name,'ar'));
+  const row=({c,s,n,f})=>{const qq=qn([c.name,...(c.alias||[]),...(c.al||[]),...xAcKids(c.id).map(k=>k.name),Math.abs(s)].join(' '));
+    return `<div class="xacr" data-q="${esc(qq)}" style="${!n||c.active===false?'opacity:.5':''}">
+    <div class="xlnc" style="padding:10px 12px" onclick="xAcGo('${c.id}')"><div class="xlnr" style="align-items:center;gap:8px">
+      <b style="flex:1">${esc(c.name)}${f?' 📌':''}${c.active===false?' ⏸':''}</b>
+      <span class="${s>0?'pos':s<0?'neg':''}" style="font-weight:700" dir="ltr">${num(Math.abs(s))}</span>
+      <button class="mini" onclick="event.stopPropagation();xAcRep('${c.id}')">📄</button></div></div></div>`};
+  const sec=(t,A)=>{if(!A.length)return '';const s=r2(A.reduce((a,x)=>a+x.s,0));
+    return `<div style="display:flex;align-items:center;gap:8px;margin:16px 4px 8px;font-weight:800"><span style="flex:1">${t}</span><span class="badge soon">${A.length}</span><span class="${s>0?'pos':s<0?'neg':''}" dir="ltr">${num(Math.abs(s))}</span></div>${A.map(row).join('')}`};
+  setTimeout(xAccF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
+  <button class="btn" onclick="XACPAR='';catForm(null,'exp')">➕ بند جديد</button>
+  <div class="gsr">${FIC}<input id="xac-q" placeholder="اسم البند أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>
+  ${sec('⭐ البنود الأساسية',L.filter(x=>x.c.core))}${sec('🛒 البنود المتغيرة',L.filter(x=>!x.c.core))}
+  ${L.length?'':'<p class="empty">لا توجد بنود</p>'}`;
+};
+
+/* شيل "على حساب" من فورم المصروف والتحصيل */
+try{xPpForm=function(){}}catch(e){}
+var xNoPP=()=>{try{const sz=$('#sheet .sz');if(!sz)return;
+  [...sz.querySelectorAll('label,div')].filter(e=>e.children.length<=1&&/^\s*👤?\s*على حساب\s*$/.test(e.textContent)).forEach(l=>{
+    const n=l.nextElementSibling;if(n&&(n.tagName==='SELECT'||(n.querySelector&&n.querySelector('select'))))n.remove();l.remove()})}catch(e){}};
+try{const _txP=txForm;txForm=function(){const r=_txP.apply(this,arguments);setTimeout(xNoPP,0);setTimeout(xNoPP,150);return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
