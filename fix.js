@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.121',XVBUILD='20/10/2026 - 05:25 م';
+const XVER='2.21.123',XVBUILD='20/10/2026 - 05:33 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8128,5 +8128,52 @@ var xNoPP=()=>{try{const sz=$('#sheet .sz');if(!sz)return;
   [...sz.querySelectorAll('label,div')].filter(e=>e.children.length<=1&&/^\s*👤?\s*على حساب\s*$/.test(e.textContent)).forEach(l=>{
     const n=l.nextElementSibling;if(n&&(n.tagName==='SELECT'||(n.querySelector&&n.querySelector('select'))))n.remove();l.remove()})}catch(e){}};
 try{const _txP=txForm;txForm=function(){const r=_txP.apply(this,arguments);setTimeout(xNoPP,0);setTimeout(xNoPP,150);return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.123 · "على حساب" بدل خانة البند ========== */
+var XOA={t:'',q:'',f:null};
+xPpForm=function(){};xNoPP=function(){};
+function xOaOk(){return F&&(F.type==='exp'||F.type==='inc')&&F.xtype!=='cl'}
+function xOaAccs(){const I=xAcInst(),out=[];
+  S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)&&c.active!==false&&!/^مصاريف إنستاباي/.test(c.name))
+    .sort((a,b)=>(b.core?1:0)-(a.core?1:0)||a.name.localeCompare(b.name,'ar'))
+    .forEach(c=>{out.push({c});xAcKids(c.id).filter(k=>k.active!==false).forEach(k=>out.push({c:k,p:c}))});return out}
+function xOaList(){const el=$('#xoa-l');if(!el)return;const q=qn(XOA.q),raw=XOA.q.trim();let h='';
+  if(XOA.t==='acc'){const L=xOaAccs().filter(x=>!q||qn([x.c.name,...(x.c.alias||[]),...(x.c.al||[]),x.p?x.p.name:''].join(' ')).includes(q));
+    h=L.map(x=>`<button type="button" class="xpo ${x.c.id===F.cat?'on':''}" onclick="xOaAcc('${x.c.id}')"><span class="xic0">${x.p?'↳':x.c.core?'⭐':'📒'}</span><span class="xl">${esc(x.c.name)}${x.p?`<small>${esc(x.p.name)}</small>`:''}${x.c.fixed?'<small>📌 ثابت</small>':''}</span>${x.c.id===F.cat?'<i>✓</i>':''}</button>`).join('');
+    if(raw&&!L.some(x=>qn(x.c.name)===q))h=`<button type="button" class="xpo xnew" onclick="xOaNew()"><span class="xic0">➕</span><span class="xl">بند جديد: ${esc(raw)}</span></button>`+h;
+  }else{const L=XPP().filter(p=>!q||qn(p.name).includes(q));
+    h=L.length?L.map(p=>`<button type="button" class="xpo ${F.pp===p.id?'on':''}" onclick="xOaPer('${p.id}')"><span class="xic0">👤</span><span class="xl">${esc(p.name)}</span>${F.pp===p.id?'<i>✓</i>':''}</button>`).join('')
+      :'<p class="muted" style="text-align:center;margin:8px 0">مفيش أشخاص · ضيفهم من 👤 حسابات الأشخاص</p>'}
+  el.innerHTML=h||'<p class="muted" style="text-align:center;margin:8px 0">مفيش نتايج</p>'}
+function xOaForm(){const sz=$('#sheet .sz');if(!sz||!xOaOk()||$('#xoa'))return;
+  const xs=sz.querySelector('button.xsel[onclick="xCatOpen()"]');if(!xs)return;
+  if(XOA.f!==F)XOA={t:'',q:'',f:F};
+  const lab=xs.closest('label');if(lab)lab.style.display='none';
+  if(F.pp===undefined){const t=F.id&&S.txs.find(x=>x.id===F.id);F.pp=(t&&t.pp)||xPpAutoOf()||''}
+  F.ppAuto=xPpAutoOf();
+  const lock=xs.disabled,c=F.cat&&F.cat!=='__new'&&C(F.cat),p=F.pp&&XPP().find(x=>x.id===F.pp);
+  const cur=p?`👤 ${esc(p.name)}${c&&normAr(c.name)!==normAr(p.name)?' · '+esc(c.name):''}`:c?`📒 ${esc(c.name)}`:F.cat==='__new'?`➕ بند جديد: ${esc(F.newCat||'')}`:'';
+  const sv=[...sz.querySelectorAll('button.btn')].find(b=>/سجّل|سجل|حفظ/.test(b.textContent));
+  const h=`<div class="xoa" id="xoa"><div class="xoah">👤 على حساب</div>
+    <div class="xoac">${cur?`<b>${cur}</b>`:'<span class="muted">لسه ما اخترتش</span>'}${c&&!lock?'<button type="button" class="mini" onclick="xCatEdit()">✏️</button>':''}</div>
+    ${lock?'':`<div class="seg"><button type="button" class="${XOA.t==='acc'?'on':''}" onclick="xOaTab('acc')">📒 حساباتي</button><button type="button" class="${XOA.t==='pp'?'on':''}" onclick="xOaTab('pp')">👤 الأشخاص</button></div>
+    ${XOA.t?`<input id="xoa-q" class="xpq" placeholder="🔍 دوّر" value="${esc(XOA.q)}" oninput="XOA.q=this.value;xOaList()"><div id="xoa-l" class="xpl xoal"></div>`:''}`}</div>`;
+  if(sv)sv.insertAdjacentHTML('beforebegin',h);else sz.insertAdjacentHTML('beforeend',h);
+  if(XOA.t)xOaList()}
+function xOaTab(t){try{grab()}catch(e){}XOA.t=XOA.t===t?'':t;XOA.q='';const o=$('#xoa');if(o)o.remove();xOaForm();const q=$('#xoa-q');if(q)setTimeout(()=>q.focus(),60)}
+function xOaAcc(id){const c=C(id);if(!c)return;try{grab()}catch(e){}XOA.t='';XOA.q='';
+  const p=XPP().find(p=>(p.cats||{})[id]);F.pp=p?p.id:'';F.ppMan=1;catPick(id)}
+function xOaPer(pid){const p=XPP().find(x=>x.id===pid);if(!p)return;try{grab()}catch(e){}
+  let cid=Object.keys(p.cats||{}).find(id=>{const c=C(id);return c&&!c.mrg&&c.active!==false});
+  if(!cid){const c=ensureCat(p.name,'exp');c.active=true;p.cats=p.cats||{};p.cats[c.id]='owe';cid=c.id;save()}
+  XOA.t='';XOA.q='';F.pp=pid;F.ppMan=1;catPick(cid)}
+function xOaNew(){const n=XOA.q.trim();if(!n)return;try{grab()}catch(e){}XOA.t='';XOA.q='';
+  F.cat='__new';F.newCat=n;F.cq=n;F.pp='';F.ppAuto='';F.ppMan=1;SHKEEP=1;txForm()}
+try{const _tfO=txForm;txForm=function(){const r=_tfO.apply(this,arguments);try{xOaForm()}catch(e){}return r}}catch(e){}
+(function(){const s=document.createElement('style');s.textContent=`
+.xoa{border-radius:18px;padding:10px 12px;margin:10px 0 12px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1)}
+.xoah{font-weight:800;margin-bottom:8px}
+.xoac{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(45,212,191,.08);margin-bottom:8px;min-height:38px}
+.xoal{max-height:45vh;overflow:auto;margin-top:6px}`;document.head.appendChild(s)})();
 try{render()}catch(e){}
 /* نهاية fix.js */
