@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.100',XVBUILD='20/10/2026 - 01:42 م';
+const XVER='2.21.101',XVBUILD='20/10/2026 - 01:48 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7257,5 +7257,33 @@ XVW.xcw=()=>{
     +sec('p','🙋 كاش من شخص · تحويل إنستاباي',P,'neg',fees?`<p class="muted" style="margin:0 4px 8px;font-size:12px">💸 مصاريف إنستاباي على التحويلات دي: <b>${fmt(fees)}</b></p>`:'')
     +sec('i','🏦 الإيداع',D,'pos');
 };
+try{render()}catch(e){}
+/* ========== 2.21.101 ========== */
+/* كاش من شخص: لو الفرق كان متسجل "مصاريف بنك" من المطابقة، يتشال ويتحط مكانه مصاريف التحويل */
+xCashToPerson=async function(id){
+  const c=S.cash.find(x=>x.id===id);if(!c)return;const ca=xCashAcct(),bank=M(c.method);
+  if(!ca)return toast('مفيش حساب كاش');if(!bank)return toast('الحساب مش موجود');if(isClosed(c.date))return toast('الشهر ده مقفول');
+  const g=(c.note||'').match(/من\s+([^\d·]+)/);
+  const w=await askIn('أخدت الكاش من مين؟','',g?g[1].trim().slice(0,30):'',false,'التالي');if(w==null)return;
+  const fv=await askIn('💸 مصاريف إنستاباي','اكتب الرقم اللي في كشف البنك على تحويل '+fmt(c.amount),amtStr(xFeeCalc(c.amount)),true,'التالي');if(fv==null)return;
+  const fee=parseNum(fv)||0,who=(w||'').trim()||'صديق';
+  const adj=S.txs.filter(t=>t.adj&&t.type==='exp'&&t.method===c.method&&!isClosed(t.date)).sort((a,b)=>b.date.localeCompare(a.date));
+  const avail=r2(adj.reduce((s,t)=>s+t.amount,0));let take=0;
+  if(fee>0&&avail>0){const u=Math.min(fee,avail);
+    const ok=await ask('المصاريف دي متسجلة قبل كده؟',`فيه ${fmt(avail)} متسجلة "مصاريف بنك" من المطابقة.\nأشيل منها ${fmt(u)} وأحط مصاريف التحويل ده بدالها؟\nالرصيد هيفضل زي ما هو.`,{icon:'💸',ok:'أيوه',cancel:'لأ'});
+    if(ok===null)return;if(ok)take=u}
+  const t={id:uid(),type:'tr',amount:c.amount,method:c.method,to:ca,cat:'',via:'instapay',date:c.date,note:'🙋 كاش من '+who+(c.note?' · '+c.note:''),files:[],created:c.created||Date.now(),xwho:who};
+  S.cash=S.cash.filter(x=>x!==c);S.txs.push(t);if(fee>0)xAddIpFee(t,fee);
+  if(take>0){let rest=take;adj.forEach(a=>{if(rest<=.001)return;const u=Math.min(a.amount,rest);a.amount=r2(a.amount-u);rest=r2(rest-u);if(a.amount<=.001)S.txs=S.txs.filter(x=>x!==a)})}
+  XNOANCH=take>0;try{save()}finally{XNOANCH=false}
+  closeSheet();render();toast('🔁 بقت تحويل من '+bank.name+' للكاش'+(fee>0?' · مصاريف '+fmt(fee):''));
+};
+try{const _cfQ=cashForm;cashForm=function(id){const r=_cfQ.apply(this,arguments);try{
+  if(!id||!S.cash.find(x=>x.id===id))return r;const b=document.querySelector('#sheet .sz .btn[onclick^="cashSave("]');
+  if(b&&!document.querySelector('#sheet .xc2p'))b.insertAdjacentHTML('afterend',`<button class="btn ghost xc2p" onclick="xCashToPerson('${id}')">🙋 دي كانت كاش من شخص وحولتله إنستاباي</button>`);
+}catch(e){}return r}}catch(e){}
+
+/* شاشة السحب والإيداع: الأقسام مقفولة كل مرة تدخلها */
+try{const _goW=go;go=function(v){if(v==='xcw'&&view!=='xcw'){XCWO={};XCWQ=''}return _goW.apply(this,arguments)}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
