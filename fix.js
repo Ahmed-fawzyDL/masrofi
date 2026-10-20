@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.132',XVBUILD='20/10/2026 - 07:35 م';
+const XVER='2.21.133',XVBUILD='20/10/2026 - 07:40 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8590,5 +8590,50 @@ try{const _peQ=xPpEditR;xPpEditR=function(){const r=_peQ.apply(this,arguments);t
 .xpin{flex:1;display:flex;flex-direction:column;min-width:0}.xpin small{font-size:11px;opacity:.75}
 .xpir{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(148,163,184,.12);cursor:pointer}
 .xpib{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px}`;document.head.appendChild(s)})();
+try{render()}catch(e){}
+/* ========== 2.21.133 · السلف والثابت جوا حساب الشخص ========== */
+var XLNPP='';
+function xLnOfP(pid){const p=XPP().find(x=>x.id===pid);
+  return XLN().filter(l=>l.pp===pid||(!l.pp&&p&&normAr(l.who||'')===normAr(p.name))||(l.cat&&C(l.cat)&&C(l.cat).ppo===pid))}
+function xPpLnPin(l,pid){l.pp=pid;const ids=new Set([l.tx,...(l.pays||[]).map(x=>x.tx)].filter(Boolean));
+  S.txs.forEach(t=>{if(ids.has(t.id)){t.pp=pid;t.ppk=t.type==='inc'?'paid':'owe';delete t.ppa;if(t.ppx)t.ppx=t.ppx.filter(x=>x!==pid)}})}
+
+/* السلفة بتتحسب على الشخص المربوطة بيه، مش على الاسم */
+try{const _pmL=xPpMatch;xPpMatch=function(t,p,L){const k=_pmL.apply(this,arguments);
+  if(k||!t||t.pend||t.del||(t.date||'')>xPpTd())return k;
+  if((t.pp&&t.pp!==p.id)||(t.ppx||[]).includes(p.id))return null;
+  const id=t.xlno||t.xlnp;if(!id)return null;const l=(L||XLN()).find(x=>x.id===id||x.tx===t.id);
+  return l&&(l.pp===p.id||(l.cat&&C(l.cat)&&C(l.cat).ppo===p.id))?(t.type==='inc'?'paid':'owe'):null}}catch(e){}
+
+/* نقل البند لحساب الشخص بينقل السلف اللي عليه */
+try{const _adL=xPpAdopt;xPpAdopt=function(cid,pid){const set=xAcSet(cid),r=_adL.apply(this,arguments);
+  try{XLN().forEach(l=>{if(l.cat&&set.has(l.cat))xPpLnPin(l,pid)})}catch(e){}return r}}catch(e){}
+
+/* سلفة جديدة من حساب الشخص */
+xPpLoan=function(pid){const p=XPP().find(x=>x.id===pid);if(!p)return;try{closeSheet()}catch(e){}XLNPP=pid;xLnNew();
+  setTimeout(()=>{const w=$('#ln-w');if(w)w.value=p.name;const x=$('#ln-wx');if(x)x.innerHTML='👤 هتتسجل في حساب '+esc(p.name)},60)};
+try{const _csL2=closeSheet;closeSheet=function(){XLNPP='';return _csL2.apply(this,arguments)}}catch(e){}
+try{const _lsP=xLnSave;xLnSave=function(){const pid=XLNPP,n0=XLN().length,r=_lsP.apply(this,arguments);
+  try{if(pid&&XLN().length>n0){const l=XLN()[XLN().length-1],c=xPpNewItem(pid,'🤝 سلف');l.cat=c.id;
+    const t=l.tx&&S.txs.find(x=>x.id===l.tx);if(t)t.cat=c.id;xPpLnPin(l,pid);save();XPPID=pid;go('xppo')}}catch(e){}return r}}catch(e){}
+
+/* ربط سلفة قديمة بالشخص */
+function xPpLnLink(pid){const L=XLN().filter(l=>!l.pp).sort((a,b)=>(b.d||'').localeCompare(a.d||''));
+  sheet(`<h2>🔗 ربط سلفة</h2><p class="muted">اختار السلفة اللي تخص الشخص ده</p>
+  <div class="list">${L.map(l=>`<div class="row" onclick="xPpLnDo('${pid}','${l.id}')"><span class="ic" style="background:var(--soft)">🤝</span><div class="grow"><b>${esc(l.who)}</b><small>${xPpD(l.d)} · ${num(l.amt)} · باقي ${num(xLnRem(l))}</small></div></div>`).join('')||'<p class="empty">مفيش سلف مش مربوطة</p>'}</div>`)}
+function xPpLnDo(pid,lid){const l=XLN().find(x=>x.id===lid);if(!l)return;xPpLnPin(l,pid);save();closeSheet();render();toast('🔗 اتربطت')}
+
+/* حساب الشخص: ⏳ الجاي + 🤝 السلف */
+function xPpExtra(pid){const td=today(),due=[];let h='';
+  xPpItems(pid).forEach(c=>[c,...xAcKids(c.id)].forEach(r=>{if(!r.fixed||r.active===false)return;const n=xClNx(r);if(n)due.push({r,n})}));
+  due.sort((a,b)=>a.n.d.localeCompare(b.n.d));
+  if(due.length)h+=`<div class="xpig"><div class="xpir" style="cursor:default;font-weight:800">⏳ الجاي</div>${due.map(({r,n})=>`<div class="xpir" onclick="occSheet('${r.id}',${n.k})"><span class="xppd">${xPpD(n.d)}</span><span class="xpin"><b>${esc(r.name)}</b><small>${r.kind==='inc'?'💰 تحصيل':'💸 مصروف'} · ${esc(everyTxt(r.every))}${n.d<td?' · ⚠️ متأخر':''}</small></span><b dir="ltr">${num(n.amt)}</b><button class="mini pri" onclick="event.stopPropagation();occSheet('${r.id}',${n.k})">✓</button></div>`).join('')}</div>`;
+  const op=xLnOfP(pid).filter(l=>xLnRem(l)>0.009);
+  h+=`<div class="xpig"><div class="xpir" style="cursor:default;font-weight:800"><span class="xpin">🤝 السلف</span>${op.length?`<b class="neg" dir="ltr">${num(r2(op.reduce((a,l)=>a+xLnRem(l),0)))}</b>`:''}</div>
+  ${op.map(l=>{const nx=xLnNext(l);return `<div class="xpir" onclick="xLnOpen('${l.id}')"><span class="xppd">${xPpD(l.d)}</span><span class="xpin"><b>من ${num(l.amt)}</b><small>${nx?(nx.d<td?'⚠️ متأخر · ':'الجاي ')+num(nx.rem)+' يوم '+xPpD(nx.d):''}</small></span><b class="neg" dir="ltr">${num(xLnRem(l))}</b><button class="mini" onclick="event.stopPropagation();xLnPay('${l.id}')">💵</button></div>`}).join('')}
+  <div class="xpib"><button class="mini" onclick="xPpLoan('${pid}')">➕ سلفة جديدة</button><button class="mini" onclick="xPpLnLink('${pid}')">🔗 ربط سلفة موجودة</button></div></div>`;
+  return h}
+try{const _xpE=XVW.xppo;XVW.xppo=function(){let h=_xpE.apply(this,arguments);
+  try{if(typeof h==='string'&&XPPID)h=h.replace('<div class="seg">',xPpExtra(XPPID)+'<div class="seg">')}catch(e){}return h}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
