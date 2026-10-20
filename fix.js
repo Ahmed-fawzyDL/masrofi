@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.127',XVBUILD='20/10/2026 - 06:16 م';
+const XVER='2.21.128',XVBUILD='20/10/2026 - 06:30 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8294,5 +8294,19 @@ xPpOpen=function(id,per){try{closeSheet()}catch(e){}XPPID=id;if(per)XPPV.per=per
 /* أسامي الإجماليات تحت الكشف */
 try{const _rnPP=render;render=function(){const r=_rnPP.apply(this,arguments);try{if(view==='xppo'){const s=$('#view .xppsum');if(s)[...s.children].forEach(d=>{const t=d.textContent;
   if(/صرفت عليه/.test(t))d.remove();else if(/عليه/.test(t)&&!d.classList.contains('xppbal'))d.firstElementChild.textContent='💸 مصروفات';else if(/رجّع/.test(t))d.firstElementChild.textContent='💰 تحصيلات'})}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.128 · الحاجات اللي كانت ناقصة من 2.21.124 ========== */
+function xAcEmpty(){const I=xAcInst(),used=new Set();
+  S.txs.forEach(t=>{if(t.cat)used.add(t.cat);if(t.l&&t.l.cat)used.add(t.l.cat)});
+  (S.plans||[]).forEach(p=>{if(p.catId)used.add(p.catId)});(S.buys||[]).forEach(b=>{if(b.catId)used.add(b.catId)});
+  XPP().forEach(p=>Object.keys(p.cats||{}).forEach(k=>used.add(k)));
+  S.cats.forEach(c=>{if(c.par)used.add(c.par)});
+  return S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!c.fixed&&!I.has(c.id)&&!used.has(c.id))}
+async function xAcClean(){const L=xAcEmpty();if(!L.length)return toast('مفيش بنود فاضية');
+  if(!await ask('مسح البنود الفاضية؟',L.map(c=>'• '+c.name).join('\n')+'\n\nمفيش عليهم ولا عملية. هيروحوا سلة المحذوفات وتقدر ترجّعهم.',{icon:'🧹',ok:'امسح',danger:true}))return;
+  const ids=new Set(L.map(c=>c.id));S.cats=S.cats.filter(c=>!ids.has(c.id));save();render();toast('🧹 اتمسح '+L.length+' بند')}
+async function xAcDel(id){const c=C(id);if(!c)return;const K=xAcKids(id);
+  if(K.length&&!await ask('البند ده جواه مصروفات ثابتة',`${K.length} مصروف ثابت جوا «${c.name}» هيفضلوا من غير بند. تكمّل؟`,{icon:'⚠️',ok:'كمّل',danger:true}))return;
+  await delCat(id);if(!C(id)){K.forEach(k=>delete k.par);save();go('xacc')}}
 try{render()}catch(e){}
 /* نهاية fix.js */
