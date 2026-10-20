@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.95',XVBUILD='20/10/2026 - 01:03 م';
+const XVER='2.21.97',XVBUILD='20/10/2026 - 01:15 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7132,4 +7132,40 @@ try{const _fcX=xFocusClear;xFocusClear=function(){
   const r=_fcX.apply(this,arguments);
   if(it&&it.isConnected)requestAnimationFrame(()=>requestAnimationFrame(()=>{try{if(it.isConnected)it.scrollIntoView({block:'center',behavior:'auto'})}catch(e){}}));
   return r}}catch(e){}
+/* ========== 2.21.97 ========== */
+/* 🔍 لاقي سبب الفرق مع البنك وصلّحه */
+var XGAP=null;
+function xEffTx(o,a){const v=+o.amount||0;if(o.type==='tr')return r2((o.to===a?v:0)-(o.method===a?v:0));if(o.method!==a)return 0;return o.type==='inc'?v:o.type==='exp'?-v:0}
+async function xGapFind(id){
+  const m=M(id);if(!m)return;let bank=$('#rc-v')?xReconVal(id):null;
+  if(bank==null){const v=await askIn('🔍 لاقي سبب الفرق','اكتب الرصيد اللي في أبلكيشن البنك دلوقتي','',true,'دوّر');if(v==null)return;bank=parseNum(v);if(isNaN(bank))return toast('اكتب الرصيد');if(xIsCr(id))bank=-Math.abs(bank)}
+  const cur=xBal(id),gap=r2(cur-bank),oa=m.openAt||'';
+  if(Math.abs(gap)<.01)return say('✅ مظبوط','رصيد البرنامج مطابق للبنك بالظبط','✅');
+  const cand=[];
+  S.txs.forEach(t=>{if(t.method!==id||t.pend||t.xpre||t.feeOf||t.payFeeOf||t.type==='inc'||t.via!=='instapay'||xFeeTx(t.id)||(oa&&t.date<oa))return;
+    const a=xFeeCalc(t.amount);if(a>0)cand.push({e:-a,t:'💸 مصاريف إنستاباي ناقصة ('+num(a)+') · '+xTxLbl(t),f:()=>{delete t.nofee;xAddIpFee(t,a)}})});
+  xTrGet().forEach(e=>{const o=e.o;if(e.k!=='txs'||!o||o.pend||o.xpre||(oa&&o.date<oa))return;const ef=xEffTx(o,id);if(Math.abs(ef)<.001)return;
+    cand.push({e:ef,t:'♻️ اتحذفت وترجع ('+(ef>0?'+':'')+num(ef)+') · '+e.l,f:()=>{xTrPut(e);xTrSet(xTrGet().filter(x=>!(x.at===e.at&&x.o&&x.o.id===o.id)))}})});
+  const C=cand.slice(0,18),target=-gap;let best=null;
+  for(let mk=1;mk<(1<<C.length);mk++){let s=0,n=0;for(let i=0;i<C.length;i++)if(mk&(1<<i)){s+=C[i].e;n++}if(Math.abs(s-target)<.011&&(!best||n<best.n))best={mk,n}}
+  const pick=best?C.filter((x,i)=>best.mk&(1<<i)):null;XGAP={id,gap,pick};
+  const dir=gap>0?'أكتر':'أقل';
+  if(pick){
+    sheet(`<h2>🔍 لقيت سبب الفرق</h2><div class="xck"><div class="xckS">رصيد ${esc(m.name)} في البرنامج ${dir} من البنك بـ <b>${fmt(Math.abs(gap))}</b>، والسبب:</div>
+    <div class="list">${pick.map(x=>`<div class="row" style="cursor:default"><div class="grow"><small style="font-size:12.5px">${esc(x.t)}</small></div></div>`).join('')}</div>
+    <button class="btn xckb" onclick="xGapFix()">✅ صلّحه</button></div>`);
+  }else{
+    sheet(`<h2>🔍 سبب الفرق</h2><div class="xck"><div class="xckS">رصيد ${esc(m.name)} في البرنامج ${dir} من البنك بـ <b>${fmt(Math.abs(gap))}</b>.<br>دورت في كل عمليات الحساب ومالقيتش حاجة جوه البرنامج تعمل الفرق ده.</div>
+    <div class="xckG"><b>يبقى البنك ${gap>0?'خصم':'زوّد'} حاجة مش متسجلة عندك</b>، غالبًا ${gap>0?'رسوم رسايل أو رسوم حساب أو كارت':'فوايد أو استرداد'}.${oa?' هتلاقيها في كشف البنك من '+dmy(oa)+'.':''}</div>
+    <button class="btn xckb" onclick="xGapRec()">✅ سجّلها ${gap>0?'مصاريف بنك':'تحصيل من البنك'} (${num(Math.abs(gap))})</button></div>`);
+  }
+}
+function xGapFix(){const g=XGAP;if(!g||!g.pick)return;g.pick.forEach(x=>{try{x.f()}catch(e){}});XGAP=null;save();closeSheet();render();say('✅ اتصلح','الرصيد بقى مطابق للبنك','✅')}
+function xGapRec(){const g=XGAP;if(!g)return;const d=today();if(isClosed(d))return toast('الشهر الحالي مقفول');
+  const out=g.gap>0,c=ensureCat(out?(xIsCr(g.id)?'مصاريف الكريديت':'مصاريف البنك'):'إضافات من البنك',out?'exp':'inc');c.active=true;
+  S.txs.push({id:uid(),type:out?'exp':'inc',amount:Math.abs(g.gap),cat:c.id,method:g.id,via:'bankop',date:d,note:'🏦 لقيتها المطابقة مع البنك',files:[],created:Date.now(),adj:true});
+  XGAP=null;save();closeSheet();render();say('✅ اتسجلت','الرصيد بقى مطابق للبنك','✅')}
+try{const _rbG=xReconBase;xReconBase=function(id){const r=_rbG.apply(this,arguments);try{
+  const d=$('#rc-d');if(d&&!document.querySelector('#sheet .xgapb'))d.insertAdjacentHTML('afterend',`<button class="btn xckb xgapb" onclick="xGapFind('${id}')">🔍 لاقي سبب الفرق وصلّحه</button>`);
+}catch(e){}return r}}catch(e){}
 /* نهاية fix.js */
