@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.101',XVBUILD='20/10/2026 - 01:48 م';
+const XVER='2.21.102',XVBUILD='20/10/2026 - 02:12 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7286,4 +7286,77 @@ try{const _cfQ=cashForm;cashForm=function(id){const r=_cfQ.apply(this,arguments)
 /* شاشة السحب والإيداع: الأقسام مقفولة كل مرة تدخلها */
 try{const _goW=go;go=function(v){if(v==='xcw'&&view!=='xcw'){XCWO={};XCWQ=''}return _goW.apply(this,arguments)}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.102 ========== */
+/* ---------- 💰 قراءة المبلغ من إيصال إنستاباي في الشير ---------- */
+var XSHAMT=null,XLNSH=null;
+function xIpParse(text){
+  const L=splitLines(text||'');let amt=0,name='';
+  for(const l of L){if(/(EGP|جنيه|ج\.?\s?م|\bLE\b)/i.test(l)&&!/(fee|fees|رسوم|مصاريف|balance|رصيد)/i.test(l)){const n=xAmtNums(l);if(n.length){amt=Math.max(...n);break}}}
+  if(!amt)for(let i=0;i<L.length;i++){if(/(amount|المبلغ|القيمة)/i.test(L[i])&&!/(fee|رسوم)/i.test(L[i])){let n=xAmtNums(L[i]);if(!n.length&&L[i+1])n=xAmtNums(L[i+1]);if(n.length){amt=n[0];break}}}
+  if(!amt){const d=L.flatMap(l=>/(fee|رسوم|مصاريف|ref|رقم|balance|رصيد)/i.test(l)?[]:(biClean(l).match(/\d[\d,]*\.\d{2}(?!\d)/g)||[]).map(x=>parseFloat(x.replace(/,/g,''))));if(d.length)amt=Math.max(...d)}
+  for(let i=0;i<L.length;i++){const m=L[i].match(/^(?:to|sent to|receiver|beneficiary|إلى|الى|المستلم|المستفيد|المرسل إليه)\s*[:：]?\s*(.*)$/i);
+    if(m){let n=(m[1]||'').trim();if(!n&&L[i+1])n=L[i+1].trim();n=n.replace(/[\d@*].*$/,'').trim().slice(0,40);if(n.replace(/\s/g,'').length>=2){name=n;break}}}
+  return{amt:r2(amt||0),name};
+}
+async function xShOcr(ids){
+  const my={ids:ids||[],amt:0,name:'',done:false,used:false};XSHAMT=my;
+  try{const id=my.ids.find(i=>{const t=(S.fmeta[i]||{}).type||'';return !t||t.startsWith('image/')||t==='application/octet-stream'});if(!id)return;
+    const r=await FDB.get(id);if(!r||!r.blob)return;const c=await fileToCanvas(r.blob);let txt='';
+    for(const[,fn,has]of CLOUD){if(!has())continue;try{txt=await fn(c);if(txt&&txt.trim())break}catch(e){}}
+    if(!txt||!txt.trim()){try{txt=await ocr('ara+eng',prepCanvas(cloneCanvas(c)),{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'})}catch(e){}}
+    const p=xIpParse(txt);my.amt=p.amt;my.name=p.name;
+  }catch(e){}finally{my.done=true;if(XSHAMT===my)xShFill()}
+}
+function xShFill(){
+  const s=XSHAMT;if(!s||!s.done||!s.amt||s.used)return;const key=s.ids[0];
+  if($('#ln-a')&&XLNSH&&XLNSH.includes(key)){const a=$('#ln-a');if(!parseNum(a.value)){a.value=amtStr(s.amt);a.dispatchEvent(new Event('input',{bubbles:true}))}
+    const w=$('#ln-w');if(w&&!w.value&&s.name){w.value=s.name;xLnWho()}s.used=true;return toast('💰 قريت المبلغ من الإيصال: '+fmt(s.amt))}
+  if(F&&!F.id&&(F.files||[]).includes(key)&&$('#f-amt')&&!parseNum(F.amount)){
+    F.amount=amtStr(s.amt);const a=$('#f-amt');a.value=F.amount;a.dispatchEvent(new Event('input',{bubbles:true}));s.used=true;
+    if(s.name&&!F.cat){const c=S.cats.find(x=>x.kind===F.type&&normAr(x.name)===normAr(s.name));if(c){F.cat=c.id;F.cq=c.name;SHKEEP=1;txForm()}}
+    toast('💰 قريت المبلغ من الإيصال: '+fmt(s.amt));
+  }
+}
+try{const _saO=xShareAsk;xShareAsk=async function(ids){try{xShOcr(ids)}catch(e){}return _saO.apply(this,arguments)}}catch(e){}
+try{const _npS=xNewPick;xNewPick=function(type,k){
+  const sh=XSHPEND;if(k==='loan')F=null;
+  const r=_npS.apply(this,arguments);
+  try{if(k==='loan'&&sh){XLNSH=sh;const v=$('#ln-v');if(v){v.value='instapay';v.dispatchEvent(new Event('change',{bubbles:true}))}}xShFill()}catch(e){}
+  return r}}catch(e){}
+try{const _stQ=xShTo;xShTo=function(){const r=_stQ.apply(this,arguments);try{xShFill()}catch(e){}return r}}catch(e){}
+try{const _snQ=xShNewCat;xShNewCat=function(){const r=_snQ.apply(this,arguments);try{xShFill()}catch(e){}return r}}catch(e){}
+try{const _csL=closeSheet;closeSheet=function(){XLNSH=null;return _csL.apply(this,arguments)}}catch(e){}
+
+/* ---------- 🤝 شاشة السلفة ---------- */
+function xLnPost(){
+  const sz=$('#sheet .sz'),w=$('#ln-w');if(!sz||!w)return;
+  const wl=w.closest('label');if(wl&&wl.firstChild&&wl.firstChild.nodeType===3)wl.firstChild.nodeValue='👤 الاسم';
+  const dl=$('#ln-wl');if(dl){const names=[...new Set(S.cats.filter(c=>c.kind==='exp'&&c.active!==false&&!/^مصاريف/.test(c.name)).map(c=>c.name).concat(XLN().map(l=>l.who)))];dl.innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('')}
+  if(wl&&!$('#ln-wx'))wl.insertAdjacentHTML('afterend','<div id="ln-wx" class="xckh" style="margin:-2px 0 8px;line-height:2"></div>');
+  w.addEventListener('input',xLnWho);
+  sz.querySelectorAll('.fl').forEach(f=>{if(/هيرجعها/.test(f.textContent))f.textContent='طريقة السداد'});
+  const o1=$('#ln-1'),l1=o1&&o1.closest('label');if(l1&&l1.firstChild&&l1.firstChild.nodeType===3)l1.firstChild.nodeValue='📅 موعد سداد السلفة';
+  const m=$('#ln-m'),row=m&&m.closest('.two');
+  if(row&&!$('#ln-v'))row.insertAdjacentHTML('afterend',`<label>الطريقة<select id="ln-v" onchange="xLnFee()">${viaOpts('')}</select></label><div id="ln-fee"></div>`);
+  const a=$('#ln-a');if(a)a.addEventListener('input',()=>{const f=$('#ln-fe');if(f&&!f.dataset.man)f.value=amtStr(xFeeCalc(parseNum(a.value)))});
+  xLnFee();xLnWho();
+}
+function xLnFee(){const v=($('#ln-v')||{}).value,b=$('#ln-fee');if(!b)return;if(v!=='instapay'){b.innerHTML='';return}if($('#ln-fe'))return;
+  b.innerHTML=`<label>💸 مصاريف إنستاباي<input id="ln-fe" inputmode="decimal" dir="ltr" value="${amtStr(xFeeCalc(parseNum(($('#ln-a')||{}).value)))}" oninput="this.dataset.man=1"></label>`}
+function xLnWho(){const w=$('#ln-w'),x=$('#ln-wx');if(!w||!x)return;const v=w.value.trim();if(!v){x.innerHTML='';return}
+  const ex=S.cats.find(c=>c.kind==='exp'&&normAr(c.name)===normAr(v));
+  if(ex){x.innerHTML='✅ موجود في البنود · السلفة هتتسجل على بند «'+esc(ex.name)+'»';return}
+  const L=S.cats.filter(c=>c.kind==='exp'&&c.active!==false&&qn(c.name).includes(qn(v))).slice(0,4);
+  x.innerHTML=(L.length?'يمكن تقصد: '+L.map(c=>`<button type="button" class="mini" onclick="$('#ln-w').value=this.textContent;xLnWho()">${esc(c.name)}</button>`).join(' ')+'<br>':'')
+    +`⚠️ الاسم ده مش متكود في البنود <button type="button" class="mini" onclick="xLnCode()">➕ كوّده بند</button>`}
+function xLnCode(){const v=(($('#ln-w')||{}).value||'').trim();if(!v)return toast('اكتب الاسم');const c=ensureCat(v,'exp');c.active=true;save();xLnWho();toast('✅ اتكوّد بند «'+v+'»')}
+try{const _lnN=xLnNew;xLnNew=function(){const r=_lnN.apply(this,arguments);try{xLnPost()}catch(e){}return r}}catch(e){}
+try{const _lsV=xLnSave;xLnSave=function(){
+  const via=($('#ln-v')||{}).value||'',fee=via==='instapay'?(parseNum(($('#ln-fe')||{}).value)||0):0,w=(($('#ln-w')||{}).value||'').trim(),files=XLNSH?[...XLNSH]:[],n0=XLN().length;
+  const r=_lsV.apply(this,arguments);
+  try{if(XLN().length>n0){const l=XLN()[XLN().length-1];let t=l.tx&&S.txs.find(x=>x.id===l.tx);if(!t)t=xLnOutTx(l);
+    t.via=via;l.via=via;if(files.length)t.files=(t.files||[]).concat(files);
+    const c=S.cats.find(x=>x.kind==='exp'&&normAr(x.name)===normAr(w));if(c){t.cat=c.id;l.cat=c.id}
+    if(fee>0)xAddIpFee(t,fee);save();render()}}catch(e){}
+  return r}}catch(e){}
 /* نهاية fix.js */
