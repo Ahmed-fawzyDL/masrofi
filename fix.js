@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.110',XVBUILD='20/10/2026 - 03:33 م';
+const XVER='2.21.111',XVBUILD='20/10/2026 - 03:58 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7762,4 +7762,44 @@ try{const _tfL=txForm;txForm=function(){const r=_tfL.apply(this,arguments);try{x
 #sheet .sz input,#sheet .sz select,#sheet .sz textarea,#sheet .sz .xsel{border-radius:14px}
 .card{border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);box-shadow:0 6px 18px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.05)}
 .xppf{margin:10px 0}`;document.head.appendChild(s)})();
+/* ========== 2.21.111 · ترتيب شاشة المصروف والتحصيل ========== */
+var XPAYOPEN=false;
+function xTopOf(sz,el){while(el&&el.parentElement&&el.parentElement!==sz)el=el.parentElement;return el&&el.parentElement===sz?el:null}
+function xPaySum(d){try{const ss=[...d.querySelectorAll('select')],v=ss.find(s=>[...s.options].some(o=>o.value==='instapay'));
+  const acc=ss.find(s=>s!==v&&s.selectedIndex>=0&&s.value),txt=s=>s&&s.value?(s.options[s.selectedIndex]||{}).text||'':'';
+  const fc=[...d.querySelectorAll('input[type=checkbox]')].find(c=>/مصاريف إنستاباي/.test((c.closest('label,div')||{}).textContent||''));
+  let fee='';if(fc&&fc.checked){const fi=[...fc.closest('div').parentElement.querySelectorAll('input:not([type=checkbox])')].find(i=>parseNum(i.value));if(fi)fee='💸 '+fi.value}
+  const parts=[txt(acc),txt(v),fee].map(x=>String(x).replace(/[■▪]/g,'').trim()).filter(x=>x&&!/اختر/.test(x));
+  d.querySelector('summary .xpays').textContent=parts.join(' · ')}catch(e){}}
+xTxLay=function(){const sz=$('#sheet .sz'),a=$('#f-amt');if(!sz||!a||!F||!(F.type==='exp'||F.type==='inc')||sz.querySelector('.xpayd'))return;
+  const save=[...sz.querySelectorAll('button.btn')].find(b=>/سجّل|سجل|حفظ/.test(b.textContent)),saveTop=save&&xTopOf(sz,save);
+  const amtTop=xTopOf(sz,a);
+  const catSel=[...sz.querySelectorAll('select')].find(s=>[...s.options].some(o=>/اختر البند/.test(o.text)))||([...sz.querySelectorAll('label')].find(l=>/^\s*البند/.test(l.textContent))||{}).querySelector?.('select,input,button');
+  const catTop=catSel&&xTopOf(sz,catSel);
+  const tipEl=xSmall(sz,/إكرامية/,'input'),tipTop=tipEl&&xTopOf(sz,tipEl);
+  const bad=t=>!t||t===saveTop||t===amtTop||t===catTop||t.contains(a)||(catSel&&t.contains(catSel));
+  const vs=[...sz.querySelectorAll('select')].find(s=>[...s.options].some(o=>o.value==='instapay'));
+  const fe=xSmall(sz,/مصاريف إنستاباي/,'input[type=checkbox]'),ip=xSmall(sz,/حو?ّ?لت على/);
+  [...sz.querySelectorAll('div,small,p')].forEach(e=>{if(!e.children.length&&/^أي دفع أو تحويل بإنستاباي/.test(e.textContent.trim()))e.remove()});
+  const pays=[];[vs,fe,ip].forEach(el=>{const t=el&&xTopOf(sz,el);if(!bad(t)&&!pays.includes(t))pays.push(t)});
+  const anc=xTopOf(sz,[...sz.querySelectorAll('*')].find(e=>!e.children.length&&/نوع العملية/.test(e.textContent)))||xTopOf(sz,sz.querySelector('h3'));
+  let at=anc;const put=n=>{if(!n)return;if(at)at.after(n);else sz.prepend(n);at=n};
+  if(catTop&&catTop!==amtTop)put(catTop);
+  if(amtTop&&amtTop!==catTop&&amtTop!==saveTop){let w=amtTop;
+    if(!amtTop.querySelector('select')&&!/المبلغ/.test(amtTop.textContent)){w=document.createElement('div');w.className='xamt';w.innerHTML='<span>💰 المبلغ</span>';amtTop.before(w);w.appendChild(amtTop)}
+    else amtTop.classList.add('xamt2');put(w)}
+  if(tipTop&&tipTop!==amtTop&&tipTop!==catTop&&tipTop!==saveTop&&!pays.includes(tipTop))put(tipTop);
+  if(pays.length){const d=document.createElement('details');d.className='xpayd';d.open=XPAYOPEN;
+    d.innerHTML='<summary><span>💳 طريقة الدفع</span><span class="xpays"></span></summary>';pays.forEach(p=>d.appendChild(p));
+    d.addEventListener('toggle',()=>{XPAYOPEN=d.open});d.addEventListener('change',()=>setTimeout(()=>xPaySum(d),30));d.addEventListener('input',()=>setTimeout(()=>xPaySum(d),30));
+    put(d);xPaySum(d)}};
+(function(){const s=document.createElement('style');s.textContent=`
+.xamt{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.xamt>span{font-weight:600;white-space:nowrap}.xamt>*:not(span){flex:0 0 55%;margin:0!important}
+.xamt input,.xamt2 input#f-amt{font-size:20px!important;font-weight:700;text-align:center;padding:8px 10px!important;margin:0!important}
+.xamt2 input#f-amt{max-width:55%}
+.xpayd{border-radius:18px;padding:10px 12px;margin:8px 0 14px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.07)}
+.xpayd>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;list-style:none;font-weight:700}
+.xpayd>summary::-webkit-details-marker{display:none}.xpayd>summary::after{content:'▾';opacity:.6;margin-inline-start:6px}
+.xpayd[open]>summary{margin-bottom:10px;color:#2dd4bf}.xpays{font-size:12px;font-weight:500;opacity:.75;flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}`;document.head.appendChild(s)})();
 /* نهاية fix.js */
