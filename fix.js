@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.80',XVBUILD='20/10/2026 - 10:58 ص';
+const XVER='2.21.81',XVBUILD='20/10/2026 - 11:33 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6645,4 +6645,34 @@ try{const _tfS=txForm;txForm=function(){const r=_tfS.apply(this,arguments);try{
   const on=!!(F&&F.id&&xFeeTx(F.id));
   l.insertAdjacentHTML('beforeend',`<small class="xfst" style="display:block;margin-top:4px;font-weight:700;color:${on?'#16a34a':'#ea580c'}">${on?'✅ متسجلة':'⚠️ مش متسجلة لسه · هتتسجل لما تدوس سجّل'}</small>`);
 }catch(e){}return r}}catch(e){}
+/* ========== 2.21.81 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+body.xhome #view#view{padding-bottom:calc(var(--navh,64px) + 14px)!important}
+body.xhome #view>.warn,body.xhome #view>.xlnal{padding:6px 10px!important;margin:0 0 6px!important;font-size:12px!important;border-radius:10px!important;line-height:1.5}
+body.xhome .brand{margin-top:8px!important;align-items:flex-end!important}
+body.xhome .brand::before{display:none}
+body.xhome .brand small{display:none}
+.xhdw{display:flex!important;align-items:center;gap:8px}
+.xhdw>span{flex:1;min-width:0}
+.xhdx{flex:0 0 auto;width:28px;height:28px;padding:0!important;border-radius:50%!important;font-size:12px!important}
+`;document.head.appendChild(s)})();
+
+/* ---------- ✕ قفل رسايل التنبيه في الرئيسية ---------- */
+var XHDK='centric-hdis';
+function xHdGet(){try{return JSON.parse(localStorage.getItem(XHDK)||'{}')}catch(e){return{}}}
+function xHdKey(el){return (el.textContent||'').replace(/[\d.,•✕·]/g,'').replace(/\s+/g,' ').trim().slice(0,40)}
+function xHdDis(btn){const el=btn.closest('.xhdw');if(!el)return;const m=xHdGet(),td=today(),o={};
+  Object.keys(m).forEach(k=>{if(m[k]===td)o[k]=td});o[xHdKey(el)]=td;localStorage.setItem(XHDK,JSON.stringify(o));el.remove();toast('اتقفل لحد بكرة')}
+try{const _rnHd=render;render=function(){const r=_rnHd.apply(this,arguments);try{
+  if(view!=='home')return r;const el=$('#view');if(!el)return r;const m=xHdGet(),td=today();
+  el.querySelectorAll(':scope>.warn,:scope>.xlnal').forEach(b=>{
+    if(b.classList.contains('xdrw')||b.querySelector('.xhdx'))return;
+    if(m[xHdKey(b)]===td){b.remove();return}
+    const sp=document.createElement('span');while(b.firstChild)sp.appendChild(b.firstChild);
+    b.appendChild(sp);b.classList.add('xhdw');
+    b.insertAdjacentHTML('beforeend','<button type="button" class="mini xhdx" onclick="event.stopPropagation();xHdDis(this)">✕</button>');
+  });
+}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
