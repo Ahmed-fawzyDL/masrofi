@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.82',XVBUILD='20/10/2026 - 11:40 ص';
+const XVER='2.21.83',XVBUILD='20/10/2026 - 11:53 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6726,4 +6726,22 @@ try{const _arw=xAcctReview;xAcctReview=function(){const r=_arw.apply(this,argume
 }catch(e){}return r}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.83 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+body.xhome .brand{align-items:center!important}
+body.xhome #view .hero{padding:8px 10px!important;margin-bottom:8px!important}
+body.xhome #view .hero .hero-t{line-height:1.6!important}
+body.xhome #view .xhb{gap:6px!important;margin:6px 0 4px!important}
+body.xhome #view .xbx{padding:5px 6px!important;gap:3px!important;border-radius:12px!important}
+body.xhome #view .xbx>small{font-size:10.5px!important}
+body.xhome #view .xbx .xv{min-height:26px!important;padding:2px 6px!important;font-size:14px!important;border-radius:9px!important}
+body.xhome #view .xbx .xd{padding:3px!important;font-size:10.5px!important;border-radius:8px!important}
+body.xhome #view .hero .hnet{padding:4px 10px!important;margin-top:4px!important}
+body.xhome #view .hero .hnet b{font-size:13.5px!important}
+body.xhome #view .dash{gap:6px!important;margin-bottom:6px!important}
+body.xhome #view .dash .tile{padding:6px 8px!important;gap:2px!important;border-radius:12px!important}
+body.xhome #view .dash .tile .xv{min-height:24px!important;padding:2px 6px!important;margin:3px 0 2px!important;font-size:13px!important;border-radius:8px!important}
+body.xhome #view .dash .tile>small{font-size:10px!important;line-height:1.3!important}
+body.xhome #view .dash .tile .xd{margin-top:2px!important;padding-top:2px!important;font-size:10px!important}
+`;document.head.appendChild(s)})();
 /* نهاية fix.js */
