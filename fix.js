@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.86',XVBUILD='20/10/2026 - 12:05 م';
+const XVER='2.21.88',XVBUILD='20/10/2026 - 12:16 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6846,5 +6846,64 @@ try{const _pmO2=xPmOpen;xPmOpen=function(){const r=_pmO2.apply(this,arguments);t
 try{const _arC=xAcctReview;xAcctReview=function(){const r=_arC.apply(this,arguments);try{
   const box=$('#sheet .xrv');if(box&&!box.querySelector('.xckb'))box.insertAdjacentHTML('afterbegin','<button class="btn xckb" onclick="xCheckAll()">✅ Check · صلّح كل الحسابات</button>');
 }catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.88 ========== */
+/* الألوان: الحالة بس هي اللي ملونة */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .xc2.xcc:has(.xlogo),#view .xc2.xcc:has(.xic){background:rgba(148,163,184,.12)!important;border-color:rgba(148,163,184,.28)!important;color:var(--tx)!important}
+`;document.head.appendChild(s)})();
+
+/* الأقساط في المصروفات بتفتح زي الثابت */
+function xInstIdx(p,it){const L=p.items.filter(i=>i.k!=='mnt'&&i.due).sort((a,b)=>a.due.localeCompare(b.due));const i=L.findIndex(x=>x.id===it.id);return i<0?'—':(i+1)+' من '+L.length}
+function xInstRowsX(){
+  const g=document.querySelector('#view details.grp[ontoggle*="\'ei\'"]');if(!g)return;
+  g.querySelectorAll(':scope>.ckx>.row').forEach(r=>{
+    const oc=r.getAttribute('onclick')||'';let m,body='';
+    if((m=oc.match(/payStart\('([^']+)','([^']+)'\)/))){
+      const p=plan(m[1]),it=p&&p.items.find(x=>x.id===m[2]);if(!p||!it)return;const ac=p.acct&&M(p.acct);
+      body=`<div class="kv xbig"><span>💰 المبلغ</span><b>${fmt(+it.amount||0)}</b></div>
+      <div class="kv"><span>📅 ميعاد القسط</span><b>${xDW(it.due)}</b></div>
+      <div class="kv"><span>🏦 القسط</span><b>${esc(p.name)}</b></div>
+      <div class="kv"><span>🔢 رقم القسط</span><b>${xInstIdx(p,it)}</b></div>
+      ${ac?`<div class="kv"><span>🏦 بيتدفع من</span><b>${xMIc(ac,1)} ${esc(ac.name)}</b></div>`:''}
+      <div class="etbar" style="margin:8px 0 0"><button class="mini pri" onclick="${p.cc?`xCcPay('${p.acct}')`:`payStart('${p.id}','${it.id}')`}">✓ دفع</button><button class="mini" onclick="instPlan='${p.id}';go('plan')">📄 كل الأقساط</button></div>`;
+    }else if((m=oc.match(/editTx\('([^']+)'\)/))){
+      const t=S.txs.find(x=>x.id===m[1]);if(!t)return;const p=t.src&&t.src.k==='i'&&plan(t.src.id),it=p&&p.items.find(x=>x.id===t.src.p);
+      body=txBody(t);
+      const ex=(p?`<div class="kv"><span>🏦 القسط</span><b>${esc(p.name)}</b></div>`:'')+(it?`<div class="kv"><span>📅 ميعاد القسط</span><b>${xDW(it.due)}</b></div><div class="kv"><span>🔢 رقم القسط</span><b>${xInstIdx(p,it)}</b></div>`:'');
+      body=body.replace('<div class="etbar"',ex+'<div class="etbar"');
+      if(p)body=body.replace(`onclick="editTx('${t.id}')">✏️ تعديل</button>`,`$&<button class="mini" onclick="instPlan='${p.id}';go('plan')">📄 كل الأقساط</button>`);
+    }else return;
+    const d=document.createElement('details');d.className='xr';
+    d.innerHTML=`<summary>${r.innerHTML}</summary><div class="xb">${body}</div>`;
+    r.replaceWith(d);
+  });
+}
+try{const _rnIx=render;render=function(){const r=_rnIx.apply(this,arguments);try{if(view==='exps')xInstRowsX()}catch(e){}return r}}catch(e){}
+
+/* اتجاه واحد لكل قسم كامل */
+xDirFix=function(){
+  const G=new Map(),add=(cont,txt,apply)=>{if(!cont)return;let g=G.get(cont);if(!g){g=[];G.set(cont,g)}g.push({l:xDirLtr(txt),apply})};
+  const box=el=>el.closest('details.grp')||el.closest('.list')||el.parentElement;
+  document.querySelectorAll('#view .xlnc,#sheet .xlnc').forEach(c=>{
+    const r=c.querySelector('.xlnr'),b=r&&r.querySelector('b');if(!b)return;
+    add(c.closest('details.grp')||c.closest('#view,#sheet'),b.textContent,on=>c.querySelectorAll('.xlnr').forEach(x=>on?x.setAttribute('dir','ltr'):x.removeAttribute('dir')))});
+  document.querySelectorAll('#view .row,#sheet .row').forEach(r=>{
+    const b=r.querySelector('.grow>b');if(!b)return;
+    add(box(r),b.textContent,on=>on?r.setAttribute('dir','ltr'):r.removeAttribute('dir'))});
+  document.querySelectorAll('#view details.xr>summary,#sheet details.xr>summary').forEach(s=>{
+    const b=s.querySelector('.grow>b');if(!b)return;
+    add(box(s.parentElement.parentElement),b.textContent,on=>on?s.setAttribute('dir','ltr'):s.removeAttribute('dir'))});
+  G.forEach(g=>{const on=g.filter(x=>x.l).length*2>g.length;g.forEach(x=>x.apply(on))});
+  const h=document.querySelector('#sheet .sz>h2:not([data-xd])');if(h){h.dataset.xd=1;if(xDirLtr(h.textContent)){h.setAttribute('dir','ltr');h.style.textAlign='left'}}
+};
+
+/* لما تفتح معاملة، اللي قبلها تتقفل */
+document.addEventListener('click',e=>{try{
+  const s=e.target.closest&&e.target.closest('#view details.xr>summary');if(!s||e.target.closest('input,button,a'))return;
+  const d=s.parentElement;if(d.open)return;
+  document.querySelectorAll('#view details.xr[open]').forEach(o=>{if(o!==d&&!o.contains(d))o.open=false});
+}catch(err){}},true);
+
 try{render()}catch(e){}
 /* نهاية fix.js */
