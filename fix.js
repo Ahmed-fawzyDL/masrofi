@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.85',XVBUILD='20/10/2026 - 11:59 ص';
+const XVER='2.21.86',XVBUILD='20/10/2026 - 12:05 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6832,5 +6832,19 @@ function xHomeFit(){try{
 }catch(e){}}
 try{const _rnFit=render;render=function(){const r=_rnFit.apply(this,arguments);xHomeFit();return r}}catch(e){}
 addEventListener('resize',()=>setTimeout(xHomeFit,50));
+try{render()}catch(e){}
+/* ========== 2.21.86 ========== */
+/* زرار Check باين في كل مكان */
+try{const _rnCk=render;render=function(){const r=_rnCk.apply(this,arguments);try{
+  if(view!=='pmv')return r;const v=$('#view');if(!v||v.querySelector('.xckb'))return r;
+  const b=v.querySelector(':scope>.btn[onclick="editMethod()"]');
+  if(b)b.insertAdjacentHTML('afterend','<button class="btn ghost xckb" onclick="xRvAll()">✅ Check · مراجعة كل الحسابات</button>');
+}catch(e){}return r}}catch(e){}
+try{const _pmO2=xPmOpen;xPmOpen=function(){const r=_pmO2.apply(this,arguments);try{
+  document.querySelectorAll('#sheet button[onclick^="xAcctReviewGo("]').forEach(b=>b.setAttribute('onclick','xRvAll()'));
+}catch(e){}return r}}catch(e){}
+try{const _arC=xAcctReview;xAcctReview=function(){const r=_arC.apply(this,arguments);try{
+  const box=$('#sheet .xrv');if(box&&!box.querySelector('.xckb'))box.insertAdjacentHTML('afterbegin','<button class="btn xckb" onclick="xCheckAll()">✅ Check · صلّح كل الحسابات</button>');
+}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
