@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.99',XVBUILD='20/10/2026 - 01:35 م';
+const XVER='2.21.100',XVBUILD='20/10/2026 - 01:42 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7230,4 +7230,32 @@ function xGcApply(){
   <button class="btn xckb" onclick="xGapRec()">✅ سجّل الباقي ${rem>0?'مصاريف بنك':'تحصيل من البنك'} (${num(Math.abs(rem))})</button>
   <button class="btn ghost" onclick="closeSheet()">سيبه دلوقتي</button></div>`);
 }
+/* ========== 2.21.100 ========== */
+/* 🏧 سحب وإيداع كاش: الكاش من شخص باين إنه تحويل + مصاريف إنستاباي */
+XVW.xcw=()=>{
+  const k=ym(cur.y,cur.m),ca=xCashAcct(),A=[],P=[],D=[],q=XCWQ.trim();let fees=0;
+  const wrap=(arr,o)=>arr.push({d:o.d,c:o.c||0,a:o.a,h:`<div class="xcwr" data-q="${esc(qn(o.q+' '+o.a+' '+num(o.a)+' '+dmy(o.d)))}">${o.h}</div>`});
+  S.cash.filter(c=>c.date.startsWith(k+'-')).forEach(c=>{const fr=M(c.method)?.name||'—';
+    wrap(A,{d:c.date,c:c.created,a:c.amount,q:fr+' '+(c.note||''),h:xCard({ic:'🏧',title:'سحب من الماكينة · '+esc(fr),amt:num(c.amount),sub:xDW(c.date),sub2:esc((c.note||'').slice(0,40)),click:`cashForm('${c.id}')`})})});
+  S.txs.filter(t=>t.type==='tr'&&!t.pend&&t.date.startsWith(k+'-')&&(t.xdep||t.xwho||t.to===ca||t.method===ca)).forEach(t=>{
+    const fr=M(t.method)?.name||'—',to=M(t.to)?.name||'—',f=xFeeTx(t.id);
+    if(t.xdep){wrap(D,{d:t.date,c:t.created,a:t.amount,q:fr+' '+to+' '+(t.xwho||'')+' '+(t.note||''),h:xCard({ic:'🏦',title:'إيداع'+(t.xwho?' من '+esc(t.xwho):''),amt:num(t.amount),sub:xDW(t.date),chip:xCh('','🔁 من '+esc(fr)+' إلى '+esc(to)),click:`editTx('${t.id}')`})});return}
+    if(f)fees=r2(fees+f.amount);
+    const chips=[xCh('','🔁 من '+esc(fr)+' لـ '+esc(to)),t.via?xCh('',esc(viaTxt(t.via))):'',f?xCh('late','💸 مصاريف إنستاباي '+num(f.amount)):''].join(' ');
+    const note=(t.note||'').replace(/^🙋[^·]*·?\s*/,'').slice(0,40);
+    wrap(t.xwho?P:A,{d:t.date,c:t.created,a:t.amount,q:fr+' '+to+' '+(t.xwho||'')+' '+(t.note||''),h:xCard({ic:t.xwho?'🙋':'🔁',title:t.xwho?'كاش من '+esc(t.xwho):'تحويل للكاش',amt:num(t.amount),sub:xDW(t.date),sub2:esc(note),chip:chips,click:`editTx('${t.id}')`})});
+  });
+  [A,P,D].forEach(l=>l.sort((a,b)=>b.d.localeCompare(a.d)||b.c-a.c));
+  const sm=l=>r2(l.reduce((s,x)=>s+x.a,0));
+  const sec=(key,t,l,cls,top)=>`<details class="grp" ${XCWO[key]||q?'open data-xso="1"':''} ontoggle="XCWO['${key}']=this.open"><summary><span>${t}</span><span class="badge soon">${l.length}</span><b class="gs ${cls}">${num(sm(l))}</b></summary>${top||''}${l.length?l.map(x=>x.h).join(''):'<p class="empty">لا توجد حركات</p>'}</details>`;
+  setTimeout(xCwF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏧 سحب وإيداع كاش</h3></div>`+monthBar(true)
+    +`<div class="xlna" style="grid-template-columns:repeat(3,1fr)"><button class="btn" onclick="xCashSheet('m')">🏧 سحب</button><button class="btn" onclick="xCashSheet('p')">🙋 من شخص</button><button class="btn ghost" onclick="xCashSheet('d')">🏦 إيداع</button></div>`
+    +kpis([['🏧 الماكينة',fmt(sm(A)),'warn'],['🙋 من أشخاص',fmt(sm(P)),'net'],['🏦 الإيداع',fmt(sm(D)),'inc']])
+    +`<div class="gsr">${FIC}<input id="xcw-q" placeholder="الاسم أو الحساب أو المبلغ" value="${esc(XCWQ)}" oninput="XCWQ=this.value;xCwF()"></div>`
+    +sec('m','🏧 سحب من الماكينة',A,'neg')
+    +sec('p','🙋 كاش من شخص · تحويل إنستاباي',P,'neg',fees?`<p class="muted" style="margin:0 4px 8px;font-size:12px">💸 مصاريف إنستاباي على التحويلات دي: <b>${fmt(fees)}</b></p>`:'')
+    +sec('i','🏦 الإيداع',D,'pos');
+};
+try{render()}catch(e){}
 /* نهاية fix.js */
