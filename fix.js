@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.73',XVBUILD='20/10/2026 - 09:53 ص';
+const XVER='2.21.75',XVBUILD='20/10/2026 - 10:32 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6298,4 +6298,184 @@ try{const _rnY=render;render=function(){const r=_rnY.apply(this,arguments);try{c
 
 /* تشغيل */
 try{XBSN=xBsnap();render()}catch(e){}
+/* ========== 2.21.74 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xpmn{display:flex;align-items:center;gap:10px;min-width:0}
+.xpmn b{font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xpmc .xpmn .xlogo,.xpmc .xpmn .xic{width:34px!important;height:34px!important;flex:0 0 34px!important;border-radius:10px!important;font-size:17px!important}
+.xpmc .xlnbig.wrn,#sheet .xlns b.wrn{color:#ea580c}
+.xlna .btn{margin:0!important}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🧾 الريسيت: الأصناف والإجمالي ---------- */
+XHEADW=/(الوصف|وصف|الصنف|صنف|البيان|الكمي|كمي|السعر|سعر|القيم|قيم|item|description|desc|qty|quantity|price|amount)/gi;
+function xLetters(l){return (biClean(l).match(/[A-Za-z\u0621-\u064A]/g)||[]).length}
+var XCONT=/^\s*(-|–|جرام|جم(?![\u0621-\u064A])|كيلو|كجم|لتر|ملي|مل(?![\u0621-\u064A])|عبو|قطع|حب|ml\b|gm?\b|kg\b|ltr?\b|pcs?\b)/i;
+xItemsOf=function(text){
+  const L=splitLines(text),out=[];let st=0,buf=[],last=null,started=false;
+  for(let i=0;i<L.length;i++){if((L[i].match(XHEADW)||[]).length>=2&&!/\d{2,}/.test(L[i])){st=i+1;break}}
+  if(!st){for(let i=0;i<Math.ceil(L.length*.5);i++)if(BI_META.test(L[i])||PHK.test(L[i]))st=i+1}
+  const STOPW=/(sub\s*-?\s*total|vat|tax|ضريب|خصم|discount|service|خدم|رسوم|delivery|توصيل)/i;
+  const isTot=(l,u)=>XTOT_S.test(l)||XTOT_S.test(u)||XTOT_N.test(l)||XTOT_N.test(u)||XTOT_P.test(l)||XTOT_C.test(l)||STOPW.test(l);
+  const nm=a=>a.join(' ').replace(/\s+/g,' ').replace(/^[\s\-–:]+|[\s\-–:]+$/g,'').trim();
+  const add=(n,it)=>{if(!(it&&it.v>0&&it.v<1e5))return null;const x={n:n||'صنف',q:it.q,p:it.p,v:it.v};out.push(x);return x};
+  const fromNums=ns=>{const it=biSplit(ns);if(it)return it;if(ns.length===1)return{q:1,p:ns[0],v:ns[0]};
+    const v=Math.max(...ns),o=ns.filter(x=>x!==v);if(!o.length)return{q:1,p:v,v};const a=o[0];
+    return a>0&&a<=50&&Math.abs(a-Math.round(a))<.001?{q:a,p:r2(v/a),v}:{q:1,p:v,v}};
+  for(let i=st;i<L.length;i++){
+    const l=L[i],u=normAr(l),ns=xAmtNums(l),lt=xLetters(l);
+    if(isTot(l,u)){if(started)break;buf=[];continue}
+    if(!ns.length&&(l.match(XHEADW)||[]).length&&l.trim().split(/\s+/).length<=3){buf=[];continue}
+    if(BI_META.test(l)||PHK.test(l)||ADRW.test(l)||VEND.test(l)||(SKIPM.test(l)&&!ns.length))continue;
+    if(lt<3&&ns.length){const x=add(nm(buf),fromNums(ns));if(x){last=x;started=true}buf=[];continue}
+    const dec=biClean(l).match(/\d[\d,]*\.\d{1,2}/g);
+    if(dec&&lt>=3){const nt=biClean(l).replace(/\d[\d,]*\.\d{1,2}/g,' ').replace(/(\s\d{1,2})+\s*$/,' ');const x=add(nm(buf.concat([nt])),fromNums(ns));if(x){last=x;started=true}buf=[];continue}
+    if(last&&!buf.length&&XCONT.test(l)){last.n=nm([last.n,l]);continue}
+    if(lt>=2)buf.push(l.trim());
+  }
+  if(last&&buf.length)last.n=nm([last.n,...buf]);
+  return out.slice(0,60);
+};
+xTotalOf=function(text,items){
+  const L=splitLines(text),S1=[],N1=[],P1=[],C1=[],lab=[];let DX=[];
+  const kind=(l,u)=>XTOT_C.test(l)||XTOT_C.test(u)?'c':XTOT_T.test(l)||XTOT_T.test(u)?'t':XTOT_S.test(l)||XTOT_S.test(u)?'s':XTOT_N.test(l)||XTOT_N.test(u)?'n':XTOT_P.test(l)||XTOT_P.test(u)?'p':'';
+  const put=(k,v)=>{if(v>0&&k!=='t')({s:S1,n:N1,p:P1,c:C1})[k].push(r2(v))};
+  L.forEach((l,i)=>{const u=normAr(l),k=kind(l,u);if(!k)return;
+    const q=XTOT_Q.test(l)||XTOT_Q.test(u);let v=xPickAmt(xAmtNums(l),q);
+    if(!(v>0)&&!/\d+\.\d{2}/.test(l)&&L[i+1]&&xLetters(L[i+1])<3){const n2=xAmtNums(L[i+1]);if(n2.length===1)v=n2[0]}
+    if(v>0)put(k,v);else lab.push({i,k})});
+  if(lab.length){const g=[];let cur=[];lab.forEach(x=>{if(cur.length&&x.i-cur[cur.length-1].i>2){g.push(cur);cur=[]}cur.push(x)});if(cur.length)g.push(cur);
+    const blk=g[g.length-1],end=blk[blk.length-1].i,D=[];
+    for(let j=end+1;j<L.length&&D.length<blk.length+2;j++)(biClean(L[j]).match(/\d[\d,]*\.\d{2}(?!\d)/g)||[]).forEach(x=>D.push(parseFloat(x.replace(/,/g,''))));
+    blk.forEach((x,n)=>put(x.k,D[n]));DX=D.filter(v=>v>0)}
+  const is=r2((items||[]).reduce((a,x)=>a+(+x.v||0),0)),all=S1.concat(N1,P1,DX);
+  if(is>0){const m=all.find(x=>Math.abs(x-is)<=Math.max(.05,is*.005));if(m)return m}
+  if(S1.length)return S1[S1.length-1];
+  if(N1.length){const c={};N1.forEach(x=>c[x]=(c[x]||0)+1);const rep=N1.filter(x=>c[x]>1);return rep.length?rep[rep.length-1]:N1[N1.length-1]}
+  if(P1.length&&C1.length){const t=r2(Math.max(...P1)-Math.max(...C1));if(t>0)return t}
+  if(P1.length)return Math.min(...P1);
+  return is>0?is:0;
+};
+
+/* ---------- 🔐 الرصيد: باسورد كل مرة ---------- */
+var XPMU=null,XPMT='all',XPMQ='';
+async function xPmAuth(id){if(XBALOK||(id&&XPMU===id))return true;XBAUTH=0;const ok=await xBalAuth();XBAUTH=0;if(ok&&id)XPMU=id;return ok}
+xBalOne=async function(id){
+  if(XBSHOW.has(id)&&!XBALOK){XBSHOW.delete(id);clearTimeout(XBT[id]);return render()}
+  if(!await xPmAuth(null))return;XBSHOW.add(id);render();clearTimeout(XBT[id]);
+  XBT[id]=setTimeout(()=>{XBSHOW.delete(id);if(view==='pmv'&&!$('#sheet').classList.contains('open'))render()},20000)};
+xRecon=function(id){xPmAuth(id).then(ok=>{if(ok)xReconBase(id)})};
+xAcctReviewGo=function(id){xPmAuth(id).then(ok=>{if(ok)xAcctReview(id)})};
+xAcctRep=async function(id){if(!await xPmAuth(id))return;closeSheet();rtab='acct';RF={...RFDEF,xp:'m',xms:[id]};RVST=[];XRVBACK='pmv';XBAUTH=Date.now();openRV()};
+try{const _crP=closeRV;closeRV=function(){XBAUTH=0;XPMU=null;return _crP.apply(this,arguments)}}catch(e){}
+try{const _csP=closeSheet;closeSheet=function(){XPMU=null;return _csP.apply(this,arguments)}}catch(e){}
+try{const _goP=go;go=function(v){if(v!==view){XPMU=null;XBALOK=false;XBAUTH=0;try{XBSHOW.clear()}catch(e){}}return _goP.apply(this,arguments)}}catch(e){}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){XPMU=null;XBALOK=false;XBAUTH=0;try{XBSHOW.clear()}catch(e){}}});
+
+/* ---------- 🏦 شاشة الحسابات ---------- */
+try{const i=GFV.indexOf('pmv');if(i>=0)GFV.splice(i,1)}catch(e){}
+function xPmGrp(m){return m.active===false?'off':xIsCr(m.id)?'cr':m.type==='cash'?'cash':'bank'}
+vPmv=function(){
+  const MB=v=>XBALOK?v:'••••••',io={};
+  keyTx(NKM).forEach(t=>{if(t.pend)return;if(t.type==='tr'){(io[t.to]=io[t.to]||{i:0,o:0}).i+=t.amount;(io[t.method]=io[t.method]||{i:0,o:0}).o+=t.amount}else{const x=io[t.method]=io[t.method]||{i:0,o:0};if(t.type==='inc')x.i+=t.amount;else if(t.type==='exp')x.o+=t.amount}});
+  let mine=0,debt=0;S.methods.forEach(m=>{if(m.active===false)return;const b=xBal(m.id);if(xIsCr(m.id))debt+=Math.min(0,b);else mine+=b});
+  const cnt=k=>S.methods.filter(m=>k==='all'?m.active!==false:xPmGrp(m)===k).length;
+  if(XPMT!=='all'&&!cnt(XPMT))XPMT='all';
+  const list=S.methods.filter(m=>XPMT==='all'?m.active!==false:xPmGrp(m)===XPMT);
+  const card=m=>{const b=xBal(m.id),cr=xIsCr(m.id),vis=XBALOK||XBSHOW.has(m.id),x=io[m.id]||{i:0,o:0},g=cr?xCcCfg(m.id):null;
+    const cls=cr?'wrn':b<0?'neg':'pos';
+    const bar=cr&&g.lim>0&&vis?`<div class="xbar"><i style="width:${Math.min(100,Math.max(0,-b)/g.lim*100)}%;background:#ea580c"></i></div>`:'';
+    return `<div class="xpmc" data-q="${esc(qn([m.name,m.bank,TYPES[m.type]].join(' ')))}"><div class="xlnc" onclick="xPmOpen('${m.id}')">
+    <div class="xlnr"><span class="xpmn">${xMIc(m)}<b>${esc(m.name)}</b></span><span class="xlnbig ${vis?cls:''}" dir="ltr">${vis?(!cr&&b<0?'-':'')+num(Math.abs(b)):'••••••'}</span></div>
+    <div class="xlnr xsm"><span>${cr?'💳 كريديت':esc(TYPES[m.type]||'')}${m.bank?' · '+esc(m.bank):''}</span><span>${cr?(b<0?'عليك':'ليك'):'الرصيد'}</span></div>${bar}
+    <div class="xlnn">${xCh('ok','⬇ '+num(r2(x.i)))} ${xCh('late','⬆ '+num(r2(x.o)))} <small class="muted">${MONTHS[NM-1]}</small></div>
+    <div class="xlna"><button class="btn ghost" onclick="event.stopPropagation();xBalOne('${m.id}')">${vis&&!XBALOK?'🙈 إخفاء':'👁️ الرصيد'}</button>${cr?`<button class="btn" onclick="event.stopPropagation();xCcPay('${m.id}')">💳 سدد</button>`:`<button class="btn" onclick="event.stopPropagation();xPmOpen('${m.id}')">📄 التفاصيل</button>`}</div></div></div>`};
+  const tb=(k,l)=>`<button type="button" class="${XPMT===k?'on':''}" onclick="XPMT='${k}';render()">${l} (${cnt(k)})</button>`;
+  setTimeout(xPmF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏦 ${esc(L('pm'))}</h3><button class="mini" onclick="${XBALOK?'XBALOK=false;render()':'xBalUnlock()'}">${XBALOK?'🙈 الكل':'👁️ الكل'}</button></div>
+  <button class="btn" onclick="editMethod()">➕ حساب جديد</button>
+  ${kpis([['💰 فلوسك',MB(fmt(r2(mine))),'inc'],['💳 الكريديت',MB(fmt(Math.abs(r2(debt)))),'exp'],['🏦 الحسابات',String(cnt('all')),'net']])}
+  <div class="seg">${tb('all','الكل')}${cnt('bank')?tb('bank','🏦 بنوك'):''}${cnt('cash')?tb('cash','💵 كاش'):''}${cnt('cr')?tb('cr','💳 كريديت'):''}${cnt('off')?tb('off','⏸ موقوف'):''}</div>
+  <div class="gsr">${FIC}<input placeholder="اسم الحساب" value="${esc(XPMQ)}" oninput="XPMQ=this.value;xPmF()"></div>
+  ${list.length?list.map(card).join(''):'<p class="muted" style="text-align:center;margin:20px 0">لا يوجد</p>'}
+  ${!XBALOK&&S.settings.balPw?`<button class="btn ghost" onclick="xBalForgot()">🔑 نسيت باسورد الأرصدة؟</button>`:''}`;
+};
+function xPmF(){const q=qn(XPMQ);document.querySelectorAll('#view .xpmc').forEach(e=>e.style.display=!q||e.dataset.q.includes(q)?'':'none')}
+function xPmOpen(id){
+  const m=M(id);if(!m)return;const cr=xIsCr(id),un=XBALOK||XPMU===id,b=xBal(id);let i=0,o=0;
+  keyTx(NKM).forEach(t=>{if(t.pend)return;if(t.type==='tr'){if(t.to===id)i+=t.amount;if(t.method===id)o+=t.amount}else if(t.method===id){if(t.type==='inc')i+=t.amount;else if(t.type==='exp')o+=t.amount}});
+  const T=S.txs.filter(t=>!t.pend&&!t.xpre&&(t.method===id||t.to===id)).sort(byDesc).slice(0,8);
+  const ef=t=>t.type==='tr'?(t.to===id?t.amount:-t.amount):t.type==='inc'?t.amount:-t.amount;
+  sheet(`<h2>${xMIc(m,1)} ${esc(m.name)}</h2><p class="muted">${cr?'💳 كريديت':esc(TYPES[m.type]||'')}${m.bank?' · '+esc(m.bank):''}${m.active===false?' · ⏸ موقوف':''}</p>
+  <div class="xlns"><div><small>${cr?'المديونية':'الرصيد'}</small><b id="xpm-bal" class="${cr?'wrn':b<0?'neg':'pos'}" dir="ltr">${un?num(cr?Math.max(0,-b):b):'••••••'}</b></div><div><small>⬇ داخل ${MONTHS[NM-1]}</small><b class="pos">${num(r2(i))}</b></div><div><small>⬆ خارج ${MONTHS[NM-1]}</small><b class="neg">${num(r2(o))}</b></div></div>
+  <div class="xlna">
+   <button class="btn ${un?'ghost':''}" onclick="xPmShow('${id}')">${un?'🙈 إخفاء':'👁️ إظهار الرصيد'}</button>
+   ${cr?`<button class="btn" onclick="xCcPay('${id}')">💳 سدد</button>`:`<button class="btn ghost" onclick="xRecon('${id}')">⚖️ مطابقة</button>`}
+   <button class="btn ghost" onclick="xAcctRep('${id}')">📄 كشف حساب</button>
+   <button class="btn ghost" onclick="xAcctReviewGo('${id}')">🔍 مراجعة</button>
+   <button class="btn ghost" onclick="xPmTr('${id}')">🔁 تحويل منه</button>
+   <button class="btn ghost" onclick="editMethod('${id}')">✏️ تعديل</button>
+  </div>
+  ${T.length?`<div class="fl">🕒 آخر الحركات</div><div class="list">${T.map(t=>{const e=ef(t);return `<div class="row clk" onclick="editTx('${t.id}')"><div class="grow"><b>${esc(t.type==='tr'?(t.to===id?'🔁 من '+(M(t.method)?.name||'—'):'🔁 لـ '+(M(t.to)?.name||'—')):(C(t.cat)?.name||'—'))}</b><small>${xDW(t.date)}${t.via?' · '+esc(viaTxt(t.via)):''}</small></div><div class="amt ${e<0?'exp':'inc'}" dir="ltr">${e<0?'-':'+'}${num(Math.abs(e))}</div></div>`}).join('')}</div>`:''}
+  <button class="btn ghost danger" onclick="closeSheet();delMethod('${id}')">🗑 حذف الحساب</button>`);
+}
+async function xPmShow(id){
+  if(XPMU===id){XPMU=null;return xPmOpen(id)}
+  if(!await xPmAuth(id))return;xPmOpen(id);
+  setTimeout(()=>{if(XPMU!==id)return;XPMU=null;const e=$('#xpm-bal');if(e)e.textContent='••••••'},20000);
+}
+function xPmTr(id){newTx('tr');if(!F)return;F.method=id;F.to=(S.methods.find(m=>m.active&&m.id!==id)||{}).id||'';SHKEEP=1;txForm()}
+
+/* ---------- 🔍 المراجعة: مصاريف إنستاباي ---------- */
+try{const _rvI=xRvItems;xRvItems=function(id){const m=M(id);
+  return _rvI.apply(this,arguments).filter(x=>!(x.sec==='nofee'&&(x.t.nofee||(m&&m.noIpFee)))).map(x=>{
+    if(x.sec==='nofee'){x.sec='info';x.why='تحويل إنستاباي من غير مصاريف. ضيفها بس لو موجودة في كشف البنك';x.acts=x.acts.concat([['nof','✋ مفيش مصاريف']])}return x})}}catch(e){}
+try{const _rvA=xRvAct;xRvAct=async function(acct,tid,act){
+  const t=S.txs.find(x=>x.id===tid);
+  if(act==='nof'){if(t){t.nofee=1;save();render()}return xAcctReview(acct)}
+  if(act==='fee'&&t&&!await ask('تضيف مصاريف إنستاباي؟',`${xTxLbl(t)}\n${fmt(xFeeCalc(t.amount))}\nضيفها بس لو موجودة فعلًا في كشف البنك.`,{icon:'💸',ok:'ضيفها',cancel:'لأ'}))return;
+  const r=await _rvA.apply(this,arguments);
+  if(act==='fee'){const f=xFeeTx(tid);if(f){f.rv=1;save()}}
+  return r}}catch(e){}
+function xRvTodayFees(id){const t0=new Date(today()+'T00:00').getTime();
+  return S.txs.filter(t=>t.feeOf&&t.method===id&&((t.created||0)>=t0||(t.rv&&Date.now()-(t.created||0)<7*864e5))).sort((a,b)=>(b.created||0)-(a.created||0))}
+try{const _arv=xAcctReview;xAcctReview=function(id){const r=_arv.apply(this,arguments);try{
+  const m=M(id),box=$('#sheet .xrv');if(!m||!box)return r;const FL=xRvTodayFees(id);
+  if(FL.length){const sm=r2(FL.reduce((a,t)=>a+t.amount,0)),kv=box.querySelectorAll(':scope>.kv'),at=kv[kv.length-1];
+    const h=`<h4>🧾 مصاريف إنستاباي اتضافت النهارده <span class="badge late">${FL.length} · ${num(sm)}</span></h4><p class="muted" style="font-size:11.5px;margin:0 0 6px">لو ضفتها من المراجعة وطلعت مش موجودة في كشف البنك، احذفها من هنا.</p>
+    <div class="list">${FL.map(f=>{const p=S.txs.find(x=>x.id===f.feeOf);return `<div class="row" style="cursor:default"><div class="grow"><b>${num(f.amount)} · ${esc(p?xTxLbl(p):'—')}</b><small>${xLnTs(f.created||Date.now())}</small></div><button class="mini danger" onclick="xRvFeeDel('${id}','${f.id}')">🗑</button></div>`}).join('')}</div>
+    <button class="btn ghost danger" onclick="xRvFeeDelAll('${id}')">🗑 احذفهم كلهم (${num(sm)})</button>`;
+    if(at)at.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('afterbegin',h)}
+  box.insertAdjacentHTML('beforeend',`<label class="chk fxbox" style="margin-top:12px"><input type="checkbox" ${m.noIpFee?'checked':''} onchange="M('${id}').noIpFee=this.checked;save();xAcctReview('${id}')"> 🚫 الحساب ده مش بيخصم مصاريف إنستاباي</label>`);
+}catch(e){}return r}}catch(e){}
+function xRvFeeGone(f){const p=S.txs.find(x=>x.id===f.feeOf);if(p)p.nofee=1;S.txs=S.txs.filter(x=>x!==f)}
+async function xRvFeeDel(acct,fid){const f=S.txs.find(x=>x.id===fid);if(!f)return xAcctReview(acct);if(isClosed(f.date))return toast('الشهر ده مقفول');
+  if(!await ask('حذف المصاريف دي؟',fmt(f.amount),{danger:true,icon:'🗑',ok:'حذف'}))return;xRvFeeGone(f);save();render();xAcctReview(acct);toast('تم ✓')}
+async function xRvFeeDelAll(acct){const FL=xRvTodayFees(acct).filter(f=>!isClosed(f.date));if(!FL.length)return;const sm=r2(FL.reduce((a,t)=>a+t.amount,0));
+  if(!await ask(`حذف ${FL.length} مصاريف؟`,`الإجمالي ${fmt(sm)}، والرصيد هيرجع زي ما كان.`,{danger:true,icon:'🗑',ok:'احذفهم'}))return;
+  FL.forEach(xRvFeeGone);save();render();xAcctReview(acct);toast('اتحذفوا ✓ · رجع '+fmt(sm))}
+
+/* حساب مش بيخصم مصاريف: المصروف الجديد من غير مصاريف */
+try{const _tfN=txForm;txForm=function(){const r=_tfN.apply(this,arguments);try{
+  if(F&&!F.id&&F.type!=='inc'&&!F._nf&&M(F.method)&&M(F.method).noIpFee){F._nf=1;
+    const cb=$('#f-feeon');if(cb&&cb.checked){F.feeOn=false;SHKEEP=1;txForm();return r}
+    const i=$('#f-ifee');if(i){i.value='0';F.ifee='0';F.ifeeMan=1}}
+}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
+/* ========== 2.21.75 ========== */
+/* التحويل بين حساباتك بإنستاباي: المصاريف بتتعلّم لوحدها */
+document.addEventListener('change',e=>{try{
+  const t=e.target;if(!t||!F||F.type!=='tr'||F.id)return;
+  if(t.id==='f-tfeeon'){F._tfT=1;return}
+  if(t.id!=='f-v')return;
+  grab();
+  if(t.value==='instapay'&&!F.tfeeOn&&!F._tfT){F.tfeeOn=true;F.tfee=amtStr(xFeeCalc(parseNum(F.amount)));SHKEEP=1;txForm()}
+  else if(t.value!=='instapay'&&F.tfeeOn&&!F._tfT){F.tfeeOn=false;SHKEEP=1;txForm()}
+}catch(err){}},true);
+document.addEventListener('input',e=>{try{
+  const t=e.target;if(!t||!F||F.type!=='tr')return;
+  if(t.id==='f-tfee'){F._tfM=1;return}
+  if(t.id==='f-amt'&&!F._tfM){const i=$('#f-tfee');if(i){i.value=amtStr(xFeeCalc(parseNum(t.value)));F.tfee=i.value}}
+}catch(err){}},true);
 /* نهاية fix.js */
