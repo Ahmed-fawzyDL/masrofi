@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.109',XVBUILD='20/10/2026 - 03:26 م';
+const XVER='2.21.110',XVBUILD='20/10/2026 - 03:33 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7709,4 +7709,57 @@ xPpPrint=function(pid){const p=XPP().find(x=>x.id===pid);if(!p)return;const R=xP
     <table><tr><th>التاريخ</th><th>البيان</th><th>مصروف</th><th>تحصيل</th><th>الرصيد</th></tr>${tr}
     <tr><th colspan="2">الإجمالي</th><th>${fmt(s.owe)}</th><th>${fmt(s.paid)}</th><th>${fmt(s.bal)}</th></tr></table>
     <p style="color:#777">Centric · DeTech Solutions</p><script>setTimeout(()=>print(),300)<\/script></body></html>`);w.document.close()};
+/* ========== 2.21.110 · على حساب صح + بوكس الدفع + الشكل ========== */
+function xPpAutoOf(){if(!F)return '';
+  if(F.id){const t=S.txs.find(x=>x.id===F.id);if(t&&!t.pp){const L=typeof XLN==='function'?XLN():[];for(const p of XPP()){
+    const sv=t.ppx;t.ppx=[];const k=xPpMatch(t,p,L);t.ppx=sv;if(k)return p.id}}}
+  if(F.cat){const p=XPP().find(p=>(p.cats||{})[F.cat]);if(p)return p.id}
+  return ''}
+xPpForm=function(){const sz=$('#sheet .sz');if(!sz||!F||!(F.type==='exp'||F.type==='inc')||$('#f-pp')||!$('#f-amt'))return;const P=XPP();if(!P.length)return;
+  if(!F.ppMan){const t=F.id&&S.txs.find(x=>x.id===F.id);F.ppAuto=xPpAutoOf();
+    if(t&&t.pp)F.pp=t.pp;else if(t&&F.ppAuto&&(t.ppx||[]).includes(F.ppAuto))F.pp='';else F.pp=F.ppAuto||(F.id?'':undefined)}
+  const bs=[...sz.querySelectorAll('button.btn')],sv=bs.find(b=>/سجّل|سجل|حفظ/.test(b.textContent))||bs[0];if(!sv)return;
+  sv.insertAdjacentHTML('beforebegin',`<div class="xppf"><label>👤 على حساب<select id="f-pp" onchange="F.pp=this.value;F.ppMan=1">
+    <option value="">— مش على حد —</option>${P.map(p=>`<option value="${p.id}"${F.pp===p.id?' selected':''}>${esc(p.name)}${F.ppAuto===p.id?' (من البند)':''}</option>`).join('')}</select></label></div>`)};
+try{const _stA=saveTx;saveTx=function(){
+  const man=F&&F.ppMan,pp=F?F.pp:undefined,au=F?F.ppAuto:'',fid=F?F.id:null,ids=new Set(S.txs.map(t=>t.id));
+  const r=_stA.apply(this,arguments);
+  const ap=()=>{try{const L=fid?S.txs.filter(t=>t.id===fid):S.txs.filter(t=>!ids.has(t.id)&&!t.feeOf&&!t.payFeeOf);let ch=0;
+    L.forEach(t=>{if(!man){if(au&&t.pp===au){delete t.pp;delete t.ppk;ch=1}return}
+      if(pp===''&&au){t.ppx=[...new Set((t.ppx||[]).concat(au))];ch=1}
+      if(pp&&t.ppx&&t.ppx.includes(pp)){t.ppx=t.ppx.filter(x=>x!==pp);ch=1}});
+    if(ch)save()}catch(e){}};
+  if(r&&typeof r.then==='function')r.then(ap);else ap();return r}}catch(e){}
+
+/* ---------- 💳 بوكس الدفع ---------- */
+var XIPOPEN=false;
+function xSmall(sz,re,need){let b=null;sz.querySelectorAll('div,label').forEach(d=>{if(!re.test(d.textContent)||!d.querySelector(need||'input,select'))return;if(!b||d.textContent.length<b.textContent.length)b=d});return b}
+function xTxLay(){const sz=$('#sheet .sz'),a=$('#f-amt');if(!sz||!a||!F||!(F.type==='exp'||F.type==='inc')||$('#xpay'))return;
+  const ok=e=>e&&e!==sz&&!e.contains(sz.querySelector('button.btn'))&&!e.querySelector('#xpay');
+  const box=document.createElement('div');box.id='xpay';box.className='xpay';
+  box.innerHTML=`<div class="xpayh">${F.type==='inc'?'💰 التحصيل':'💳 الدفع'}</div>`;
+  const al=a.closest('label')||a.parentElement;if(ok(al)&&!al.contains(sz.querySelector('select'))){al.classList.add('xamt');box.appendChild(al)}
+  const vs=[...sz.querySelectorAll('select')].find(s=>[...s.options].some(o=>o.value==='instapay'));
+  if(vs){let row=vs.parentElement;while(row&&row!==sz&&row.querySelectorAll('select').length<2)row=row.parentElement;
+    if(row===sz||!ok(row)||row.textContent.length>400||row.contains(a))row=vs.closest('label');if(ok(row))box.appendChild(row)}
+  const fe=xSmall(sz,/مصاريف إنستاباي/,'input[type=checkbox]');if(ok(fe)&&!box.contains(fe)){fe.classList.add('xfee');box.appendChild(fe)}
+  [...sz.querySelectorAll('div,small,p')].forEach(e=>{if(!e.children.length&&/^أي دفع أو تحويل بإنستاباي/.test(e.textContent.trim()))e.remove()});
+  const ip=xSmall(sz,/حو?ّ?لت على/);if(ok(ip)&&!box.contains(ip)){const d=document.createElement('details');d.className='xipd';d.open=XIPOPEN;
+    d.innerHTML='<summary>⚡ بيانات إنستاباي</summary>';d.appendChild(ip);d.addEventListener('toggle',()=>{XIPOPEN=d.open});box.appendChild(d)}
+  if(box.children.length<2)return;
+  const h=sz.querySelector(':scope > h3, :scope > .ttl');if(h)h.after(box);else sz.prepend(box)}
+try{const _tfL=txForm;txForm=function(){const r=_tfL.apply(this,arguments);try{xTxLay()}catch(e){}return r}}catch(e){}
+
+(function(){const s=document.createElement('style');s.textContent=`
+.xpay{border-radius:18px;padding:12px 12px 6px;margin:4px 0 14px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.07)}
+.xpayh{font-weight:700;font-size:14px;margin-bottom:10px;color:#2dd4bf}
+.xpay .xamt{display:flex!important;align-items:center;justify-content:space-between;gap:12px;font-weight:600}
+.xpay .xamt input{width:55%!important;max-width:55%;font-size:20px!important;font-weight:700;text-align:center;padding:8px 10px!important;margin:0!important}
+.xpay .xfee{margin:6px 0}.xpay label{margin-bottom:8px}
+.xipd{border-radius:14px;border:1px dashed rgba(45,212,191,.35);padding:8px 10px;margin:6px 0 8px;background:rgba(45,212,191,.04)}
+.xipd>summary{cursor:pointer;font-weight:600;font-size:13px;list-style:none}.xipd>summary::-webkit-details-marker{display:none}
+.xipd>summary::after{content:' ▾';opacity:.6}.xipd[open]>summary{margin-bottom:8px}
+#sheet .sz input,#sheet .sz select,#sheet .sz textarea,#sheet .sz .xsel{border-radius:14px}
+.card{border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);box-shadow:0 6px 18px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.05)}
+.xppf{margin:10px 0}`;document.head.appendChild(s)})();
 /* نهاية fix.js */
