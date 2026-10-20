@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.88',XVBUILD='20/10/2026 - 12:16 م';
+const XVER='2.21.89',XVBUILD='20/10/2026 - 12:21 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6906,4 +6906,76 @@ document.addEventListener('click',e=>{try{
 }catch(err){}},true);
 
 try{render()}catch(e){}
+/* ========== 2.21.89 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xrvS{margin:10px 0 0!important}
+.xrvS>summary{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13.5px;cursor:pointer;list-style:none}
+.xrvS>summary::-webkit-details-marker{display:none}
+.xrvS>summary::after{content:'▾';margin-inline-start:auto;opacity:.6}
+.xrvS[open]>summary::after{content:'▴'}
+.xrvS[open]>summary{margin-bottom:6px}
+.xrvI{padding:10px 0;border-top:1px dashed rgba(148,163,184,.3)}
+.xrvI .grow b{display:block;font-size:13.5px}
+.xrvI small{display:block;font-size:11.5px;opacity:.85;margin-top:2px}
+.xrvI .xwhy{color:#ea580c;font-weight:700;opacity:1;margin-top:4px}
+.xrvI .xnb{margin-top:8px}
+.xckB>div{cursor:pointer}
+.xlns b[dir=ltr]{font-size:15px}
+`;document.head.appendChild(s)})();
+
+/* لما تشيل مصاريف بإيدك، البرنامج يفتكر إن التحويل ملوش مصاريف */
+xRvFeeGone=function(f){const p=S.txs.find(x=>x.id===f.feeOf);if(p)p.nofee=1;S.txs=S.txs.filter(x=>x!==f)};
+function xRvTxT(t){const nm=t.type==='tr'?'🔁 '+(M(t.method)?.name||'—')+' ← '+(M(t.to)?.name||'—'):(C(t.cat)?.name||'—');return `<b>${esc(nm)}</b><small>${t.type==='tr'?'تحويل · ':''}${num(t.amount)} ج.م · ${xDW(t.date)}</small>`}
+function xRvSec(t,n,body,cls,id){return `<details class="gen xrvS"${id?` id="${id}"`:''}><summary>${t} <span class="badge ${cls||'soon'}">${n}</span></summary>${body}</details>`}
+
+/* ---------- 🔍 مراجعة الحساب ---------- */
+xAcctReview=function(id){
+  const m=M(id);if(!m)return;const it=xRvItems(id),td=today(),FL=xRvTodayFees(id);
+  const SEC=[['bad','⛔ أخطاء','late'],['fee','💸 مشاكل في مصاريف إنستاباي','late'],['nofee','💸 تحويلات إنستاباي من غير مصاريف','wait'],['dup','🔁 ممكن تكون مكررة','wait'],['info','ℹ️ ملاحظات','soon']];
+  const issue=x=>`<div class="xrvI"><div class="grow">${xRvTxT(x.t)}<small class="xwhy">${esc(x.why)}</small></div><div class="xnb"><button class="mini" onclick="editTx('${x.t.id}')">📂 افتح</button>${x.acts.map(([a,l])=>`<button class="mini" onclick="xRvAct('${id}','${x.t.id}','${a}')">${l}</button>`).join('')}</div></div>`;
+  let neg='';if(!xIsCr(id)){try{const g=xLedger(id,'1900-01-01',td,S.txs,S.cash),e=g.ev.find(e=>e.r<0);if(e)neg=`<div class="xwarn">⚠️ الرصيد نزل تحت الصفر يوم <b>${xDW(e.d)}</b> بعد «${esc(e.l)}».<br>يعني فيه فلوس دخلت قبلها ومتسجلتش، أو حركة تاريخها غلط، أو رصيد البداية ناقص.</div>`}catch(e){}}
+  const n=it.filter(x=>x.sec!=='info').length;
+  let h=`<h2>🔍 مراجعة ${esc(m.name)}</h2><div class="xrv">
+  <button class="btn xckb" onclick="xCheckAll()">✅ Check · صلّح كل الحسابات</button>
+  <div class="xlns"><div><small>الرصيد في البرنامج</small><b dir="ltr">${num(xBal(id))}</b></div><div><small>رصيد البداية</small><b dir="ltr">${num(+m.open||0)}</b>${m.openAt?`<small>${dmy(m.openAt)}</small>`:''}</div><div><small>محتاج تبص</small><b class="${n?'neg':'pos'}">${n}</b></div></div>
+  ${neg}${!it.length&&!FL.length?'<div class="xrvok">✅ مفيش أخطاء في عمليات الحساب ده</div>':''}`;
+  if(FL.length){const sm=r2(FL.reduce((a,t)=>a+t.amount,0));
+    h+=xRvSec('💸 مصاريف إنستاباي اتضافت النهارده',FL.length+' · '+num(sm),`<p class="muted" style="font-size:11.5px;margin:0 0 4px">لو البنك مخصمش واحدة منهم، دوس 🗑 شيلها.</p>${FL.map(f=>{const p=S.txs.find(x=>x.id===f.feeOf);return `<div class="xckr"><div class="grow">${p?xRvTxT(p):'<b>—</b>'}</div><span class="xcka">مصاريف ${num(f.amount)}</span><button class="mini" onclick="xRvFeeDel('${id}','${f.id}')">🗑 شيلها</button></div>`}).join('')}<button class="btn ghost danger" onclick="xRvFeeDelAll('${id}')">🗑 شيل الكل (${num(sm)})</button>`,'late')}
+  SEC.forEach(([k,t,c])=>{const L=it.filter(x=>x.sec===k);if(!L.length)return;
+    h+=xRvSec(t,L.length,(k==='nofee'?'<p class="muted" style="font-size:11.5px;margin:0 0 4px">قارن كل واحدة بكشف البنك: لو البنك خصم مصاريف دوس ➕، ولو المبلغ فيه المصاريف أصلًا دوس ✋</p>':'')+L.map(issue).join(''),c)});
+  const tr=xTrGet().map((e,i)=>({e,i})).filter(({e})=>e.k==='txs'&&e.o&&(e.o.method===id||e.o.to===id)&&Date.now()-e.at<45*864e5).reverse();
+  if(tr.length)h+=xRvSec('🗑 اتحذف من الحساب مؤخرًا',tr.length,tr.map(({e,i})=>`<div class="xckr"><div class="grow"><b>${esc(e.l)}</b><small>اتحذف ${xLnTs(e.at)}</small></div><button class="mini" onclick="xRvRest('${id}',${i})">♻️ رجّعه</button></div>`).join(''));
+  const log=xBlogGet().filter(x=>x.a===id).slice(-40).reverse();
+  h+=xRvSec('📜 آخر التغييرات في الرصيد',log.length,log.length?log.map(x=>`<div class="xrvI"><div class="grow"><b class="${x.d<0?'neg':'pos'}" dir="ltr" style="text-align:right">${x.d>0?'+':''}${num(x.d)}</b><small>${xLnTs(x.at)}</small>${x.w.map(w=>`<small>${esc(w)}</small>`).join('')}</div></div>`).join(''):'<p class="muted">السجل بيبدأ من 2.21.73. أي تغيير في رصيد الحساب هيتسجل هنا وسببه.</p>');
+  sheet(h+'</div>');
+};
+
+/* ---------- ✅ نتيجة الـ Check ---------- */
+function xCkGo(k){const d=$('#xck-'+k);if(!d)return toast('مفيش');d.open=true;setTimeout(()=>{try{d.scrollIntoView({block:'start',behavior:'smooth'})}catch(e){}},60)}
+xCheckShow=function(){
+  const R=XCHK;if(!R)return toast('لسه معملتش Check');
+  const add=R.add.map(x=>({...x,p:S.txs.find(t=>t.id===x.pid),f:xFeeTx(x.pid)})).filter(x=>x.p&&x.f);
+  const sumA=r2(add.reduce((s,x)=>s+x.f.amount,0)),aN=id=>M(id)?.name||'—';
+  const parts=[];
+  if(add.length)parts.push(`ضفت مصاريف إنستاباي على <b>${add.length}</b> تحويل كانوا من غير مصاريف، والإجمالي <b>${fmt(sumA)}</b>.`);
+  if(R.fix.length)parts.push(`وصلّحت <b>${R.fix.length}</b> غلطة.`);
+  if(R.look.length)parts.push(`وفيه <b>${R.look.length}</b> حاجة محتاج تبص عليها بنفسك.`);
+  let h=`<h2>✅ نتيجة الـ Check</h2><div class="xck">
+  <div class="xlns xckB"><div onclick="xCkGo('fix')"><small>اتصلح</small><b class="pos">${R.fix.length}</b></div><div onclick="xCkGo('add')"><small>مصاريف اتضافت</small><b>${num(sumA)}</b></div><div onclick="xCkGo('look')"><small>محتاج تبص</small><b class="${R.look.length?'neg':''}">${R.look.length}</b></div></div>
+  <div class="xckS">${parts.length?parts.join(' '):'كل حاجة مظبوطة ✓'}<br><small class="muted">${xLnTs(R.at)} · دوس على أي مربع فوق عشان تشوف تفاصيله</small></div>`;
+  if(add.length){const ac=[...new Set(add.map(x=>x.a))];
+    h+=xRvSec('💸 المصاريف اللي اتضافت',add.length+' · '+num(sumA),'<p class="muted" style="font-size:11.5px;margin:0 0 4px">لو البنك مخصمش واحدة منهم، دوس ✋ شيلها.</p>'+ac.map(a=>{const m=M(a),L=add.filter(x=>x.a===a),s=r2(L.reduce((t,x)=>t+x.f.amount,0));
+      return `<div class="xlnc" style="cursor:default"><div class="xlnr"><span class="xpmn">${m?xMIc(m):''}<b>${esc(aN(a))}</b></span><span class="xlnbig neg" dir="ltr">-${num(s)}</span></div>
+      ${L.map(x=>`<div class="xckr"><div class="grow">${xRvTxT(x.p)}</div><span class="xcka">مصاريف ${num(x.f.amount)}</span><button class="mini" onclick="xChkRm('${x.pid}')">✋ شيلها</button></div>`).join('')}</div>`}).join(''),'late','xck-add')}
+  if(R.fix.length)h+=xRvSec('🛠 اللي اتصلح',R.fix.length,R.fix.map(x=>`<div class="xrvI"><div class="grow"><b>${esc(aN(x.a))}</b><small>${esc(x.t)}</small></div></div>`).join(''),'done','xck-fix');
+  if(R.look.length){const ac=[...new Set(R.look.map(x=>x.a))];
+    h+=xRvSec('👀 محتاج تبص عليه',R.look.length,ac.map(a=>{const m=M(a),L=R.look.filter(x=>x.a===a);
+      return `<div class="xlnc" style="cursor:default"><div class="xlnr"><span class="xpmn">${m?xMIc(m):''}<b>${esc(aN(a))}</b></span></div>${L.map(x=>{const t=x.id&&S.txs.find(y=>y.id===x.id);
+        if(x.k==='neg')return `<div class="xrvI"><small class="xwhy">⚠️ الرصيد نزل تحت الصفر يوم ${xDW(x.d)}</small><small>يعني فيه فلوس دخلت الحساب ده قبل اليوم ده ومتسجلتش، أو رصيد البداية أقل من الحقيقي. اعمل مطابقة بالرصيد الحقيقي، أو افتح كشف الحساب وشوف الحركات اللي قبل اليوم ده.</small><div class="xnb"><button class="mini" onclick="closeSheet();xRecon('${a}')">⚖️ مطابقة</button><button class="mini" onclick="xAcctRep('${a}')">📄 كشف الحساب</button></div></div>`;
+        if(!t)return '';
+        return `<div class="xrvI"><div class="grow">${xRvTxT(t)}<small class="xwhy">${x.k==='dup'?'متسجلة مرتين بنفس اليوم والمبلغ. لو مكررة غلط افتحها واحذفها':'تاريخها بعد النهارده'}</small></div><div class="xnb"><button class="mini" onclick="editTx('${t.id}')">📂 افتح</button></div></div>`}).join('')}</div>`}).join(''),'late','xck-look')}
+  if(add.length)h+=`<div class="xckG"><b>إزاي تعرف المصاريف صح ولا لأ؟</b><br>1️⃣ افتح كشف البنك.<br>2️⃣ دوّر على كل تحويل بنفس اليوم.<br>3️⃣ لو تحته سطر مصاريف ← سيبها.<br>4️⃣ لو مفيش، أو المبلغ فيه المصاريف أصلًا ← ✋ شيلها.<br>5️⃣ في الآخر اعمل ⚖️ مطابقة مع رصيد البنك.</div>`;
+  if(XCHKSNAP)h+=`<button class="btn ghost danger" onclick="xCheckUndo()">↩️ رجّع كل اللي الـ Check عمله</button>`;
+  sheet(h+'</div>');
+};
 /* نهاية fix.js */
