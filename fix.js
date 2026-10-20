@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.81',XVBUILD='20/10/2026 - 11:33 ص';
+const XVER='2.21.82',XVBUILD='20/10/2026 - 11:40 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6672,6 +6672,57 @@ try{const _rnHd=render;render=function(){const r=_rnHd.apply(this,arguments);try
     b.appendChild(sp);b.classList.add('xhdw');
     b.insertAdjacentHTML('beforeend','<button type="button" class="mini xhdx" onclick="event.stopPropagation();xHdDis(this)">✕</button>');
   });
+}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
+/* ========== 2.21.82 ========== */
+/* قاعدة واحدة: إنستاباي = مصاريف، ما عدا الفواتير لو مش متعلّمة */
+if(!S.settings.xipmig1){S.txs.forEach(t=>{delete t.nofee});S.methods.forEach(m=>{delete m.noIpFee});S.settings.xipmig1=1;save()}
+function xIsBillTx(t){return !!(t&&(t.bill||(C(t.cat)&&C(t.cat).xbill)))}
+xIpNeed=function(t){return !!t&&!t.pend&&!t.xpre&&!t.feeOf&&!t.payFeeOf&&!t.nofee&&t.type!=='inc'&&t.via==='instapay'&&!xIsBillTx(t)&&!xFeeTx(t.id)};
+xRvFeeGone=function(f){S.txs=S.txs.filter(x=>x!==f)};
+
+/* شاشة التسجيل: مربع واحد لمصاريف إنستاباي */
+function xIpCtlOk(){if(!F||(F.type!=='exp'&&F.type!=='tr')||F.via!=='instapay')return false;const o=F.id&&S.txs.find(t=>t.id===F.id);return !(o&&(o.feeOf||o.payFeeOf))}
+function xIpBill(){if(F.type!=='exp')return false;if(F.isBill)return true;const c=F.cat&&F.cat!=='__new'&&C(F.cat);return !!(c&&c.xbill)}
+function xIpCtl(){
+  const sz=$('#sheet .sz');if(!sz||!F||!xIpCtlOk())return;
+  sz.querySelectorAll('.xfee').forEach(e=>e.remove());const fi=$('#f-ifee');if(fi){const l=fi.closest('label');if(l)l.remove()}
+  const bill=xIpBill(),ft=F.id&&xFeeTx(F.id);
+  if(F.ipOn==null||(F._ipB!==bill&&!F.ipT)){F.ipOn=ft?true:!bill;if(!F.ipMan)F.ipAmt=ft?amtStr(ft.amount):amtStr(xFeeCalc(parseNum(F.amount)));if(ft)F.ipMan=1}
+  F._ipB=bill;
+  const v=$('#f-v'),at=sz.querySelector('.xipb')||(v&&(v.closest('.two')||v.closest('label')));if(!at)return;
+  at.insertAdjacentHTML('afterend',`<div class="xfee" id="xipc"><label class="chk"><input type="checkbox" id="xip-on" ${F.ipOn?'checked':''} onchange="F.ipOn=this.checked;F.ipT=1;$('#xip-b').style.display=this.checked?'':'none'"> 💸 مصاريف إنستاباي</label>
+  <div id="xip-b" style="${F.ipOn?'':'display:none'}"><div class="inl"><input id="xip-a" inputmode="decimal" dir="ltr" value="${esc(F.ipAmt||'')}" oninput="F.ipAmt=this.value;F.ipMan=1"><button type="button" class="mini" onclick="F.ipMan=0;F.ipAmt=amtStr(xFeeCalc(parseNum(($('#f-amt')||{}).value)));$('#xip-a').value=F.ipAmt">↺</button></div></div>
+  <small class="muted">${bill?'الفاتورة بتتدفع بمصاريفها. علّم هنا بس لو حولت الفلوس لحد بإنستاباي':'أي دفع أو تحويل بإنستاباي بيتسجل معاه مصاريفه'}</small></div>`);
+  const a=$('#f-amt');if(a&&!a.dataset.xip){a.dataset.xip=1;a.addEventListener('input',()=>{if(F&&!F.ipMan){F.ipAmt=amtStr(xFeeCalc(parseNum(a.value)));const i=$('#xip-a');if(i)i.value=F.ipAmt}})}
+}
+try{const _tfC2=txForm;txForm=function(){const r=_tfC2.apply(this,arguments);try{xIpCtl()}catch(e){}return r}}catch(e){}
+document.addEventListener('change',e=>{try{if(e.target&&e.target.id==='f-v'&&F&&F.type==='tr'&&F.id){grab();SHKEEP=1;txForm()}}catch(err){}},true);
+try{const _stC2=saveTx;saveTx=async function(){
+  let on=null,kind=F&&F.type;const before=new Set(S.txs.map(t=>t.id));
+  try{grab();if(F&&$('#xipc')){on=!!($('#xip-on')||{}).checked;const a=parseNum(($('#xip-a')||{}).value)||0;F.ipOn=on;
+    if(F.type==='exp'){F.feeOn=on&&a>0;F.fee=amtStr(a);F._feeT=1}else{F.tfeeOn=on&&a>0;F.tfee=amtStr(a)}
+    const t=F.id&&S.txs.find(x=>x.id===F.id);if(t){if(on)delete t.nofee;else if(!xIsBillTx(t))t.nofee=1}}}catch(e){}
+  const r=await _stC2.apply(this,arguments);
+  try{if(on===false&&!$('#sheet').classList.contains('open')){const t=S.txs.find(x=>!before.has(x.id)&&x.type===kind&&x.via==='instapay'&&!x.feeOf&&!x.payFeeOf);if(t&&!xIsBillTx(t)){t.nofee=1;save()}}}catch(e){}
+  return r}}catch(e){}
+
+/* المراجعة: قسم واحد واضح */
+try{const _rvJ=xRvItems;xRvItems=function(){const re=/إنستاباي من غير مصاريف/;
+  return _rvJ.apply(this,arguments).filter(x=>!(re.test(x.why)&&(xIsBillTx(x.t)||x.t.nofee))).map(x=>{
+    if(re.test(x.why)){x.sec='nofee';x.why='اتحولت بإنستاباي ومفيش مصاريف متسجلة عليها';x.acts=[['fee','➕ ضيف المصاريف'],['nof','✋ المصاريف محسوبة في المبلغ']]}return x})}}catch(e){}
+try{const _rvB=xRvAct;xRvAct=async function(acct,tid,act){
+  if(act!=='fee')return _rvB.apply(this,arguments);
+  const t=S.txs.find(x=>x.id===tid);if(!t)return xAcctReview(acct);if(isClosed(t.date))return toast('الشهر ده مقفول');
+  const v=await askIn('💸 مصاريف إنستاباي',xTxLbl(t)+'\nاكتب الرقم اللي في كشف البنك',amtStr(xFeeCalc(t.amount)),true,'ضيف');if(v==null)return;
+  const a=parseNum(v);if(!(a>0))return toast('اكتب المبلغ');xAddIpFee(t,a);delete t.nofee;const f=xFeeTx(tid);if(f)f.rv=1;
+  save();render();xAcctReview(acct);toast('💸 اتضافت '+fmt(a))}}catch(e){}
+try{const _arw=xAcctReview;xAcctReview=function(){const r=_arw.apply(this,arguments);try{const box=$('#sheet .xrv');if(!box)return r;
+  box.querySelectorAll('label').forEach(l=>{if(/مش بيخصم/.test(l.textContent))l.remove()});
+  const h=[...box.querySelectorAll('h4')].find(x=>/إنستاباي من غير مصاريف/.test(x.textContent));
+  if(h){if(h.firstChild&&h.firstChild.nodeType===3)h.firstChild.nodeValue='💸 تحويلات إنستاباي من غير مصاريف ';
+    h.insertAdjacentHTML('afterend','<p class="muted" style="font-size:11.5px;margin:0 0 6px">قارن كل واحدة بكشف البنك: لو البنك خصم مصاريف دوس ➕ واكتب الرقم اللي في الكشف، ولو المبلغ اللي كاتبه فيه المصاريف أصلًا دوس ✋</p>')}
 }catch(e){}return r}}catch(e){}
 
 try{render()}catch(e){}
