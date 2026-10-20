@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.125',XVBUILD='20/10/2026 - 05:50 م';
+const XVER='2.21.127',XVBUILD='20/10/2026 - 06:16 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8265,5 +8265,34 @@ xOaAccs=function(){const I=xAcInst();
 try{const _olC=xOaList;xOaList=function(){const r=_olC.apply(this,arguments);try{
   if(XOA.t==='acc')document.querySelectorAll('#xoa-l .xpo[onclick^="xOaAcc("]').forEach(b=>{const id=(b.getAttribute('onclick').match(/'([^']+)'/)||[])[1],c=C(id),l=b.querySelector('.xl');
     if(c&&c.code&&l&&!l.dataset.cd){l.dataset.cd=1;l.insertAdjacentHTML('afterbegin','<small style="margin:0 0 0 6px">#'+esc(c.code)+'</small>')}})}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.126 · تصليح فتح بنود الحسابات ========== */
+var XACT=typeof XACT==='string'?XACT:'';
+/* xTrNew متعرّفة مرتين: واحدة بتعمل التحويل وواحدة بتفتح الشاشة */
+xTrNew=function(f,to,a,d,note){
+  if(arguments.length>=3)return{id:uid(),type:'tr',amount:a,method:f,to,cat:'',via:'',date:d,note:note||'',files:[],created:Date.now()};
+  try{closeSheet()}catch(e){}try{newTx(xTrType())}catch(e){toast('افتح التحويل من ➕')}};
+/* شيل أي عملية أو بند فاضي */
+function xClean0(){let ch=false;['txs','cats','cash','plans','buys'].forEach(k=>{if(Array.isArray(S[k])){const n=S[k].length;S[k]=S[k].filter(x=>x&&typeof x==='object');if(S[k].length!==n)ch=true}});if(ch)save();return ch}
+try{xClean0()}catch(e){}
+try{const _rnZ=render;render=function(){try{xClean0()}catch(e){}return _rnZ.apply(this,arguments)}}catch(e){}
+/* لو حصل خطأ: الشاشة تفتح والخطأ يبان */
+['xacc','xace','xacr'].forEach(k=>{const f=XVW[k];if(!f)return;XVW[k]=function(){try{return f.apply(this,arguments)}catch(e){
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
+  <div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b><br><small dir="ltr">${esc(((e&&e.stack)||'').split('\n').slice(0,3).join(' | '))}</small><br>صوّر الشاشة دي وابعتها</div>`}}});
+try{render()}catch(e){}
+/* ========== 2.21.127 · حسابات الأشخاص شاشة كاملة ========== */
+var XPPID='';
+function xCap(fn,args){let h='';const s=sheet;sheet=function(x){h=x};
+  try{fn.apply(null,args||[])}catch(e){h='<div class="xwarn">⚠️ '+esc((e&&e.message)||String(e))+'</div>'}finally{sheet=s}return h}
+function xPpHead(h,back){return h.replace(/<div class="xpph"><h3>([\s\S]*?)<\/h3>/,`<div class="xpph"><span style="display:flex;align-items:center;gap:8px"><button class="mini" onclick="${back}">→</button><h3>$1</h3></span>`)}
+var _xPpL0=xPpList,_xPpO0=xPpOpen;
+XVW.xpp=()=>xPpHead(xCap(_xPpL0),"go('more')").replace('<details class="grp xppgrp">','<details class="grp xppgrp" open>');
+XVW.xppo=()=>{if(!XPP().some(p=>p.id===XPPID)){setTimeout(()=>go('xpp'),0);return ''}return xPpHead(xCap(_xPpO0,[XPPID]),"go('xpp')")};
+xPpList=function(){try{closeSheet()}catch(e){}if(view==='xpp')render();else go('xpp')};
+xPpOpen=function(id,per){try{closeSheet()}catch(e){}XPPID=id;if(per)XPPV.per=per;if(view==='xppo')render();else go('xppo')};
+/* أسامي الإجماليات تحت الكشف */
+try{const _rnPP=render;render=function(){const r=_rnPP.apply(this,arguments);try{if(view==='xppo'){const s=$('#view .xppsum');if(s)[...s.children].forEach(d=>{const t=d.textContent;
+  if(/صرفت عليه/.test(t))d.remove();else if(/عليه/.test(t)&&!d.classList.contains('xppbal'))d.firstElementChild.textContent='💸 مصروفات';else if(/رجّع/.test(t))d.firstElementChild.textContent='💰 تحصيلات'})}}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
