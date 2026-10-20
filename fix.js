@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.91',XVBUILD='20/10/2026 - 12:31 م';
+const XVER='2.21.92',XVBUILD='20/10/2026 - 12:41 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7044,4 +7044,30 @@ document.addEventListener('click',e=>{try{
   const t=e.target;if(!t||!t.closest||!t.closest('#view,nav,header'))return;
   document.querySelectorAll('#view details.xr[open]').forEach(o=>{if(!o.contains(t))o.open=false});
 }catch(err){}},true);
+/* ========== 2.21.92 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view details.grp .ckx:has(>details[open]),body #view details.grp .list>details[open],body #view .list>details[open]{box-shadow:none!important}
+`;document.head.appendChild(s)})();
+
+/* سطر مصاريف إنستاباي دايمًا في أي دفع أو تحويل بإنستاباي */
+try{const _tbS=txBody;txBody=function(t){let h=_tbS.apply(this,arguments);try{
+  if(!t||t.feeOf||t.payFeeOf||t.type==='inc'||t.via!=='instapay'||t.pend||xFeeTx(t.id)||/مصاريف إنستاباي/.test(h))return h;
+  const bo=xBeforeOpen(t),why=bo?'محسوبة في رصيد البداية':xIsBillTx(t)?'فاتورة · من غير مصاريف':t.nofee?'مفيش · المصاريف جوه المبلغ':'مش متسجلة';
+  const btn=bo?'':`<div class="etbar" style="margin:6px 0 0"><button class="mini" onclick="xTxFeeAdd('${t.id}')">➕ ضيف مصاريف</button></div>`;
+  h=h.replace('<div class="etbar"',`<div class="kv"><span>💸 مصاريف إنستاباي</span><b>${why}</b></div>${btn}<div class="etbar"`);
+}catch(e){}return h}}catch(e){}
+
+/* الأقساط من برا: مصاريف إنستاباي جنب الحساب والطريقة */
+try{const _irF=xInstRowsX;xInstRowsX=function(){const r=_irF.apply(this,arguments);try{
+  document.querySelectorAll('#view details.grp[ontoggle*="\'ei\'"] .ckx>details.xr').forEach(d=>{
+    if(d.dataset.xf)return;d.dataset.xf=1;
+    const b=d.querySelector('.xb [onclick^="editTx("]'),m=b&&b.getAttribute('onclick').match(/editTx\('([^']+)'\)/);if(!m)return;
+    const f=xFeeTx(m[1]);if(!f)return;
+    const sm=d.querySelector('summary .grow>small');if(!sm)return;
+    const chip=`<span class="xc2 xcc" style="--cc:#7c3aed">💸 مصاريف ${num(f.amount)}</span>`;
+    if(sm.classList.contains('xcs'))sm.insertAdjacentHTML('beforeend',chip);else sm.insertAdjacentHTML('beforeend',' · 💸 مصاريف '+num(f.amount));
+  });
+}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
