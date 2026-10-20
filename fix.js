@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.129',XVBUILD='20/10/2026 - 06:38 م';
+const XVER='2.21.130',XVBUILD='20/10/2026 - 07:13 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8382,5 +8382,64 @@ xSubSave=function(par,id){const p=C(par);if(!p)return;
 xAcDel=async function(id){const c=C(id);if(!c)return;const K=xAcKids(id);
   if(K.length)return say('مينفعش يتحذف',`جواه ${K.length} حساب فرعي: ${K.map(k=>k.name).join('، ')}\nاحذفهم الأول من 🗂 تكويد حساب فرعي.`,'🗂');
   await delCat(id);if(!C(id))go('xacc')};
+try{render()}catch(e){}
+/* ========== 2.21.130 · البند مش اسم العملية ========== */
+/* 1) كل عملية تخص شخص بتتربط بيه مباشرة، مش عن طريق البند */
+function xPpPinAll(){const L=typeof XLN==='function'?XLN():[];let n=0;
+  XPP().forEach(p=>S.txs.forEach(t=>{if(t.pp||t.feeOf||t.payFeeOf||(t.ppx||[]).includes(p.id))return;
+    const k=xPpMatch(t,p,L);if(k){t.pp=p.id;t.ppk=k;t.ppa=1;n++}}));return n}
+try{if(!S.settings.xppPin1){xPpPinAll();S.settings.xppPin1=1;save()}}catch(e){}
+try{const _psN=xPpSave;xPpSave=function(){
+  const id=XPPE&&XPPE.id,o=id&&XPP().find(p=>p.id===id),old=o?Object.keys(o.cats||{}):[];
+  const r=_psN.apply(this,arguments);
+  try{const p=XPPE&&XPP().find(x=>x.id===XPPE.id);if(p){const rm=old.filter(k=>!(p.cats||{})[k]);
+    S.txs.forEach(t=>{if(t.pp===p.id&&t.ppa&&rm.includes(t.cat)){delete t.pp;delete t.ppk;delete t.ppa}});
+    xPpPinAll();save();if(view==='xppo')render()}}catch(e){}
+  return r}}catch(e){}
+try{const _stK2=saveTx;saveTx=function(){const man=F&&F.ppMan,fid=F&&F.id,r=_stK2.apply(this,arguments);
+  const ap=()=>{try{if(man&&fid){const t=S.txs.find(x=>x.id===fid);if(t&&t.ppa){delete t.ppa;save()}}}catch(e){}};
+  if(r&&typeof r.then==='function')r.then(ap);else ap();return r}}catch(e){}
+
+/* 2) اختيار الشخص مبيغيرش البند، واختيار البند مبيشيلش الشخص */
+try{const _opK=xOaPer;xOaPer=function(pid){
+  const c=F&&F.cat&&F.cat!=='__new'&&C(F.cat),own=c&&XPP().some(p=>p.id!==pid&&(p.cats||{})[c.id]);
+  if(c&&!own&&!c.par){try{grab()}catch(e){}XOA.t='';XOA.q='';F.pp=pid;F.ppMan=1;SHKEEP=1;txForm();return}
+  return _opK.apply(this,arguments)}}catch(e){}
+xOaAcc=function(id){const c=C(id);if(!c)return;try{grab()}catch(e){}XOA.t='';XOA.q='';
+  const p=XPP().find(p=>(p.cats||{})[id]);F.pp=p?p.id:(F.pp||'');F.ppMan=1;catPick(id)};
+function xOaNoPer(){try{grab()}catch(e){}F.pp='';F.ppMan=1;SHKEEP=1;txForm()}
+
+/* 3) ✏️ بيسألك: اسم العملية دي بس، ولا اسم البند كله */
+var XOAF=null;
+xCatEdit=function(){try{grab()}catch(e){}const c=F&&F.cat&&F.cat!=='__new'&&C(F.cat);if(!c)return;XOAF=F;
+  const n=S.txs.filter(t=>t.cat===c.id).length;
+  sheet(`<h2>✏️ تعديل الاسم</h2>
+  <button class="btn" onclick="xOaNote()">📝 اسم العملية دي بس (البيان)</button>
+  <button class="btn ghost" onclick="xOaCatRen()">📒 اسم البند كله · «${esc(c.name)}»</button>
+  <p class="xwarn">⚠️ تغيير اسم البند هيغيّر اسم كل العمليات اللي عليه (${n} عملية)</p>
+  <button class="btn ghost" onclick="xOaBack()">رجوع</button>`)};
+function xOaBack(){if(XOAF)F=XOAF;SHKEEP=1;txForm()}
+async function xOaNote(){const v=await askIn('📝 البيان','اسم العملية دي بس',(XOAF&&XOAF.note)||'',false);if(v==null)return;
+  F=XOAF;F.note=String(v).trim();SHKEEP=1;txForm()}
+function xOaCatRen(){F=XOAF;XCATBACK=true;catForm(F.cat)}
+try{const _tfN=txForm;txForm=function(){const r=_tfN.apply(this,arguments);try{
+  if(F&&F.pp){const c=$('#xoa .xoac');if(c&&!c.querySelector('.xnop'))c.insertAdjacentHTML('beforeend','<button type="button" class="mini xnop" onclick="xOaNoPer()">✕ شيل الشخص</button>');
+    const n=$('#f-n'),l=n&&n.closest('label');if(l&&l.firstChild&&l.firstChild.nodeType===3)l.firstChild.nodeValue='📝 البيان (اسم العملية)'}
+}catch(e){}return r}}catch(e){}
+
+/* 4) كشف الشخص: تعديل البيان وفتح العملية من السطر نفسه */
+async function xPpNote(tid){const t=S.txs.find(x=>x.id===tid);if(!t)return;
+  const v=await askIn('📝 البيان','اسم العملية دي بس، البند مش هيتغير',t.note||'',false);if(v==null)return;
+  t.note=String(v).trim();save();render();toast('✅ اتعدل')}
+try{const _rnPN=render;render=function(){const r=_rnPN.apply(this,arguments);try{if(view==='xppo')
+  document.querySelectorAll('#view .xppb').forEach(b=>{if(b.dataset.xn)return;b.dataset.xn=1;
+    const m=(b.innerHTML.match(/xPpSet\('([^']+)'/)||[])[1];if(m)b.insertAdjacentHTML('afterbegin',
+      `<button class="mini" onclick="xPpNote('${m}')">📝 البيان</button><button class="mini" onclick="editTx('${m}')">📂 افتح</button>`)})}catch(e){}return r}}catch(e){}
+
+/* 5) تعديل الشخص: البنود المربوطة بس، والباقي بالبحث */
+xPpQ=function(q){const n=xNrm(q||'');let any=0;
+  document.querySelectorAll('#pp-cl .xppcat').forEach(r=>{const on=r.classList.contains('xppcon'),v=on||(n&&r.dataset.q.includes(n));r.style.display=v?'':'none';if(v)any++});
+  let h=$('#pp-hint');if(!h){const i=$('#pp-q');if(i){i.insertAdjacentHTML('afterend','<div id="pp-hint" class="xckh" style="margin:6px 2px"></div>');h=$('#pp-hint')}}
+  if(h)h.textContent=n?(any?'':'مفيش بند بالاسم ده'):'🔍 دوّر على البند عشان تضيفه'};
 try{render()}catch(e){}
 /* نهاية fix.js */
