@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.105',XVBUILD='20/10/2026 - 02:39 م';
+const XVER='2.21.106',XVBUILD='20/10/2026 - 03:12 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7601,4 +7601,19 @@ function xTrTiles(){
 try{const _rnT=render;render=function(){const r=_rnT.apply(this,arguments);try{xTrTiles()}catch(e){}return r}}catch(e){}
 (function(){const s=document.createElement('style');s.textContent=`.xtrr summary{display:flex;gap:8px;align-items:center;padding:8px 2px;list-style:none;cursor:pointer}.xtrr summary::-webkit-details-marker{display:none}
 .xtrr summary>span:last-child{text-align:left;min-width:80px;display:flex;flex-direction:column}.xtrr small{font-size:10px;opacity:.7}.xtrq{margin:6px 0}.xtrb{padding:6px 0}`;document.head.appendChild(s)})();
+/* ========== 2.21.106 · تنضيف الكلام + مقارنة أدق ========== */
+xSim=function(a,b){a=a.replace(/\s/g,'');b=b.replace(/\s/g,'');if(!a||!b)return 0;if(a===b)return 1;
+  const s=a.length<b.length?a:b,l=a.length<b.length?b:a;if(s.length>=3&&l.includes(s))return s.length/l.length;
+  const bg=x=>{const m={};for(let i=0;i<x.length-1;i++){const k=x.substr(i,2);m[k]=(m[k]||0)+1}return m};
+  const A=bg(a),B=bg(b);let n=0,t=0;for(const k in A){t+=A[k];if(B[k])n+=Math.min(A[k],B[k])}for(const k in B)t+=B[k];return t?2*n/t:0};
+function xSzClean(){const sz=$('#sheet .sz');if(!sz)return;
+  [...sz.children].forEach(e=>{if(e.matches&&e.matches('.xckh,.card.xckh'))e.remove()});
+  sz.querySelectorAll('details .xckh').forEach(e=>{if(/ماعرفهاش/.test(e.textContent))e.remove()})}
+try{const _mgC=xMgOpen;xMgOpen=function(){const r=_mgC.apply(this,arguments);try{xSzClean();
+  const b=[...$('#sheet .sz').querySelectorAll('button.btn')].find(x=>/ادمج الكل/.test(x.textContent));if(b)b.textContent=b.textContent.replace('ادمج الكل','ادمج الحسابات الشبيهة')}catch(e){}return r}}catch(e){}
+try{const _ppC=xPpList;xPpList=function(){const r=_ppC.apply(this,arguments);try{xSzClean()}catch(e){}return r}}catch(e){}
+try{const _peC=xPpEditR;xPpEditR=function(){const r=_peC.apply(this,arguments);try{xSzClean()}catch(e){}return r}}catch(e){}
+function xCwName(){document.querySelectorAll('button,.tile,[onclick]').forEach(x=>{if(x.closest('#sheet'))return;const tx=x.textContent.replace(/\s+/g,' ').trim();
+  if(/سحب و\s*إيداع كاش/.test(tx)&&tx.length<40){const w=document.createTreeWalker(x,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode())n.nodeValue=n.nodeValue.replace(/سحب و(\s*)إيداع كاش/,'سحب و$1إيداع وتحويل')}})}
+try{const _rnN=render;render=function(){const r=_rnN.apply(this,arguments);try{xCwName()}catch(e){}return r}}catch(e){}
 /* نهاية fix.js */
