@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.119',XVBUILD='20/10/2026 - 05:10 م';
+const XVER='2.21.120',XVBUILD='20/10/2026 - 05:16 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8053,5 +8053,37 @@ XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
   ${XACADD?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
     <button class="btn" onclick="XACADD=false;XACPAR='${c.id}';catForm(null,'exp')">💸 مصروف</button>
     <button class="btn" onclick="XACADD=false;XACPAR='${c.id}';catForm(null,'inc')">💰 تحصيل</button></div>`:''}`};
+try{render()}catch(e){}
+/* ========== 2.21.120 · بنود الحسابات: سطر واحد + من غير أقساط + دمج الأسماء المكررة ========== */
+var xAcInst=()=>{const s=new Set();try{
+  Object.keys(S).forEach(k=>{if(/inst|ins|plan|qist/i.test(k)&&Array.isArray(S[k]))S[k].forEach(o=>{if(o&&o.cat)s.add(o.cat);if(o&&o.catId)s.add(o.catId)})});
+  if(S.settings)Object.keys(S.settings).forEach(k=>{if(/inst|ins|plan|qist/i.test(k)&&Array.isArray(S.settings[k]))S.settings[k].forEach(o=>{if(o&&o.cat)s.add(o.cat);if(o&&o.catId)s.add(o.catId)})});
+  S.cats.forEach(c=>{if(c.inst||c.ins||c.isInst||c.instId||c.plan||c.kind==='ins')s.add(c.id)})}catch(e){}return s};
+
+/* دمج البنود اللي ليها نفس الاسم بالظبط (مرة واحدة) */
+try{if(!S.settings.xunif2){const I=xAcInst(),G={};
+  S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)).forEach(c=>{const k=xNrm(c.name);(G[k]=G[k]||[]).push(c)});
+  const D=Object.values(G).filter(g=>g.length>1);
+  if(D.length){try{xMgSnap()}catch(e){}
+    D.forEach(g=>{const n=c=>S.txs.filter(t=>t.cat===c.id).length;g.sort((a,b)=>n(b)-n(a));g.slice(1).forEach(f=>{try{xCatMerge(f.id,g[0].id)}catch(e){}})})}
+  S.settings.xunif2=1;if(typeof save==='function')save()}}catch(e){}
+
+XVW.xacc=()=>{
+  const y=NY+'-',I=xAcInst(),L=S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)&&!/^مصاريف إنستاباي ·/.test(c.name)).map(c=>{
+    let s=0,n=0;xAcTxs(c.id).forEach(t=>{if(!t.date.startsWith(y))return;n++;s+=t.type==='inc'?t.amount:-t.amount});
+    return {c,s:r2(s),n,f:c.fixed||xAcKids(c.id).some(k=>k.fixed)}})
+    .sort((a,b)=>(a.c.active===false)-(b.c.active===false)||(!a.n)-(!b.n)||a.c.name.localeCompare(b.c.name,'ar'));
+  const row=({c,s,n,f})=>{const qq=qn([c.name,...(c.alias||[]),...(c.al||[]),...xAcKids(c.id).map(k=>k.name),Math.abs(s)].join(' '));
+    return `<div class="xacr" data-q="${esc(qq)}" style="${!n||c.active===false?'opacity:.5':''}">
+    <div class="xlnc" style="padding:10px 12px" onclick="xAcGo('${c.id}')"><div class="xlnr" style="align-items:center;gap:8px">
+      <b style="flex:1">${esc(c.name)}${f?' 📌':''}${c.active===false?' ⏸':''}</b>
+      <span class="${s>0?'pos':s<0?'neg':''}" style="font-weight:700" dir="ltr">${num(Math.abs(s))}</span>
+      <button class="mini" onclick="event.stopPropagation();xAcRep('${c.id}')">📄</button></div></div></div>`};
+  setTimeout(xAccF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
+  <button class="btn" onclick="XACPAR='';catForm(null,'exp')">➕ بند جديد</button>
+  <div class="gsr">${FIC}<input id="xac-q" placeholder="اسم البند أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>
+  ${L.length?L.map(row).join(''):'<p class="empty">لا توجد بنود</p>'}`;
+};
 try{render()}catch(e){}
 /* نهاية fix.js */
