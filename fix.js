@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.98',XVBUILD='20/10/2026 - 01:23 م';
+const XVER='2.21.99',XVBUILD='20/10/2026 - 01:35 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7202,4 +7202,32 @@ xGapFind=async function(id){
 xGapFix=function(){const g=XGAP;if(!g||!g.pick)return;g.pick.forEach(x=>{try{x.f()}catch(e){}});
   XNOANCH=g.pick.some(x=>x.na);try{save()}finally{XNOANCH=false}
   XGAP=null;closeSheet();render();say('✅ اتصلح','الرصيد بقى مطابق للبنك','✅')};
+/* ========== 2.21.99 ========== */
+/* لو لاقي الفرق مالقاش: تختار السحب الكاش اللي كان تحويل لشخص وتكتب مصاريفه */
+try{const _gfC=xGapFind;xGapFind=async function(id){const r=await _gfC.apply(this,arguments);try{
+  const g=XGAP;if(!g||g.pick||g.id!==id||g.gap<=0)return r;
+  const L=S.cash.filter(c=>c.method===id&&!isClosed(c.date)).sort((a,b)=>b.date.localeCompare(a.date));if(!L.length)return r;
+  const b=document.querySelector('#sheet .xck .btn.xckb');if(!b)return r;
+  b.insertAdjacentHTML('beforebegin',`<div class="fl">🙋 لو فيه سحب كاش كان تحويل إنستاباي لشخص، علّم عليه واكتب مصاريفه زي ما هي في كشف البنك</div>
+  <div class="list" id="xgc">${L.map(c=>`<div class="xckr"><input type="checkbox" data-c="${c.id}" onchange="xGcSum()" style="width:22px;height:22px;flex:0 0 22px;margin:0"><div class="grow"><b>سحب ${num(c.amount)} ج.م</b><small>${xDW(c.date)}${c.note?' · '+esc(c.note):''}</small></div><input data-f="${c.id}" inputmode="decimal" dir="ltr" value="${amtStr(xFeeCalc(c.amount))}" oninput="xGcSum()" style="width:70px;flex:0 0 70px;margin:0;text-align:center"></div>`).join('')}</div>
+  <div id="xgc-s" class="xckS" style="margin-top:8px"></div>
+  <button class="btn xckb" id="xgc-b" onclick="xGcApply()" disabled>✅ حوّلهم وسجّل المصاريف</button>
+  <div class="fl" style="margin-top:14px">أو لو الفرق مش من السحب الكاش</div>`);
+  xGcSum();
+}catch(e){}return r}}catch(e){}
+function xGcSel(){return [...document.querySelectorAll('#xgc input[data-c]:checked')].map(i=>({c:S.cash.find(x=>x.id===i.dataset.c),f:parseNum((document.querySelector(`#xgc input[data-f="${i.dataset.c}"]`)||{}).value)||0})).filter(x=>x.c)}
+function xGcSum(){const g=XGAP,el=$('#xgc-s'),b=$('#xgc-b');if(!g||!el)return;const L=xGcSel(),s=r2(L.reduce((a,x)=>a+x.f,0)),rem=r2(g.gap-s);
+  el.innerHTML=L.length?`المصاريف اللي علّمت عليها: <b>${fmt(s)}</b><br>الفرق مع البنك: <b>${fmt(g.gap)}</b><br>${Math.abs(rem)<.01?'✅ <b>مطابق بالظبط</b>':`فاضل: <b>${fmt(rem)}</b>`}`:'علّم على السحب اللي كان تحويل لشخص';
+  if(b)b.disabled=!L.length}
+function xGcApply(){
+  const g=XGAP;if(!g)return;const L=xGcSel();if(!L.length)return toast('علّم على سحب واحد على الأقل');
+  const s=r2(L.reduce((a,x)=>a+x.f,0));L.forEach(x=>xCashConv(x.c,x.f));
+  XNOANCH=true;try{save()}finally{XNOANCH=false}render();
+  const rem=r2(g.gap-s);
+  if(Math.abs(rem)<.01){XGAP=null;closeSheet();return say('✅ اتصلح','السحب اتحول لتحويل من البنك للكاش + مصاريف إنستاباي، والرصيد بقى مطابق للبنك','✅')}
+  XGAP={id:g.id,gap:rem,pick:null};
+  sheet(`<h2>✅ اتحولوا</h2><div class="xck"><div class="xckS">السحب اتحول لتحويل من البنك للكاش + مصاريف إنستاباي ${fmt(s)}.<br>${rem>0?'البرنامج لسه أكتر من البنك بـ':'البرنامج بقى أقل من البنك بـ'} <b>${fmt(Math.abs(rem))}</b>.</div>
+  <button class="btn xckb" onclick="xGapRec()">✅ سجّل الباقي ${rem>0?'مصاريف بنك':'تحصيل من البنك'} (${num(Math.abs(rem))})</button>
+  <button class="btn ghost" onclick="closeSheet()">سيبه دلوقتي</button></div>`);
+}
 /* نهاية fix.js */
