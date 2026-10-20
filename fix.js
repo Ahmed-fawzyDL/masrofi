@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.78',XVBUILD='20/10/2026 - 10:48 ص';
+const XVER='2.21.80',XVBUILD='20/10/2026 - 10:58 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6611,4 +6611,38 @@ try{const _vhE=vHome;vHome=function(){let h=_vhE.apply(this,arguments);try{
 }catch(e){}return h}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.79 ========== */
+/* مصاريف إنستاباي: باينة من برا، وبتتسجل مع البنود الثابتة */
+function xIpNeed(t){return !!t&&!t.pend&&!t.xpre&&!t.feeOf&&!t.payFeeOf&&!t.nofee&&t.type!=='inc'&&t.via==='instapay'&&!xFeeTx(t.id)&&!(M(t.method)&&M(t.method).noIpFee)}
+function xIpTag(t){if(!t||t.pend)return '';const f=xFeeTx(t.id);if(f)return ' · 💸 مصاريف '+num(f.amount);return xIpNeed(t)?' · ⚠️ من غير مصاريف إنستاباي':''}
+async function xTxFeeAdd(id){const t=S.txs.find(x=>x.id===id);if(!t)return;if(isClosed(t.date))return toast('الشهر ده مقفول');
+  const v=await askIn('💸 مصاريف إنستاباي','المبلغ اللي البنك خصمه فعلًا',amtStr(xFeeCalc(t.amount)),true,'ضيف');if(v==null)return;
+  const a=parseNum(v);if(!(a>0))return toast('اكتب المبلغ');xAddIpFee(t,a);delete t.nofee;save();render();toast('💸 اتضافت '+fmt(a))}
+function xTxNoFee(id){const t=S.txs.find(x=>x.id===id);if(!t)return;t.nofee=1;save();render();toast('تمام · مش هسألك عليها تاني')}
+
+/* جوه المعاملة */
+try{const _tbI=txBody;txBody=function(t){let h=_tbI.apply(this,arguments);try{
+  if(xIpNeed(t))h=h.replace('<div class="etbar"',`<div class="kv"><span>💸 مصاريف إنستاباي</span><b>مش متسجلة</b></div><div class="etbar" style="margin:6px 0 0"><button class="mini" onclick="xTxFeeAdd('${t.id}')">➕ ضيف ${num(xFeeCalc(t.amount))}</button><button class="mini" onclick="xTxNoFee('${t.id}')">✋ مفيش</button></div><div class="etbar"`);
+}catch(e){}return h}}catch(e){}
+
+/* من برا: في السطر اللي تحت الاسم */
+try{const _frI=fixedRow;fixedRow=function(o){let h=_frI.apply(this,arguments);try{
+  if(o&&o.s&&o.s.st==='done'&&o.s.t){const tg=xIpTag(o.s.t);if(tg)h=h.replace('</small>',tg+'</small>')}}catch(e){}return h}}catch(e){}
+try{const _trI=txRow;txRow=function(t){let h=_trI.apply(this,arguments);try{const tg=xIpTag(t);if(tg)h=h.replace('</small>',tg+'</small>')}catch(e){}return h}}catch(e){}
+try{const _xmI=xMeta;xMeta=function(t,fee){const a=_xmI.apply(this,arguments);try{if(!fee&&t&&!t.pend){const f=xFeeTx(t.id);
+  if(f)a.push(xC('💸 مصاريف '+num(f.amount),'#7c3aed'));else if(xIpNeed(t))a.push(xC('⚠️ من غير مصاريف','#ea580c'))}}catch(e){}return a}}catch(e){}
+
+/* البنود الثابتة اللي بتتدفع بإنستاباي: المصاريف بتتسجل معاها */
+function xAutoFee(before){let n=0;S.txs.filter(t=>!before.has(t.id)&&t.src&&t.src.k==='r'&&t.type==='exp'&&xIpNeed(t)&&!isClosed(t.date)).forEach(t=>{xAddIpFee(t,xFeeCalc(t.amount));n++});if(n)save();return n}
+try{const _apF=autoPostFixed;autoPostFixed=function(){const b=new Set(S.txs.map(t=>t.id)),r=_apF.apply(this,arguments);try{xAutoFee(b)}catch(e){}return r}}catch(e){}
+try{const _ocF=occCollect;occCollect=async function(){const b=new Set(S.txs.map(t=>t.id)),r=await _ocF.apply(this,arguments);try{if(xAutoFee(b))render()}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
+/* ========== 2.21.80 ========== */
+/* خانة مصاريف إنستاباي بتقول هي متسجلة ولا لأ */
+try{const _tfS=txForm;txForm=function(){const r=_tfS.apply(this,arguments);try{
+  const i=$('#f-ifee'),l=i&&i.closest('label');if(!l||l.querySelector('.xfst'))return r;
+  const on=!!(F&&F.id&&xFeeTx(F.id));
+  l.insertAdjacentHTML('beforeend',`<small class="xfst" style="display:block;margin-top:4px;font-weight:700;color:${on?'#16a34a':'#ea580c'}">${on?'✅ متسجلة':'⚠️ مش متسجلة لسه · هتتسجل لما تدوس سجّل'}</small>`);
+}catch(e){}return r}}catch(e){}
 /* نهاية fix.js */
