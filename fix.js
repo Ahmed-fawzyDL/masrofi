@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.89',XVBUILD='20/10/2026 - 12:21 م';
+const XVER='2.21.91',XVBUILD='20/10/2026 - 12:31 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6978,4 +6978,70 @@ xCheckShow=function(){
   if(XCHKSNAP)h+=`<button class="btn ghost danger" onclick="xCheckUndo()">↩️ رجّع كل اللي الـ Check عمله</button>`;
   sheet(h+'</div>');
 };
+/* ========== 2.21.90 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.btn.xckb,.btn.ghost.xckb{background:linear-gradient(135deg,#22c55e,#15803d)!important;color:#fff!important;border:0!important;box-shadow:0 8px 20px rgba(22,163,74,.3)!important}
+`;document.head.appendChild(s)})();
+
+/* ---------- العمليات اللي قبل تاريخ رصيد البداية محسوبة خلاص ---------- */
+function xBeforeOpen(t){const m=M(t.method);return !!(m&&m.openAt&&t.date<=m.openAt)}
+xIpNeed=function(t){return !!t&&!t.pend&&!t.xpre&&!t.feeOf&&!t.payFeeOf&&!t.nofee&&t.type!=='inc'&&t.via==='instapay'&&!xIsBillTx(t)&&!xFeeTx(t.id)&&!xBeforeOpen(t)};
+try{const _rvO=xRvItems;xRvItems=function(){return _rvO.apply(this,arguments).filter(x=>!(x.sec==='nofee'&&xBeforeOpen(x.t)))}}catch(e){}
+/* تصليح مرة واحدة: شيل المصاريف اللي اتضافت تاني على عمليات قبل رصيد البداية */
+if(!S.settings.xopfix1){try{
+  const bad=S.txs.filter(f=>{if(!f.feeOf||!(f.chk||f.rv))return false;const p=S.txs.find(x=>x.id===f.feeOf);return p&&xBeforeOpen(p)&&!isClosed(f.date)});
+  const sum=r2(bad.reduce((a,f)=>a+f.amount,0));
+  if(bad.length){bad.forEach(f=>{const p=S.txs.find(x=>x.id===f.feeOf);if(p)p.nofee=1});const ids=new Set(bad.map(f=>f.id));S.txs=S.txs.filter(t=>!ids.has(t.id))}
+  S.settings.xopfix1=1;save();
+  if(bad.length)setTimeout(()=>say('اتصلح ✓',`شلت ${bad.length} مصاريف إنستاباي بإجمالي ${fmt(sum)}.\nكانت على تحويلات قبل تاريخ رصيد البداية، يعني كانت محسوبة أصلًا جوه رصيد البداية واتخصمت مرتين.`,'✅'),1500);
+}catch(e){}}
+
+/* ---------- 🏦 قايمة الحسابات مقفولة كل مرة ---------- */
+try{const _goX=go;go=function(v){if(v==='pmv'&&view!=='pmv'){XPMO=false;XPMQ=''}return _goX.apply(this,arguments)}}catch(e){}
+
+/* ---------- 👀 الحسابات اللي محتاج تبص عليها ---------- */
+function xNeedList(){
+  const td=today();
+  const rows=S.methods.filter(m=>m.active!==false).map(m=>{let it=[],neg=null;try{it=xRvItems(m.id).filter(x=>x.sec!=='info')}catch(e){}
+    if(!xIsCr(m.id)){try{const g=xLedger(m.id,'1900-01-01',td,S.txs,S.cash);neg=g.ev.find(e=>e.r<0)}catch(e){}}return{m,it,neg}}).filter(x=>x.it.length||x.neg);
+  sheet(`<h2>👀 الحسابات اللي محتاج تبص عليها</h2>${rows.length?rows.map(x=>`<div class="xlnc" onclick="xAcctReviewGo('${x.m.id}')">
+  <div class="xlnr"><span class="xpmn">${xMIc(x.m)}<b>${esc(x.m.name)}</b></span><span class="badge late">${x.it.length+(x.neg?1:0)}</span></div>
+  ${x.neg?`<div class="xckh">⚠️ الرصيد نزل تحت الصفر يوم ${xDW(x.neg.d)}. يعني فيه فلوس دخلت قبل اليوم ده ومتسجلتش، أو رصيد البداية ناقص.</div>`:''}
+  ${x.it.length?`<div class="xckh">🔎 ${x.it.length} عملية فيها مشكلة</div>`:''}
+  <div class="xlna"><button class="btn" onclick="event.stopPropagation();xAcctReviewGo('${x.m.id}')">🔍 افتح المراجعة</button>${x.neg?`<button class="btn ghost" onclick="event.stopPropagation();closeSheet();xRecon('${x.m.id}')">⚖️ مطابقة</button>`:''}</div></div>`).join(''):'<div class="xrvok">✅ كل الحسابات مظبوطة</div>'}`);
+}
+document.addEventListener('click',e=>{try{
+  const b=e.target.closest&&e.target.closest('#sheet .xlns>div');if(!b)return;
+  const s=b.querySelector('small');if(!s||!/محتاج تبص/.test(s.textContent))return;
+  e.stopPropagation();e.preventDefault();xNeedList();
+}catch(err){}},true);
+XFC.check=['✅','Check','xRvAll()','#22c55e,#166534',()=>0,''];
+
+try{render()}catch(e){}
+/* ========== 2.21.91 ========== */
+/* الألوان: كل مستوى بشكل مختلف */
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view details.grp>summary{background:var(--card)!important;border:1px solid rgba(148,163,184,.25)!important;border-inline-start:6px solid var(--p)!important;color:var(--tx)!important;box-shadow:0 2px 8px rgba(0,0,0,.12)!important}
+body #view details.grp[open]>summary{background:var(--p)!important;border-color:var(--p)!important;color:#fff!important}
+body #view details.grp[open]>summary .gs,body #view details.grp[open]>summary .gs *{color:#fff!important}
+body #view details.grp[open]>summary .badge{background:#fff!important;color:var(--p)!important}
+body #view details.grp[open]>summary::after{color:#fff;opacity:.9}
+body #view details.grp .ckx,body #view details.grp .list>*,body #view .list>.row,body #view .list>details{background:var(--card)!important;border:1px solid rgba(148,163,184,.22)!important;box-shadow:none!important}
+body #view details.grp .ckx:has(>details[open]),body #view details.grp .list>details[open],body #view .list>details[open]{border:2px solid #3b82f6!important;box-shadow:0 0 0 3px rgba(59,130,246,.18)!important;background:var(--card)!important}
+body #view details.xr:not(.xgr)>.xb{background:rgba(148,163,184,.07)!important;border:1px solid rgba(148,163,184,.2)!important}
+body #view details.xr:not(.xgr)>.xb>.kv{background:rgba(148,163,184,.09)!important;border-color:rgba(148,163,184,.2)!important}
+body #view details.xr:not(.xgr)>.xb>.kv.xbig>b{color:var(--tx)!important}
+`;document.head.appendChild(s)})();
+
+/* لما تقفل قسم، اللي جواه يتقفل */
+document.addEventListener('toggle',e=>{try{
+  const d=e.target;if(!d||d.tagName!=='DETAILS'||d.open||!d.classList.contains('grp')||!d.closest('#view'))return;
+  d.querySelectorAll('details[open]').forEach(x=>{x.open=false});
+}catch(err){}},true);
+
+/* أي دوسة على حاجة تانية، تقفل المعاملة المفتوحة */
+document.addEventListener('click',e=>{try{
+  const t=e.target;if(!t||!t.closest||!t.closest('#view,nav,header'))return;
+  document.querySelectorAll('#view details.xr[open]').forEach(o=>{if(!o.contains(t))o.open=false});
+}catch(err){}},true);
 /* نهاية fix.js */
