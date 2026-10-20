@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.128',XVBUILD='20/10/2026 - 06:30 م';
+const XVER='2.21.129',XVBUILD='20/10/2026 - 06:38 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8308,5 +8308,79 @@ async function xAcClean(){const L=xAcEmpty();if(!L.length)return toast('مفيش
 async function xAcDel(id){const c=C(id);if(!c)return;const K=xAcKids(id);
   if(K.length&&!await ask('البند ده جواه مصروفات ثابتة',`${K.length} مصروف ثابت جوا «${c.name}» هيفضلوا من غير بند. تكمّل؟`,{icon:'⚠️',ok:'كمّل',danger:true}))return;
   await delCat(id);if(!C(id)){K.forEach(k=>delete k.par);save();go('xacc')}}
+try{render()}catch(e){}
+/* ========== 2.21.129 · البند الرئيسي + حسابات فرعية ========== */
+var XSUBP='';
+function xSubGo(id){XSUBP=id;go('xsub')}
+
+/* نقل البنود الثابتة القديمة لحساب فرعي (مرة واحدة) */
+function xFixToSub(c){
+  const k={id:uid(),name:c.name,code:c.code?c.code+'-1':'',kind:c.kind,fixed:true,par:c.id,active:c.active!==false,files:[],
+    amount:c.amount,every:c.every,start:c.start,pct:c.pct||0,acct:c.acct||'',via:c.via||'',amt:c.amt||{},st:c.st||{},
+    autoFrom:c.autoFrom,noAuto:c.noAuto,end:c.end,p3:c.p3,prevAmt:c.prevAmt,incPct:c.incPct,amtAt:c.amtAt};
+  S.cats.push(k);
+  S.txs.forEach(t=>{if(t.src&&t.src.k==='r'&&t.src.id===c.id){t.src.id=k.id;if(t.cat===c.id)t.cat=k.id}});
+  (S.settings.pins||[]).forEach(p=>{if(p.type==='cat'&&p.ref===c.id)p.ref=k.id});
+  c.fixed=false;c.st={};c.amt={};['autoFrom','end','p3','noAuto'].forEach(x=>delete c[x]);return k}
+try{if(!S.settings.xsub1){const I=xAcInst(),L=S.cats.filter(c=>c.fixed&&!c.par&&!c.cl&&!c.mrg&&!I.has(c.id));
+  L.forEach(xFixToSub);S.settings.xsub1=1;save();
+  if(L.length)setTimeout(()=>say('🗂 اتنقل الثابت لحسابات فرعية',L.map(c=>'• '+c.name).join('\n')+'\n\nكل بند من دول بقى جواه حساب فرعي ثابت بنفس الاسم والمبلغ والمواعيد.','🗂'),1200)}}catch(e){}
+
+/* الحساب الفرعي مش بيظهر في اختيار البند */
+try{const _coS=xCatOpen;xCatOpen=function(){const Cs=S.cats;S.cats=Cs.filter(c=>!c.par||(F&&c.id===F.cat));try{return _coS.apply(this,arguments)}finally{S.cats=Cs}}}catch(e){}
+
+/* جوا البند */
+XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
+  const K=xAcKids(c.id);
+  return `<div class="phead"><button class="mini" onclick="go('xacc')">→</button><h3>${c.code?'#'+esc(c.code)+' · ':''}${esc(c.name)}</h3></div>
+  <div class="xlnn" style="margin:0 4px 10px">${c.core?xCh('up','⭐ أساسي'):xCh('','🛒 متغير')} ${c.active===false?xCh('late','⏸ موقوف'):''}</div>
+  <button class="btn" onclick="xSubGo('${c.id}')">🗂 تكويد حساب فرعي${K.length?' ('+K.length+')':''}</button>
+  ${K.length?`<div class="xsm" style="margin:6px 4px 12px">${K.map(k=>esc(k.name)+(k.fixed?' 📌':'')).join(' · ')}</div>`:''}
+  <div class="xlna" style="grid-template-columns:repeat(3,1fr)"><button class="btn ghost" onclick="xAcForm('${c.id}')">✏️ تعديل</button><button class="btn ghost" onclick="xAcRep('${c.id}')">📄 العمليات</button><button class="btn ghost danger" onclick="xAcDel('${c.id}')">🗑 حذف</button></div>`};
+
+/* 🗂 شاشة الحسابات الفرعية */
+XVW.xsub=()=>{const p=C(XSUBP);if(!p){setTimeout(()=>go('xacc'),0);return ''}
+  const td=today(),K=xAcKids(p.id).sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''),'en',{numeric:true})||a.name.localeCompare(b.name,'ar'));
+  const row=x=>{const nx=x.fixed&&x.active!==false?xClNx(x):null;
+    return `<div class="xlnc" style="cursor:default"><div class="xlnr"><b>${x.code?'<span class="xsm">#'+esc(x.code)+'</span> ':''}${esc(x.name)}</b>${x.fixed?`<span class="xlnbig ${x.kind==='inc'?'pos':'neg'}" dir="ltr">${num(+x.amount||0)}</span>`:''}</div>
+    <div class="xlnn">${x.fixed?xCh('up','📌 ثابت · '+esc(everyTxt(x.every))):xCh('','غير ثابت')} ${x.fixed&&x.acct&&M(x.acct)?xCh('',esc(M(x.acct).name)):''} ${nx?xCh(nx.d<td?'late':'up',(nx.d<td?'⚠️ متأخر ':'⏳ الجاي ')+dmy(nx.d)):''} ${x.active===false?xCh('late','⏸ موقوف'):''}</div>
+    <div class="xlna"><button class="btn ghost" onclick="xSubForm('${p.id}','${x.id}')">✏️ تعديل</button><button class="btn ghost danger" onclick="xSubDel('${x.id}')">🗑 حذف</button></div></div>`};
+  return `<div class="phead"><button class="mini" onclick="xAcGo('${p.id}')">→</button><h3>🗂 الحسابات الفرعية</h3></div>
+  <p class="muted" style="margin:0 4px 10px">${p.code?'#'+esc(p.code)+' · ':''}${esc(p.name)}</p>
+  <button class="btn" onclick="xSubForm('${p.id}')">➕ حساب فرعي جديد</button>
+  ${K.length?K.map(row).join(''):'<p class="empty">مفيش حسابات فرعية لسه</p>'}`};
+
+/* فورم الحساب الفرعي */
+xSubForm=function(par,id){const p=C(par);if(!p)return;const k=id?C(id):null,has=!!(k&&(Object.keys(k.st||{}).length||S.txs.some(t=>t.cat===k.id)));
+  const fx=k?!!k.fixed:true,nc=(p.code?p.code+'-':'')+(xAcKids(par).length+1);
+  sheet(`<h2>${k?'✏️ تعديل حساب فرعي':'🗂 حساب فرعي جديد'}</h2><p class="muted">تحت: ${esc(p.name)}</p>
+  <div class="two"><label>رقم الحساب<input id="sb-c" dir="ltr" value="${esc(k?(k.code||''):nc)}"></label><label>الاسم<input id="sb-n" value="${esc(k?k.name:'')}" placeholder="مثلاً: إيجار"></label></div>
+  <label class="chk fxbox"><input type="checkbox" id="sb-fx" ${fx?'checked':''} onchange="$('#sb-fxb').style.display=this.checked?'':'none'"> 📌 ثابت</label>
+  <div id="sb-fxb" class="fxin" style="${fx?'':'display:none'}">
+    <label>المبلغ<input id="sb-a" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" value="${k&&k.amount?amtStr(+k.amount):''}"></label>
+    <div class="two"><label>التكرار<select id="sb-e" ${has?'disabled':''}>${EVERY.map(([v,l])=>`<option value="${v}" ${+((k&&k.every)||1)===v?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label>الميعاد<input id="sb-d" type="date" value="${k&&k.start?k.start:today()}" ${has?'disabled':''}></label></div>
+    <div class="two"><label>${p.kind==='inc'?'بيتحصّل على حساب':'بيتدفع من حساب'}<select id="sb-m">${opt(S.methods.filter(m=>m.active||(k&&m.id===k.acct)),(k&&k.acct)||defMethod())}</select></label><label>الطريقة<select id="sb-v">${viaOpts(k?k.via:'')}</select></label></div>
+    <label class="chk"><input type="checkbox" id="sb-au" ${k&&k.noAuto?'':'checked'}> 🔄 بيتسجل لوحده في ميعاده</label>
+  </div>
+  ${k?`<label class="chk"><input type="checkbox" id="sb-on" ${k.active!==false?'checked':''}> مفعّل</label>`:''}
+  <button class="btn" onclick="xSubSave('${par}','${id||''}')">💾 حفظ</button><button class="btn ghost" onclick="closeSheet()">رجوع</button>`)};
+xSubSave=function(par,id){const p=C(par);if(!p)return;
+  const n=$('#sb-n').value.trim(),code=latD(($('#sb-c').value||'').trim()),fx=$('#sb-fx').checked,a=parseNum(($('#sb-a')||{}).value);
+  if(!n)return toast('اكتب الاسم');if(fx&&!(a>0))return toast('اكتب المبلغ');
+  if(code&&S.cats.some(x=>x.id!==id&&!x.mrg&&String(x.code||'')===code))return toast('رقم الحساب ده مستخدم');
+  const e=$('#sb-e'),d=$('#sb-d');let k=id?C(id):null;
+  if(!k){if(fx&&!d.value)return toast('اختار الميعاد');k={id:uid(),kind:p.kind||'exp',par,amt:{},st:{},files:[],pct:0,active:true,every:1};S.cats.push(k)}
+  k.name=n;k.code=code;
+  if(fx){Object.assign(k,{fixed:true,amount:a,acct:$('#sb-m').value,via:$('#sb-v').value,noAuto:!$('#sb-au').checked});
+    if(!e.disabled)k.every=+e.value||1;if(!d.disabled&&d.value)k.start=d.value;if(!k.autoFrom&&k.kind==='exp')k.autoFrom=NKM+'-01'}
+  else k.fixed=false;
+  if($('#sb-on'))k.active=$('#sb-on').checked;
+  save();try{autoPostFixed()}catch(x){}closeSheet();render();toast('✅ اتحفظ')};
+
+/* البند اللي جواه حسابات فرعية مش بيتحذف */
+xAcDel=async function(id){const c=C(id);if(!c)return;const K=xAcKids(id);
+  if(K.length)return say('مينفعش يتحذف',`جواه ${K.length} حساب فرعي: ${K.map(k=>k.name).join('، ')}\nاحذفهم الأول من 🗂 تكويد حساب فرعي.`,'🗂');
+  await delCat(id);if(!C(id))go('xacc')};
 try{render()}catch(e){}
 /* نهاية fix.js */
