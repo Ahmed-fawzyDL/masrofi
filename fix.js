@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.83',XVBUILD='20/10/2026 - 11:53 ص';
+const XVER='2.21.85',XVBUILD='20/10/2026 - 11:59 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -6744,4 +6744,93 @@ body.xhome #view .dash .tile .xv{min-height:24px!important;padding:2px 6px!impor
 body.xhome #view .dash .tile>small{font-size:10px!important;line-height:1.3!important}
 body.xhome #view .dash .tile .xd{margin-top:2px!important;padding-top:2px!important;font-size:10px!important}
 `;document.head.appendChild(s)})();
+/* ========== 2.21.84 ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xrv .xnb,.xck .xnb{display:grid!important;grid-template-columns:1fr 1fr;gap:6px!important}
+.xrv .xnb .mini,.xck .xnb .mini{white-space:normal!important;height:auto!important;min-height:34px;padding:6px 8px!important;line-height:1.35;font-size:12px!important;min-width:0!important}
+.xrv .xnb .mini:last-child:nth-child(odd),.xck .xnb .mini:last-child:nth-child(odd){grid-column:1/-1}
+.xck h4{margin:14px 0 6px;font-size:13.5px}
+.xck .list .row small{display:block;margin-top:3px;white-space:normal}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🔍 مراجعة كل الحسابات ---------- */
+function xRvAll(){
+  const rows=S.methods.filter(m=>m.active!==false).map(m=>{let n=0;try{n=xRvItems(m.id).filter(x=>x.sec!=='info').length}catch(e){}
+    return `<div class="row" onclick="xAcctReviewGo('${m.id}')"><span class="pmlg">${xMIc(m)}</span><div class="grow"><b>${esc(m.name)}</b><small>${n?'⚠️ '+n+' حاجة محتاجة مراجعة':'✅ مفيش مشاكل'}</small></div><span class="nchev">‹</span></div>`}).join('');
+  sheet(`<h2>🔍 مراجعة الحسابات</h2>
+  <p class="muted">دوس ✅ Check والبرنامج هيلف على كل الحسابات ويصلح الأخطاء لوحده، وفي الآخر هيوريك عمل إيه، وتقدر ترجّع كل حاجة بزرار واحد.</p>
+  <button class="btn" onclick="xCheckAll()">✅ Check</button>
+  <div class="fl">أو افتح مراجعة حساب معين</div><div class="list">${rows}</div>`);
+}
+var XCHKSNAP=null;
+async function xCheckAll(){
+  if(!await ask('✅ Check','هيلف على كل الحسابات ويصلح:\n• مصاريف إنستاباي الناقصة أو المكررة أو على حساب غلط\n• العمليات اللي فيها أخطاء واضحة\n\nوتقدر ترجّع كل حاجة بعدها بزرار واحد.',{icon:'✅',ok:'ابدأ'}))return;
+  XCHKSNAP=JSON.stringify(S);
+  const fix=[],look=[],P=id=>S.txs.find(x=>x.id===id),aN=id=>M(id)?.name||'—';
+  const del=new Set(),seen={};
+  /* مصاريف إنستاباي */
+  S.txs.forEach(f=>{if(!f.feeOf||isClosed(f.date))return;const p=P(f.feeOf);
+    const why=!p?'مصاريف لعملية اتحذفت':p.pend?'مصاريف لعملية لسه ما اتدفعتش':(p.via!=='instapay'&&p.type!=='tr')?'مصاريف إنستاباي على عملية مش إنستاباي':seen[f.feeOf]?'مصاريف متسجلة مرتين':'';
+    if(why){del.add(f.id);fix.push({a:f.method,t:'🗑 '+why+' · '+num(f.amount)+(p?' · '+xTxLbl(p):'')});return}
+    seen[f.feeOf]=1;
+    if(f.method!==p.method){fix.push({a:p.method,t:'↪ مصاريف '+num(f.amount)+' اتنقلت من '+aN(f.method)+' · '+xTxLbl(p)});f.method=p.method}});
+  S.txs.forEach(t=>{if(isClosed(t.date)||del.has(t.id))return;
+    if(t.payFeeOf&&!P(t.payFeeOf)){del.add(t.id);fix.push({a:t.method,t:'🗑 مصاريف دفع لقسط اتحذف · '+num(t.amount)})}
+    else if(!(t.amount>0)){del.add(t.id);fix.push({a:t.method,t:'🗑 عملية مبلغها غلط · '+xTxLbl(t)})}
+    else if(t.type==='tr'&&t.method&&t.method===t.to){del.add(t.id);fix.push({a:t.method,t:'🗑 تحويل من الحساب لنفسه · '+num(t.amount)})}
+    else if(t.xpre&&t.method){fix.push({a:t.method,t:'🧹 قسط مدفوع سابقًا اتشال من الحساب · '+num(t.amount)});t.method='';t.via=''}});
+  S.txs=S.txs.filter(t=>!del.has(t.id));
+  /* إنستاباي من غير مصاريف */
+  let addSum=0;
+  S.txs.slice().forEach(t=>{if(isClosed(t.date)||!xIpNeed(t))return;const a=xFeeCalc(t.amount);if(!(a>0))return;
+    xAddIpFee(t,a);const f=xFeeTx(t.id);if(f){f.rv=1;f.chk=1}addSum=r2(addSum+a);fix.push({a:t.method,t:'➕ مصاريف إنستاباي '+num(a)+' · '+xTxLbl(t),id:t.id})});
+  /* اللي محتاج تبص عليه */
+  const td=today(),dp={};
+  S.txs.forEach(t=>{if(t.feeOf||t.payFeeOf||t.pend)return;
+    const k=[t.type,t.date,r2(t.amount),t.cat||'',t.method,t.to||''].join('|');(dp[k]=dp[k]||[]).push(t);
+    if(t.date>td)look.push({a:t.method,t:'📅 تاريخها بعد النهارده · '+xTxLbl(t),id:t.id})});
+  Object.values(dp).forEach(l=>{if(l.length>1)l.slice(1).forEach(t=>look.push({a:t.method,t:'🔁 ممكن تكون مكررة · '+xTxLbl(t),id:t.id}))});
+  S.methods.forEach(m=>{if(xIsCr(m.id))return;try{const g=xLedger(m.id,'1900-01-01',td,S.txs,S.cash),e=g.ev.find(e=>e.r<0);if(e)look.push({a:m.id,t:'⚠️ الرصيد نزل تحت الصفر يوم '+dmy(e.d)+' بعد «'+e.l+'»'})}catch(e){}});
+  save();render();
+  const grp=(L,ac)=>{const by={};L.forEach(x=>(by[x.a]=by[x.a]||[]).push(x));return Object.entries(by).map(([a,l])=>`<h4>${esc(aN(a))} <span class="badge soon">${l.length}</span></h4><div class="list">${l.map(x=>`<div class="row" style="cursor:default"><div class="grow"><small style="font-size:12.5px">${esc(x.t)}</small>${ac&&x.id?`<div class="xnb"><button class="mini" onclick="editTx('${x.id}')">📂 افتح</button></div>`:''}</div></div>`).join('')}</div>`).join('')};
+  sheet(`<h2>✅ نتيجة الـ Check</h2><div class="xck">
+  <div class="xlns"><div><small>اتصلح</small><b class="pos">${fix.length}</b></div><div><small>مصاريف اتضافت</small><b>${num(addSum)}</b></div><div><small>محتاج تبص</small><b class="${look.length?'neg':''}">${look.length}</b></div></div>
+  ${fix.length?'<div class="fl">🛠 اللي اتصلح</div>'+grp(fix,0):'<div class="xrvok">✅ مفيش أخطاء تتصلح</div>'}
+  ${look.length?'<div class="fl">👀 محتاج تبص عليه بنفسك</div>'+grp(look,1):''}
+  <p class="muted" style="margin-top:12px">آخر خطوة: اعمل ⚖️ مطابقة لكل حساب مع رصيد البنك. لو طلع فرق بعد ما المصاريف اتضافت، دوس ↩️ رجّع، أو افتح مراجعة الحساب ودوس ✋ على العملية اللي المصاريف بتاعتها جوه المبلغ.</p>
+  ${fix.length?'<button class="btn ghost danger" onclick="xCheckUndo()">↩️ رجّع كل اللي اتعمل</button>':''}</div>`);
+}
+async function xCheckUndo(){
+  if(!XCHKSNAP)return toast('مفيش حاجة ترجع');
+  if(!await ask('ترجّع كل اللي اتعمل؟','كل تصليحات الـ Check هتترجع زي ما كانت.',{icon:'↩️',ok:'رجّع',danger:true}))return;
+  XTRSKIP=true;try{S=normalize(JSON.parse(XCHKSNAP));save()}finally{XTRSKIP=false}
+  XCHKSNAP=null;closeSheet();render();toast('↩️ رجع كل حاجة زي ما كانت');
+}
+/* زرار المراجعة فوق في شاشة الحسابات */
+try{const _rnRv=render;render=function(){const r=_rnRv.apply(this,arguments);try{
+  if(view!=='pmv')return r;const ph=$('#view .phead');if(!ph||ph.querySelector('.xrva'))return r;
+  const h=ph.querySelector('h3');if(h)h.insertAdjacentHTML('afterend','<button class="mini xrva" onclick="xRvAll()">🔍 مراجعة</button>');
+}catch(e){}return r}}catch(e){}
+XFC.check=['✅','Check','xRvAll()','#22c55e,#166534',()=>0,''];
+
+try{render()}catch(e){}
+/* ========== 2.21.85 ========== */
+/* الرئيسية: بوكس الشركة ثابت تحت، ورقم الإصدار ظاهر */
+(()=>{const s=document.createElement('style');s.textContent=`
+body.xhome #view{display:flex!important;flex-direction:column}
+body.xhome #view>.brand{margin-top:auto!important;padding-top:10px}
+body.xhome .brand small{display:block!important;font-size:10px!important;line-height:1.5!important;opacity:.8}
+`;document.head.appendChild(s)})();
+function xHomeFit(){try{
+  const v=$('#view');if(!v)return;
+  if(view!=='home'){v.style.minHeight='';return}
+  const z=parseFloat(getComputedStyle(document.querySelector('main')).zoom)||1;
+  const top=v.getBoundingClientRect().top+window.scrollY;
+  v.style.minHeight=Math.max(0,(innerHeight-top)/z)+'px';
+  const sm=v.querySelector('.brand small');
+  if(sm&&!sm.dataset.x2){sm.dataset.x2=1;sm.innerHTML=sm.innerHTML.replace(/ · (?=[^·]*$)/,'<br>')}
+}catch(e){}}
+try{const _rnFit=render;render=function(){const r=_rnFit.apply(this,arguments);xHomeFit();return r}}catch(e){}
+addEventListener('resize',()=>setTimeout(xHomeFit,50));
+try{render()}catch(e){}
 /* نهاية fix.js */
