@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.131',XVBUILD='20/10/2026 - 07:22 م';
+const XVER='2.21.132',XVBUILD='20/10/2026 - 07:35 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8498,5 +8498,97 @@ try{const _rnPM=render;render=function(){const r=_rnPM.apply(this,arguments);try
   if(view==='xppo'&&!$('#ppm-b')){const per=$('#view .xppper');if(per)per.insertAdjacentHTML('beforebegin',
     `<div class="xlna" id="ppm-b"><button class="btn" onclick="xPpMove(XPPID)">📥 نقل عمليات عليه</button><button class="btn ghost" onclick="xRfOpen()">🩹 رجّع البنود من نسخة</button></div>`)}
 }catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.132 · البند القديم يتنقل لحساب الشخص ========== */
+var XPIO={};
+function xPpItems(pid){const p=XPP().find(x=>x.id===pid),ids=new Set(Object.keys((p&&p.cats)||{}));
+  S.cats.forEach(c=>{if(c.ppo===pid)ids.add(c.id)});return [...ids].map(C).filter(c=>c&&!c.par&&!c.mrg)}
+function xPpAdopt(cid,pid){const p=XPP().find(x=>x.id===pid),c=C(cid);if(!p||!c)return;const set=xAcSet(cid);
+  XPP().forEach(q=>{if(q.id!==pid&&q.cats)set.forEach(id=>delete q.cats[id])});
+  p.cats=p.cats||{};set.forEach(id=>{const x=C(id);if(x)x.ppo=pid;p.cats[id]='owe'});c.active=true;
+  S.txs.forEach(t=>{if(!set.has(t.cat))return;t.pp=pid;t.ppk=t.type==='inc'?'paid':'owe';delete t.ppa;if(t.ppx)t.ppx=t.ppx.filter(x=>x!==pid)})}
+function xPpNewItem(pid,n){const p=XPP().find(x=>x.id===pid);let c=xPpItems(pid).find(x=>normAr(x.name)===normAr(n));if(c)return c;
+  c={id:uid(),name:n,kind:'exp',active:true,files:[],amt:{},st:{},every:1,pct:0,ppo:pid};S.cats.push(c);p.cats=p.cats||{};p.cats[c.id]='owe';return c}
+
+/* بنود الأشخاص مش بتظهر في البنود العامة */
+function xNoPpo(fn,keep){return function(){const Cs=S.cats;S.cats=Cs.filter(c=>!c.ppo||(keep&&F&&c.id===F.cat));try{return fn.apply(this,arguments)}finally{S.cats=Cs}}}
+try{XVW.xacc=xNoPpo(XVW.xacc)}catch(e){}
+try{xCatOpen=xNoPpo(xCatOpen,1)}catch(e){}
+try{xOaAccs=xNoPpo(xOaAccs)}catch(e){}
+
+/* ✏️ تعديل البند: 👤 تحت حساب */
+try{const _afP=xAcForm;xAcForm=function(id){const r=_afP.apply(this,arguments);try{
+  const c=id&&C(id),b=document.querySelector('#sheet .btn[onclick^="xAcSave("]');
+  if(c&&b&&!c.cl&&XPP().length&&!$('#af-pp'))b.insertAdjacentHTML('beforebegin',`<label>👤 تحت حساب<select id="af-pp"><option value="">— بند عام —</option>${XPP().map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
+  <small class="muted xhint">لو اخترت شخص، البند هيتشال من بنود الحسابات، ويبقى جوا حسابه بالاسم اللي فوق، وكل عملياته معاه.</small>`);
+}catch(e){}return r}}catch(e){}
+try{const _asP=xAcSave;xAcSave=function(id){const s=$('#af-pp');if(id&&s&&s.value)return xPpAdoptSave(id,s.value);return _asP.apply(this,arguments)}}catch(e){}
+async function xPpAdoptSave(id,pid){const c=C(id),p=XPP().find(x=>x.id===pid);if(!c||!p)return;
+  const n=(($('#af-n')||{}).value||'').trim();if(!n)return toast('اكتب الاسم');
+  const ex=xPpItems(pid).find(x=>x.id!==id&&normAr(x.name)===normAr(n));
+  c.name=n;xPpAdopt(id,pid);let to=id;
+  if(ex&&await ask('فيه بند بنفس الاسم في حسابه','تدمجهم في بند واحد؟',{icon:'🔗',ok:'ادمجهم',cancel:'سيبهم لوحدهم'})){try{xMgSnap()}catch(e){}xCatMerge(id,ex.id);xPpAdopt(ex.id,pid);to=ex.id}
+  save();closeSheet();XPPV.per='a';XPPID=pid;XPIO={};XPIO[to]=true;go('xppo');toast('✅ «'+n+'» بقى في حساب '+p.name)}
+try{const _xeP=XVW.xace;XVW.xace=function(){let h=_xeP.apply(this,arguments);try{const c=C(XACE);
+  if(c&&!c.cl&&XPP().length&&typeof h==='string')h=h.replace('<button class="btn" onclick="xSubGo(',`<button class="btn" onclick="xAcForm('${c.id}')">👤 نقله لحساب شخص</button><button class="btn" onclick="xSubGo(`)}catch(e){}return h}}catch(e){}
+
+/* حساب الشخص: بنود، وجوا كل بند عملياته */
+XVW.xppo=()=>{const p=XPP().find(x=>x.id===XPPID);if(!p){setTimeout(()=>go('xpp'),0);return ''}
+  if(!XPPV.m)XPPV.m=xPpTd().slice(0,7);let from='',to='9999',lbl='';
+  if(XPPV.per==='m'){from=XPPV.m+'-01';to=XPPV.m+'-31';lbl=XPPV.m.split('-').reverse().join('/')}
+  else if(XPPV.per==='y'){from=XPPV.m.slice(0,4)+'-01-01';to=XPPV.m.slice(0,4)+'-12-31';lbl=XPPV.m.slice(0,4)}
+  const R=xPpRows(p),pre=xPpSum(R.filter(r=>(r.t.date||'')<from)),IN=R.filter(r=>(r.t.date||'')>=from&&(r.t.date||'')<=to),ps=xPpSum(IN);
+  const top=id=>{const c=C(id);return c&&c.par&&C(c.par)?C(c.par):c},G=new Map();
+  IN.forEach(r=>{const c=top(r.t.cat),k=c?c.id:'_';if(!G.has(k))G.set(k,{c,L:[]});G.get(k).L.push(r)});
+  if(XPPV.per==='a')xPpItems(p.id).forEach(c=>{if(!G.has(c.id))G.set(c.id,{c,L:[]})});
+  const last=g=>g.L.reduce((m,r)=>r.t.date>m?r.t.date:m,'');
+  const grp=[...G.values()].sort((a,b)=>last(b).localeCompare(last(a)));
+  const row=r=>{const t=r.t,a=Math.abs(+t.amount||0),inc=r.k==='paid';
+    return `<div class="xpir" onclick="editTx('${t.id}')"><span class="xppd">${xPpD(t.date)}</span><span class="xpin"><b>${esc(t.note||'—')}</b><small>${inc?'💰 تحصيل':'💸 مصروف'}${M(t.method)?' · '+esc(M(t.method).name):''}</small></span><b class="${inc?'pos':'neg'}" dir="ltr">${inc?'−':''}${num(a)}</b><button class="mini" onclick="event.stopPropagation();xPpNote('${t.id}')">📝</button></div>`};
+  const gh=({c,L})=>{const k=c?c.id:'_',own=c&&c.ppo===p.id,s=r2(L.reduce((a,r)=>a+(r.k==='paid'?-1:1)*Math.abs(+r.t.amount||0),0));
+    return `<details class="xpig" ${XPIO[k]?'open':''} ontoggle="XPIO['${k}']=this.open"><summary><span class="xpin"><b>📒 ${esc(c?c.name:'من غير بند')}</b><small>${L.length} عملية</small></span><b class="${s<0?'pos':'neg'}" dir="ltr">${num(Math.abs(s))}</b></summary>
+    ${L.slice().reverse().map(row).join('')||'<div class="xckh" style="padding:10px 14px">مفيش عمليات في الفترة دي</div>'}
+    ${c?`<div class="xpib"><button class="mini" onclick="xPpItNew('${p.id}','${c.id}')">➕ مصروف عليه</button>${own?`<button class="mini" onclick="xPpItRen('${c.id}')">✏️ الاسم</button><button class="mini" onclick="xPpItBack('${c.id}')">↩ رجّعه للبنود العامة</button>`:''}</div>`:''}</details>`};
+  return `<div class="phead"><button class="mini" onclick="go('xpp')">→</button><h3>👤 ${esc(p.name)}</h3><button class="mini" onclick="xPpEdit('${p.id}')">✏️</button><button class="mini" onclick="xPpPrint('${p.id}')">🖨️</button><button class="mini" onclick="xPpShare('${p.id}')">📤</button></div>
+  <div class="xlna"><button class="btn" onclick="xPpAddT('${p.id}','exp')">➕ مصروف</button><button class="btn" onclick="xPpAddT('${p.id}','inc')">➕ تحصيل</button></div>
+  ${kpis([['💸 مصروفات',fmt(ps.owe),'exp'],['💰 تحصيلات',fmt(ps.paid),'inc'],['الرصيد',fmt(r2(pre.bal+ps.bal)),'net']])}
+  <div class="seg">${[['m','شهر'],['y','سنة'],['a','الكل']].map(([v,l])=>`<button class="${XPPV.per===v?'on':''}" onclick="xPpOpen('${p.id}','${v}')">${l}</button>`).join('')}</div>
+  ${XPPV.per!=='a'?`<div class="xppnav"><button class="mini" onclick="xPpMv('${p.id}',-1)">→</button><b>${lbl}</b><button class="mini" onclick="xPpMv('${p.id}',1)">←</button></div>`:''}
+  ${grp.length?grp.map(gh).join(''):'<p class="empty">مفيش عمليات في الفترة دي</p>'}
+  <button class="btn ghost" onclick="xPpMove('${p.id}')">📥 ربط عمليات متفرقة</button>`};
+function xPpItNew(pid,cid){const c=C(cid);if(!c)return;try{closeSheet()}catch(e){}newTx('exp',1);if(!F)return;
+  F.xtype='other';F.pp=pid;F.ppMan=1;F.cat=cid;F.cq=c.name;F.newCat='';SHKEEP=1;txForm()}
+function xPpAddT(pid,type){try{closeSheet()}catch(e){}newTx(type,1);if(!F)return;F.xtype='other';F.pp=pid;F.ppMan=1;xOaPer(pid)}
+async function xPpItRen(cid){const c=C(cid);if(!c)return;const v=await askIn('✏️ اسم البند','',c.name,false);if(v==null||!String(v).trim())return;c.name=String(v).trim();save();render();toast('✅ اتغير الاسم')}
+async function xPpItBack(cid){const c=C(cid);if(!c||!c.ppo)return;const pid=c.ppo,p=XPP().find(x=>x.id===pid);
+  if(!await ask('ترجّعه للبنود العامة؟',`«${c.name}» هيتشال من حساب ${p?p.name:''} ويرجع في 📒 بنود الحسابات.`,{icon:'↩',ok:'رجّعه'}))return;
+  const set=xAcSet(cid);set.forEach(id=>{const x=C(id);if(x)delete x.ppo;if(p&&p.cats)delete p.cats[id]});
+  S.txs.forEach(t=>{if(set.has(t.cat)&&t.pp===pid){delete t.pp;delete t.ppk;delete t.ppa}});save();render();toast('↩ رجع للبنود العامة')}
+
+/* على حساب ← شخص: تختار بند من بنوده أو تعمل بند جديد */
+xOaPer=function(pid){const p=XPP().find(x=>x.id===pid);if(!p||!F)return;try{grab()}catch(e){}XOAF=F;
+  const L=xPpItems(pid).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  sheet(`<h2>👤 ${esc(p.name)}</h2><p class="muted">اختار البند اللي هتسجل عليه</p>
+  <div class="list">${L.map(c=>`<div class="row" onclick="xPpPickIt('${pid}','${c.id}')"><span class="ic" style="background:var(--soft)">📒</span><div class="grow"><b>${esc(c.name)}</b></div>${F.cat===c.id?'<b>✓</b>':''}</div>`).join('')||'<p class="empty">لسه مفيش بنود في حسابه</p>'}</div>
+  <label>➕ بند جديد في حسابه<input id="pi-n" placeholder="مثلاً: مصروف شهري"></label>
+  <button class="btn" onclick="xPpPickNew('${pid}')">➕ اعمله وسجّل عليه</button>
+  <button class="btn ghost" onclick="xOaBack()">رجوع</button>`)};
+function xPpPickIt(pid,cid){const c=C(cid);F=XOAF;if(!F||!c)return;F.pp=pid;F.ppMan=1;F.cat=cid;F.cq=c.name;F.newCat='';F.fix=false;XOA.t='';XOA.q='';SHKEEP=1;txForm()}
+function xPpPickNew(pid){const n=(($('#pi-n')||{}).value||'').trim();if(!n)return toast('اكتب اسم البند');const c=xPpNewItem(pid,n);save();xPpPickIt(pid,c.id)}
+
+/* تعديل الشخص: من غير قايمة كل البنود */
+try{const _peQ=xPpEditR;xPpEditR=function(){const r=_peQ.apply(this,arguments);try{const sz=$('#sheet .sz');if(!sz)return r;
+  ['#pp-q','#pp-hint','#pp-cl'].forEach(s=>{const e=$(s);if(e)e.remove()});
+  sz.querySelectorAll('.fl').forEach(f=>{if(/البنود اللي تخصه/.test(f.textContent)){const L=XPPE&&XPPE.id?xPpItems(XPPE.id):[];
+    f.outerHTML=`<div class="fl">📒 بنود حسابه</div><div class="xckh">${L.length?L.map(c=>esc(c.name)).join(' · '):'لسه مفيش'}</div>`}})}catch(e){}return r}}catch(e){}
+
+(function(){const s=document.createElement('style');s.textContent=`
+.xpig{border-radius:16px;margin:0 0 10px;background:var(--card);border:1px solid rgba(148,163,184,.25)}
+.xpig>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;list-style:none;cursor:pointer}
+.xpig>summary::-webkit-details-marker{display:none}.xpig[open]{border-color:var(--p)}
+.xpig[open]>summary{border-bottom:1px dashed rgba(148,163,184,.3)}
+.xpin{flex:1;display:flex;flex-direction:column;min-width:0}.xpin small{font-size:11px;opacity:.75}
+.xpir{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(148,163,184,.12);cursor:pointer}
+.xpib{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px}`;document.head.appendChild(s)})();
 try{render()}catch(e){}
 /* نهاية fix.js */
