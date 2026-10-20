@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.130',XVBUILD='20/10/2026 - 07:13 م';
+const XVER='2.21.131',XVBUILD='20/10/2026 - 07:22 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8441,5 +8441,62 @@ xPpQ=function(q){const n=xNrm(q||'');let any=0;
   document.querySelectorAll('#pp-cl .xppcat').forEach(r=>{const on=r.classList.contains('xppcon'),v=on||(n&&r.dataset.q.includes(n));r.style.display=v?'':'none';if(v)any++});
   let h=$('#pp-hint');if(!h){const i=$('#pp-q');if(i){i.insertAdjacentHTML('afterend','<div id="pp-hint" class="xckh" style="margin:6px 2px"></div>');h=$('#pp-hint')}}
   if(h)h.textContent=n?(any?'':'مفيش بند بالاسم ده'):'🔍 دوّر على البند عشان تضيفه'};
+try{render()}catch(e){}
+/* ========== 2.21.131 · نقل عمليات على شخص + ترجيع البنود من نسخة ========== */
+var XPPM={pid:'',sel:new Set()},XRF=null,XCBS='width:22px;height:22px;flex:0 0 22px;margin:0';
+
+/* 📥 نقل عمليات على الشخص: البند والبيان والمبلغ مبيتغيروش */
+function xPpMove(pid){const p=XPP().find(x=>x.id===pid);if(!p)return;
+  XPPM={pid,sel:new Set(S.txs.filter(t=>t.pp===pid).map(t=>t.id))};
+  const L=S.txs.filter(t=>(t.type==='exp'||t.type==='inc')&&!t.feeOf&&!t.payFeeOf&&!t.del).sort(byDesc);
+  sheet(`<h2>📥 عمليات ${esc(p.name)}</h2>
+  <p class="muted">علّم على كل عملية تخصه. البند والبيان والمبلغ مش هيتغيروا.</p>
+  <input id="ppm-q" class="xpq" placeholder="🔍 البند أو البيان أو المبلغ أو التاريخ" oninput="xPpMQ(this.value)">
+  <div class="xckh" id="ppm-n" style="margin:4px 2px 8px"></div>
+  <div class="list" id="ppm-l">${L.map(t=>{const c=C(t.cat),o=t.pp&&t.pp!==pid&&XPP().find(x=>x.id===t.pp);
+    return `<label class="row" style="cursor:pointer" data-q="${esc(xqn([c?c.name:'',t.note||'',t.amount,num(t.amount),dmy(t.date)].join(' ')))}"><input type="checkbox" data-t="${t.id}" ${XPPM.sel.has(t.id)?'checked':''} onchange="xPpMT(this)" style="${XCBS}"><div class="grow"><b>${esc(c?c.name:'—')}</b><small>${dmy(t.date)}${t.note?' · '+esc(t.note):''}${o?' · 👤 '+esc(o.name):''}</small></div><div class="amt ${t.type}">${num(t.amount)}</div></label>`}).join('')}</div>
+  <button class="btn" onclick="xPpMSave()">✅ حفظ</button><button class="btn ghost" onclick="closeSheet()">إلغاء</button>`);
+  xPpMN()}
+function xPpMT(el){const id=el.dataset.t;if(el.checked)XPPM.sel.add(id);else XPPM.sel.delete(id);xPpMN()}
+function xPpMN(){const el=$('#ppm-n');if(!el)return;let s=0;XPPM.sel.forEach(id=>{const t=S.txs.find(x=>x.id===id);if(t)s+=t.type==='inc'?-t.amount:t.amount});
+  el.textContent='متعلّم على '+XPPM.sel.size+' عملية · الصافي '+fmt(r2(s))}
+function xPpMQ(q){const n=xqn(q);document.querySelectorAll('#ppm-l>.row').forEach(r=>r.style.display=!n||r.dataset.q.includes(n)?'':'none')}
+function xPpMSave(){const pid=XPPM.pid,s=XPPM.sel;let a=0,d=0;
+  S.txs.forEach(t=>{
+    if(s.has(t.id)){if(t.pp!==pid)a++;t.pp=pid;t.ppk=t.type==='inc'?'paid':'owe';delete t.ppa;if(t.ppx)t.ppx=t.ppx.filter(x=>x!==pid)}
+    else if(t.pp===pid){delete t.pp;delete t.ppk;delete t.ppa;t.ppx=[...new Set((t.ppx||[]).concat(pid))];d++}});
+  save();closeSheet();XPPID=pid;if(view==='xppo')render();else go('xppo');
+  toast('✅ اتضاف '+a+(d?' · اتشال '+d:''))}
+
+/* 🩹 ترجيع البند والبيان من النسخة التلقائية */
+async function xRfOpen(){let all=[];try{all=(await XBK.run('readonly',s=>s.getAll())).sort((a,b)=>b.d.localeCompare(a.d))}catch(e){}
+  if(!all.length)return say('مفيش نسخ','مفيش نسخ تلقائية على الموبايل ده. رجّع من Google Drive.','🕒');
+  sheet(`<h2>🩹 رجّع البنود من نسخة</h2>
+  <p class="muted">اختار نسخة من قبل ما الأسامي تبوظ. هيرجّع البند والبيان بس، والمبالغ وأي عمليات جديدة هتفضل زي ما هي. وهتشوف كل حاجة قبل ما تتنفذ.</p>
+  <div class="list">${all.map(x=>`<div class="row" onclick="xRfPick('${x.d}')"><span class="ic" style="background:var(--soft)">🕒</span><div class="grow"><b>${fdate(x.d)}</b><small>${new Date(x.at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})} · ${x.n} عملية</small></div></div>`).join('')}</div>`)}
+async function xRfPick(d){const x=await XBK.run('readonly',s=>s.get(d));if(!x)return;let o;try{o=JSON.parse(x.data)}catch(e){return toast('النسخة دي مش سليمة')}
+  const OT=new Map((o.txs||[]).map(t=>[t.id,t])),OC=new Map((o.cats||[]).map(c=>[c.id,c])),tx=[],cn=[];
+  S.txs.forEach(t=>{const a=OT.get(t.id);if(!a||isClosed(t.date))return;if(a.cat!==t.cat||(a.note||'')!==(t.note||''))tx.push({t,a})});
+  S.cats.forEach(c=>{const a=OC.get(c.id);if(a&&a.name!==c.name)cn.push({c,a})});
+  XRF={tx,cn,OC};
+  if(!tx.length&&!cn.length)return say('مفيش فرق','البنود والبيانات زي النسخة دي بالظبط. جرّب نسخة أقدم.','🕒');
+  const nm=id=>(C(id)||OC.get(id)||{}).name||'—';
+  sheet(`<h2>🩹 الفرق مع نسخة ${fdate(d)}</h2>
+  ${cn.length?`<div class="fl">📒 بنود اتغير اسمها (${cn.length})</div><div class="list">${cn.map((x,i)=>`<label class="row" style="cursor:pointer"><input type="checkbox" data-c="${i}" checked style="${XCBS}"><div class="grow"><b>${esc(x.c.name)}</b><small>يرجع: ${esc(x.a.name)}</small></div></label>`).join('')}</div>`:''}
+  ${tx.length?`<div class="fl">💸 عمليات اتغير بندها أو بيانها (${tx.length})</div><div class="list">${tx.map((x,i)=>`<label class="row" style="cursor:pointer"><input type="checkbox" data-x="${i}" checked style="${XCBS}"><div class="grow"><b>${dmy(x.t.date)} · ${num(x.t.amount)}</b><small>دلوقتي: ${esc(nm(x.t.cat))}${x.t.note?' · '+esc(x.t.note):''}</small><small>هيرجع: ${esc(nm(x.a.cat))}${x.a.note?' · '+esc(x.a.note):''}</small></div></label>`).join('')}</div>`:''}
+  <button class="btn xckb" onclick="xRfApply()">✅ رجّع المتعلّم عليه</button><button class="btn ghost" onclick="xRfOpen()">رجوع</button>`)}
+function xRfApply(){const R=XRF;if(!R)return;let n=0;
+  document.querySelectorAll('#sheet [data-c]:checked').forEach(i=>{const x=R.cn[+i.dataset.c];if(x){x.c.name=x.a.name;n++}});
+  document.querySelectorAll('#sheet [data-x]:checked').forEach(i=>{const x=R.tx[+i.dataset.x];if(!x)return;
+    if(!C(x.a.cat)){const oc=R.OC.get(x.a.cat);if(oc)S.cats.push(JSON.parse(JSON.stringify(oc)))}
+    x.t.cat=x.a.cat;x.t.note=x.a.note||'';n++});
+  XRF=null;save();closeSheet();render();
+  say('✅ رجعت',n+' تعديل رجع زي النسخة.\nدلوقتي افتح كشف الشخص ودوس 📥 نقل عمليات عليه.','✅')}
+
+/* الزرارين في كشف الشخص */
+try{const _rnPM=render;render=function(){const r=_rnPM.apply(this,arguments);try{
+  if(view==='xppo'&&!$('#ppm-b')){const per=$('#view .xppper');if(per)per.insertAdjacentHTML('beforebegin',
+    `<div class="xlna" id="ppm-b"><button class="btn" onclick="xPpMove(XPPID)">📥 نقل عمليات عليه</button><button class="btn ghost" onclick="xRfOpen()">🩹 رجّع البنود من نسخة</button></div>`)}
+}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
