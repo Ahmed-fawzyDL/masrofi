@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.106',XVBUILD='20/10/2026 - 03:12 م';
+const XVER='2.21.107',XVBUILD='20/10/2026 - 03:20 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7616,4 +7616,28 @@ try{const _peC=xPpEditR;xPpEditR=function(){const r=_peC.apply(this,arguments);t
 function xCwName(){document.querySelectorAll('button,.tile,[onclick]').forEach(x=>{if(x.closest('#sheet'))return;const tx=x.textContent.replace(/\s+/g,' ').trim();
   if(/سحب و\s*إيداع كاش/.test(tx)&&tx.length<40){const w=document.createTreeWalker(x,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode())n.nodeValue=n.nodeValue.replace(/سحب و(\s*)إيداع كاش/,'سحب و$1إيداع وتحويل')}})}
 try{const _rnN=render;render=function(){const r=_rnN.apply(this,arguments);try{xCwName()}catch(e){}return r}}catch(e){}
+/* ========== 2.21.107 · أكتر من رقم + البحث من غير ما الكيبورد يختفي ========== */
+function xPpKHtml(c){const k=XPPE.cats[c.id];if(!k)return '';if(c.kind==='inc')return '<span class="xckh">🟢 رجّع</span>';
+  return ['owe','gift'].map(v=>`<button type="button" class="mini${k===v?' xppon':''}" onclick="xPpKSet('${c.id}','${v}')">${XPPKN[v]}</button>`).join('')}
+function xPpCRow(c){const on=!!XPPE.cats[c.id];
+  return `<div class="xppcat${on?' xppcon':''}" id="pp-r-${c.id}" data-q="${esc(xCNames(c).map(xNrm).join(' '))}"><label><input type="checkbox" ${on?'checked':''} onchange="xPpCat('${c.id}',this.checked)"> ${c.kind==='inc'?'💰':'💸'} ${esc(c.name)}</label><span id="pp-k-${c.id}">${xPpKHtml(c)}</span></div>`}
+function xPpPhRows(){const P=XPPE.phs;return P.map((p,i)=>`<div class="xppph"><input dir="ltr" inputmode="tel" value="${esc(p)}" oninput="XPPE.phs[${i}]=this.value">${P.length>1?`<button type="button" class="mini" onclick="xPpPhDel(${i})">✕</button>`:''}</div>`).join('')}
+function xPpPhAdd(){XPPE.phs.push('');$('#pp-phs').innerHTML=xPpPhRows();const L=$('#pp-phs').querySelectorAll('input');L[L.length-1].focus()}
+function xPpPhDel(i){XPPE.phs.splice(i,1);if(!XPPE.phs.length)XPPE.phs=[''];$('#pp-phs').innerHTML=xPpPhRows()}
+function xPpQ(q){const n=xNrm(q||'');let shown=0;
+  document.querySelectorAll('#pp-cl .xppcat').forEach(r=>{const on=r.classList.contains('xppcon');let v=on||(n?r.dataset.q.includes(n):shown<20);if(v&&!on)shown++;r.style.display=v?'':'none'})}
+xPpEditR=function(){const e=XPPE;if(!Array.isArray(e.phs)||!e.phs.length)e.phs=e.ph?[e.ph]:[''];
+  const cs=S.cats.filter(c=>(c.kind==='exp'||c.kind==='inc')&&c.active!==false&&!c.mrg).sort((a,b)=>(e.cats[b.id]?1:0)-(e.cats[a.id]?1:0)||a.name.localeCompare(b.name,'ar'));
+  sheet(`<h3>${e.id?'✏️ تعديل':'➕ شخص جديد'}</h3>
+    <label>👤 الاسم<input id="pp-n" value="${esc(e.name)}" oninput="XPPE.name=this.value"></label>
+    <div class="fl">📞 الرقم</div><div id="pp-phs">${xPpPhRows()}</div><button type="button" class="mini" onclick="xPpPhAdd()">➕ رقم تاني</button>
+    <div class="fl">🔗 البنود اللي تخصه</div><input id="pp-q" placeholder="🔍 دوّر على بند" oninput="xPpQ(this.value)">
+    <div id="pp-cl">${cs.map(xPpCRow).join('')}</div>
+    <button class="btn" onclick="xPpSave()">✅ حفظ</button>${e.id?`<button class="btn" style="background:#c0392b" onclick="xPpDel('${e.id}')">🗑 حذف الشخص</button>`:''}`);
+  xPpQ('')};
+xPpCat=function(cid,on){const c=C(cid);if(on)XPPE.cats[cid]=c&&c.kind==='inc'?'paid':'owe';else delete XPPE.cats[cid];
+  const r=$('#pp-r-'+cid);if(r)r.classList.toggle('xppcon',on);const k=$('#pp-k-'+cid);if(k)k.innerHTML=xPpKHtml(c)};
+function xPpKSet(cid,k){XPPE.cats[cid]=k;const s=$('#pp-k-'+cid);if(s)s.innerHTML=xPpKHtml(C(cid))}
+try{const _psP=xPpSave;xPpSave=function(){try{if(XPPE){XPPE.phs=(XPPE.phs||[]).map(x=>String(x||'').trim()).filter(Boolean);XPPE.ph=XPPE.phs[0]||''}}catch(e){}return _psP.apply(this,arguments)}}catch(e){}
+(function(){const s=document.createElement('style');s.textContent=`.xppph{display:flex;gap:6px;align-items:center;margin-bottom:6px}.xppph input{flex:1;margin:0}`;document.head.appendChild(s)})();
 /* نهاية fix.js */
