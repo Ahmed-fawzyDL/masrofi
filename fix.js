@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.94',XVBUILD='20/10/2026 - 12:50 م';
+const XVER='2.21.95',XVBUILD='20/10/2026 - 01:03 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -7125,4 +7125,11 @@ if(!S.settings.xanchor1){try{
 }catch(e){}}
 
 try{render()}catch(e){}
+/* ========== 2.21.95 ========== */
+/* بعد "عرض كل العمليات" يرجعك للعملية اللي كنت فاتحها */
+try{const _fcX=xFocusClear;xFocusClear=function(){
+  const it=document.querySelector('#view.xfocus details.grp.xon .xon');
+  const r=_fcX.apply(this,arguments);
+  if(it&&it.isConnected)requestAnimationFrame(()=>requestAnimationFrame(()=>{try{if(it.isConnected)it.scrollIntoView({block:'center',behavior:'auto'})}catch(e){}}));
+  return r}}catch(e){}
 /* نهاية fix.js */
