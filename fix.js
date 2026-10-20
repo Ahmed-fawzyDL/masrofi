@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.118',XVBUILD='20/10/2026 - 05:00 م';
+const XVER='2.21.119',XVBUILD='20/10/2026 - 05:10 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8015,5 +8015,43 @@ XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
     <button class="btn" onclick="XACPAR='${c.id}';catForm(null,'exp')">➕ ثابت مصروف</button>
     <button class="btn" onclick="XACPAR='${c.id}';catForm(null,'inc')">➕ ثابت تحصيل</button>
   </div>`};
+try{render()}catch(e){}
+/* ========== 2.21.119 · بنود الحسابات: قايمة بنود بس، والثابت جوا البند ========== */
+var XACADD=false;
+xAcGo=id=>{XACE=id;XACADD=false;go('xace')};
+
+/* 📒 القايمة: بنود بس، من غير تقسيم ومن غير العملاء */
+XVW.xacc=()=>{
+  const y=NY+'-',L=S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!/^مصاريف إنستاباي ·/.test(c.name))
+    .sort((a,b)=>(a.active===false)-(b.active===false)||a.name.localeCompare(b.name,'ar'));
+  const card=c=>{let s=0,n=0;xAcTxs(c.id).forEach(t=>{if(!t.date.startsWith(y))return;n++;s+=t.type==='inc'?t.amount:-t.amount});s=r2(s);
+    const K=xAcKids(c.id),nf=K.filter(k=>k.fixed).length+(c.fixed?1:0),ch=[];
+    if(nf)ch.push(xCh('up','📌 '+nf+' ثابت'));if(c.active===false)ch.push(xCh('late','⏸ موقوف'));
+    const qq=qn([c.name,...(c.alias||[]),...(c.al||[]),...K.map(k=>k.name),c.amount||'',s].join(' '));
+    return `<div class="xacr" data-q="${esc(qq)}" ${c.active===false?'style="opacity:.55"':''}><div class="xlnc" onclick="xAcGo('${c.id}')">
+    <div class="xlnr"><b>${esc(c.name)}</b><span class="xlnbig ${s>=0?'pos':'neg'}" dir="ltr">${num(s)}</span></div>
+    <div class="xlnr xsm"><span>${n} عملية في ${NY}</span><button class="mini" onclick="event.stopPropagation();xAcRep('${c.id}')">📄 العمليات</button></div>
+    ${ch.length?`<div class="xlnn">${ch.join(' ')}</div>`:''}</div></div>`};
+  setTimeout(xAccF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
+  <button class="btn" onclick="XACPAR='';catForm(null,'exp')">➕ بند جديد</button>
+  <div class="gsr">${FIC}<input id="xac-q" placeholder="اسم البند أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>
+  ${L.length?L.map(card).join(''):'<p class="empty">لا توجد بنود</p>'}`;
+};
+
+/* جوا البند: تعديل + المبالغ الثابتة */
+XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
+  const td=today(),F=[...(c.fixed?[c]:[]),...xAcKids(c.id)];
+  const row=x=>{const nx=x.fixed&&x.active!==false?xClNx(x):null,ed=x.id===c.id?`XACPAR='';catForm('${c.id}')`:`XACPAR='';catForm('${x.id}')`;
+    return `<div class="xlnc" onclick="${ed}"><div class="xlnr"><b>📌 ${x.id===c.id?'مبلغ ثابت':esc(x.name)}</b><span class="xlnbig ${x.kind==='inc'?'pos':'neg'}" dir="ltr">${num(+x.amount||0)}</span></div>
+    <div class="xlnn">${xCh(x.kind==='inc'?'ok':'late',x.kind==='inc'?'💰 تحصيل':'💸 مصروف')} ${x.fixed?xCh('',esc(everyTxt(x.every))):''} ${nx?xCh(nx.d<td?'late':'up',(nx.d<td?'⚠️ متأخر ':'⏳ الجاي ')+dmy(nx.d)):''} ${x.active===false?xCh('late','⏸ موقوف'):''}</div></div>`};
+  return `<div class="phead"><button class="mini" onclick="go('xacc')">→</button><h3>${esc(c.name)}</h3></div>
+  <button class="btn" onclick="XACPAR='';catForm('${c.id}')">✏️ تعديل البند</button>
+  <div style="margin:16px 4px 8px;font-weight:700">📌 المبالغ الثابتة</div>
+  ${F.length?F.map(row).join(''):'<p class="empty">مفيش مبالغ ثابتة لسه</p>'}
+  <button class="btn" onclick="XACADD=!XACADD;render()">➕ مبلغ ثابت</button>
+  ${XACADD?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+    <button class="btn" onclick="XACADD=false;XACPAR='${c.id}';catForm(null,'exp')">💸 مصروف</button>
+    <button class="btn" onclick="XACADD=false;XACPAR='${c.id}';catForm(null,'inc')">💰 تحصيل</button></div>`:''}`};
 try{render()}catch(e){}
 /* نهاية fix.js */
