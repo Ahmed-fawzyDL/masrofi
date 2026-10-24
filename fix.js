@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.136',XVBUILD='24/10/2026 - 09:10 م';
+const XVER='2.21.137',XVBUILD='24/10/2026 - 09:40 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8978,5 +8978,103 @@ XVW.xppo=()=>{const p=XPP().find(x=>x.id===XPPID);if(!p){setTimeout(()=>go('xpp'
   return `<div class="phead"><button class="mini" onclick="XAPT='pp';go('xacc')">→</button><h3>👤 ${esc(p.name)}</h3><button class="mini" onclick="xPpEdit('${p.id}')">✏️</button><button class="mini" onclick="xPpPrint('${p.id}')">🖨️</button><button class="mini" onclick="xPpShare('${p.id}')">📤</button></div>
   <button class="btn" onclick="xMvGo('pp','${p.id}')">📥 نقل العمليات</button>
   <div class="seg"><button class="${XPPTB==='fx'?'on':''}" onclick="XPPTB='fx';render()">📌 ثابتة (${F1.length})</button><button class="${XPPTB==='var'?'on':''}" onclick="XPPTB='var';render()">🛒 متغيرة (${V1.length})</button><button class="${XPPTB==='ln'?'on':''}" onclick="XPPTB='ln';render()">🤝 السلف (${op.length})</button></div>${body}`};
+try{render()}catch(e){}
+/* ========== 2.21.137 · القسط + الكاش + الفلتر + التقارير + شاشة العملية ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .xqb{display:none!important}
+#view .gsr>svg{cursor:pointer;padding:5px;border-radius:9px;background:var(--soft,#eef2f6);box-sizing:content-box}
+#view .gsr.xflon>svg{background:var(--p);color:#fff}
+.xflc{display:flex;align-items:center;gap:8px;margin:-4px 4px 10px;font-size:12.5px;font-weight:700}
+.rp .rtb th{background:#f8fafc!important;color:#475569!important;font-size:11px!important;border-bottom:2px solid var(--p)!important}
+.rp .rtb tr.xgh td{background:color-mix(in srgb,var(--p) 10%,#fff)!important;font-weight:800;color:#0f172a;border-top:2px solid var(--p)!important;padding:9px 10px!important}
+.rp .rtb tr.xgh td em{float:left;font-style:normal;direction:ltr}
+.rp .rtb tr.xsub td{font-weight:700;background:#f8fafc!important;color:#334155}
+.rp .rs{border-bottom:1px solid #e5e9f0;padding-bottom:6px}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🏠 القسط: الإجمالي = سعر الوحدة، والمدفوع كله، والمتبقي كله ---------- */
+function xPlanAnn(){XPLO[instPlan]=true;render();setTimeout(()=>{const d=document.querySelector('#view details.grp');if(d)d.scrollIntoView({block:'start',behavior:'smooth'})},80)}
+try{const _vpQ=vPlan;vPlan=function(){let h=_vpQ.apply(this,arguments);try{
+  const p=plan(instPlan);if(!p||typeof h!=='string')return h;
+  const st=planStats(p),its=p.items.filter(i=>i.k!=='mnt'),reg=its.filter(i=>i.k!=='ann'),ann=its.filter(i=>i.k==='ann');
+  const pr=reg.filter(i=>itTx(i)),prs=r2(pr.reduce((a,i)=>a+((itTx(i)||{}).amount||0),0));
+  if(+p.price){const hd=+p.hand||0,hp=hd&&xHandPaid(p),paid=r2((+p.down||0)+st.paid+(hp?hd:0));
+    h=h.replace(/<div class="kpis">[\s\S]*?<\/div><\/div>/,kpis([['الإجمالي',fmt(+p.price),'net'],['المدفوع',fmt(paid),'inc'],['المتبقي',fmt(r2(+p.price-paid)),'exp']]))}
+  let add=`<div class="kv"><span>💵 مدفوع أقساط</span><b>${fmt(prs)} · ${pr.length} قسط</b></div>`;
+  if(ann.length){const ap=ann.filter(i=>itTx(i)).length,as=r2(ann.reduce((a,i)=>a+(+i.amount||0),0));
+    add+=`<div class="kv" style="cursor:pointer" onclick="xPlanAnn()"><span>📆 دفعات سنوية</span><b>${ann.length} دفعة · ${fmt(as)}${ap?' · مدفوع '+ap:''} ‹</b></div>`}
+  const re=/(<div class="kv"><span>📊 الأقساط<\/span><b>[^<]*<\/b><\/div>)/;
+  h=re.test(h)?h.replace(re,'$1'+add):h.replace('<div class="box">','<div class="box">'+add);
+}catch(e){}return h}}catch(e){}
+
+/* ---------- 💵 الحساب كاش = الطريقة كاش ---------- */
+Object.assign(XACV,{'ln-m':'ln-v','hp-m':'hp-v','cp-m':'cp-v','pp-m':'pp-v'});
+document.addEventListener('change',e=>{const s=e.target;if(!s||!XACV[s.id])return;const m=M(s.value);if(!m||m.type!=='cash')return;
+  const v=document.getElementById(XACV[s.id]);if(!v||v.value==='cash')return;v.value='cash';v.dispatchEvent(new Event('change',{bubbles:true}))});
+
+/* ---------- 🔍 الفلتر: من تاريخ لتاريخ + الاسم أو المبلغ ---------- */
+var XFLT={};
+var XFLSEL='#view .row,#view details.grp>.ckx,#view .xlnc,#view .xpl2,#view .xacr,#view .xmvr,#view .xcwr,#view .xpmc,#view .rtb tr.clk,#view details.xr';
+function xElDate(el){const t=latD(el.textContent||'');let m=t.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m)return m[3]+'-'+pad(+m[2])+'-'+pad(+m[1]);
+  m=t.match(/(?:^|[^\d\/])(\d{1,2})\/(\d{1,2})(?![\d\/])/);if(m&&+m[2]>=1&&+m[2]<=12)return cur.y+'-'+pad(+m[2])+'-'+pad(+m[1]);return ''}
+function xFlApply(){const f=XFLT[view];if(!f||(!f.f&&!f.t))return;const a=f.f||'0000',b=f.t||'9999',L=[...document.querySelectorAll(XFLSEL)],S2=new Set(L);
+  L.filter(e=>{let p=e.parentElement;while(p&&p.id!=='view'){if(S2.has(p))return false;p=p.parentElement}return true})
+   .forEach(e=>{const d=xElDate(e);if(d&&(d<a||d>b))e.style.display='none'})}
+function xFlChip(){const g=$('#view .gsr');if(!g)return;const f=XFLT[view];g.classList.toggle('xflon',!!f);if(!f||$('#view .xflc'))return;
+  g.insertAdjacentHTML('afterend',`<div class="xflc">📅 ${f.f?'من '+dmy(f.f):''} ${f.t?'إلى '+dmy(f.t):''} <button class="mini" onclick="xFlClr()">✕</button></div>`)}
+function xFlOpen(){const i=$('#view .gsr input'),f=XFLT[view]||{};
+  sheet(`<h2>🔍 فلتر</h2>
+  <label>🔍 الاسم أو البند أو المبلغ<input id="xfl-q" value="${esc(i?i.value:'')}" placeholder="${esc(i?i.placeholder:'')}"></label>
+  <div class="two"><label>📅 من تاريخ<input id="xfl-f" type="date" value="${f.f||''}"></label><label>📅 إلى تاريخ<input id="xfl-t" type="date" value="${f.t||''}"></label></div>
+  <button class="btn ghost" onclick="xFlToday()">📅 النهارده</button>
+  <div class="xlna"><button class="btn" onclick="xFlGo()">✅ تطبيق</button><button class="btn ghost" onclick="xFlClr()">✕ مسح الفلتر</button></div>`)}
+function xFlToday(){['#xfl-f','#xfl-t'].forEach(s=>{const i=$(s);if(i){i.value=today();i.dispatchEvent(new Event('change',{bubbles:true}))}})}
+function xFlGo(){const q=($('#xfl-q')||{}).value||'',f=($('#xfl-f')||{}).value||'',t=($('#xfl-t')||{}).value||'';
+  if(f&&t&&f>t)return toast('تاريخ البداية بعد تاريخ النهاية');
+  const v=view;closeSheet();if(f||t)XFLT[v]={f,t};else delete XFLT[v];
+  if(['col','exps','xcw'].includes(v)&&f&&t&&f.slice(0,7)===t.slice(0,7)){cur.y=+f.slice(0,4);cur.m=+f.slice(5,7)}
+  render();const i=$('#view .gsr input');if(i){i.value=q;i.dispatchEvent(new Event('input',{bubbles:true}))}setTimeout(xFlApply,30)}
+function xFlClr(){const v=view;closeSheet();delete XFLT[v];render();const i=$('#view .gsr input');if(i&&i.value){i.value='';i.dispatchEvent(new Event('input',{bubbles:true}))}}
+document.addEventListener('click',e=>{const s=e.target.closest&&e.target.closest('#view .gsr>svg');if(!s)return;e.preventDefault();e.stopPropagation();xFlOpen()},true);
+document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#view .gsr'))setTimeout(xFlApply,0)},true);
+try{const _goF=go;go=function(v){if(v!==view)XFLT={};return _goF.apply(this,arguments)}}catch(e){}
+try{const _rnF=render;render=function(){const r=_rnF.apply(this,arguments);setTimeout(()=>{try{xFlChip();xFlApply()}catch(e){}},60);return r}}catch(e){}
+
+/* ---------- 📊 التقارير: جدول واحد لكل قسم بدل جدول لكل بند ---------- */
+function xRpMerge(){const rp=document.querySelector('#rvdoc .rp');if(!rp)return;const all=[...rp.children];
+  const ok=k=>all[k]&&all[k].classList.contains('rs2')&&all[k+1]&&all[k+1].classList.contains('rtb')&&all[k+1].querySelector('thead');
+  for(let i=0;i<all.length;){
+    if(!ok(i)){i++;continue}
+    const hd=all[i+1].querySelector('thead').innerHTML,run=[];let j=i;
+    while(ok(j)&&all[j+1].querySelector('thead').innerHTML===hd){run.push([all[j],all[j+1]]);j+=2}
+    if(run.length>=2){
+      const nw=run[0][1].cloneNode(true),tb=nw.querySelector('tbody'),cols=nw.querySelectorAll('thead th').length;
+      tb.innerHTML='';const tf=nw.querySelector('tfoot');if(tf)tf.remove();
+      run.forEach(([rs,t])=>{const em=rs.querySelector('em'),tt=[...rs.childNodes].filter(n=>n!==em).map(n=>n.textContent).join('').trim();
+        tb.insertAdjacentHTML('beforeend',`<tr class="xgh"><td colspan="${cols}">${esc(tt)}${em?`<em>${em.innerHTML}</em>`:''}</td></tr>`);
+        [...t.querySelectorAll('tbody>tr')].forEach(r=>tb.appendChild(r));
+        [...t.querySelectorAll('tfoot>tr')].forEach(r=>{r.classList.add('xsub');tb.appendChild(r)})});
+      run[0][0].before(nw);run.forEach(([a,b])=>{a.remove();b.remove()});
+    }
+    i=j;
+  }}
+(()=>{const d=$('#rvdoc');if(!d)return;let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xRpMerge()}catch(e){}})}).observe(d,{childList:true})})();
+
+/* ---------- ✏️ شاشة العملية: على حساب فوق، والحالة تحت مقفولة ---------- */
+var XSTO=false,XSTOF=null;
+function xTfLay2(){const sz=$('#sheet .sz');if(!sz||!F)return;if(XSTOF!==F){XSTOF=F;XSTO=false}
+  const oa=$('#xoa'),a=$('#f-amt'),at=a&&xTopOf(sz,a);if(oa&&at&&at!==oa)at.after(oa);
+  if(sz.querySelector('.xstd'))return;
+  const kv=[...sz.children].find(e=>e.classList.contains('kv')&&((e.querySelector('span')||{}).textContent||'').trim()==='الحالة');if(!kv)return;
+  const els=[];let n=kv.nextElementSibling;
+  while(n&&(n.classList.contains('xstc')||(n.matches('button')&&/F\._st=1/.test(n.getAttribute('onclick')||''))||(n.classList.contains('two')&&n.querySelector('[onclick^="txSetSt"]')))){els.push(n);n=n.nextElementSibling}
+  const d=document.createElement('details');d.className='xpayd xstd';d.open=XSTO||!!F._st;
+  d.innerHTML=`<summary><span>📋 الحالة</span><span class="xpays">${esc(((kv.querySelector('b')||{}).textContent||'').trim())}</span></summary>`;
+  d.addEventListener('toggle',()=>{XSTO=d.open});els.forEach(x=>d.appendChild(x));kv.remove();
+  const sv=[...sz.querySelectorAll('button.btn')].find(b=>!d.contains(b)&&/سجّل|سجل|حفظ/.test(b.textContent)),st=sv&&xTopOf(sz,sv);
+  if(st)st.before(d);else sz.appendChild(d)}
+try{const _tfY2=txForm;txForm=function(){
+  try{if(F&&F.type!=='tr'&&!F.id&&!F.via&&M(F.method)&&M(F.method).type==='cash')F.via='cash'}catch(e){}
+  const r=_tfY2.apply(this,arguments);try{xTfLay2()}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
