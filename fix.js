@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.137',XVBUILD='24/10/2026 - 09:40 م';
+const XVER='2.21.138',XVBUILD='24/10/2026 - 10:00 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -9076,5 +9076,109 @@ function xTfLay2(){const sz=$('#sheet .sz');if(!sz||!F)return;if(XSTOF!==F){XSTO
 try{const _tfY2=txForm;txForm=function(){
   try{if(F&&F.type!=='tr'&&!F.id&&!F.via&&M(F.method)&&M(F.method).type==='cash')F.via='cash'}catch(e){}
   const r=_tfY2.apply(this,arguments);try{xTfLay2()}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.138 · الكريديت: الكشف الصح + المرتجع + فلوس الكاش اللي تخص الكريديت ========== */
+(()=>{const s=document.createElement('style');s.textContent=`
+.xcch{font-weight:800;font-size:13.5px;margin:4px 0 6px}
+.xccb .list{margin-top:6px}
+.xccp{background:#ecfdf5!important;border-color:#a7f3d0!important}
+body.dark .xccp{background:rgba(22,163,74,.1)!important}
+`;document.head.appendChild(s)})();
+
+/* ---------- الكشف المطلوب: لو كشف الشهر ده اتسدد، يبقى المطلوب كشف الشهر الجاي ---------- */
+var XCCC0=xCcCalc;
+xCcCalc=function(id,mk){return XCCC0(id,mk||(XCC&&XCC.id===id&&XCC.mk)||NKM)};
+function xCcCur(id){const a=XCCC0(id,NKM);if(a.due>0.009)return{mk:NKM,k:a};const n=addMonths(NKM+'-01',1).slice(0,7);return{mk:n,k:XCCC0(id,n)}}
+xCcDue=function(id){return xCcCur(id).k.due};
+function xCcOpenCyc(id,mk){const n=addMonths(mk+'-01',1).slice(0,7),w=xCcWin(id,n),td=today();
+  const L=S.txs.filter(t=>t.type==='exp'&&t.method===id&&!t.pend&&t.date>=w.ws&&t.date<=w.we&&t.date<=td&&!xCcCyc(t)).sort(byDesc);
+  return{...w,L,A:r2(L.reduce((a,t)=>a+t.amount,0))}}
+
+/* ---------- 💵 فلوس معاك تخص الكريديت (المرتجع كاش + التحصيل مقابل الكريديت) ---------- */
+function xRfOf(t){return r2(S.txs.filter(x=>x.rf===t.id&&!x.pend).reduce((a,x)=>a+x.amount,0))}
+function xCcPool(id){const one=xCcAccts().length<=1,lp=S.txs.filter(t=>t.type==='tr'&&t.to===id&&!t.pend).map(t=>t.date).sort().pop()||'';
+  return S.txs.filter(t=>t.ccr&&t.type==='inc'&&!t.pend&&!t.ccUsed&&!xIsCr(t.method)&&(one||!t.ccm||t.ccm===id)&&(!lp||t.date>lp)).sort(byDesc)}
+
+/* ---------- ↩️ المرتجع ---------- */
+var XCRW='cash';
+function xCcRefund(id){const cr=xCcAccts();if(!cr.length)return say('مفيش حساب كريديت','علّم حساب الفيزا كريديت الأول من ✏️ تعديل الحساب','💳');
+  const cut=addMonths(today(),-3),L=S.txs.filter(t=>t.type==='exp'&&!t.pend&&!t.feeOf&&xIsCr(t.method)&&(!id||t.method===id)&&t.date>=cut&&xRfOf(t)<t.amount-0.009).sort(byDesc).slice(0,80);
+  sheet(`<h2>↩️ مرتجع مشتريات كريديت</h2><p class="muted">اختار الحاجة اللي رجّعتها</p>
+  <input class="xpq" placeholder="🔍 اسم البند أو المبلغ" oninput="const q=xqn(this.value);document.querySelectorAll('#xrf-l .row').forEach(r=>r.style.display=!q||r.dataset.q.includes(q)?'':'none')">
+  <div class="list" id="xrf-l">${L.map(t=>`<div class="row" data-q="${esc(xqn([C(t.cat)?.name,t.note,t.amount,num(t.amount),dmy(t.date)].join(' ')))}" onclick="xCcRfPick('${t.id}')"><span class="ic" style="background:var(--soft)">💳</span><div class="grow"><b>${esc(C(t.cat)?.name||'—')}</b><small>${xDW(t.date)} · ${esc(M(t.method)?.name||'')}</small></div><div class="amt exp">${num(t.amount)}</div></div>`).join('')||'<p class="empty">مفيش مشتريات كريديت آخر 3 شهور</p>'}</div>`)}
+function xCcRfPick(tid){const t=S.txs.find(x=>x.id===tid);if(!t)return;const left=r2(t.amount-xRfOf(t));XCRW='cash';
+  sheet(`<h2>↩️ مرتجع · ${esc(C(t.cat)?.name||'')}</h2>
+  <div class="kv"><span>اتشترى</span><b>${xDW(t.date)} · ${fmt(t.amount)} · ${esc(M(t.method)?.name||'')}</b></div>
+  ${xRfOf(t)?`<div class="kv"><span>اترجع قبل كده</span><b>${fmt(xRfOf(t))}</b></div>`:''}
+  <label>المبلغ اللي رجع<input id="rf-a" class="amt-in" inputmode="decimal" dir="ltr" value="${amtStr(left)}"></label>
+  <div class="fl">الفلوس رجعت فين؟</div>
+  <div class="seg" id="rf-w"><button type="button" class="on" data-w="cash" onclick="xCcRfW(this)">💵 كاش أو حساب تاني</button><button type="button" data-w="card" onclick="xCcRfW(this)">💳 على الكارت نفسه</button></div>
+  <label id="rf-ml">استلمتها في<select id="rf-m">${opt(S.methods.filter(m=>m.active&&!xIsCr(m.id)),xCashAcct())}</select></label>
+  <label>التاريخ<input id="rf-d" type="date" value="${today()}"></label>
+  <p class="muted" id="rf-h">المديونية على الكارت هتفضل زي ما هي، والفلوس اللي معاك هتظهر في شاشة السداد إنها تخص الكريديت.</p>
+  <button class="btn" onclick="xCcRfSave('${tid}')">✅ سجّل المرتجع</button>`)}
+function xCcRfW(b){XCRW=b.dataset.w;xSegOn(b);const l=$('#rf-ml'),h=$('#rf-h');if(l)l.style.display=XCRW==='card'?'none':'';
+  if(h)h.textContent=XCRW==='card'?'المبلغ هيتخصم من مديونية الكارت.':'المديونية على الكارت هتفضل زي ما هي، والفلوس اللي معاك هتظهر في شاشة السداد إنها تخص الكريديت.'}
+function xCcRfSave(tid){const t=S.txs.find(x=>x.id===tid);if(!t)return;const a=parseNum($('#rf-a').value),d=$('#rf-d').value,left=r2(t.amount-xRfOf(t));
+  if(!(a>0))return toast('اكتب المبلغ');if(a>left+0.009)return toast('المبلغ أكبر من '+fmt(left));if(!d)return toast('اختار التاريخ');if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
+  const m=XCRW==='card'?t.method:$('#rf-m').value;if(!m)return toast('اختار الحساب');
+  S.txs.push({id:uid(),type:'inc',amount:a,cat:t.cat,method:m,via:XCRW==='card'?'card':(M(m)&&M(m).type==='cash'?'cash':''),date:d,note:'↩️ مرتجع · '+(C(t.cat)?.name||''),files:[],created:Date.now(),ccr:1,rf:t.id,ccm:t.method});
+  save();closeSheet();render();toast(XCRW==='card'?'↩️ اتخصم من مديونية الكارت':'↩️ '+fmt(a)+' معاك كاش وتخص الكريديت')}
+/* المرتجع مش بيتحسب مصروف */
+try{const _smR=sums;sums=function(l){const s=_smR.apply(this,arguments);try{if(Array.isArray(l)){const r=r2(l.reduce((a,t)=>a+(t&&t.rf&&t.type==='inc'&&!t.pend?t.amount:0),0));if(r){s.exp=r2(s.exp-r);s.net=r2(s.inc-s.exp)}}}catch(e){}return s}}catch(e){}
+try{const _xsR=xSums;xSums=function(l){const s=_xsR.apply(this,arguments);try{const r=r2((l||[]).reduce((a,t)=>{if(!(t&&t.rf&&t.type==='inc'&&!t.pend))return a;const o=S.txs.find(x=>x.id===t.rf);return a+(o&&xIsCr(o.method)?t.amount:0)},0));
+  if(r){s.cr=r2(s.cr-r);s.expNC=r2(s.exp-s.cr);s.netNC=r2(s.inc-s.expNC)}}catch(e){}return s}}catch(e){}
+/* جوا المعاملة */
+try{const _tbR=txBody;txBody=function(t){let h=_tbR.apply(this,arguments);try{
+  if(t&&t.type==='exp'&&!t.pend&&xIsCr(t.method)){const r=xRfOf(t);
+    h=h.replace('<div class="etbar"',(r?`<div class="kv"><span>↩️ اترجع</span><b>${fmt(r)}</b></div>`:'')+'<div class="etbar"').replace(/(<div class="etbar"[^>]*>)/,`$1${r<t.amount-0.009?`<button class="mini" onclick="xCcRfPick('${t.id}')">↩️ مرتجع</button>`:''}`)}
+  if(t&&t.rf){const o=S.txs.find(x=>x.id===t.rf);if(o)h=h.replace('<div class="etbar"',`<div class="kv"><span>↩️ مرتجع لـ</span><b>${esc(C(o.cat)?.name||'')} · ${fmt(o.amount)} · ${dmy(o.date)}</b></div><div class="etbar"`)}
+}catch(e){}return h}}catch(e){}
+
+/* ---------- 💳 شاشة السداد ---------- */
+function xCcBoxes(id){const k=xCcCalc(id),g=xCcCfg(id),td=today(),late=k.due>0.009&&k.dd<td,nx=xCcOpenCyc(id,XCC.mk),pool=xCcPool(id),ps=r2(pool.reduce((a,t)=>a+t.amount,0));
+  const ln=(l,v,c)=>`<div class="kv"><span>${l}</span><b class="${c||''}">${v}</b></div>`;
+  const brow=t=>{const r=xRfOf(t);return `<div class="row" onclick="editTx('${t.id}')"><div class="grow"><b>${esc(C(t.cat)?.name||'—')}</b><small>${dmy(t.date)}${r?' · ↩️ اترجع '+num(r):''}${t.note&&!/^🧾/.test(t.note)?' · '+esc(t.note):''}</small></div><div class="amt exp">${num(t.amount)}</div></div>`};
+  let h=`<div class="xccb"><div class="xcch">🧾 الكشف المطلوب · ${dmy(k.ws)} – ${dmy(k.we)}</div>
+  <div class="xlnn" style="margin:0 0 6px">${late?xCh('late','⚠️ متأخر · كان يوم '+xDW(k.dd)):k.due>0.009?xCh('up','📅 السداد '+xDW(k.dd)):xCh('ok','✅ اتسدد')}</div>
+  ${k.buys.length?`<details class="gen xccd" id="cc-pl"><summary>🛒 مشتريات الكشف (${k.buys.length}) ▾<b>${num(k.A)}</b></summary><div class="list">${[...k.buys].sort(byAsc).map(brow).join('')}</div></details>`:ln('🛒 مشتريات الكشف','0')}`;
+  if(Math.abs(k.B)>.009)h+=ln(k.B>0?'📂 مديونية من قبل':'💚 مدفوع زيادة قبلها',(k.B<0?'-':'')+num(Math.abs(k.B)),k.B<0?'pos':'');
+  k.inst.forEach(x=>{h+=x.t?ln('💸 مصاريف قسط '+esc(x.p.name),num(x.f)):ln('🏦 قسط '+esc(x.p.name)+' · '+dmy(x.it.due),num(x.a)+(x.f?' + '+num(x.f):''))});
+  if(k.paid>.009)h+=ln('✅ اتسدد بعد قفل الكشف','-'+num(k.paid),'pos');
+  h+=`<div class="kv xccT"><span>💳 المطلوب يوم ${dmy(k.dd)}</span><b>${fmt(k.due)}</b></div></div>`;
+  if(ps>.009)h+=`<div class="xccb xccp"><div class="xcch">💵 فلوس معاك تخص الكريديت · ${num(ps)}</div>
+    <p class="muted" style="font-size:11.5px;margin:0">الفلوس دي داخلة في رصيد الكاش أو الحساب، بس هي بتاعة الكريديت</p>
+    <div class="list">${pool.map(t=>`<div class="row" onclick="editTx('${t.id}')"><div class="grow"><b>${t.rf?'↩️ مرتجع':'💰 تحصيل للكريديت'} · ${esc(C(t.cat)?.name||'')}</b><small>${dmy(t.date)} · ${esc(M(t.method)?.name||'')}</small></div><div class="amt pos">${num(t.amount)}</div></div>`).join('')}</div>
+    ${k.due>.009?ln('💵 المطلوب من فلوسك فعلًا',fmt(Math.max(0,r2(k.due-ps)))):''}</div>`;
+  h+=`<div class="xccb"><div class="xcch">📅 الكشف الجاي · ${dmy(nx.ws)} – ${dmy(nx.we)}</div>
+  ${nx.L.length?`<details class="gen xccd"><summary>🛒 المشتريات لحد دلوقتي (${nx.L.length}) ▾<b>${num(nx.A)}</b></summary><div class="list">${nx.L.map(brow).join('')}</div></details>`:ln('🛒 المشتريات لحد دلوقتي','0')}
+  ${ln('📅 هيتسدد يوم',xDW(nx.dd))}
+  <p class="muted" style="font-size:11px;margin:6px 0 0">الكشف بيقفل يوم ${g.cut} وبيتسدد يوم ${g.due} اللي بعده</p>
+  <div class="xlna" style="margin-top:8px"><button type="button" class="btn ghost" onclick="xCcRefund('${id}')">↩️ مرتجع</button><button type="button" class="btn ghost" onclick="xCcCfgEdit('${id}')">⚙️ المواعيد والحد</button></div></div>`;
+  return h}
+try{const _ccS2=xCcSheet;xCcSheet=function(){if(XCC&&!XCC.mk)XCC.mk=xCcCur(XCC.id).mk;const r=_ccS2.apply(this,arguments);try{
+  const sz=$('#sheet .sz');if(!sz||!XCC)return r;sz.querySelectorAll('.xccb').forEach(e=>e.remove());
+  const h=sz.querySelector('h2');if(h)h.insertAdjacentHTML('afterend',xCcBoxes(XCC.id))}catch(e){}return r}}catch(e){}
+/* بعد السداد: فلوس الكاش اللي كانت تخص الكريديت تتقفل */
+try{const _ccV2=xCcSave;xCcSave=function(){const id=XCC&&XCC.id,P=id?xCcPool(id):[];const r=_ccV2.apply(this,arguments);
+  try{if(id&&!XCC){P.forEach(t=>{t.ccUsed=1});if(P.length)save()}}catch(e){}return r}}catch(e){}
+
+/* ---------- 💳 شاشة الكريديت ---------- */
+xCcOpen=function(){go('xcc')};
+XVW.xcc=()=>{const cr=xCcAccts(),td=today();
+  const head=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>💳 الكريديت</h3></div>`;
+  if(!cr.length)return head+'<div class="nempty"><div>💳</div><b>مفيش حساب كريديت</b><small>علّمه من 🏦 البنوك والكاش ← ✏️ ← 💳 كريديت</small></div>';
+  return head+cr.map(m=>{const cu=xCcCur(m.id),k=cu.k,nx=xCcOpenCyc(m.id,cu.mk),ps=r2(xCcPool(m.id).reduce((a,t)=>a+t.amount,0)),late=k.due>0.009&&k.dd<td,g=xCcCfg(m.id);
+    const pays=S.txs.filter(t=>t.type==='tr'&&t.to===m.id&&!t.pend).sort(byDesc).slice(0,12);
+    return `<div class="xlnc" style="cursor:default"><div class="xlnr"><span class="xpmn">${xMIc(m)}<b>${esc(m.name)}</b></span><span class="xlnbig ${late?'neg':''}" dir="ltr">${num(k.due)}</span></div>
+    <div class="xlnr xsm"><span>كشف ${dmy(k.ws)} – ${dmy(k.we)}</span><span>${k.due>0.009?'المطلوب':'✅ اتسدد'}</span></div>
+    <div class="xlnn">${late?xCh('late','⚠️ متأخر · '+xDW(k.dd)):k.due>0.009?xCh('up','📅 السداد '+xDW(k.dd)):''} ${ps>.009?xCh('ok','💵 معاك '+num(ps)+' تخص الكريديت'):''}</div>
+    <div class="kv"><span>📅 الكشف الجاي (لحد دلوقتي)</span><b>${num(nx.A)} · يتسدد ${dmy(nx.dd)}</b></div>
+    ${g.lim>0?`<div class="kv"><span>🟢 المتاح من الحد</span><b>${num(r2(g.lim-Math.max(0,-xBal(m.id))))}</b></div>`:''}
+    <div class="xlna"><button class="btn" onclick="xCcPay('${m.id}')">💳 سدد الكشف</button><button class="btn ghost" onclick="xCcRefund('${m.id}')">↩️ مرتجع</button></div>
+    ${pays.length?`<details class="gen"><summary>📜 السدادات اللي فاتت (${pays.length})</summary><div class="list">${pays.map(t=>`<div class="row" onclick="editTx('${t.id}')"><div class="grow"><b>${xDW(t.date)}</b><small>من ${esc(M(t.method)?.name||'—')}</small></div><div class="amt">${num(t.amount)}</div></div>`).join('')}</div></details>`:''}
+    </div>`}).join('');
+};
+XFC.cc=['💳','الكريديت',"go('xcc')",'#f97316,#9a3412',()=>xCcList().length,'لما يكون فيه كشف كريديت مطلوب'];
 try{render()}catch(e){}
 /* نهاية fix.js */
