@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.133',XVBUILD='20/10/2026 - 07:40 م';
+const XVER='2.21.135',XVBUILD='24/10/2026 - 08:20 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8635,5 +8635,231 @@ function xPpExtra(pid){const td=today(),due=[];let h='';
   return h}
 try{const _xpE=XVW.xppo;XVW.xppo=function(){let h=_xpE.apply(this,arguments);
   try{if(typeof h==='string'&&XPPID)h=h.replace('<div class="seg">',xPpExtra(XPPID)+'<div class="seg">')}catch(e){}return h}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.134 · ترتيب الأشخاص والسلف والبنود ========== */
+(function(){const s=document.createElement('style');s.textContent=`
+.xpl2{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(148,163,184,.12);cursor:pointer}
+.xlnb{border-radius:16px;padding:10px 12px;margin:0 0 10px;background:var(--card);border:1px solid rgba(148,163,184,.25)}
+.xlnb.late{border-color:#dc2626}.xlnb .kv{padding:6px 0!important}
+.xpsec{margin:16px 4px 8px;font-weight:800}
+.xart tr.clk{cursor:pointer}`;document.head.appendChild(s)})();
+
+/* ---------- فتح أي عملية: لو شاشة التعديل ما فتحتش، تظهر تفاصيلها والسبب ---------- */
+var XTXERR='';
+function xTxOpen(id){const t=S.txs.find(x=>x.id===id);if(!t)return toast('العملية مش موجودة');XTXERR='';
+  try{closeSheet()}catch(e){}
+  try{editTx(id)}catch(e){XTXERR=(e&&e.message)||String(e)}
+  setTimeout(()=>{if(!$('#sheet').classList.contains('open'))xTxView(id)},150)}
+function xTxView(id){const t=S.txs.find(x=>x.id===id);if(!t)return;let b='';try{b=txBody(t)}catch(e){}
+  sheet(`<h2>${t.type==='inc'?'💰':t.type==='tr'?'🔁':'💸'} ${esc(t.note||(C(t.cat)||{}).name||'—')}</h2>${b}
+  ${XTXERR?`<p class="xwarn">⚠️ شاشة التعديل ما فتحتش: <b dir="ltr">${esc(XTXERR)}</b><br>صوّر الشاشة دي وابعتها</p>`:''}`)}
+
+/* ---------- 👤 قايمة الأشخاص: كروت زي باقي البنود ---------- */
+XVW.xpp=()=>{const P=XPP();
+  const card=p=>{const its=xPpItems(p.id).length,n=xPpRows(p).length,lr=r2(xLnOfP(p.id).reduce((a,l)=>a+Math.max(0,xLnRem(l)),0)),ph=(p.phs&&p.phs[0])||p.ph||'';
+    return `<div class="xlnc" onclick="xPpOpen('${p.id}')"><div class="xlnr"><b>👤 ${esc(p.name)}</b><button class="mini" onclick="event.stopPropagation();xPpEdit('${p.id}')">✏️ تعديل</button></div>
+    <div class="xlnr xsm"><span>${its} بند · ${n} عملية</span>${ph?`<span dir="ltr">${esc(ph)}</span>`:''}</div>${lr?`<div class="xlnn">${xCh('late','🤝 باقي من السلف '+num(lr))}</div>`:''}</div>`};
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>👤 حسابات الأشخاص</h3></div>
+  <button class="btn" onclick="xPpEdit()">➕ شخص جديد</button>${P.length?P.map(card).join(''):'<p class="empty">لسه مفيش أشخاص</p>'}`};
+
+/* ---------- 👤 حساب الشخص: كل عملية زي ما هي، من غير خصم ولا رصيد ---------- */
+XVW.xppo=()=>{const p=XPP().find(x=>x.id===XPPID);if(!p){setTimeout(()=>go('xpp'),0);return ''}
+  if(!XPPV.m)XPPV.m=xPpTd().slice(0,7);let from='',to='9999',lbl='';
+  if(XPPV.per==='m'){from=XPPV.m+'-01';to=XPPV.m+'-31';lbl=XPPV.m.split('-').reverse().join('/')}
+  else if(XPPV.per==='y'){from=XPPV.m.slice(0,4)+'-01-01';to=XPPV.m.slice(0,4)+'-12-31';lbl=XPPV.m.slice(0,4)}
+  const td=today(),LS=xLnOfP(p.id),lx=new Set();
+  LS.forEach(l=>{if(l.tx)lx.add(l.tx);(l.pays||[]).forEach(x=>{if(x.tx)lx.add(x.tx)})});
+  const isLn=t=>lx.has(t.id)||!!t.xlno||!!t.xlnp;
+  const IN=xPpRows(p).filter(r=>!isLn(r.t)&&(r.t.date||'')>=from&&(r.t.date||'')<=to);
+  const dk=t=>[t.type,t.date,r2(t.amount),t.cat].join('|'),dc={};IN.forEach(r=>{const k=dk(r.t);dc[k]=(dc[k]||0)+1});
+  const top=id=>{const c=C(id);return c&&c.par&&C(c.par)?C(c.par):c},G=new Map();
+  IN.forEach(r=>{const c=top(r.t.cat),k=c?c.id:'_';if(!G.has(k))G.set(k,{c,L:[]});G.get(k).L.push(r)});
+  if(XPPV.per==='a')xPpItems(p.id).forEach(c=>{if(!G.has(c.id)&&!S.txs.some(t=>t.cat===c.id&&isLn(t)))G.set(c.id,{c,L:[]})});
+  const last=g=>g.L.reduce((m,r)=>r.t.date>m?r.t.date:m,'');
+  const row=r=>{const t=r.t,inc=t.type==='inc',a=Math.abs(+t.amount||0),cn=(C(t.cat)||{}).name||'';
+    return `<div class="xpl2" onclick="xTxOpen('${t.id}')"><span class="xppd">${xPpD(t.date)}</span><span class="xpin"><b>${esc(t.note||cn||'—')}</b><small>${inc?'💰 تحصيل':'💸 مصروف'}${M(t.method)?' · '+esc(M(t.method).name):''}${dc[dk(t)]>1?' · ⚠️ ممكن تكون مكررة':''}</small></span><b class="${inc?'pos':'neg'}" dir="ltr">${num(a)}</b></div>`};
+  const gh=({c,L})=>{const k=c?c.id:'_',own=c&&c.ppo===p.id;let ex=0,ic=0;L.forEach(r=>{const a=Math.abs(+r.t.amount||0);if(r.t.type==='inc')ic+=a;else ex+=a});
+    return `<details class="xpig" ${XPIO[k]?'open':''} ontoggle="XPIO['${k}']=this.open"><summary><span class="xpin"><b>📒 ${esc(c?c.name:'من غير بند')}</b><small>${L.length} عملية</small></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">${ex?`<b class="neg" dir="ltr">💸 ${num(r2(ex))}</b>`:''}${ic?`<b class="pos" dir="ltr">💰 ${num(r2(ic))}</b>`:''}</span></summary>
+    ${L.slice().sort((a,b)=>b.t.date.localeCompare(a.t.date)).map(row).join('')||'<div class="xckh" style="padding:10px 14px">مفيش عمليات في الفترة دي</div>'}
+    ${c?`<div class="xpib"><button class="mini" onclick="xPpItNew('${p.id}','${c.id}')">➕ مصروف عليه</button>${own?`<button class="mini" onclick="xPpItRen('${c.id}')">✏️ الاسم</button><button class="mini" onclick="xPpItBack('${c.id}')">↩ رجّعه للبنود العامة</button>`:''}</div>`:''}</details>`};
+  const lcard=l=>{const rem=Math.max(0,xLnRem(l)),pd=xLnPaid(l,1),nx=xLnNext(l),lt=nx&&nx.d<td;
+    return `<div class="xlnb ${lt?'late':''}"><div class="xlnr"><b>🤝 سلفة يوم ${xPpD(l.d)}</b><b class="neg" dir="ltr">${num(l.amt)}</b></div>
+    <div class="kv"><span>✅ رجع منها</span><b class="pos">${num(pd)}</b></div><div class="kv"><span>⏳ الباقي</span><b class="neg">${num(rem)}</b></div>
+    ${nx?`<div class="kv"><span>📅 موعد السداد${lt?' · ⚠️ متأخر':''}</span><b>${xDW(nx.d)}${nx.rem<rem?' · '+num(nx.rem):''}</b></div>`:'<div class="kv"><span>الحالة</span><b class="pos">✅ اتسددت</b></div>'}
+    <div class="xlna"><button class="btn ghost" onclick="xLnOpen('${l.id}')">📄 التفاصيل</button>${rem>0.009?`<button class="btn" onclick="xLnPay('${l.id}')">💵 سجّل اللي رجع</button>`:''}</div></div>`};
+  const op=LS.filter(l=>xLnRem(l)>0.009).sort((a,b)=>(a.d||'').localeCompare(b.d||'')),cl=LS.filter(l=>xLnRem(l)<=0.009);
+  const due=[];xPpItems(p.id).forEach(c=>[c,...xAcKids(c.id)].forEach(r=>{if(!r.fixed||r.active===false)return;const n=xClNx(r);if(n)due.push({r,n})}));
+  due.sort((a,b)=>a.n.d.localeCompare(b.n.d));
+  const grp=[...G.values()].sort((a,b)=>last(b).localeCompare(last(a)));
+  return `<div class="phead"><button class="mini" onclick="go('xpp')">→</button><h3>👤 ${esc(p.name)}</h3><button class="mini" onclick="xPpEdit('${p.id}')">✏️</button><button class="mini" onclick="xPpPrint('${p.id}')">🖨️</button><button class="mini" onclick="xPpShare('${p.id}')">📤</button></div>
+  <div class="xpsec">🤝 السلف</div>${op.length?op.map(lcard).join(''):'<p class="muted" style="margin:0 4px 8px">مفيش سلف مفتوحة</p>'}
+  ${cl.length?`<details class="gen"><summary>📁 سلف اتسددت (${cl.length})</summary>${cl.map(lcard).join('')}</details>`:''}
+  <div class="xlna"><button class="btn ghost" onclick="xPpLoan('${p.id}')">➕ سلفة جديدة</button><button class="btn ghost" onclick="xPpLnLink('${p.id}')">🔗 ربط سلفة موجودة</button></div>
+  ${due.length?`<div class="xpsec">⏳ المواعيد الجاية</div><div class="xpig">${due.map(({r,n})=>`<div class="xpl2" onclick="occSheet('${r.id}',${n.k})"><span class="xppd">${xPpD(n.d)}</span><span class="xpin"><b>${esc(r.name)}</b><small>${r.kind==='inc'?'💰 تحصيل':'💸 مصروف'} · ${esc(everyTxt(r.every))}${n.d<td?' · ⚠️ متأخر':''}</small></span><b dir="ltr">${num(n.amt)}</b></div>`).join('')}</div>`:''}
+  <div class="xpsec">📒 العمليات</div>
+  <div class="seg">${[['m','شهر'],['y','سنة'],['a','الكل']].map(([v,l])=>`<button class="${XPPV.per===v?'on':''}" onclick="xPpOpen('${p.id}','${v}')">${l}</button>`).join('')}</div>
+  ${XPPV.per!=='a'?`<div class="xppnav"><button class="mini" onclick="xPpMv('${p.id}',-1)">→</button><b>${lbl}</b><button class="mini" onclick="xPpMv('${p.id}',1)">←</button></div>`:''}
+  ${grp.length?grp.map(gh).join(''):'<p class="empty">مفيش عمليات في الفترة دي</p>'}
+  <button class="btn ghost" onclick="xPpMove('${p.id}')">📥 ربط عمليات متفرقة</button>`};
+
+/* الكشف المطبوع والشير: مصروف وتحصيل كل واحد لوحده */
+xPpText=function(p){let e=0,i=0;const R=xPpRows(p);
+  return `كشف حساب: ${p.name}\n`+R.map(r=>{const a=Math.abs(+r.t.amount||0),inc=r.t.type==='inc';if(inc)i+=a;else e+=a;return `${xPpD(r.t.date)} · ${r.t.note||xPpNm(r.t)} · ${inc?'تحصيل':'مصروف'} ${fmt(a)}`}).join('\n')
+    +`\n————\nمصروفات: ${fmt(r2(e))}\nتحصيلات: ${fmt(r2(i))}`};
+xPpPrint=function(pid){const p=XPP().find(x=>x.id===pid);if(!p)return;let e=0,i=0;
+  const tr=xPpRows(p).map(r=>{const a=Math.abs(+r.t.amount||0),inc=r.t.type==='inc';if(inc)i+=a;else e+=a;
+    return `<tr><td>${xPpD(r.t.date)}</td><td>${esc((C(r.t.cat)||{}).name||'')}</td><td>${esc(r.t.note||'')}</td><td>${inc?'':fmt(a)}</td><td>${inc?fmt(a):''}</td></tr>`}).join('');
+  const w=window.open('','_blank');if(!w)return toast('افتح النوافذ المنبثقة للطباعة');
+  w.document.write(`<html dir="rtl"><head><meta charset="utf-8"><title>كشف ${esc(p.name)}</title><style>body{font-family:sans-serif;padding:16px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border:1px solid #999;padding:5px;text-align:center}th{background:#eee}</style></head><body>
+  <h2>كشف حساب: ${esc(p.name)}</h2><p>بتاريخ ${xPpD(xPpTd())}</p>
+  <table><tr><th>التاريخ</th><th>البند</th><th>البيان</th><th>مصروف</th><th>تحصيل</th></tr>${tr}
+  <tr><th colspan="3">الإجمالي</th><th>${fmt(r2(e))}</th><th>${fmt(r2(i))}</th></tr></table>
+  <p style="color:#777">Centric · DeTech Solutions</p><script>setTimeout(()=>print(),300)<\/script></body></html>`);w.document.close()};
+
+/* ربط العمليات: اللي اترطبت بشخص تاني ما تظهرش */
+try{const _pmvF=xPpMove;xPpMove=function(pid){const T=S.txs;S.txs=T.filter(t=>!(t.pp&&t.pp!==pid));try{return _pmvF.apply(this,arguments)}finally{S.txs=T}}}catch(e){}
+
+/* ---------- 👤 نقل البند لشخص: شاشة لوحدها فيها شخص جديد ---------- */
+function xPpNewPerson(n){n=String(n||'').trim();if(!n)return null;let p=XPP().find(x=>normAr(x.name)===normAr(n));
+  if(!p){p={id:'pp'+Date.now().toString(36),name:n,ph:'',phs:[],cats:{}};XPP().push(p)}return p}
+function xPpMvSheet(cid){const c=C(cid);if(!c)return;
+  sheet(`<h2>👤 نقل «${esc(c.name)}» لحساب شخص</h2><p class="muted">البند هيتشال من بنود الحسابات ويبقى جوا حساب الشخص بكل عملياته.</p>
+  <div class="list">${XPP().map(p=>`<div class="row" onclick="xPpMvDo('${cid}','${p.id}')"><span class="ic" style="background:var(--soft)">👤</span><div class="grow"><b>${esc(p.name)}</b></div></div>`).join('')}</div>
+  <label>➕ شخص جديد<input id="pmv-n" placeholder="الاسم"></label>
+  <button class="btn" onclick="xPpMvNew('${cid}')">➕ اعمله وانقل البند ليه</button>`)}
+async function xPpMvDo(cid,pid){const c=C(cid),p=XPP().find(x=>x.id===pid);if(!c||!p)return;
+  if(!await ask('نقل «'+c.name+'»؟','هيتشال من بنود الحسابات ويبقى جوا حساب '+p.name+' بكل عملياته.',{icon:'👤',ok:'انقله'}))return;
+  const ex=xPpItems(pid).find(x=>x.id!==cid&&normAr(x.name)===normAr(c.name));xPpAdopt(cid,pid);
+  if(ex){try{xMgSnap()}catch(e){}xCatMerge(cid,ex.id);xPpAdopt(ex.id,pid)}
+  save();closeSheet();XPPV.per='a';XPPID=pid;go('xppo');toast('✅ اتنقل لحساب '+p.name)}
+function xPpMvNew(cid){const n=(($('#pmv-n')||{}).value||'').trim();if(!n)return toast('اكتب الاسم');const p=xPpNewPerson(n);save();xPpMvDo(cid,p.id)}
+/* شيل "تحت حساب" من تعديل البند */
+try{const _afQ=xAcForm;xAcForm=function(){const r=_afQ.apply(this,arguments);try{const s=$('#af-pp');if(s){const l=s.closest('label'),h=l&&l.nextElementSibling;if(h&&h.classList.contains('xhint'))h.remove();if(l)l.remove()}}catch(e){}return r}}catch(e){}
+/* زرار النقل: لبنود المصروف المتغيرة بس */
+try{const _xeQ=XVW.xace;XVW.xace=function(){let h=_xeQ.apply(this,arguments);try{const c=C(XACE);if(typeof h==='string'&&c)
+  h=h.replace(/<button class="btn" onclick="xAcForm\('[^']+'\)">👤 نقله لحساب شخص<\/button>/,c.kind==='exp'&&!c.core?`<button class="btn" onclick="xPpMvSheet('${c.id}')">👤 نقله لحساب شخص</button>`:'')}catch(e){}return h}}catch(e){}
+
+/* ---------- تعديل البند: العميل للتحصيل بس، و"تاريخ انتهاء" بدل "تقسيط للغير" ---------- */
+try{const _csQ=catSheet;catSheet=function(){const r=_csQ.apply(this,arguments);try{const c=CF;if(!c)return r;
+  const isP=c.ppo||XPP().some(p=>normAr(p.name)===normAr(c.name||''));
+  if((isP||c.kind!=='inc')&&!c.cl){const s=$('#cf-cl'),l=s&&s.closest('label');if(l)l.remove()}
+  const p3=$('#cf-p3'),pl=p3&&p3.closest('label');if(pl&&pl.lastChild&&pl.lastChild.nodeType===3)pl.lastChild.nodeValue=' 📅 ليه تاريخ انتهاء';
+}catch(e){}return r}}catch(e){}
+try{const _tfP3=txForm;txForm=function(){const r=_tfP3.apply(this,arguments);try{const o=document.querySelector('#f-ev option[value="p3"]');if(o)o.textContent='📅 ليه تاريخ انتهاء'}catch(e){}return r}}catch(e){}
+
+/* ---------- 🗂 الحساب الفرعي: المبلغ السابق ونسبة الزيادة ---------- */
+try{const _sfP=xSubForm;xSubForm=function(par,id){const r=_sfP.apply(this,arguments);try{const k=id&&C(id),a=$('#sb-a');if(!k||!a)return r;
+  const o=+k.amount||0,pv0=k.prevAmt?amtStr(k.prevAmt):'',pc0=k.prevAmt&&k.incPct!=null?k.incPct+'%':'';
+  a.closest('label').insertAdjacentHTML('afterend',`<div class="two"><label>المبلغ السابق<input id="sb-pv" readonly dir="ltr" value="${pv0}" placeholder="—"></label><label>نسبة الزيادة<input id="sb-pc" readonly dir="ltr" value="${pc0}" placeholder="—"></label></div>${k.amtAt?`<small class="muted xhint">آخر تغيير: ${dmy(k.amtAt)}</small>`:''}`);
+  a.addEventListener('input',()=>{const n=parseNum(a.value);if(n>0&&o>0&&Math.abs(n-o)>.001){$('#sb-pv').value=amtStr(o);$('#sb-pc').value=(Math.round((n-o)/o*1000)/10)+'%'}else{$('#sb-pv').value=pv0;$('#sb-pc').value=pc0}});
+}catch(e){}return r}}catch(e){}
+try{const _ssP=xSubSave;xSubSave=function(par,id){const k=id&&C(id),o=k?+k.amount||0:0,r=_ssP.apply(this,arguments);
+  try{if(k){const n=+k.amount||0;if(o>0&&n>0&&Math.abs(n-o)>.001){k.prevAmt=o;k.incPct=Math.round((n-o)/o*1000)/10;k.amtAt=today();save();render()}}}catch(e){}return r}}catch(e){}
+XVW.xsub=()=>{const p=C(XSUBP);if(!p){setTimeout(()=>go('xacc'),0);return ''}
+  const td=today(),K=xAcKids(p.id).sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''),'en',{numeric:true})||a.name.localeCompare(b.name,'ar'));
+  const row=x=>{const nx=x.fixed&&x.active!==false?xClNx(x):null,pv=x.prevAmt?xCh(x.incPct>=0?'ok':'late','كان '+num(x.prevAmt)+(x.incPct!=null?' · '+(x.incPct>=0?'▲ ':'▼ ')+Math.abs(x.incPct)+'%':'')):'';
+    return `<div class="xlnc" onclick="xAcRep('${x.id}')"><div class="xlnr"><b>${x.code?'<span class="xsm">#'+esc(x.code)+'</span> ':''}${esc(x.name)}</b>${x.fixed?`<span class="xlnbig ${x.kind==='inc'?'pos':'neg'}" dir="ltr">${num(+x.amount||0)}</span>`:''}</div>
+    <div class="xlnn">${x.fixed?xCh('up','📌 ثابت · '+esc(everyTxt(x.every))):xCh('','غير ثابت')} ${pv} ${nx?xCh(nx.d<td?'late':'up',(nx.d<td?'⚠️ متأخر ':'⏳ الجاي ')+dmy(nx.d)):''} ${x.active===false?xCh('late','⏸ موقوف'):''}</div>
+    <div class="xlna" style="grid-template-columns:repeat(3,1fr)"><button class="btn ghost" onclick="event.stopPropagation();xSubForm('${p.id}','${x.id}')">✏️ تعديل</button><button class="btn ghost" onclick="event.stopPropagation();xAcRep('${x.id}')">📄 العمليات</button><button class="btn ghost danger" onclick="event.stopPropagation();xSubDel('${x.id}')">🗑 حذف</button></div></div>`};
+  return `<div class="phead"><button class="mini" onclick="xAcGo('${p.id}')">→</button><h3>🗂 الحسابات الفرعية</h3></div>
+  <p class="muted" style="margin:0 4px 10px">${p.code?'#'+esc(p.code)+' · ':''}${esc(p.name)}</p>
+  <button class="btn" onclick="xSubForm('${p.id}')">➕ حساب فرعي جديد</button>${K.length?K.map(row).join(''):'<p class="empty">مفيش حسابات فرعية لسه</p>'}`};
+
+/* ---------- 📄 عمليات البند: تدوس على العملية تفتح، ومن غير خصم ---------- */
+XVW.xacr=()=>{const c=C(XACR);if(!c){setTimeout(()=>go('xacc'),0);return ''}
+  const f=XARF,td=today(),K=xAcKids(c.id);let a='',b='';
+  if(f.p==='month')a=td.slice(0,7)+'-01';else if(f.p==='year')a=td.slice(0,4)+'-01-01';else if(f.p==='cus'){a=f.a||'';b=f.b||''}
+  const R=xAcTxs(c.id).filter(t=>(!a||t.date>=a)&&(!b||t.date<=b)&&(f.k==='all'||t.type===f.k)&&(f.s==='all'||t.cat===f.s)).sort((x,y)=>x.date.localeCompare(y.date));
+  let ti=0,to=0;
+  const rows=R.map(t=>{if(t.type==='inc')ti+=t.amount;else to+=t.amount;const sc=t.cat!==c.id&&C(t.cat);
+    return `<tr class="clk" onclick="xTxOpen('${t.id}')"><td>${dmy(t.date)}</td><td>${sc?'<b>📌 '+esc(sc.name)+'</b><br>':''}<span class="xsm">${esc(t.note||(sc?'':c.name))}</span></td><td>${t.type==='inc'?'💰 تحصيل':'💸 مصروف'}</td><td class="${t.type==='inc'?'pos':'neg'}" dir="ltr">${num(t.amount)}</td></tr>`}).join('');
+  const sg=(L,key)=>`<div class="seg">${L.map(([k,l])=>`<button class="${f[key]===k?'on':''}" onclick="XARF.${key}='${k}';render()">${l}</button>`).join('')}</div>`;
+  return `<style>.xart{width:100%;border-collapse:collapse;font-size:13px}.xart th{background:var(--p);color:#fff;padding:8px 6px;text-align:right}.xart td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}</style>
+  <div class="phead"><button class="mini" onclick="${c.par?`xSubGo('${c.par}')`:`go('xacc')`}">→</button><h3>📄 عمليات ${esc(c.name)}</h3></div>
+  ${sg([['month','الشهر'],['year','السنة'],['all','الكل'],['cus','📅 فترة']],'p')}
+  ${f.p==='cus'?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0"><input type="date" value="${f.a}" onchange="XARF.a=this.value;render()"><input type="date" value="${f.b}" onchange="XARF.b=this.value;render()"></div>`:''}
+  ${sg([['all','الكل'],['inc','💰 تحصيل'],['exp','💸 مصروف']],'k')}
+  ${K.length?`<select style="width:100%;margin:8px 0" onchange="XARF.s=this.value;render()"><option value="all">كل البنود</option>${[c,...K].map(x=>`<option value="${x.id}" ${f.s===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>`:''}
+  ${kpis([['💰 تحصيل',fmt(r2(ti)),'inc'],['💸 مصروف',fmt(r2(to)),'exp']])}
+  <div class="xsm" style="margin:6px 4px">${R.length} عملية · دوس على أي عملية تفتحها</div>
+  ${R.length?`<table class="xart"><tr><th>التاريخ</th><th>البيان</th><th>النوع</th><th>المبلغ</th></tr>${rows}</table>`:'<p class="empty">مفيش عمليات في الفترة دي</p>'}`};
+
+/* ---------- 📒 بنود الحسابات: البحث بالمبلغ في كل البنود ---------- */
+XVW.xacc=xNoPpo(()=>{
+  const y=NY+'-',I=xAcInst(),L=S.cats.filter(c=>!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)&&!/^مصاريف إنستاباي ·/.test(c.name)).map(c=>{
+    let s=0,n=0;const K=xAcKids(c.id),ns=new Set();
+    [c,...K].forEach(x=>{if(+x.amount)ns.add(String(r2(+x.amount)));if(+x.prevAmt)ns.add(String(r2(+x.prevAmt)))});
+    xAcTxs(c.id).forEach(t=>{ns.add(String(r2(t.amount)));if(!t.date.startsWith(y))return;n++;s+=t.type==='inc'?t.amount:-t.amount});
+    return {c,K,s:r2(s),n,ns:[...ns],f:c.fixed||K.some(k=>k.fixed)}})
+    .sort((a,b)=>(a.c.active===false)-(b.c.active===false)||((parseInt(a.c.code)||1e9)-(parseInt(b.c.code)||1e9))||a.c.name.localeCompare(b.c.name,'ar'));
+  const CO=L.filter(x=>x.c.core),VA=L.filter(x=>!x.c.core);if(!XACT)XACT=CO.length?'core':'var';
+  const em=xAcEmpty().length;
+  const row=({c,K,s,f,ns})=>`<div class="xacr" data-t="${c.core?'core':'var'}" data-n="${ns.join(' ')}" data-q="${esc(qn([c.code||'',c.name,...(c.alias||[]),...(c.al||[]),...K.map(k=>k.name)].join(' ')))}" style="${c.active===false?'opacity:.5':''}">
+    <div class="xlnc" style="padding:10px 12px" onclick="xAcGo('${c.id}')"><div class="xlnr" style="align-items:center;gap:8px">
+    <b style="flex:1">${c.code?'<span class="xsm">#'+esc(c.code)+'</span> ':''}${esc(c.name)}${f?' 📌':''}${c.active===false?' ⏸':''}</b>
+    <span class="${s>0?'pos':s<0?'neg':''}" style="font-weight:700" dir="ltr">${num(Math.abs(s))}</span>
+    <button class="mini" onclick="event.stopPropagation();xAcRep('${c.id}')">📄</button></div></div></div>`;
+  setTimeout(xAccF,0);
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
+  <div class="seg"><button class="${XACT==='core'?'on':''}" onclick="XACT='core';render()">⭐ الأساسي (${CO.length})</button><button class="${XACT==='var'?'on':''}" onclick="XACT='var';render()">🛒 المتغير (${VA.length})</button></div>
+  <button class="btn" onclick="xAcNew()">➕ بند جديد</button>
+  <div class="gsr">${FIC}<input id="xac-q" placeholder="رقم البند أو اسمه أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>
+  <div class="xsm" id="xac-cnt" style="margin:4px 4px 8px"></div>${L.map(row).join('')}
+  ${L.length?'':'<p class="empty">لا توجد بنود</p>'}
+  ${em?`<button class="btn ghost danger" style="margin-top:12px" onclick="xAcClean()">🧹 امسح البنود الفاضية (${em})</button>`:''}`});
+xAccF=function(){const raw=XACQ.trim(),q=qn(raw),d=latD(raw).replace(/[,\s]/g,''),isN=/^\d+(\.\d+)?$/.test(d);let n=0;
+  document.querySelectorAll('#view .xacr').forEach(e=>{let ok;
+    if(!raw)ok=e.dataset.t===XACT;else{ok=e.dataset.q.includes(q);if(!ok&&isN)ok=(e.dataset.n||'').split(' ').some(v=>v===d||v.split('.')[0]===d)}
+    e.style.display=ok?'':'none';if(ok)n++});
+  const c=$('#xac-cnt');if(c)c.textContent=raw?(n?'🔍 '+n+' نتيجة في كل البنود':'مفيش بند بالاسم ده أو المبلغ ده'):''};
+
+/* ---------- 🤝 السلفة جوا شاشة التعديل: موعد السداد ---------- */
+try{const _tfLD=txForm;txForm=function(){const r=_tfLD.apply(this,arguments);try{
+  const o=F&&F.id&&S.txs.find(t=>t.id===F.id);if(!o||!o.xlno||$('#xlnd'))return r;
+  const l=XLN().find(x=>x.id===o.xlno||x.tx===o.id);if(!l)return r;
+  const tp=$('#f-tip');if(tp){const lb=tp.closest('label');if(lb)lb.remove()}
+  const nx=xLnNext(l);
+  const h=`<div class="xlnb" id="xlnd"><div class="kv"><span>🤝 سلفة لـ</span><b>${esc(l.who)}</b></div><div class="kv"><span>✅ رجع منها</span><b class="pos">${num(xLnPaid(l,1))}</b></div><div class="kv"><span>⏳ الباقي</span><b class="neg">${num(Math.max(0,xLnRem(l)))}</b></div>
+  ${nx?`<label>📅 موعد سداد السلفة<input id="f-lnd" type="date" data-l="${l.id}" value="${nx.d}"></label>`:'<div class="xrvok">✅ اتسددت بالكامل</div>'}
+  <button type="button" class="btn ghost" onclick="xLnOpen('${l.id}')">📆 جدول السداد</button></div>`;
+  const at=$('#xtyp')||document.querySelector('#sheet .sz h2');if(at)at.insertAdjacentHTML('afterend',h);
+}catch(e){}return r}}catch(e){}
+try{const _stLD=saveTx;saveTx=async function(){const i=$('#f-lnd'),v=i?i.value:'',lid=i?i.dataset.l:'';const r=await _stLD.apply(this,arguments);
+  try{if(v&&lid&&!$('#sheet').classList.contains('open')){const l=XLN().find(x=>x.id===lid),nx=l&&xLnNext(l);
+    if(nx&&nx.d!==v){const it=l.sch.find(x=>x.id===nx.id);if(it){if(nx.pd>0){it.a=r2(it.a-nx.rem);l.sch.push({id:uid(),d:v,a:nx.rem})}else it.d=v;
+      xLnLog(l,'📅 موعد السداد اتغير لـ '+dmy(v));save();render()}}}}catch(e){}return r}}catch(e){}
+/* شاشة السداد: واضح إنها الفلوس اللي رجعت من السلفة */
+try{const _lpT=xLnPay;xLnPay=function(id){const r=_lpT.apply(this,arguments);try{const l=xLnL(id),h=$('#sheet .sz h2');
+  if(l&&h&&!$('#xlpn')){h.textContent='💵 سداد سلفة · '+l.who;h.insertAdjacentHTML('afterend',`<p class="muted" id="xlpn">سجّل هنا الفلوس اللي رجعتلك من السلفة اللي اديتها لـ ${esc(l.who)} يوم ${dmy(l.d)} (${num(l.amt)})</p>`)}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.135 · البنوك والكاش + الحسابات والأشخاص ========== */
+var XAPT='acc';
+/* الأسامي */
+LDEF.pm='البنوك والكاش';
+if(XFC.pmv)XFC.pmv[1]='البنوك والكاش';
+if(XFC.xacc)XFC.xacc[1]='الحسابات والأشخاص';
+
+/* شاشة الأشخاص بقت جوا الحسابات والأشخاص */
+try{const _goAP=go;go=function(v){
+  if(v==='xpp'){XAPT='pp';v='xacc'}
+  else if(v==='xacc'&&view!=='xacc'&&!['xace','xacr','xsub','xppo'].includes(view))XAPT='acc';
+  return _goAP.apply(this,[v].concat([].slice.call(arguments,1)))}}catch(e){}
+
+try{const _xaB=XVW.xacc;XVW.xacc=function(){
+  const strip=h=>String(h||'').replace(/^\s*<div class="phead">[\s\S]*?<\/div>/,'');
+  const head=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 الحسابات والأشخاص</h3></div>
+  <div class="seg"><button class="${XAPT==='acc'?'on':''}" onclick="XAPT='acc';render()">📒 حسابات</button><button class="${XAPT==='pp'?'on':''}" onclick="XAPT='pp';render()">👤 أشخاص</button></div>`;
+  if(XAPT==='pp')return head+strip(XVW.xpp());
+  return head+strip(_xaB.apply(this,arguments))}}catch(e){}
+
+/* زرار الرجوع من حساب الشخص يرجعك لتبويب الأشخاص */
+try{const _xpoB=XVW.xppo;XVW.xppo=function(){const h=_xpoB.apply(this,arguments);return typeof h==='string'?h.replace(`onclick="go('xpp')"`,`onclick="XAPT='pp';go('xacc')"`):h}}catch(e){}
+
+/* شاشة المزيد: زرار واحد بالاسم الجديد، ومن غير زرار الأشخاص اللي لوحده */
+try{const _rnAP=render;render=function(){const r=_rnAP.apply(this,arguments);try{
+  if(view==='more'){const el=$('#view');if(el){
+    const pp=$('#xpp-tile');if(pp)pp.remove();
+    const t=xTileFind(el,'بنود الحسابات');if(t)xTileSet(t,'📒','الحسابات والأشخاص',"go('xacc')")}}
+}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* نهاية fix.js */
