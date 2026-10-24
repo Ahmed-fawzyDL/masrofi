@@ -1,6 +1,6 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
-const XVER='2.21.135',XVBUILD='24/10/2026 - 08:20 م';
+const XVER='2.21.136',XVBUILD='24/10/2026 - 09:10 م';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
 function spAbout(){
   return `<div class="list"><div class="row" style="cursor:default"><span class="ic" style="overflow:hidden">${LOGO()}</span><div class="grow"><b dir="ltr" style="text-align:right">${esc(appName())}</b><small>الإصدار ${XVER} · ${XVBUILD}</small></div></div>
@@ -8861,5 +8861,122 @@ try{const _rnAP=render;render=function(){const r=_rnAP.apply(this,arguments);try
     const pp=$('#xpp-tile');if(pp)pp.remove();
     const t=xTileFind(el,'بنود الحسابات');if(t)xTileSet(t,'📒','الحسابات والأشخاص',"go('xacc')")}}
 }catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.136 · الحساب: عمليات ثابتة ومتغيرة + نقل العمليات ========== */
+var XACTB='',XPPTB='',XMV={k:'',id:'',q:''};
+function xTxtRep(root,P){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){const v=n.nodeValue;let x=v;P.forEach(([a,b])=>{x=x.split(a).join(b)});if(x!==v)n.nodeValue=x}}
+function xCatPpo(c){if(!c)return '';if(c.ppo)return c.ppo;const p=c.par&&C(c.par);return p&&p.ppo||''}
+function xIsFx(t){return t.xfx!=null?!!t.xfx:!!((t.src&&t.src.k==='r')||(C(t.cat)&&C(t.cat).par))}
+function xOpsOf(k,id){return S.txs.filter(t=>t&&!t.del&&!t.xpre&&(t.type==='exp'||t.type==='inc')&&!t.feeOf&&!t.payFeeOf&&!t.xlno&&!t.xlnp&&
+  (k==='acc'?xAcSet(id).has(t.cat):(t.pp===id||xCatPpo(C(t.cat))===id)))}
+function xOpRow(t,k){const inc=t.type==='inc',c=C(t.cat),fx=xIsFx(t),p=k==='acc'&&t.pp&&XPP().find(x=>x.id===t.pp),ti=t.note||(c?c.name:'—');
+  const sub=[inc?'💰 تحصيل':'💸 مصروف',k==='pp'&&c&&normAr(c.name)!==normAr(ti)?esc(c.name):'',M(t.method)?esc(M(t.method).name):'',t.pend?'⏳ لسه':'',p?'👤 '+esc(p.name):''].filter(Boolean).join(' · ');
+  return `<div class="xpl2" onclick="xTxOpen('${t.id}')"><span class="xppd">${xPpD(t.date)}</span><span class="xpin"><b>${esc(ti)}</b><small>${sub}</small></span><b class="${inc?'pos':'neg'}" dir="ltr">${num(+t.amount||0)}</b><button class="mini" onclick="event.stopPropagation();xOpFlip('${t.id}')">${fx?'🔄 للمتغير':'🔄 للثابت'}</button></div>`}
+function xOpList(L,k){if(!L.length)return '<p class="empty">مفيش عمليات</p>';const G=new Map();
+  L.slice().sort(byDesc).forEach(t=>{const m=(t.date||'').slice(0,7);if(!G.has(m))G.set(m,[]);G.get(m).push(t)});
+  return [...G].map(([m,l])=>{let ex=0,ic=0;l.forEach(t=>{if(t.type==='inc')ic+=+t.amount||0;else ex+=+t.amount||0});
+    return `<div class="xpig"><div class="xpl2" style="cursor:default"><span class="xpin"><b>📅 ${m?mName(m):'—'}</b><small>${l.length} عملية</small></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">${ex?`<b class="neg" dir="ltr">💸 ${num(r2(ex))}</b>`:''}${ic?`<b class="pos" dir="ltr">💰 ${num(r2(ic))}</b>`:''}</span></div>${l.map(t=>xOpRow(t,k)).join('')}</div>`}).join('')}
+function xOpFlip(id){const t=S.txs.find(x=>x.id===id);if(!t)return;const fx=xIsFx(t);t.xfx=fx?0:1;save();render();toast(fx?'🛒 اتنقلت للمتغير':'📌 اتنقلت للثابت')}
+function xSchHTML(tops){const td=today(),L=[];
+  tops.forEach(c=>{if(c.fixed)L.push({r:c,top:null});xAcKids(c.id).forEach(k=>{if(k.fixed)L.push({r:k,top:c})})});
+  return L.map(({r,top})=>{const n=r.active!==false?xClNx(r):null;
+    return `<div class="xlnb ${n&&n.d<td?'late':''}"><div class="xlnr"><b>📅 ${esc(r.name)}</b><b dir="ltr">${num(+r.amount||0)}</b></div>
+    <div class="xlnn">${xCh('',esc(everyTxt(r.every)))} ${r.kind==='inc'?xCh('ok','💰 تحصيل'):xCh('late','💸 مصروف')} ${n?xCh(n.d<td?'late':'up',(n.d<td?'⚠️ متأخر ':'⏳ الجاي ')+dmy(n.d)):''} ${r.active===false?xCh('late','⏸ موقوف'):''}</div>
+    <div class="xlna">${n?`<button class="btn" onclick="occSheet('${r.id}',${n.k})">✓ سجّله</button>`:''}<button class="btn ghost" onclick="${top?`xSubForm('${top.id}','${r.id}')`:`catForm('${r.id}')`}">⚙️ تعديل</button></div></div>`}).join('')}
+
+/* ---------- 📒 جوا الحساب ---------- */
+XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
+  const all=xOpsOf('acc',c.id),F1=all.filter(xIsFx),V1=all.filter(t=>!xIsFx(t));if(!XACTB)XACTB=c.core?'fx':'var';
+  const sch=XACTB==='fx'?xSchHTML([c]):'';
+  return `<div class="phead"><button class="mini" onclick="go('xacc')">→</button><h3>${c.code?'#'+esc(c.code)+' · ':''}${esc(c.name)}</h3><button class="mini" onclick="xAcForm('${c.id}')">✏️</button><button class="mini" onclick="xAcRep('${c.id}')">📄</button><button class="mini danger" onclick="xAcDel('${c.id}')">🗑</button></div>
+  <div class="xlnn" style="margin:0 4px 10px">${c.core?xCh('up','📌 حساب ثابت'):xCh('','🛒 حساب متغير')} ${c.active===false?xCh('late','⏸ موقوف'):''}</div>
+  <button class="btn" onclick="xMvGo('acc','${c.id}')">📥 نقل العمليات</button>
+  <div class="seg"><button class="${XACTB==='fx'?'on':''}" onclick="XACTB='fx';render()">📌 عمليات ثابتة (${F1.length})</button><button class="${XACTB==='var'?'on':''}" onclick="XACTB='var';render()">🛒 عمليات متغيرة (${V1.length})</button></div>
+  ${XACTB==='fx'?`<div class="xpsec">📅 المواعيد الثابتة</div>${sch||'<p class="muted" style="margin:0 4px 8px">مفيش مواعيد ثابتة</p>'}<button class="btn ghost" onclick="xSubForm('${c.id}')">➕ ميعاد ثابت</button><div class="xpsec">📌 العمليات الثابتة</div>`:''}
+  ${xOpList(XACTB==='fx'?F1:V1,'acc')}`};
+try{const _agT=xAcGo;xAcGo=function(){XACTB='';return _agT.apply(this,arguments)}}catch(e){}
+xAcDel=async function(id){const c=C(id);if(!c)return;const n=xOpsOf('acc',id).length;
+  if(n)return say('مينفعش يتحذف',`عليه ${n} عملية. انقلهم لحساب تاني الأول من 📥 نقل العمليات، أو امسحهم.`,'📒');
+  if(!await ask('حذف «'+c.name+'»؟','',{danger:true,icon:'🗑',ok:'حذف'}))return;
+  const ids=new Set([id,...xAcKids(id).map(k=>k.id)]);S.cats=S.cats.filter(x=>!ids.has(x.id));save();go('xacc');toast('اتحذف')};
+try{const _arB=XVW.xacr;XVW.xacr=function(){const h=_arB.apply(this,arguments);return typeof h==='string'&&XACR===XACE?h.replace(`onclick="go('xacc')"`,`onclick="go('xace')"`):h}}catch(e){}
+
+/* ---------- الأسامي: حساب ثابت / متغير ---------- */
+xAcNew=function(){sheet(`<h2>➕ حساب جديد</h2><p class="muted">نوع الحساب</p>
+  <div class="xtype"><button type="button" onclick="xAcForm(null,1)"><span>📌</span>حساب ثابت<small>أمي، جراج، إيجار...</small></button>
+  <button type="button" onclick="xAcForm(null,0)"><span>🛒</span>حساب متغير<small>سوبر ماركت، مشتريات...</small></button></div>`)};
+try{const _afN=xAcForm;xAcForm=function(){const r=_afN.apply(this,arguments);try{xTxtRep($('#sheet .sz'),[['⭐ بند أساسي جديد','📌 حساب ثابت جديد'],['🛒 بند متغير جديد','🛒 حساب متغير جديد'],['✏️ تعديل البند','✏️ تعديل الحساب'],['رقم البند','رقم الحساب'],['اسم البند','اسم الحساب'],['⭐ أساسي','📌 ثابت']])}catch(e){}return r}}catch(e){}
+try{const _sfN=xSubForm;xSubForm=function(){const r=_sfN.apply(this,arguments);try{xTxtRep($('#sheet .sz'),[['🗂 حساب فرعي جديد','📅 ميعاد ثابت جديد'],['تعديل حساب فرعي','تعديل الميعاد الثابت'],['رقم الحساب','رقم الميعاد']])}catch(e){}return r}}catch(e){}
+try{const _xaN=XVW.xacc;XVW.xacc=function(){let h=_xaN.apply(this,arguments);if(typeof h!=='string')return h;
+  [['⭐ الأساسي','📌 الثابت'],['➕ بند جديد','➕ حساب جديد'],['رقم البند أو اسمه أو المبلغ','رقم الحساب أو اسمه أو المبلغ'],['امسح البنود الفاضية','امسح الحسابات الفاضية'],['لا توجد بنود','لا توجد حسابات']].forEach(([a,b])=>{h=h.split(a).join(b)});return h}}catch(e){}
+
+/* ---------- 📥 شاشة نقل العمليات ---------- */
+function xMvGo(k,id){XMV={k,id,q:''};go('xmv')}
+XVW.xmv=()=>{const {k,id}=XMV,tg=k==='acc'?C(id):XPP().find(x=>x.id===id);
+  if(!tg){setTimeout(()=>go('xacc'),0);return ''}
+  const inT=t=>k==='acc'?xAcSet(id).has(t.cat):(t.pp===id||xCatPpo(C(t.cat))===id);
+  const L=S.txs.filter(t=>t&&!t.del&&!t.xpre&&(t.type==='exp'||t.type==='inc')&&!t.feeOf&&!t.payFeeOf&&!t.xlno&&!t.xlnp&&!inT(t)).sort(byDesc);
+  const row=t=>{const inc=t.type==='inc',c=C(t.cat),p=t.pp&&XPP().find(x=>x.id===t.pp),cn=c?c.name:'—';
+    return `<div class="xpl2 xmvr" data-mv="${t.id}" data-q="${esc(xqn([cn,t.note||'',t.amount,num(t.amount),dmy(t.date),p?p.name:''].join(' ')))}"><span class="xppd">${xPpD(t.date)}</span><span class="xpin"><b>${esc(t.note||cn)}</b><small>${inc?'💰 تحصيل':'💸 مصروف'} · 📒 ${esc(cn)}${p?' · 👤 '+esc(p.name):''}</small></span><b class="${inc?'pos':'neg'}" dir="ltr">${num(+t.amount||0)}</b><button class="mini pri" onclick="xMvDo('${t.id}')">➡️ نقل</button></div>`};
+  setTimeout(xMvF,0);
+  return `<div class="phead"><button class="mini" onclick="go('${k==='acc'?'xace':'xppo'}')">→</button><h3>📥 نقل العمليات · ${esc(tg.name)}</h3></div>
+  <p class="muted" style="margin:0 4px 8px">دوّر على العملية ودوس ➡️ نقل، وهيسألك ثابتة ولا متغيرة. البيان والمبلغ والتاريخ بيفضلوا زي ما هم.</p>
+  <div class="gsr">${FIC}<input placeholder="اسم البند أو البيان أو المبلغ أو التاريخ" value="${esc(XMV.q)}" oninput="XMV.q=this.value;xMvF()"></div>
+  <div class="xsm" id="xmv-n" style="margin:4px 4px 8px"></div>
+  <button class="btn ghost" id="xmv-all" style="display:none" onclick="xMvAll()"></button>
+  <div class="xpig">${L.map(row).join('')||'<p class="empty">مفيش عمليات تتنقل</p>'}</div>`};
+function xMvF(){const q=xqn(XMV.q);let n=0;
+  document.querySelectorAll('#view .xmvr').forEach(r=>{const ok=!q||r.dataset.q.includes(q);r.style.display=ok?'':'none';if(ok)n++});
+  const e=$('#xmv-n');if(e)e.textContent=n+' عملية';const b=$('#xmv-all');if(b){b.style.display=q&&n?'':'none';b.textContent='➡️ نقل كل اللي ظاهر ('+n+')'}}
+function xMvApply(t,fx){const {k,id}=XMV,old=C(t.cat);
+  if(k==='acc'){const tg=C(id);if(!t.note&&old&&normAr(old.name)!==normAr(tg.name))t.note=old.name;t.cat=id;delete t.pp;delete t.ppk;delete t.ppa}
+  else{const p=XPP().find(x=>x.id===id),c=xPpNewItem(id,p.name);if(!(old&&xCatPpo(old)===id)){if(!t.note&&old&&normAr(old.name)!==normAr(p.name))t.note=old.name;t.cat=c.id}
+    t.pp=id;t.ppk=t.type==='inc'?'paid':'owe';delete t.ppa;if(t.ppx)t.ppx=t.ppx.filter(x=>x!==id)}
+  t.xfx=fx?1:0}
+async function xMvDo(id){const t=S.txs.find(x=>x.id===id);if(!t)return;
+  const r=await ask('📥 نقل العملية',`${t.note||(C(t.cat)||{}).name||''} · ${fmt(+t.amount||0)} · ${dmy(t.date)}\nثابتة ولا متغيرة؟`,{icon:'📥',ok:'📌 ثابتة',cancel:'🛒 متغيرة'});
+  if(r===null)return;xMvApply(t,r);save();const e=document.querySelector(`#view [data-mv="${id}"]`);if(e)e.remove();xMvF();toast(r?'📌 اتنقلت ثابتة':'🛒 اتنقلت متغيرة')}
+async function xMvAll(){const ids=[...document.querySelectorAll('#view .xmvr')].filter(r=>r.style.display!=='none').map(r=>r.dataset.mv);if(!ids.length)return;
+  const r=await ask('📥 نقل '+ids.length+' عملية','ثابتة ولا متغيرة؟',{icon:'📥',ok:'📌 ثابتة',cancel:'🛒 متغيرة'});if(r===null)return;
+  ids.forEach(id=>{const t=S.txs.find(x=>x.id===id);if(t)xMvApply(t,r)});save();render();toast('✅ اتنقل '+ids.length+' عملية')}
+
+/* ---------- 👤 قايمة الأشخاص ---------- */
+XVW.xpp=()=>{const P=XPP();
+  const card=p=>{const n=xOpsOf('pp',p.id).length,lr=r2(xLnOfP(p.id).reduce((a,l)=>a+Math.max(0,xLnRem(l)),0)),ph=(p.phs&&p.phs[0])||p.ph||'';
+    return `<div class="xlnc" onclick="xPpOpen('${p.id}')"><div class="xlnr"><b>👤 ${esc(p.name)}</b><button class="mini" onclick="event.stopPropagation();xPpEdit('${p.id}')">✏️ تعديل</button></div>
+    <div class="xlnr xsm"><span>${n} عملية</span>${ph?`<span dir="ltr">${esc(ph)}</span>`:''}</div>${lr?`<div class="xlnn">${xCh('late','🤝 باقي من السلف '+num(lr))}</div>`:''}</div>`};
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>👤 الأشخاص</h3></div>
+  <button class="btn" onclick="xPpEdit()">➕ شخص جديد</button>${P.length?P.map(card).join(''):'<p class="empty">لسه مفيش أشخاص</p>'}`};
+
+/* ---------- 👤 حساب الشخص: ثابتة / متغيرة / السلف ---------- */
+function xPpSch(pid){const p=XPP().find(x=>x.id===pid);if(!p)return;const c=xPpNewItem(pid,p.name);save();xSubForm(c.id)}
+try{const _poT=xPpOpen;xPpOpen=function(id){if(id!==XPPID||view!=='xppo')XPPTB='';return _poT.apply(this,arguments)}}catch(e){}
+XVW.xppo=()=>{const p=XPP().find(x=>x.id===XPPID);if(!p){setTimeout(()=>go('xpp'),0);return ''}
+  if(!XPPV.m)XPPV.m=xPpTd().slice(0,7);let from='',to='9999',lbl='';
+  if(XPPV.per==='m'){from=XPPV.m+'-01';to=XPPV.m+'-31';lbl=XPPV.m.split('-').reverse().join('/')}
+  else if(XPPV.per==='y'){from=XPPV.m.slice(0,4)+'-01-01';to=XPPV.m.slice(0,4)+'-12-31';lbl=XPPV.m.slice(0,4)}
+  const td=today(),all=xOpsOf('pp',p.id),F1=all.filter(xIsFx),V1=all.filter(t=>!xIsFx(t)),LS=xLnOfP(p.id);
+  const op=LS.filter(l=>xLnRem(l)>0.009).sort((a,b)=>(a.d||'').localeCompare(b.d||'')),cl=LS.filter(l=>xLnRem(l)<=0.009);
+  if(!XPPTB)XPPTB='fx';
+  const lcard=l=>{const rem=Math.max(0,xLnRem(l)),pd=xLnPaid(l,1),nx=xLnNext(l),lt=nx&&nx.d<td;
+    return `<div class="xlnb ${lt?'late':''}"><div class="xlnr"><b>🤝 سلفة يوم ${xPpD(l.d)}</b><b class="neg" dir="ltr">${num(l.amt)}</b></div>
+    <div class="kv"><span>✅ رجع منها</span><b class="pos">${num(pd)}</b></div><div class="kv"><span>⏳ الباقي</span><b class="neg">${num(rem)}</b></div>
+    ${nx?`<div class="kv"><span>📅 موعد السداد${lt?' · ⚠️ متأخر':''}</span><b>${xDW(nx.d)}${nx.rem<rem?' · '+num(nx.rem):''}</b></div>`:'<div class="kv"><span>الحالة</span><b class="pos">✅ اتسددت</b></div>'}
+    <div class="xlna"><button class="btn ghost" onclick="xLnOpen('${l.id}')">📄 التفاصيل</button>${rem>0.009?`<button class="btn" onclick="xLnPay('${l.id}')">💵 سجّل اللي رجع</button>`:''}</div></div>`};
+  let body='';
+  if(XPPTB==='ln'){
+    body=(op.length?op.map(lcard).join(''):'<p class="muted" style="margin:0 4px 8px">مفيش سلف مفتوحة</p>')
+      +(cl.length?`<details class="gen"><summary>📁 سلف اتسددت (${cl.length})</summary>${cl.map(lcard).join('')}</details>`:'')
+      +`<div class="xlna"><button class="btn ghost" onclick="xPpLoan('${p.id}')">➕ سلفة جديدة</button><button class="btn ghost" onclick="xPpLnLink('${p.id}')">🔗 ربط سلفة موجودة</button></div>`;
+  }else{
+    const L=(XPPTB==='fx'?F1:V1).filter(t=>(t.date||'')>=from&&(t.date||'')<=to);
+    if(XPPTB==='fx')body+=`<div class="xpsec">📅 المواعيد الثابتة</div>${xSchHTML(xPpItems(p.id))||'<p class="muted" style="margin:0 4px 8px">مفيش مواعيد ثابتة</p>'}<button class="btn ghost" onclick="xPpSch('${p.id}')">➕ ميعاد ثابت</button><div class="xpsec">📌 العمليات الثابتة</div>`;
+    body+=`<div class="seg">${[['m','شهر'],['y','سنة'],['a','الكل']].map(([v,l])=>`<button class="${XPPV.per===v?'on':''}" onclick="xPpOpen('${p.id}','${v}')">${l}</button>`).join('')}</div>
+    ${XPPV.per!=='a'?`<div class="xppnav"><button class="mini" onclick="xPpMv('${p.id}',-1)">→</button><b>${lbl}</b><button class="mini" onclick="xPpMv('${p.id}',1)">←</button></div>`:''}${xOpList(L,'pp')}`;
+  }
+  return `<div class="phead"><button class="mini" onclick="XAPT='pp';go('xacc')">→</button><h3>👤 ${esc(p.name)}</h3><button class="mini" onclick="xPpEdit('${p.id}')">✏️</button><button class="mini" onclick="xPpPrint('${p.id}')">🖨️</button><button class="mini" onclick="xPpShare('${p.id}')">📤</button></div>
+  <button class="btn" onclick="xMvGo('pp','${p.id}')">📥 نقل العمليات</button>
+  <div class="seg"><button class="${XPPTB==='fx'?'on':''}" onclick="XPPTB='fx';render()">📌 ثابتة (${F1.length})</button><button class="${XPPTB==='var'?'on':''}" onclick="XPPTB='var';render()">🛒 متغيرة (${V1.length})</button><button class="${XPPTB==='ln'?'on':''}" onclick="XPPTB='ln';render()">🤝 السلف (${op.length})</button></div>${body}`};
 try{render()}catch(e){}
 /* نهاية fix.js */
