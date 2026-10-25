@@ -9543,4 +9543,93 @@ function xCashVia(){Object.keys(XACV).forEach(a=>{if(a==='f-m')return;const s=do
 try{const _shCv=sheet;sheet=function(){const r=_shCv.apply(this,arguments);setTimeout(()=>{try{xCashVia()}catch(e){}},0);return r}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.142 · 📅 التقرير الشهري من جديد ========== */
+XVER2='2.21.142';XVBUILD2='25/10/2026 - 11:00 ص';
+
+/* أنواع المصروف والتحصيل */
+var XRGE=[['fix','📌 مصروف ثابت'],['inst','🏦 أقساط'],['bill','🧾 فواتير'],['loan','🤝 سلف'],['tip','🎁 إكراميات'],['fee','🏛️ مصاريف بنكية وإنستاباي'],['var','🛒 مصروف متغير']];
+var XRGI=[['fix','📌 تحصيل ثابت'],['ann','📄 تحصيل سنوي'],['cl','👥 عملاء'],['loan','🤝 سداد سلف'],['var','💵 تحصيل متغير']];
+function xRgE(t){const c=C(t.cat)||{},n=c.name||'';
+  if(t.feeOf||t.payFeeOf||/^مصاريف (إنستاباي|البنك|الكريديت|الدفع)|رسوم/.test(n))return 'fee';
+  if(t.tipOf||n==='إكرامية')return 'tip';
+  if(t.src&&t.src.k==='i')return 'inst';
+  if(t.xlno||t.loan)return 'loan';
+  if(t.bill||c.xbill)return 'bill';
+  if((t.src&&t.src.k==='r')||c.fixed||c.par)return 'fix';
+  return 'var'}
+function xRgI(t){const c=C(t.cat)||{};if(t.xlnp||t.loanOf)return 'loan';if(t.cl)return 'cl';
+  if((t.src&&t.src.k==='r')||c.fixed||c.par)return c.fixed&&isAnn(c)?'ann':'fix';return 'var'}
+function xTopC(id){const c=C(id);return c&&c.par&&C(c.par)?C(c.par):c}
+function xPctTx(a,b){if(!b)return '—';const p=Math.round((a-b)/Math.abs(b)*100);return (p>0?'▲ ':p<0?'▼ ':'')+Math.abs(p)+'%'}
+function xTxNm(x){const n=(x.note||'').trim();return n&&!/^🧾/.test(n)?n:((C(x.cat)||{}).name||'—')}
+
+/* الإجماليات محسوبة صح: من غير تحصيل الكريديت ولا المدفوع سابقًا، والمرتجع بيتخصم من المصروف */
+function xMS(L){let inc=0,exp=0,cr=0,rf=0,rfc=0;
+  L.forEach(x=>{if(x.pend||x.xpre||x.type==='tr')return;
+    if(x.type==='exp'){exp+=x.amount;if(xIsCr(x.method))cr+=x.amount}
+    else if(x.type==='inc'){if(x.rf){rf+=x.amount;const o=S.txs.find(y=>y.id===x.rf);if(o&&xIsCr(o.method))rfc+=x.amount}else if(!x.ccr)inc+=x.amount}});
+  exp=r2(exp-rf);cr=r2(cr-rfc);inc=r2(inc);return{inc,exp,cr,expNC:r2(exp-cr),net:r2(inc-exp)}}
+function xMList(k){return S.txs.filter(x=>x&&!x.del&&!x.pend&&!x.xpre&&x.type!=='tr'&&(x.date||'').startsWith(k+'-')&&!(x.type==='inc'&&(x.ccr||x.rf)))}
+
+/* جدول بالأنواع وجوه كل نوع الحسابات */
+function xRgTable(list,G,fn,tot,f,t,type){
+  const by={};list.forEach(x=>{const g=fn(x),top=xTopC(x.cat),k=top?top.id:'_';by[g]=by[g]||{};const o=by[g][k]=by[g][k]||{c:top,n:0,v:0};o.n++;o.v+=x.amount});
+  const rows=[];
+  G.forEach(([g,l])=>{const A=by[g];if(!A)return;const L=Object.values(A).sort((a,b)=>b.v-a.v),gs=r2(L.reduce((a,x)=>a+x.v,0)),gn=L.reduce((a,x)=>a+x.n,0);
+    rows.push(`<tr class="xgh"><td colspan="4">${l} · ${gn} عملية<em>${nm(num(gs))}${tot?' · '+Math.round(gs/tot*100)+'%':''}</em></td></tr>`);
+    L.forEach(x=>rows.push(`<tr class="clk" onclick="dOps('${f}','${t}','${x.c?x.c.id:''}','${type}')">${cT(esc(x.c?x.c.name:'—'))}${cC(nm(x.n))}${cN(num(r2(x.v)),type)}${cN(tot?Math.round(x.v/tot*100)+'%':'')}</tr>`))});
+  return rows.length?rtbl(['الحساب','العمليات|c','المبلغ|n','النسبة|n'],rows,ft('الإجمالي',2,fN(num(r2(tot))),fE)):NONE}
+
+function xBMonth2(){
+  const k=RF.month||NKM,[f,t]=mRange(k),pk=prevKey(k),td=today();
+  const L=xMList(k),s=xMS(L),P=xMS(xMList(pk)),E=L.filter(x=>x.type==='exp'),I=L.filter(x=>x.type==='inc');
+  const MN=m=>esc(MONTHS[+m.slice(5,7)-1]);
+
+  /* الأرقام الأساسية */
+  let b=rkp([['💰 التحصيلات',s.inc,'inc'],['💸 المصروفات',s.exp,'exp'],['🧮 الناتج',s.net,s.net<0?'exp':'inc']]
+    .concat(s.cr?[['💳 منها كريديت',s.cr,'warn'],['💵 من فلوسك',s.expNC,'net']]:[]));
+  b+=ioPie(s);
+
+  /* مقارنة بالشهر اللي فات */
+  const cr=(l,a,p,c)=>`<tr>${cT(l)}${cN(num(a),c)}${cN(num(p))}${cC(xPctTx(a,p))}</tr>`;
+  b+=rsec('📊 مقارنة بـ '+esc(mName(pk)))+rtbl(['البيان',MN(k)+'|n',MN(pk)+'|n','التغيير|c'],
+    [cr('💰 التحصيلات',s.inc,P.inc,'inc'),cr('💸 المصروفات',s.exp,P.exp,'exp'),cr('🧮 الناتج',s.net,P.net,s.net<0?'exp':'inc')]
+    .concat(s.cr||P.cr?[cr('💳 الكريديت',s.cr,P.cr,'exp')]:[]));
+
+  /* التحصيلات والمصروفات بالأنواع */
+  b+=rsec('💰 التحصيلات',num(s.inc))+xRgTable(I,XRGI,xRgI,s.inc,f,t,'inc');
+  b+=rsec('💸 المصروفات',num(s.exp))+xRgTable(E,XRGE,xRgE,r2(E.reduce((a,x)=>a+x.amount,0)),f,t,'exp');
+
+  /* الصرف أسبوع بأسبوع */
+  const end=+t.slice(8),W=[[1,7],[8,14],[15,21],[22,end]],wr=W.map(([a,z],i)=>{const l=E.filter(x=>{const d=+x.date.slice(8);return d>=a&&d<=z}),v=r2(l.reduce((q,x)=>q+x.amount,0));
+    return `<tr>${cT('الأسبوع '+(i+1),a+' – '+z)}${cC(nm(l.length))}${cN(num(v),'exp')}</tr>`});
+  if(E.length)b+=rsec('📆 الصرف أسبوع بأسبوع')+rtbl(['الأسبوع','العمليات|c','المبلغ|n'],wr);
+
+  /* أكبر 10 مصروفات */
+  const T10=E.slice().sort((a,c)=>c.amount-a.amount).slice(0,10);
+  if(T10.length)b+=rsec('🔝 أكبر 10 مصروفات')+rtbl(['التاريخ|c','اسم العملية','المبلغ|n'],T10.map(x=>{const cn=(xTopC(x.cat)||{}).name||'';
+    return `<tr class="clk" onclick="editTx('${x.id}')">${cD(x.date)}${cT(esc(xTxNm(x)),[cn!==xTxNm(x)?cn:'',(M(x.method)||{}).name||''].filter(Boolean).map(esc).join(' · '))}${cN(num(x.amount),'exp')}</tr>`}));
+
+  /* اللي لسه */
+  const pr=[],seen=new Set();
+  pendTx('inc',k).forEach(x=>{seen.add(x.id);pr.push({d:x.date,n:xTxNm(x),a:x.amount,ty:'inc',js:`editTx('${x.id}')`})});
+  pendTx('exp',k).forEach(x=>{seen.add(x.id);pr.push({d:x.date,n:xTxNm(x),a:x.amount,ty:'exp',js:`editTx('${x.id}')`})});
+  dueList(k,'m','inc').concat(dueList(k,'a','inc')).forEach(o=>{if(o.s.st==='wait')pr.push({d:o.date,n:o.r.name,a:o.amt,ty:'inc',js:`occSheet('${o.r.id}',${o.k})`})});
+  dueList(k,'','exp').forEach(o=>{if(o.s.st==='wait')pr.push({d:o.date,n:o.r.name,a:o.amt,ty:'exp',js:`occSheet('${o.r.id}',${o.k})`})});
+  try{xInstDue(k).forEach(({p,it})=>pr.push({d:it.due,n:'🏦 '+p.name,a:+it.amount||0,ty:'exp',js:`payStart('${p.id}','${it.id}')`}))}catch(e){}
+  if(pr.length){pr.sort((a,c)=>a.d.localeCompare(c.d));
+    const pi=r2(pr.filter(x=>x.ty==='inc').reduce((a,x)=>a+x.a,0)),pe=r2(pr.filter(x=>x.ty==='exp').reduce((a,x)=>a+x.a,0));
+    b+=rsec('⏳ لسه ما اتعملش',pr.length+' بند')+rtbl(['الموعد|c','البيان','المبلغ|n','الحالة|c'],pr.map(x=>`<tr class="clk" onclick="${x.js}">${cD(x.d)}${cT(esc(x.n),x.ty==='inc'?'💰 تحصيل':'💸 مصروف')}${cN(num(x.a),x.ty)}${cC(x.d<td?'<span class="rb late">متأخر</span>':'<span class="rb wait">لسه</span>')}</tr>`),
+      `<tr><td colspan="2" class="t"><b>💰 لسه هيتحصّل</b></td><td class="n"><b class="inc">${nm(num(pi))}</b></td><td></td></tr><tr><td colspan="2" class="t"><b>💸 لسه هيتدفع</b></td><td class="n"><b class="exp">${nm(num(pe))}</b></td><td></td></tr>`)}
+
+  /* البنوك والكاش */
+  const all=S.txs.filter(x=>x&&!x.pend&&!x.xpre&&(x.date||'').startsWith(k+'-'));
+  try{if(pmStats(all).some(x=>x.i||x.o))b+=rsec('🏦 البنوك والكاش')+pmTable(all,f,t)}catch(e){}
+
+  return{title:'التقرير الشهري',sub:mName(k)+(S.closed[k]?' · 🔒 مقفول':''),body:b,
+    csv:{head:['التاريخ','النوع','الحساب','اسم العملية','الحساب البنكي','المبلغ'],
+      rows:L.slice().sort(byAsc).map(x=>[dmy(x.date),x.type==='inc'?'تحصيل':'مصروف',(xTopC(x.cat)||{}).name||'',xTxNm(x),(M(x.method)||{}).name||'',x.type==='exp'?-x.amount:x.amount])}};
+}
+if(window.XB0)window.XB0.month=xBMonth2;
+try{render()}catch(e){}
 /* نهاية fix.js */
