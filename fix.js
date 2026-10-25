@@ -9476,4 +9476,71 @@ try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">$
 try{const _spA2=spAbout;spAbout=function(){return _spA2.apply(this,arguments).split(XVER).join(XVER2).split(XVBUILD).join(XVBUILD2)}}catch(e){}
 try{const _xpoS=XVW.xppo;XVW.xppo=function(){const h=_xpoS.apply(this,arguments);return typeof h==='string'?h.split('💵 سجّل اللي رجع').join('💵 سداد دفعة'):h}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.141 ========== */
+XVER2='2.21.141';XVBUILD2='25/10/2026 - 10:45 ص';
+
+/* ---------- 🔐 التفاصيل في الرئيسية بالباسورد لما المبالغ مستخبية ---------- */
+document.addEventListener('click',e=>{try{
+  if(view!=='home'||!amtHidden())return;
+  const el=e.target.closest&&e.target.closest('#view .xbx .xd,#view .dash .tile');
+  if(!el||e.target.closest('.xmk,.xv'))return;
+  if(XBALOK||Date.now()-XBAUTH<60000)return;
+  const js=el.getAttribute('onclick');if(!js)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  xBalAuth().then(ok=>{if(!ok)return;XBAUTH=Date.now();try{new Function(js).call(el)}catch(x){}});
+}catch(err){}},true);
+
+/* ---------- 🔢 الباسورد بيفتح كيبورد الأرقام ---------- */
+new MutationObserver(()=>{document.querySelectorAll('input[type=password]:not([data-xn])').forEach(i=>{i.dataset.xn=1;
+  if(i.closest('#pwv')||i.id==='dv-p'||i.id==='pw-m')return;
+  i.setAttribute('inputmode','numeric');i.setAttribute('pattern','[0-9]*');
+  i.insertAdjacentHTML('afterend','<button type="button" class="mini xabc" style="margin-top:6px">🔤 حروف</button>')})}).observe(document.body,{childList:true,subtree:true});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.xabc');if(!b)return;e.preventDefault();e.stopPropagation();
+  const i=b.previousElementSibling;if(!i)return;const n=i.getAttribute('inputmode')==='numeric';
+  i.setAttribute('inputmode',n?'text':'numeric');b.textContent=n?'🔢 أرقام':'🔤 حروف';i.blur();setTimeout(()=>i.focus(),60)},true);
+
+/* ---------- 📋 من غير بنود مكررة في اختيار البند ---------- */
+try{const _coH=xCatOptsH;xCatOptsH=function(){const Cs=S.cats;S.cats=Cs.filter(c=>!c.par&&!c.mrg);try{return _coH.apply(this,arguments)}finally{S.cats=Cs}}}catch(e){}
+try{const _rsK=xRepScope;xRepScope=function(fn){const o=RF.xc;try{if(Array.isArray(o)&&o.filter(Boolean).length){const s=new Set(o.filter(Boolean));o.filter(Boolean).forEach(id=>xAcKids(id).forEach(k=>s.add(k.id)));RF.xc=[...s]}return _rsK.apply(this,arguments)}finally{RF.xc=o}}}catch(e){}
+
+/* ---------- 📊 التقارير: اسم العملية + شكل أوضح + من غير العملاء في المصروفات ---------- */
+(()=>{const s=document.createElement('style');s.textContent=`
+#rvdoc .rp{font-size:13px}
+#rvdoc .rp .rs{display:flex;align-items:center;gap:8px;margin:18px 0 8px!important;padding:9px 12px!important;border-radius:10px;background:#f1f5f9;border-inline-start:5px solid var(--p);border-bottom:0!important;font-weight:800;color:#0f172a}
+#rvdoc .rtb{border-radius:12px;overflow:hidden;border:1px solid #e2e8f0}
+#rvdoc .rtb tbody tr:nth-child(even) td{background:#f8fafc}
+#rvdoc .rtb td,#rvdoc .rtb th{font-variant-numeric:tabular-nums}
+#rvdoc .rtb td.t b{display:block;font-weight:700;color:#0f172a}
+#rvdoc .rtb td.t small{display:block;color:#64748b;font-size:11px;margin-top:2px}
+#rvdoc .exp,#rvdoc td.exp,#rvdoc b.exp{color:#c2410c!important}
+#rvdoc .inc,#rvdoc td.inc,#rvdoc b.inc{color:#15803d!important}
+`;document.head.appendChild(s)})();
+function xRpPolish(){const d=$('#rvdoc');if(!d)return;
+  d.querySelectorAll('tr[onclick]:not([data-xp])').forEach(tr=>{tr.dataset.xp=1;
+    const m=(tr.getAttribute('onclick')||'').match(/(?:editTx|xTxOpen)\('([^']+)'\)/);if(!m)return;
+    const t=S.txs.find(x=>x.id===m[1]),cell=tr.querySelector('td.t');if(!t||!cell)return;
+    const sm=cell.querySelector('small'),sub=sm?sm.textContent:'',main=cell.textContent.replace(sub,'').trim(),nt=(t.note||'').trim();
+    const parts=[...new Set(sub.split(' · ').map(x=>x.trim()).filter(Boolean))].filter(x=>x!==nt);
+    if(nt&&!/^🧾/.test(nt)&&normAr(nt)!==normAr(main)){parts.unshift(main);cell.innerHTML=`<b>${esc(nt)}</b>${parts.length?`<small>${esc(parts.join(' · '))}</small>`:''}`}
+    else if(sm)sm.textContent=parts.join(' · ')});
+  if(RF&&(RF.xt==='exp'||RF.type==='exp'))d.querySelectorAll('.rs').forEach(s=>{if(/تحصيلات العملاء/.test(s.textContent)){const n=s.nextElementSibling;if(n&&n.classList.contains('rtb'))n.remove();s.remove()}})}
+(()=>{const d=$('#rvdoc');if(!d)return;let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xRpPolish()}catch(e){}})}).observe(d,{childList:true,subtree:true})})();
+
+/* ---------- 🏦 قسط جديد: اختار النوع الأول ---------- */
+var _xPlanNew0=planNew;
+planNew=function(){sheet(`<h2>➕ قسط جديد</h2><p class="muted">نوع القسط</p><div class="xtype">
+  <button type="button" onclick="xPlanNew('norm')"><span>🏦</span>قسط عادي<small>قرض، عربية...</small></button>
+  <button type="button" onclick="xPlanNew('cc')"><span>💳</span>كريديت كارد<small>على كشف الكريديت</small></button>
+  <button type="button" onclick="xPlanNew('app')"><span>📱</span>أبلكيشن<small>Valu، Contact، Aman...</small></button>
+  <button type="button" onclick="xPlanNew('prop')"><span>🏠</span>عقار / وحدة<small>شقة، أرض، شاليه...</small></button></div>`)};
+function xPlanNew(t){_xPlanNew0();PF.ptype=t;PF.cc=t==='cc';planForm()}
+
+/* ---------- 💵 الحساب كاش = الطريقة كاش (في كل الشاشات) ---------- */
+Object.assign(XACV,{'rc-m':'rc-v','q5':'q6'});
+function xCashVia(){Object.keys(XACV).forEach(a=>{if(a==='f-m')return;const s=document.getElementById(a),v=document.getElementById(XACV[a]);if(!s||!v||v.value)return;
+  const m=M(s.value);if(!m)return;const w=m.type==='cash'?'cash':(xIsCardAcct(s.value)?'card':'');
+  if(!w||![...v.options].some(o=>o.value===w))return;v.value=w;v.dispatchEvent(new Event('change',{bubbles:true}))})}
+try{const _shCv=sheet;sheet=function(){const r=_shCv.apply(this,arguments);setTimeout(()=>{try{xCashVia()}catch(e){}},0);return r}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
