@@ -10239,4 +10239,34 @@ try{const _rfL=xRcFinish;xRcFinish=async function(){
 }}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.147 · اسم المكان: مطابقة مضمونة بس ========== */
+XVER2='2.21.147';XVBUILD2='25/10/2026 - 02:40 م';
+
+/* أثناء قراءة الريسيت: الاسم لازم يكون مطابق بالظبط، مش شبهه */
+var XRCSTRICT=false;
+try{const _cfS=xCatFind;xCatFind=function(){const r=_cfS.apply(this,arguments);if(XRCSTRICT&&r&&r.s<1)return null;return r}}catch(e){}
+try{const _rfS=receiptFlow;receiptFlow=function(rc,fid){
+  XRCSTRICT=true;
+  let p;
+  try{p=_rfS.apply(this,arguments)}finally{XRCSTRICT=false}
+  return p;
+}}catch(e){}
+
+/* فوق الاسم: البرنامج اختاره ليه */
+try{const _asW=askStore;askStore=function(rc){
+  const p=_asW.apply(this,arguments);
+  try{
+    const sm=document.querySelector('#nm-card small');
+    if(sm&&rc&&rc.match){
+      let why='⭐ من اسم اتسجل قبل كده';
+      if(rc.phMatch)why='⭐ عرفته من رقم التليفون';
+      else if(rc.matchBy==='key')why='⭐ عرفته من الخط الساخن أو اسم الماركة';
+      else if(rc.matchBy==='name')why='⭐ الاسم مكتوب كده بالظبط في الريسيت';
+      sm.textContent=why;
+    }
+  }catch(e){}
+  return p;
+}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
