@@ -9728,4 +9728,319 @@ xBMonth2=function(){
 };
 if(window.XB0)window.XB0.month=xBMonth2;
 try{render()}catch(e){}
+/* ========== 2.21.144 · 📊 باقي التقارير بنفس الشكل ========== */
+XVER2='2.21.144';XVBUILD2='25/10/2026 - 02:00 م';
+
+(()=>{const s=document.createElement('style');s.textContent=`
+#rvdoc .xrg :where(th.c){width:62px}#rvdoc .xrg :where(th.n){width:82px}
+#rvdoc .xgm th:nth-child(n+2){width:74px!important}
+#rvdoc .xgo th:nth-child(2){width:26px!important}#rvdoc .xgo th:nth-child(3){width:84px!important}
+#rvdoc .xgd th:nth-child(2){width:84px!important}
+#rvdoc .xrn{background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:2px 8px 10px;margin:14px 0}
+#rvdoc .xrn .rs{background:#dbeafe!important;border-inline-start-color:#2563eb!important;color:#1e3a8a!important}
+#rvdoc .xrn .rtb{background:#fff}
+#rvdoc .xrn tr.xgh td{background:#dbeafe!important;border-top-color:#2563eb!important}
+`;document.head.appendChild(s)})();
+
+/* ---------- أدوات مشتركة ---------- */
+function xBI(h){return '<div class="xri">'+h+'</div>'}
+function xBE(h){return '<div class="xre">'+h+'</div>'}
+function xBN(h){return '<div class="xrn">'+h+'</div>'}
+
+function xRL(f,t){
+  return S.txs.filter(function(x){
+    if(!x||x.del||x.pend||x.xpre||x.type==='tr')return false;
+    if(x.date<f||x.date>t)return false;
+    if(x.type==='inc'&&(x.ccr||x.rf))return false;
+    return true;
+  });
+}
+function xRS(f,t){return xMS(S.txs.filter(function(x){return x&&x.date>=f&&x.date<=t}))}
+function xSum(L){let s=0;L.forEach(function(x){s+=(+x.amount||0)});return r2(s)}
+
+function xSubOf(x){
+  const cn=(xTopC(x.cat)||{}).name||'';
+  const nn=xTxNm(x);
+  const mm=(M(x.method)||{}).name||'';
+  const vv=x.via?viaTxt(x.via):'';
+  const a=[];
+  [cn!==nn?cn:'',mm,vv].forEach(function(v){if(v&&a.indexOf(v)<0)a.push(v)});
+  return a.map(esc).join(' · ');
+}
+
+function xKP(s,ty){
+  const a=[];
+  if(ty!=='exp')a.push(['💰 التحصيلات',s.inc,'inc']);
+  if(ty!=='inc')a.push(['💸 المصروفات',s.exp,'exp']);
+  if(!ty)a.push(['🧮 الناتج',s.net,s.net<0?'exp':'inc']);
+  if(ty!=='inc'&&s.cr){a.push(['💳 منها كريديت',s.cr,'warn']);a.push(['💵 من فلوسك',s.expNC,'net'])}
+  return rkp(a);
+}
+
+function xTop10(E){
+  const T=E.slice().sort(function(a,c){return c.amount-a.amount}).slice(0,10);
+  if(!T.length)return '';
+  const rows=T.map(function(x){
+    return '<tr class="clk" onclick="editTx(\''+x.id+'\')">'+cD(x.date)+cT(esc(xTxNm(x)),xSubOf(x))+cN(num(x.amount),'exp')+'</tr>';
+  });
+  return rsec('🔝 أكبر 10 مصروفات')+xRgCls(rtbl(['التاريخ|c','اسم العملية','المبلغ|n'],rows),'xgt');
+}
+
+function xByMonth(f,t){
+  const ms=xMonthsIn(f,t);
+  if(ms.length<2)return '';
+  let ti=0,te=0;
+  const rows=[];
+  ms.forEach(function(k){
+    const s=xMS(S.txs.filter(function(x){return x&&(x.date||'').startsWith(k+'-')}));
+    if(!s.inc&&!s.exp)return;
+    ti+=s.inc;te+=s.exp;
+    rows.push('<tr class="clk" onclick="dMonth(\''+k+'\')">'+cT(esc(mName(k)))+cN(num(s.inc),'inc')+cN(num(s.exp),'exp')+cN(num(s.net),s.net<0?'exp':'inc')+'</tr>');
+  });
+  if(!rows.length)return '';
+  const foot=ft('الإجمالي',1,fN(num(r2(ti))),fN(num(r2(te))),fN(num(r2(ti-te))));
+  return rsec('📅 شهر بشهر')+xRgCls(rtbl(['الشهر','💰 تحصيل|n','💸 مصروف|n','الناتج|n'],rows,foot),'xgm');
+}
+
+function xOpsList(L){
+  const g={};
+  L.slice().sort(byAsc).forEach(function(x){if(!g[x.date])g[x.date]=[];g[x.date].push(x)});
+  const rows=[];
+  Object.keys(g).sort().forEach(function(d){
+    const l=g[d];
+    const ii=xSum(l.filter(function(x){return x.type==='inc'}));
+    const ee=xSum(l.filter(function(x){return x.type==='exp'}));
+    rows.push('<tr class="xgh"><td colspan="3">📅 '+xDW(d)+'<em>'+(ii?'💰 '+num(ii)+'  ':'')+(ee?'💸 '+num(ee):'')+'</em></td></tr>');
+    l.forEach(function(x){
+      rows.push('<tr class="clk '+(x.type==='inc'?'xti':'xte')+'" onclick="editTx(\''+x.id+'\')">'+cT(esc(xTxNm(x)),xSubOf(x))+cC(x.type==='inc'?'💰':'💸')+cN(num(x.amount),x.type)+'</tr>');
+    });
+  });
+  if(!rows.length)return NONE;
+  return xRgCls(rtbl(['اسم العملية','|c','المبلغ|n'],rows),'xgo');
+}
+
+function xCsvOf(L){
+  const rows=L.slice().sort(byAsc).map(function(x){
+    return [dmy(x.date),x.type==='inc'?'تحصيل':'مصروف',(xTopC(x.cat)||{}).name||'',xTxNm(x),(M(x.method)||{}).name||'',x.type==='exp'?-x.amount:x.amount];
+  });
+  return {head:['التاريخ','النوع','الحساب','اسم العملية','الحساب البنكي','المبلغ'],rows:rows};
+}
+
+function xCmpTbl(a,b,la,lb){
+  function cr(l,x,y,c,cls){return '<tr class="'+cls+'">'+cT(l)+cN(num(x),c)+cN(num(y))+cC(xPctTx(x,y))+'</tr>'}
+  const rows=[cr('💰 التحصيلات',a.inc,b.inc,'inc','xti'),cr('💸 المصروفات',a.exp,b.exp,'exp','xte'),cr('🧮 الناتج',a.net,b.net,a.net<0?'exp':'inc','')];
+  if(a.cr||b.cr)rows.push(cr('💳 الكريديت',a.cr,b.cr,'exp','xte'));
+  return xRgCls(rtbl(['البيان',la+'|n',lb+'|n','التغيير|c'],rows),'xgc');
+}
+
+/* ---------- 📋 كشف حساب / العمليات / الفترة ---------- */
+function xBRangeCore(f,t,title,ty,ops){
+  const s=xRS(f,t);
+  const L=xRL(f,t).filter(function(x){return !ty||x.type===ty});
+  const I=L.filter(function(x){return x.type==='inc'});
+  const E=L.filter(function(x){return x.type==='exp'});
+  let b=xKP(s,ty);
+  if(!ty)b+=ioPie(s);
+  b+=xByMonth(f,t);
+  if(ty!=='exp')b+=xBI(rsec('💰 التحصيلات',num(s.inc))+xRgTable(I,XRGI,xRgI,s.inc,f,t,'inc'));
+  if(ty!=='inc')b+=xBE(rsec('💸 المصروفات',num(s.exp))+xRgTable(E,XRGE,xRgE,xSum(E),f,t,'exp')+xTop10(E));
+  if(ops)b+=rsec('📋 كل العمليات',L.length+' عملية')+xOpsList(L);
+  return {title:title,sub:xRngTxt(f,t),body:b,csv:xCsvOf(L)};
+}
+if(window.XB0){
+  XB0.stmt=function(){return xBRangeCore(RF.from,RF.to,'كشف حساب حسب البند',RF.type==='all'?'':RF.type,false)};
+  XB0.ops=function(){return xBRangeCore(RF.from,RF.to,(REPS.ops&&REPS.ops.t)||'كشف العمليات',RF.type==='all'?'':RF.type,true)};
+}
+xBRange=function(f,t){return xBRangeCore(f,t,'تقرير الفترة','',false)};
+
+/* ---------- 📆 التقرير السنوي ---------- */
+if(window.XB0)XB0.year=function(){
+  const y=+RF.year||NY,f=y+'-01-01',t=y+'-12-31';
+  const s=xRS(f,t);
+  const P=xRS((y-1)+'-01-01',(y-1)+'-12-31');
+  const L=xRL(f,t);
+  const I=L.filter(function(x){return x.type==='inc'});
+  const E=L.filter(function(x){return x.type==='exp'});
+  const mo=(y===NY)?NM:12;
+  let b=xKP(s,'')+ioPie(s);
+  b+=rsec('📊 مقارنة بسنة '+(y-1))+xCmpTbl(s,P,String(y),String(y-1));
+  const av=[
+    '<tr class="xti">'+cT('💰 التحصيلات','على '+mo+' شهر')+cN(num(r2(s.inc/mo)),'inc')+'</tr>',
+    '<tr class="xte">'+cT('💸 المصروفات','على '+mo+' شهر')+cN(num(r2(s.exp/mo)),'exp')+'</tr>',
+    '<tr>'+cT('🧮 الناتج')+cN(num(r2(s.net/mo)),s.net<0?'exp':'inc')+'</tr>'
+  ];
+  b+=rsec('📈 متوسط الشهر')+xRgCls(rtbl(['البيان','المتوسط|n'],av),'xgd');
+  b+=xByMonth(f,t);
+  b+=xBI(rsec('💰 التحصيلات',num(s.inc))+xRgTable(I,XRGI,xRgI,s.inc,f,t,'inc'));
+  b+=xBE(rsec('💸 المصروفات',num(s.exp))+xRgTable(E,XRGE,xRgE,xSum(E),f,t,'exp')+xTop10(E));
+  const all=S.txs.filter(function(x){return x&&!x.pend&&!x.xpre&&x.date>=f&&x.date<=t});
+  try{if(pmStats(all).some(function(x){return x.i||x.o}))b+=rsec('🏦 البنوك والكاش')+pmTable(all,f,t)}catch(e){}
+  return {title:'التقرير السنوي',sub:'سنة '+y,body:b,csv:xCsvOf(L)};
+};
+
+/* ---------- 🗓️ التقرير اليومي ---------- */
+if(REPS.day)REPS.day.b=function(){
+  const d=RF.xd||today(),ty=RF.xt||'';
+  const L=xRL(d,d).filter(function(x){return !ty||x.type===ty});
+  const s=xRS(d,d);
+  const I=L.filter(function(x){return x.type==='inc'});
+  const E=L.filter(function(x){return x.type==='exp'});
+  function tm(x){try{const c=new Date(x.created);return (c&&isoD(c)===d)?fmtTime(c.toTimeString().slice(0,5)):''}catch(e){return ''}}
+  function lst(A,k){
+    if(!A.length)return NONE;
+    const rows=A.slice().sort(function(a,c){return (a.created||0)-(c.created||0)}).map(function(x){
+      const sub=[xSubOf(x),tm(x)].filter(Boolean).join(' · ');
+      return '<tr class="clk" onclick="editTx(\''+x.id+'\')">'+cT(esc(xTxNm(x)),sub)+cN(num(x.amount),k)+'</tr>';
+    });
+    const foot=ft('الإجمالي',1,fN(num(xSum(A))));
+    return xRgCls(rtbl(['اسم العملية','المبلغ|n'],rows,foot),'xgd');
+  }
+  let b=xKP(s,ty);
+  if(ty!=='exp')b+=xBI(rsec('💰 التحصيلات',I.length+' عملية · '+num(s.inc))+lst(I,'inc'));
+  if(ty!=='inc')b+=xBE(rsec('💸 المصروفات',E.length+' عملية · '+num(s.exp))+lst(E,'exp'));
+  return {title:'التقرير اليومي',sub:xDW(d),body:b,csv:xCsvOf(L)};
+};
+
+/* ---------- 🧾 تقرير الفواتير ---------- */
+if(REPS.bills)REPS.bills.b=function(){
+  xLegacy('bills');
+  const p=xPer('bills'),f=p.f,t=p.t;
+  const sub=p.k?mName(p.k):(p.y?'سنة '+p.y:xRngTxt(f,t));
+  function isB(x){
+    if(x.type!=='exp')return false;
+    const c=C(x.cat)||{},tc=xTopC(x.cat)||{};
+    return !!(x.bill||c.xbill||/فاتور|فواتير/.test(tc.name||''));
+  }
+  const L=xRL(f,t).filter(isB);
+  const tot=xSum(L);
+  let b=rkp([['🧾 الفواتير',tot,'exp'],['العدد',String(L.length),'net'],['المتوسط',L.length?r2(tot/L.length):0,'net']]);
+  if(!L.length)return {title:'تقرير الفواتير',sub:sub,body:b+NONE};
+  const by={};
+  L.forEach(function(x){const c=xTopC(x.cat),k=c?c.id:'_';if(!by[k])by[k]={c:c,n:0,v:0};by[k].n++;by[k].v+=x.amount});
+  const A=Object.values(by).sort(function(a,c){return c.v-a.v});
+  const ar=A.map(function(o){
+    const js='dOps(\''+f+'\',\''+t+'\',\''+(o.c?o.c.id:'')+'\',\'exp\')';
+    return '<tr class="clk" onclick="'+js+'">'+cT(esc(o.c?o.c.name:'—'))+cC(nm(o.n))+cN(num(r2(o.v)),'exp')+cN(Math.round(o.v/tot*100)+'%')+'</tr>';
+  });
+  const foot=ft('الإجمالي',2,fN(num(tot)),fE);
+  let e=rsec('🧾 حسب الحساب',num(tot))+xRgCls(rtbl(['الحساب','عدد|c','المبلغ|n','%|n'],ar,foot),'xg4');
+  const ms=[];
+  xMonthsIn(f,t).forEach(function(k){const l=L.filter(function(x){return x.date.startsWith(k+'-')});if(l.length)ms.push([k,l])});
+  if(ms.length>1){
+    const mr=ms.map(function(m){return '<tr>'+cT(esc(mName(m[0])))+cC(nm(m[1].length))+cN(num(xSum(m[1])),'exp')+'</tr>'});
+    e+=rsec('📅 شهر بشهر')+xRgCls(rtbl(['الشهر','عدد|c','المبلغ|n'],mr),'xgw');
+  }
+  e+=rsec('📋 الفواتير',String(L.length))+xOpsList(L);
+  return {title:'تقرير الفواتير',sub:sub,body:b+xBE(e),csv:xCsvOf(L)};
+};
+
+/* ---------- 💰 تقرير التحصيلات ---------- */
+function xBCols2(f,t,sub){
+  const td=today();
+  const L=xRL(f,t).filter(function(x){return x.type==='inc'});
+  const got=xSum(L);
+  const pr=[];
+  S.txs.forEach(function(x){
+    if(x&&x.type==='inc'&&x.pend&&!x.ccr&&x.date>=f&&x.date<=t)pr.push({d:x.date,n:xTxNm(x),a:x.amount,js:'editTx(\''+x.id+'\')'});
+  });
+  xMonthsIn(f,t).forEach(function(k){
+    dueList(k,'m','inc').concat(dueList(k,'a','inc')).forEach(function(o){
+      if(o.s.st==='wait'&&o.date>=f&&o.date<=t)pr.push({d:o.date,n:o.r.name,a:o.amt,js:'occSheet(\''+o.r.id+'\','+o.k+')'});
+    });
+  });
+  pr.sort(function(a,c){return a.d.localeCompare(c.d)});
+  let rem=0;pr.forEach(function(x){rem+=x.a});rem=r2(rem);
+  let b=rkp([['✅ اتحصّل',got,'inc'],['⏳ لسه',rem,'warn'],['📊 المتوقع',r2(got+rem),'net']]);
+  b+=donut([{label:'اتحصّل',value:got,color:'#16a34a'},{label:'لسه',value:rem,color:'#ea580c'}],'المتوقع',short(r2(got+rem)));
+  b+=xByMonth(f,t);
+  b+=xBI(rsec('✅ اتحصّل',num(got))+xRgTable(L,XRGI,xRgI,got,f,t,'inc'));
+  if(pr.length){
+    const rows=pr.map(function(x){
+      const st=x.d<td?'<span class="rb late">متأخر</span>':'<span class="rb wait">لسه</span>';
+      return '<tr class="clk xti" onclick="'+x.js+'">'+cD(x.d)+cT(esc(x.n))+cN(num(x.a),'inc')+cC(st)+'</tr>';
+    });
+    const foot=ft('الإجمالي',2,fN(num(rem)),fE);
+    b+=rsec('⏳ لسه ما اتحصّلش',num(rem))+xRgCls(rtbl(['الموعد|c','البيان','المبلغ|n','الحالة|c'],rows,foot),'xgp');
+  }
+  return {title:'تقرير التحصيلات',sub:sub,body:b,csv:xCsvOf(L)};
+}
+if(window.XB0)XB0.cols=function(){const k=RF.month||NKM,r=mRange(k);return xBCols2(r[0],r[1],mName(k))};
+xBColsRange=function(f,t){return xBCols2(f,t,xRngTxt(f,t))};
+
+/* ---------- 🏧 تقرير الكاش ---------- */
+function xBCash2(f,t,sub){
+  const ca=xCashAcct(),O=[],D=[];
+  S.cash.forEach(function(c){
+    if(c.date>=f&&c.date<=t)O.push({d:c.date,a:+c.amount||0,m:c.method,n:c.note||'🏧 سحب من الماكينة',js:'cashForm(\''+c.id+'\')'});
+  });
+  S.txs.forEach(function(x){
+    if(!x||x.type!=='tr'||x.pend||x.date<f||x.date>t||!ca)return;
+    if(x.to===ca)O.push({d:x.date,a:+x.amount||0,m:x.method,n:x.xwho?'🙋 كاش من '+x.xwho:'🔁 تحويل للكاش',js:'editTx(\''+x.id+'\')'});
+    else if(x.method===ca)D.push({d:x.date,a:+x.amount||0,m:x.to,n:'🏦 إيداع'+(x.xwho?' من '+x.xwho:''),js:'editTx(\''+x.id+'\')'});
+  });
+  function sa(L){let s=0;L.forEach(function(x){s+=x.a});return r2(s)}
+  function tbl(L){
+    const rows=L.slice().sort(function(a,c){return a.d.localeCompare(c.d)}).map(function(x){
+      return '<tr class="clk" onclick="'+x.js+'">'+cD(x.d)+cT(esc(x.n),esc((M(x.m)||{}).name||''))+cN(num(x.a))+'</tr>';
+    });
+    const foot=L.length>1?ft('الإجمالي',2,fN(num(sa(L)))):'';
+    return xRgCls(rtbl(['التاريخ|c','البيان','المبلغ|n'],rows,foot),'xgt');
+  }
+  const so=sa(O),sd=sa(D);
+  let b=rkp([['🏧 السحب',so,'warn'],['🏦 الإيداع',sd,'inc'],['عدد الحركات',String(O.length+D.length),'net']]);
+  const by={};
+  O.forEach(function(x){if(!by[x.m])by[x.m]={m:M(x.m),n:0,v:0};by[x.m].n++;by[x.m].v+=x.a});
+  const A=Object.values(by).sort(function(a,c){return c.v-a.v});
+  let o='';
+  if(A.length){
+    const ar=A.map(function(x){return '<tr>'+cT(esc(x.m?x.m.name:'—'))+cC(nm(x.n))+cN(num(r2(x.v)))+cN(so?Math.round(x.v/so*100)+'%':'')+'</tr>'});
+    o+=rsec('🏦 السحب من كل حساب')+xRgCls(rtbl(['الحساب','عدد|c','المبلغ|n','%|n'],ar),'xg4');
+  }
+  const ms=[];
+  xMonthsIn(f,t).forEach(function(k){const l=O.filter(function(x){return x.d.startsWith(k+'-')});if(l.length)ms.push([k,l])});
+  if(ms.length>1){
+    const mr=ms.map(function(m){return '<tr>'+cT(esc(mName(m[0])))+cC(nm(m[1].length))+cN(num(sa(m[1])))+'</tr>'});
+    o+=rsec('📅 شهر بشهر')+xRgCls(rtbl(['الشهر','عدد|c','المبلغ|n'],mr),'xgw');
+  }
+  o+=rsec('🏧 السحب',num(so))+(O.length?tbl(O):NONE);
+  b+=xBN(o);
+  if(D.length)b+=xBI(rsec('🏦 الإيداع',num(sd))+tbl(D));
+  const csv={head:['التاريخ','النوع','البيان','الحساب','المبلغ'],rows:[]};
+  O.forEach(function(x){csv.rows.push([dmy(x.d),'سحب',x.n,(M(x.m)||{}).name||'',x.a])});
+  D.forEach(function(x){csv.rows.push([dmy(x.d),'إيداع',x.n,(M(x.m)||{}).name||'',x.a])});
+  return {title:'تقرير الكاش',sub:sub,body:b,csv:csv};
+}
+if(window.XB0)XB0.cash=function(){const y=+RF.year||NY;return xBCash2(y+'-01-01',y+'-12-31','سنة '+y)};
+xBCashRange=function(f,t){return xBCash2(f,t,xRngTxt(f,t))};
+
+/* ---------- باقي التقارير: نفس الألوان والمقاسات ---------- */
+try{
+  const _rpP=xRpPolish;
+  xRpPolish=function(){
+    _rpP.apply(this,arguments);
+    const d=$('#rvdoc');if(!d)return;
+    d.querySelectorAll('.rtb').forEach(function(r){r.classList.add('xrg')});
+    const rp=d.querySelector('.rp');
+    if(!rp||rp.dataset.xb)return;
+    rp.dataset.xb='1';
+    let box=null;
+    Array.from(rp.children).forEach(function(el){
+      const cl=el.classList;
+      if(cl.contains('xri')||cl.contains('xre')||cl.contains('xrn')){box=null;return}
+      if(cl.contains('rs')){
+        const tx=el.textContent.trim();
+        let k='';
+        if(tx.indexOf('💰')===0||tx.indexOf('✅')===0||tx.indexOf('التحصيل')>=0)k='xri';
+        else if(tx.indexOf('💸')===0||tx.indexOf('🧾')===0||tx.indexOf('🛒')===0||tx.indexOf('المصروف')>=0||tx.indexOf('الفواتير')>=0)k='xre';
+        else if(tx.indexOf('🏦')===0||tx.indexOf('🏧')===0)k='xrn';
+        if(k){box=document.createElement('div');box.className=k;el.before(box);box.appendChild(el)}
+        else box=null;
+        return;
+      }
+      if(box)box.appendChild(el);
+    });
+  };
+}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
