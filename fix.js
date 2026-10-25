@@ -10160,4 +10160,83 @@ try{const _rfD=receiptFlow;receiptFlow=async function(rc,fid){
 }}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.146 · اسم المكان في الريسيت ========== */
+XVER2='2.21.146';XVBUILD2='25/10/2026 - 02:30 م';
+
+/* كلمات عامة موجودة في أي ريسيت، مينفعش تبقى اسم مكان */
+var XRCGEN=['فاتوره','الفاتوره','اصل الفاتوره','الاجمالي','اجمالي','الصافي','صافي','نقدا','نقدي','كاش','المجموع','الخصم','خصم','اجمالي الخصم',
+  'التاريخ','تاريخ','الكاشير','كاشير','رقم','الرقم المرجعي','مرجعي','الكميه','السعر','الوصف','الصنف','شكرا','عميل','بيع','فرع','الفرع','فرع بيع','المرتجع','ساعه',
+  'cash','total','subtotal','tax','vat','invoice','receipt','thank you','thanks','welcome','customer','date','time','change'];
+function xAlBad(a){
+  const n=xNrm(a);
+  if(!n||n.replace(/\s/g,'').length<3)return true;
+  if(/^[\d\s.\-\/:]+$/.test(n))return true;
+  const g=XRCGEN.map(xNrm);
+  if(g.indexOf(n)>=0)return true;
+  const w=n.split(' ').filter(Boolean);
+  return w.every(function(x){return g.indexOf(x)>=0||g.indexOf(x.replace(/^ال/,''))>=0||/^\d+$/.test(x)});
+}
+function xAlClean(){
+  let n=0;
+  S.cats.forEach(function(c){['alias','al'].forEach(function(k){
+    if(!Array.isArray(c[k]))return;const b=c[k].length;
+    c[k]=c[k].filter(function(a){return !xAlBad(a)});n+=b-c[k].length;
+  })});
+  return n;
+}
+/* تنضيف الأسماء الغلط اللي اتحفظت قبل كده (مرة واحدة) */
+try{if(!S.settings.xal146){const n=xAlClean();S.settings.xal146=1;save();if(n)setTimeout(function(){toast('🧹 اتشال '+n+' اسم غلط كان بيلخبط قراءة الريسيت')},1500)}}catch(e){}
+/* ومن هنا ورايح مايتحفظش أي اسم عام */
+try{const _laX=learnAlias;learnAlias=function(c){const r=_laX.apply(this,arguments);try{['alias','al'].forEach(function(k){if(c&&Array.isArray(c[k]))c[k]=c[k].filter(function(a){return !xAlBad(a)})})}catch(e){}return r}}catch(e){}
+
+/* رقم الخط الساخن (زي 15720) واسم الماركة بالإنجليزي (زي welfare) */
+function xRcKeys(text){
+  const t=xLatN(text),L=splitLines(t),hot=[],br=[];
+  (t.match(/(^|[^\d.,])(1[5-9]\d{3})(?![\d.,])/g)||[]).forEach(function(m){const h=m.replace(/\D/g,'');if(hot.indexOf(h)<0)hot.push(h)});
+  const ST=['total','cash','receipt','invoice','dairy','products','product','market','store','date','time','cashier','change','thank','thanks','welcome',
+    'branch','customer','items','price','amount','visa','master','card','subtotal','discount','number','egypt','cairo','giza','street','phone','mobile','http','www'];
+  L.slice(0,8).forEach(function(l){(l.match(/[A-Za-z]{5,}/g)||[]).forEach(function(w){
+    w=w.toLowerCase();if(ST.indexOf(w)<0&&!/kash|cash/.test(w)&&br.indexOf(w)<0)br.push(w);
+  })});
+  return {hot:hot,br:br};
+}
+/* هل اسم الحساب ده مكتوب فعلًا فوق في الريسيت؟ */
+function xRcVerify(c,lines){
+  const names=[c.name].concat(c.alias||[],c.al||[]).filter(function(a){return !xAlBad(a)});
+  return lines.some(function(l){
+    const lc=xCore(l);if(lc.replace(/\s/g,'').length<3)return false;
+    return names.some(function(n){const nc=xCore(n);return nc.replace(/\s/g,'').length>=3&&xSim(lc,nc)>=.8});
+  });
+}
+try{const _rfV=receiptFlow;receiptFlow=async function(rc,fid){
+  try{if(rc&&rc.raw){
+    const main=xRawMain(rc.raw)||rc.raw,k=xRcKeys(main);
+    const top=splitLines(xLatN(main)).slice(0,12).concat(rc.names||[]);
+    let hit=null;
+    S.cats.forEach(function(c){
+      if(hit||c.mrg)return;
+      if((c.xhot||[]).some(function(h){return k.hot.indexOf(h)>=0})||(c.xbr||[]).some(function(b){return k.br.indexOf(b)>=0}))hit=c;
+    });
+    if(hit){rc.match=hit;rc.matchBy='key';rc.phMatch=false}
+    else if(rc.match&&!rc.phMatch&&!xRcVerify(rc.match,top))rc.match=null;
+  }}catch(e){}
+  return _rfV.apply(this,arguments);
+}}catch(e){}
+/* لما تأكد المكان، البرنامج يحفظ الخط الساخن والماركة عليه عشان يعرفه المرة الجاية */
+try{const _rfL=xRcFinish;xRcFinish=async function(){
+  const x=XRC2;
+  try{if(x&&x.cat&&x.rc&&x.rc.raw){
+    const k=xRcKeys(xRawMain(x.rc.raw)||x.rc.raw),c=x.cat;
+    c.xhot=[...new Set((c.xhot||[]).concat(k.hot))].slice(-6);
+    c.xbr=[...new Set((c.xbr||[]).concat(k.br))].slice(-8);
+    S.cats.forEach(function(o){
+      if(o===c)return;
+      if(o.xhot)o.xhot=o.xhot.filter(function(h){return k.hot.indexOf(h)<0});
+      if(o.xbr)o.xbr=o.xbr.filter(function(b){return k.br.indexOf(b)<0});
+    });
+  }}catch(e){}
+  return _rfL.apply(this,arguments);
+}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
