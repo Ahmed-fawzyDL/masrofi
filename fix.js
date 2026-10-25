@@ -10043,4 +10043,121 @@ try{
 }catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.145 · Receipt Scan + من غير أمثلة ========== */
+XVER2='2.21.145';XVBUILD2='25/10/2026 - 02:15 م';
+
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet .btn.xrsb{display:flex!important;align-items:center;gap:12px;text-align:start;padding:12px 14px!important;margin:4px 0 12px!important;border-radius:18px!important;
+ background:linear-gradient(135deg,rgba(45,212,191,.30),rgba(59,130,246,.22)),rgba(15,23,42,.35)!important;border:1px solid rgba(255,255,255,.18)!important;
+ box-shadow:0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18)!important;
+ backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;color:#fff!important}
+#sheet .xrsb .xrs0{font-size:26px;width:46px;height:46px;flex:0 0 46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14)}
+#sheet .xrsb b{display:block;font-size:15px;font-weight:800}
+#sheet .xrsb small{display:block;font-size:11.5px;opacity:.85;font-weight:500;margin-top:2px}
+`;document.head.appendChild(s)})();
+
+/* ---------- شيل الأمثلة من الخانات ---------- */
+function xPhClean(){
+  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(function(i){
+    const p=i.getAttribute('placeholder')||'';
+    if(/^\s*🔍/.test(p))return;
+    if(/مثلا|مثلاً|،.*(\.\.\.|…)|(\.\.\.|…)\s*$/.test(p))i.setAttribute('placeholder','');
+  });
+}
+(function(){let q=false;new MutationObserver(function(){if(q)return;q=true;requestAnimationFrame(function(){q=false;try{xPhClean()}catch(e){}})}).observe(document.body,{childList:true,subtree:true})})();
+
+/* ---------- 📷 Receipt Scan فوق في أول الشاشة ---------- */
+try{
+  const _tfRs=txForm;
+  txForm=function(){
+    const r=_tfRs.apply(this,arguments);
+    try{
+      const sz=$('#sheet .sz');if(!sz)return r;
+      const b=sz.querySelector('.btn[onclick="scanReceipt()"]');if(!b)return r;
+      if(!b.classList.contains('xrsb')){
+        b.classList.add('xrsb');b.classList.remove('ghost');
+        b.innerHTML='<span class="xrs0">📷</span><span><b>Receipt Scan</b><small>صوّر الريسيت والبرنامج يقرا المبلغ والمكان والأصناف</small></span>';
+      }
+      const at=$('#xtyp')||sz.querySelector('h2');
+      if(at&&at.nextElementSibling!==b)at.after(b);
+    }catch(e){}
+    return r;
+  };
+}catch(e){}
+
+/* ---------- 🔎 قراءة أدق للريسيت ---------- */
+var XRCSCAN=0;
+try{const _srX=scanReceipt;scanReceipt=function(){XRCSCAN=Date.now();return _srX.apply(this,arguments)}}catch(e){}
+function xRcOn(){return Date.now()-XRCSCAN<180000}
+
+/* تحسين الصورة: تكبير + أبيض وأسود + تباين */
+function xEnh2(src){
+  let sc=Math.min(2.5,Math.max(1,1600/src.width));
+  sc=Math.min(sc,Math.sqrt(12e6/(src.width*src.height)));
+  const c=document.createElement('canvas');
+  c.width=Math.round(src.width*sc);c.height=Math.round(src.height*sc);
+  const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(src,0,0,c.width,c.height);
+  const im=g.getImageData(0,0,c.width,c.height),d=im.data,n=d.length/4,h=new Uint32Array(256);
+  for(let i=0;i<d.length;i+=4){const y=(d[i]*299+d[i+1]*587+d[i+2]*114)/1000|0;d[i]=y;h[y]++}
+  let lo=0,hi=255,acc=0;
+  for(;lo<255;lo++){acc+=h[lo];if(acc>n*.02)break}
+  acc=0;for(;hi>0;hi--){acc+=h[hi];if(acc>n*.02)break}
+  const rg=Math.max(1,hi-lo);
+  for(let i=0;i<d.length;i+=4){let v=(d[i]-lo)*255/rg;v=v<0?0:(v>255?255:v);v=255*Math.pow(v/255,1.2);d[i]=v;d[i+1]=v;d[i+2]=v}
+  g.putImageData(im,0,0);return c;
+}
+
+/* الأرقام العربي تتقري صح */
+function xLatN(t){return latD(String(t||'')).replace(/٫/g,'.').replace(/٬/g,',')}
+try{const _prL=parseReceipt;parseReceipt=function(t){return _prL.call(this,xLatN(t))}}catch(e){}
+try{const _bpL=biParse;biParse=function(t){return _bpL.call(this,xLatN(t))}}catch(e){}
+
+/* لو القراءة ضعيفة، يقرا تاني بالصورة المحسّنة وياخد الأحسن */
+try{CLOUD.forEach(function(e){const f=e[1];e[1]=async function(c){
+  let best=await f(c);if(!xRcOn())return best;
+  let bs=xRcScore(best||'');if(bs>=6)return best;
+  try{const t=await f(xEnh2(c));const s=xRcScore(t||'');if(s>bs){best=t;bs=s}}catch(x){}
+  return best;
+}})}catch(e){}
+try{const _ocrX=ocr;ocr=async function(lang,c,opts,onP){
+  const t=await _ocrX.apply(this,arguments);
+  try{
+    if(!xRcOn()||!c||!c.getContext||xRcScore(t||'')>=5)return t;
+    const t2=await _ocrX(lang,xEnh2(c),Object.assign({},opts||{},{tessedit_pageseg_mode:'4'}),onP);
+    return xRcScore(t2||'')>xRcScore(t||'')?t2:t;
+  }catch(e){return t}
+}}catch(e){}
+
+/* التاريخ الصح من الريسيت */
+function xRcDate(text){
+  const L=splitLines(xLatN(text)),td=today(),min=addMonths(td,-4),C2=[];
+  L.forEach(function(l,i){
+    const near=/(date|تاريخ|التاريخ)/i.test(l)||(i>0&&/(date|تاريخ)/i.test(L[i-1]));
+    let m;const re1=/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/g,re2=/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/g;
+    function add(y,mo,d){y=+y;mo=+mo;d=+d;if(y<100)y+=2000;if(mo<1||mo>12||d<1||d>31)return false;const iso=y+'-'+pad(mo)+'-'+pad(d);if(iso>td||iso<min)return false;C2.push({iso:iso,near:near});return true}
+    while((m=re1.exec(l))){if(!add(m[3],m[2],m[1]))add(m[3],m[1],m[2])}
+    while((m=re2.exec(l))){add(m[1],m[2],m[3])}
+  });
+  if(!C2.length)return '';
+  const n=C2.filter(function(x){return x.near});
+  return (n.length?n:C2)[0].iso;
+}
+try{const _rfD=receiptFlow;receiptFlow=async function(rc,fid){
+  try{if(rc&&rc.raw){
+    const main=xRawMain(rc.raw)||rc.raw;
+    const d=xRcDate(main);
+    if(d&&(!rc.date||rc.date>today()||rc.date<addMonths(today(),-4)))rc.date=d;
+    if(!rc.match){
+      const cand=(rc.names||[]).concat(splitLines(main).slice(0,6));
+      let best=null;
+      cand.forEach(function(nm0){if(!nm0||String(nm0).replace(/\s/g,'').length<3)return;const m=xCatFind(nm0,'exp');if(m&&m.s>=.85&&(!best||m.s>best.s))best=m});
+      if(best){rc.match=best.c;rc.matchBy='name'}
+    }
+    const its=rc.items||[];
+    if(its.length){const mx=Math.max.apply(null,its.map(function(x){return +x.v||0}));if(rc.total&&rc.total<mx){const t2=xTotalOf(main,its);rc.total=t2>=mx?t2:r2(its.reduce(function(a,x){return a+(+x.v||0)},0))}}
+  }}catch(e){}
+  return _rfD.apply(this,arguments);
+}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
