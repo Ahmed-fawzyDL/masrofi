@@ -9817,6 +9817,7 @@ if(REPS.bills)REPS.bills.b=function(){
   if(!L.length)return{title:'تقرير الفواتير',sub,body:b+NONE};
   const by={};L.forEach(x=>{const c=xTopC(x.cat),k=c?c.id:'_';const o=by[k]=by[k]||{c,n:0,v:0};o.n++;o.v+=x.amount});
   const A=Object.values(by).sort((a,c)=>c.v-a.v);
+  const tbl=(L,cls)=>{const rows=L.sort((a,c)=>a.d.localeCompare(c.d)).map(x=>`<tr class="clk" onclick="${x.js}">${cD(x.d)}${cT(esc(x.n),esc((M(x.m)||{}).name||''))}${cN(num(x.a))}</tr>`);const tot=r2(L.reduce((s,y)=>s+y.a,0));return xRgCls(rtbl(['التاريخ|c','البيان','المبلغ|n'],rows,L.length>1?ft('الإجمالي',2,fN(num(tot))):''),cls)};
   let e=rsec('🧾 حسب الحساب',num(tot))+xRgCls(rtbl(['الحساب','عدد|c','المبلغ|n','%|n'],A.map(o=>`<tr class="clk" onclick="dOps('${f}','${t}','${o.c?o.c.id:''}','exp')">${cT(esc(o.c?o.c.name:'—'))}${cC(nm(o.n))}${cN(num(r2(o.v)),'exp')}${cN(Math.round(o.v/tot*100)+'%')}</tr>`),ft('الإجمالي',2,fN(num(tot)),fE)),'xg4');
   const ms=xMonthsIn(f,t).map(k=>[k,L.filter(x=>x.date.startsWith(k+'-'))]).filter(x=>x[1].length);
   if(ms.length>1)e+=rsec('📅 شهر بشهر')+xRgCls(rtbl(['الشهر','عدد|c','المبلغ|n'],ms.map(([k,l])=>`<tr>${cT(esc(mName(k)))}${cC(nm(l.length))}${cN(num(xSum(l)),'exp')}</tr>`)),'xgw');
