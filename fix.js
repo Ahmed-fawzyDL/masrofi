@@ -9470,4 +9470,10 @@ try{const _rnZ9=render;render=function(){const r=_rnZ9.apply(this,arguments);try
 }catch(e){}return r}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.140 · "سجّل اللي رجع" بقت "سداد دفعة" + رقم الإصدار ========== */
+var XVER2='2.21.140',XVBUILD2='25/10/2026 - 10:15 ص';
+try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER2} · ${XVBUILD2}</small></div>`}}catch(e){}
+try{const _spA2=spAbout;spAbout=function(){return _spA2.apply(this,arguments).split(XVER).join(XVER2).split(XVBUILD).join(XVBUILD2)}}catch(e){}
+try{const _xpoS=XVW.xppo;XVW.xppo=function(){const h=_xpoS.apply(this,arguments);return typeof h==='string'?h.split('💵 سجّل اللي رجع').join('💵 سداد دفعة'):h}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
