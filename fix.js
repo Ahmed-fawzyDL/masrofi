@@ -10808,4 +10808,15 @@ function xAiInject(){const v=$('#view');if(!v||$('#xaibox'))return;
   if(ref===at)at.insertAdjacentHTML('beforebegin',xAiBox());else ref.insertAdjacentHTML('afterend',xAiBox())}
 (()=>{let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xAiInject()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});try{xAiInject()}catch(e){}})();
 try{render()}catch(e){}
+/* ========== 2.21.164 · زرار التحديث بيجيب النسخة الجديدة فعلًا ========== */
+XVER2='2.21.164';XVBUILD2='26/10/2026 - 03:00 م';
+xUpdGo=async function(){
+  try{xStSave()}catch(e){}try{draftSave()}catch(e){}
+  try{const el=$('#xupd');if(el)el.innerHTML='<span>⏳ بجيب النسخة الجديدة...</span>'}catch(e){}
+  try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();
+    if(reg){try{await reg.update()}catch(e){}const w=reg.waiting||reg.installing;if(w){try{w.postMessage({type:'SKIP_WAITING'});w.postMessage('skipWaiting')}catch(e){}}}}catch(e){}
+  try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.filter(k=>!/share/i.test(k)).map(k=>caches.delete(k)))}}catch(e){}
+  setTimeout(()=>location.replace(location.pathname+'?u='+Date.now()),400);
+};
+try{render()}catch(e){}
 /* نهاية fix.js */
