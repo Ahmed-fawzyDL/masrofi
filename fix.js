@@ -10747,76 +10747,110 @@ try{const _bwD=xBalWhy;xBalWhy=function(id,d){if(d)XBWD=d;const o=xDayIso;xDayIs
     const k=sz.querySelector('.kv');if(k&&!$('#bw-d'))k.insertAdjacentHTML('afterend',`<div class="seg" id="bw-d">${[[7,'آخر 7 أيام'],[30,'آخر 30 يوم'],[90,'آخر 3 شهور']].map(([v,l])=>`<button type="button" class="${XBWD===v?'on':''}" onclick="xBalWhy('${id}',${v})">${l}</button>`).join('')}</div>`)}}catch(e){}
   return r}}catch(e){}
 try{render()}catch(e){}
-/* ========== 2.21.161 · قراءة الريسيت ببلاش (Gemini) ========== */
-XVER2='2.21.161';XVBUILD2='26/10/2026 - 02:40 م';
+/* ========== 2.21.165 · قراءة الريسيت بـ Gemini (ببلاش) ========== */
+XVER2='2.21.165';XVBUILD2='26/10/2026 - 03:10 م';
 var XGM=['gemini-3.6-flash','gemini-3.5-flash','gemini-2.5-flash'];
-var _xAiCallC=xAiCall;
-xAiCall=async function(content,max){const k=xAiKey();if(/^sk-ant/.test(k))return _xAiCallC(content,max);if(!k)throw new Error('مفيش مفتاح');
-  const parts=content.map(c=>c.type==='image'?{inline_data:{mime_type:c.source.media_type,data:c.source.data}}:{text:c.text});
-  let m=xAiModel();if(!/^gemini/.test(m))m=XGM[0];const list=[m].concat(XGM.filter(x=>x!==m));let last=null;
-  for(const md of list){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),40000);
+function xGK(){return localStorage.getItem('centric-aik')||''}
+function xGMod(){const m=localStorage.getItem('centric-aim')||'';return /^gemini/.test(m)?m:XGM[0]}
+async function xGCall(parts){const k=xGK();if(!k)throw new Error('مفيش مفتاح');let m=xGMod(),last=null;
+  for(const md of [m].concat(XGM.filter(x=>x!==m))){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),40000);
     try{const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+md+':generateContent',{method:'POST',signal:ctl.signal,
-        headers:{'content-type':'application/json','x-goog-api-key':k},
-        body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{maxOutputTokens:4096,temperature:0}})});
+        headers:{'content-type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{maxOutputTokens:4096,temperature:0}})});
       const j=await res.json().catch(()=>({}));
       if(res.status===404){last=new Error('الموديل '+md+' مش متاح');continue}
       if(res.status===429)throw new Error('خلصت القراءات المجانية دلوقتي، جرّب كمان شوية');
       if(!res.ok)throw new Error((j.error&&j.error.message)||('HTTP '+res.status));
-      if(md!==xAiModel())localStorage.setItem('centric-aim',md);
+      if(md!==m)localStorage.setItem('centric-aim',md);
       return (((j.candidates||[])[0]||{}).content||{parts:[]}).parts.map(p=>p.text||'').join('');
     }catch(e){if(e.name==='AbortError')throw new Error('الرد اتأخر');throw e}finally{clearTimeout(to)}}
-  throw last||new Error('مفيش موديل متاح')};
-xAiSave=function(){const k=(($('#ai-k')||{}).value||'').trim(),m=($('#ai-m')||{}).value||XGM[0];
-  if(k)localStorage.setItem('centric-aik',k);else localStorage.removeItem('centric-aik');localStorage.setItem('centric-aim',m);render();toast(k?'✅ اتحفظ':'اتشال المفتاح')};
-try{const _spG=spOcr;spOcr=function(){let h=_spG.apply(this,arguments);
-  h=h.replace(/<h3>🤖 قراءة الريسيت بالذكاء الاصطناعي<\/h3>[\s\S]*?<\/button><\/div>(<p[^>]*>[\s\S]*?<\/p>)?<\/div>/,'');
-  const k=xAiKey(),m=/^gemini/.test(xAiModel())?xAiModel():XGM[0];
-  return `<h3>🤖 قراءة الريسيت بالذكاء الاصطناعي (ببلاش)</h3><div class="box">
-  <p class="muted" style="margin-top:0">بيقرا اسم المحل والمبلغ والتاريخ والأصناف صح. ببلاش ومن غير كارت.<br>
-  1) افتح <b dir="ltr">aistudio.google.com</b> وادخل بحساب Gmail<br>2) دوس <b dir="ltr">Get API key</b> ← <b dir="ltr">Create API key</b><br>3) انسخ المفتاح وحطه هنا</p>
-  <label>API Key<input id="ai-k" dir="ltr" autocomplete="off" spellcheck="false" value="${esc(k)}" placeholder="AIza..."></label>
-  <label>الموديل<select id="ai-m">${XGM.map(x=>`<option value="${x}" ${m===x?'selected':''}>${x}</option>`).join('')}</select></label>
-  <div class="xlna"><button class="btn" onclick="xAiSave()">💾 حفظ</button><button class="btn ghost" onclick="xAiTest()">🧪 تجربة</button></div>
-  ${k?'<p class="xrvok" style="margin:8px 0 0">✅ شغال · الريسيت هيتقري بالذكاء الاصطناعي</p>':''}
-  <p class="muted" style="font-size:11.5px;margin:8px 0 0">النسخة المجانية ليها حد في اليوم وده كفاية جدًا للريسيتات. صور الريسيت بتتبعت لـ Google، وفي النسخة المجانية Google ممكن تستخدمها في تحسين خدماتها.</p></div>`+h}}catch(e){}
-try{render()}catch(e){}
-/* ========== 2.21.162 · إعدادات Gemini في شاشة قراءة الريسيت ========== */
-XVER2='2.21.162';XVBUILD2='26/10/2026 - 02:45 م';
-function xAiBox(){const k=xAiKey(),m=/^gemini/.test(xAiModel())?xAiModel():XGM[0];
+  throw last||new Error('مفيش موديل متاح')}
+function xGSave(){const k=(($('#ai-k')||{}).value||'').trim(),m=($('#ai-m')||{}).value||XGM[0];
+  if(k)localStorage.setItem('centric-aik',k);else localStorage.removeItem('centric-aik');localStorage.setItem('centric-aim',m);
+  const b=$('#xaibox');if(b)b.remove();render();toast(k?'✅ اتحفظ':'اتشال المفتاح')}
+async function xGTest(){xGSave();toast('⏳ بجرب...');
+  try{const t=await xGCall([{text:'رد بكلمة OK بس'}]);say('✅ شغال','Gemini رد: '+t,'🤖')}
+  catch(e){say('⚠️ مش شغال',(e.message||'')+'\n\nاتأكد إن المفتاح منسوخ كامل.','🤖')}}
+async function xGRead(fid){const r=await FDB.get(fid);if(!r||!r.blob)return null;
+  const c=await fileToCanvas(r.blob),sc=Math.min(1,1600/Math.max(c.width,c.height)),cv=document.createElement('canvas');
+  cv.width=Math.round(c.width*sc);cv.height=Math.round(c.height*sc);cv.getContext('2d').drawImage(c,0,0,cv.width,cv.height);
+  const data=cv.toDataURL('image/jpeg',.85).split(',')[1];
+  const names=[...new Set(S.cats.filter(x=>x&&!x.mrg&&!x.par&&!x.cl&&!x.ppo&&x.kind==='exp'&&x.active!==false).map(x=>x.name))].slice(0,250);
+  const prompt=`ده ريسيت مشتريات من مصر. رجّع JSON بس من غير أي كلام تاني:
+{"store":"","match":"","total":0,"date":"","time":"","items":[{"n":"","q":1,"p":0,"v":0}],"phones":[],"tax_id":""}
+- store: اسم المحل أو الشركة الحقيقي زي ما هو مكتوب فوق في الريسيت. مش اسم الكاشير ولا العميل ولا الفرع ولا كلمة "فاتورة".
+- match: لو المحل ده هو نفس واحد من الأسامي دي، اكتبه بالظبط زي ما هو في القايمة. لو مش متأكد سيبه فاضي: ${names.join(' | ')}
+- total: المبلغ النهائي المدفوع بعد الخصم والضريبة، رقم.
+- date: تاريخ الريسيت YYYY-MM-DD. time: الساعة HH:MM. لو مش موجودين سيبهم فاضيين.
+- items: كل صنف: n الاسم، q الكمية، p سعر الوحدة، v الإجمالي.
+- phones: أرقام التليفون والخط الساخن. tax_id: رقم التسجيل الضريبي لو موجود.`;
+  const tx=await xGCall([{inline_data:{mime_type:'image/jpeg',data}},{text:prompt}]);
+  const s=tx.indexOf('{'),e=tx.lastIndexOf('}');if(s<0)return null;return JSON.parse(tx.slice(s,e+1))}
+function xGTax(raw){const L=splitLines(xLatN(raw||''));for(let i=0;i<L.length;i++){if(!/(ضريب|tax|تسجيل|reg)/i.test(L[i]))continue;
+  const m=(L[i]+' '+(L[i+1]||'')).match(/(\d{3})[\s\-.]?(\d{3})[\s\-.]?(\d{3})(?!\d)/);if(m)return m[1]+m[2]+m[3]}return ''}
+function xGByTax(t){return t?S.cats.find(c=>!c.mrg&&(c.xtax||[]).includes(t)):null}
+
+/* ---------- قراءة الريسيت ---------- */
+try{const _rfG=receiptFlow;receiptFlow=async function(rc,fid){
+  rc=rc||{};const tax0=xGTax(rc.raw);
+  if(xGK()&&fid){try{sheet('<h2>🤖 بقرا الريسيت</h2><p class="muted">ثواني والبيانات تطلع...</p>')}catch(e){}
+    let ai=null;try{ai=await xGRead(fid)}catch(e){toast('⚠️ Gemini: '+(e.message||'')+' · هكمّل بالطريقة العادية')}
+    if(ai&&(ai.store||+ai.total)){const td=today(),min=addMonths(td,-6),st=String(ai.store||'').trim();
+      if(+ai.total>0)rc.total=r2(+ai.total);
+      if(/^\d{4}-\d{2}-\d{2}$/.test(ai.date||'')&&ai.date<=td&&ai.date>=min)rc.date=ai.date;
+      if(/^\d{1,2}:\d{2}/.test(ai.time||''))rc.time=ai.time.slice(0,5);
+      const its=(ai.items||[]).map(x=>({n:String(x.n||'').trim()||'صنف',q:+x.q||1,p:r2(+x.p||+x.v||0),v:r2(+x.v||((+x.p||0)*(+x.q||1)))})).filter(x=>x.v>0);
+      if(its.length)rc.items=its;
+      rc.phones=[...new Set((rc.phones||[]).concat((ai.phones||[]).map(p=>String(p).replace(/\D/g,'')).filter(p=>p.length>=5)))];
+      const tx=String(ai.tax_id||'').replace(/\D/g,'')||tax0;rc.aitax=tx;
+      let m=ai.match?S.cats.find(c=>!c.mrg&&!c.par&&c.kind==='exp'&&normAr(c.name)===normAr(ai.match)):null;
+      if(!m&&st)m=S.cats.find(c=>!c.mrg&&!c.par&&c.kind==='exp'&&[c.name].concat(c.alias||[],c.al||[]).some(n=>normAr(n)===normAr(st)));
+      if(!m)m=xGByTax(tx);
+      rc.match=m||null;rc.matchBy=m?'ai':'';rc.phMatch=!!m;
+      rc.names=[...new Set([st].concat(rc.names||[]).filter(Boolean))];
+      rc.ai=1;rc._raw=rc.raw;rc.raw=''}}
+  else if(tax0){const m=xGByTax(tax0);if(m){rc.match=m;rc.matchBy='tax';rc.phMatch=true}}
+  return _rfG.call(this,rc,fid)}}catch(e){}
+
+/* ---------- شاشة اسم المكان: السطور اللي اتقرت ---------- */
+var XNML=[];
+function xNmLn(i){const v=XNML[i];if(!v)return;const inp=$('#nm-in');if(inp)inp.value=v;xNmEdit();try{xNmFind(v)}catch(e){}}
+try{const _asG=askStore;askStore=function(rc){if(rc&&rc._raw&&!rc.raw)rc.raw=rc._raw;const p=_asG.apply(this,arguments);try{
+  const sm=document.querySelector('#nm-card small');
+  if(sm&&rc){if(rc.matchBy==='ai')sm.textContent='🤖 Gemini عرف إنه حسابك ده';else if(rc.ai)sm.textContent='🤖 قراءة Gemini';else if(rc.matchBy==='tax')sm.textContent='⭐ عرفته من رقم التسجيل الضريبي'}
+  const raw=xRawMain((rc&&rc.raw)||'');XNML=[];
+  splitLines(xLatN(raw)).slice(0,14).forEach(l=>{l=l.trim();if(xLetters(l)>=3&&!xAlBad(l)&&!/\d{4,}/.test(l)&&XNML.length<8&&!XNML.includes(l))XNML.push(l)});
+  const cn=[...document.querySelectorAll('#sheet .sz>.btn.ghost')].pop();
+  if(XNML.length&&cn&&!$('#nm-ln'))cn.insertAdjacentHTML('beforebegin',`<div class="fl" id="nm-ln">📄 أو دوس على السطر اللي فيه اسم المحل</div><div class="xnmo">${XNML.map((l,i)=>`<button type="button" class="rch" onclick="xNmLn(${i})">${esc(l)}</button>`).join('')}</div>`);
+}catch(e){}return p}}catch(e){}
+
+/* ---------- البرنامج يحفظ رقم التسجيل الضريبي على المحل ---------- */
+try{const _rfTG=xRcFinish;xRcFinish=async function(){const x=XRC2;try{if(x&&x.cat&&x.rc){const t=x.rc.aitax||xGTax(x.rc.raw||x.rc._raw||'');
+  if(t){S.cats.forEach(o=>{if(o!==x.cat&&o.xtax)o.xtax=o.xtax.filter(v=>v!==t)});x.cat.xtax=[...new Set((x.cat.xtax||[]).concat(t))].slice(-4)}}}catch(e){}
+  return _rfTG.apply(this,arguments)}}catch(e){}
+
+/* ---------- بوكس Gemini في شاشة قراءة الريسيت ---------- */
+function xGBox(){const k=xGK(),m=xGMod();
   return `<div id="xaibox"><h3>🤖 قراءة بالذكاء الاصطناعي · Gemini (ببلاش)</h3><div class="box">
-  <p class="muted" style="margin-top:0">أدق طريقة لقراءة اسم المحل والمبلغ والتاريخ والأصناف.<br>
-  1) افتح <b dir="ltr">aistudio.google.com</b><br>2) <b dir="ltr">Create API key</b> وانسخه<br>3) حطه هنا</p>
+  <p class="muted" style="margin-top:0">أدق طريقة لقراءة اسم المحل والمبلغ والتاريخ والأصناف.<br>1) افتح <b dir="ltr">aistudio.google.com</b><br>2) <b dir="ltr">Create API key</b> وانسخه<br>3) حطه هنا</p>
   <label>Gemini API Key<input id="ai-k" dir="ltr" autocomplete="off" spellcheck="false" value="${esc(k)}" placeholder="AIza..."></label>
   <label>الموديل<select id="ai-m">${XGM.map(x=>`<option value="${x}" ${m===x?'selected':''}>${x}</option>`).join('')}</select></label>
-  <div class="xlna"><button class="btn" onclick="xAiSave()">💾 حفظ</button><button class="btn ghost" onclick="xAiTest()">🧪 تجربة</button></div>
-  ${k?'<p class="xrvok" style="margin:8px 0 0">✅ شغال · الريسيت هيتقري بالذكاء الاصطناعي، ولو حصلت مشكلة بيرجع لـ OCR.space</p>':''}
+  <div class="xlna"><button class="btn" onclick="xGSave()">💾 حفظ</button><button class="btn ghost" onclick="xGTest()">🧪 تجربة</button></div>
+  ${k?'<p class="xrvok" style="margin:8px 0 0">✅ شغال · ولو حصلت مشكلة بيرجع لـ OCR.space</p>':''}
   <p class="muted" style="font-size:11.5px;margin:8px 0 0">النسخة المجانية ليها حد في اليوم، وصور الريسيت بتتبعت لـ Google.</p></div></div>`}
-try{const _rnAiB=render;render=function(){const r=_rnAiB.apply(this,arguments);try{
-  if(view!=='settings'||stab!=='ocr')return r;const v=$('#view');if(!v)return r;
-  v.querySelectorAll('h3').forEach(h=>{if(/قراءة الريسيت بالذكاء الاصطناعي/.test(h.textContent)&&!h.closest('#xaibox')){const b=h.nextElementSibling;if(b&&b.classList.contains('box'))b.remove();h.remove()}});
-  if(!$('#xaibox')){const ph=v.querySelector('.phead');if(ph)ph.insertAdjacentHTML('afterend',xAiBox());else v.insertAdjacentHTML('afterbegin',xAiBox())}
-}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
-/* ========== 2.21.163 · بوكس Gemini في شاشة قراءة الريسيت ========== */
-XVER2='2.21.163';XVBUILD2='26/10/2026 - 02:50 م';
-function xAiInject(){const v=$('#view');if(!v||$('#xaibox'))return;
-  const hit=[...v.querySelectorAll('h3,label,b,.fl,div')].find(e=>e.children.length<3&&/OCR\.space/.test(e.textContent)&&!e.closest('#xaibox'));
-  if(!hit)return;
+function xGInject(){const v=$('#view');if(!v||$('#xaibox'))return;
+  const hit=[...v.querySelectorAll('h3,label,b,.fl,div')].find(e=>e.children.length<3&&/OCR\.space/.test(e.textContent));if(!hit)return;
   let at=hit;while(at.parentElement&&at.parentElement!==v)at=at.parentElement;
-  const ph=v.querySelector(':scope>.phead');
-  const ref=ph&&ph.nextElementSibling&&ph.nextElementSibling!==at&&ph.nextElementSibling.compareDocumentPosition(at)&Node.DOCUMENT_POSITION_FOLLOWING?ph.nextElementSibling:at;
-  if(ref===at)at.insertAdjacentHTML('beforebegin',xAiBox());else ref.insertAdjacentHTML('afterend',xAiBox())}
-(()=>{let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xAiInject()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});try{xAiInject()}catch(e){}})();
-try{render()}catch(e){}
-/* ========== 2.21.164 · زرار التحديث بيجيب النسخة الجديدة فعلًا ========== */
-XVER2='2.21.164';XVBUILD2='26/10/2026 - 03:00 م';
-xUpdGo=async function(){
-  try{xStSave()}catch(e){}try{draftSave()}catch(e){}
+  const ph=v.querySelector(':scope>.phead'),first=ph&&ph.nextElementSibling;
+  if(first&&first!==at&&/OCR\.space/.test(first.textContent)&&first.textContent.length<150)first.insertAdjacentHTML('afterend',xGBox());
+  else at.insertAdjacentHTML('beforebegin',xGBox())}
+(()=>{let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xGInject()}catch(e){}})}).observe(document.body,{childList:true,subtree:true})})();
+
+/* ---------- زرار التحديث بيجيب النسخة الجديدة فعلًا ---------- */
+xUpdGo=async function(){try{xStSave()}catch(e){}try{draftSave()}catch(e){}
   try{const el=$('#xupd');if(el)el.innerHTML='<span>⏳ بجيب النسخة الجديدة...</span>'}catch(e){}
   try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();
     if(reg){try{await reg.update()}catch(e){}const w=reg.waiting||reg.installing;if(w){try{w.postMessage({type:'SKIP_WAITING'});w.postMessage('skipWaiting')}catch(e){}}}}catch(e){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.filter(k=>!/share/i.test(k)).map(k=>caches.delete(k)))}}catch(e){}
-  setTimeout(()=>location.replace(location.pathname+'?u='+Date.now()),400);
-};
+  setTimeout(()=>location.replace(location.pathname+'?u='+Date.now()),400)};
 try{render()}catch(e){}
 /* نهاية fix.js */
