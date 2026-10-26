@@ -10797,4 +10797,15 @@ try{const _rnAiB=render;render=function(){const r=_rnAiB.apply(this,arguments);t
   if(!$('#xaibox')){const ph=v.querySelector('.phead');if(ph)ph.insertAdjacentHTML('afterend',xAiBox());else v.insertAdjacentHTML('afterbegin',xAiBox())}
 }catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.163 · بوكس Gemini في شاشة قراءة الريسيت ========== */
+XVER2='2.21.163';XVBUILD2='26/10/2026 - 02:50 م';
+function xAiInject(){const v=$('#view');if(!v||$('#xaibox'))return;
+  const hit=[...v.querySelectorAll('h3,label,b,.fl,div')].find(e=>e.children.length<3&&/OCR\.space/.test(e.textContent)&&!e.closest('#xaibox'));
+  if(!hit)return;
+  let at=hit;while(at.parentElement&&at.parentElement!==v)at=at.parentElement;
+  const ph=v.querySelector(':scope>.phead');
+  const ref=ph&&ph.nextElementSibling&&ph.nextElementSibling!==at&&ph.nextElementSibling.compareDocumentPosition(at)&Node.DOCUMENT_POSITION_FOLLOWING?ph.nextElementSibling:at;
+  if(ref===at)at.insertAdjacentHTML('beforebegin',xAiBox());else ref.insertAdjacentHTML('afterend',xAiBox())}
+(()=>{let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xAiInject()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});try{xAiInject()}catch(e){}})();
+try{render()}catch(e){}
 /* نهاية fix.js */
