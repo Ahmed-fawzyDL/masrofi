@@ -10613,4 +10613,42 @@ function xBwGap(id){const el=$('#bw-g'),R=document.querySelectorAll('#sheet .xbw
   el.innerHTML=`<div class="xbwm">${t}</div>`;
   if(hit[0])setTimeout(()=>hit[0].scrollIntoView({block:'center',behavior:'smooth'}),100)}
 try{render()}catch(e){}
+/* ========== 2.21.156 · تصليح الإكراميات المحسوبة مرتين ========== */
+XVER2='2.21.156';XVBUILD2='26/10/2026 - 02:00 م';
+var XTFPRE=[];
+function xTipList(id){return S.txs.filter(t=>t&&t.tipOf&&!t.pend&&(!id||t.method===id)).map(x=>({x,o:S.txs.find(y=>y.id===x.tipOf)})).filter(z=>z.o).sort((a,b)=>b.x.date.localeCompare(a.x.date))}
+function xTipFix(id){const L=xTipList(id);
+  sheet(`<h2>🎁 الإكراميات اللي اتزوّدت على المصروف</h2>
+  <div class="xbwm">لما كنت بتكتب إكرامية في مصروف، البرنامج كان بيزوّدها <b>فوق</b> المبلغ.<br>مثلًا: مصروف 1,665 وإكرامية 55 → اتسجل 1,665 + 55 = 1,720.<br><b>لو المبلغ اللي كتبته كان فيه الإكرامية أصلًا</b>، علّم عليه، والبرنامج هيشيل الإكرامية من المصروف الأصلي.</div>
+  <div class="list">${L.map(({x,o})=>{const ok=o.amount>x.amount&&!isClosed(o.date);
+    return `<label class="row" style="cursor:pointer"><input type="checkbox" data-tf="${x.id}" data-v="${x.amount}" ${XTFPRE.includes(x.id)?'checked':''} ${ok?'':'disabled'} onchange="xTipSum()" style="width:22px;height:22px;flex:0 0 22px;margin:0">
+    <div class="grow"><b>${esc(xTxNm(o))} · ${xDW(o.date)}</b>
+    <small>متسجل دلوقتي: ${num(o.amount)} + إكرامية ${num(x.amount)} = <b>${num(r2(o.amount+x.amount))}</b></small>
+    <small>لو علّمت: ${num(r2(o.amount-x.amount))} + إكرامية ${num(x.amount)} = <b>${num(o.amount)}</b></small>
+    <small>${esc((M(o.method)||{}).name||'')}${ok?'':' · 🔒 الشهر مقفول'}</small></div></label>`}).join('')||'<p class="empty">مفيش إكراميات اتفصلت</p>'}</div>
+  <div id="tf-s" class="xbwm ok" style="display:none"></div>
+  <button class="btn" onclick="xTipFixGo('${id||''}')">✅ صلّح المتعلّم عليه</button>`);XTFPRE=[];xTipSum()}
+function xTipSum(){const el=$('#tf-s');if(!el)return;let s=0,n=0;document.querySelectorAll('#sheet [data-tf]:checked').forEach(c=>{s+=+c.dataset.v;n++});
+  el.style.display=n?'':'none';el.innerHTML=`متعلّم على ${n} · الرصيد هيزيد <b>${num(r2(s))}</b>`}
+function xTipFixGo(id){const C2=[...document.querySelectorAll('#sheet [data-tf]:checked')];if(!C2.length)return toast('علّم على واحدة على الأقل');let s=0;
+  C2.forEach(c=>{const x=S.txs.find(t=>t.id===c.dataset.tf),o=x&&S.txs.find(t=>t.id===x.tipOf);if(!o||o.amount<=x.amount||isClosed(o.date))return;
+    o.amount=r2(o.amount-x.amount);s+=x.amount;const b=S.buys.find(b=>b.txId===o.id);if(b)b.total=r2(o.amount+x.amount)});
+  save();render();toast('✅ اتصلح · الرصيد زاد '+fmt(r2(s)));if(id)xBalWhy(id);else closeSheet()}
+/* لو الفرق بنفس مجموع إكراميات، يقولك */
+try{const _bwT=xBwGap;xBwGap=function(id){_bwT.apply(this,arguments);try{
+  const el=$('#bw-g'),v=parseNum(($('#bw-r')||{}).value);if(!el||isNaN(v))return;const gap=r2(xBal(id)-v);if(gap>=-.009)return;
+  const T=xTipList(id).filter(z=>z.o.amount>z.x.amount&&!isClosed(z.o.date)).slice(0,16),want=Math.abs(gap);let pick=null;
+  for(let m=1;m<(1<<T.length)&&!pick;m++){let sm=0;for(let i=0;i<T.length;i++)if(m&(1<<i))sm+=T[i].x.amount;if(Math.abs(sm-want)<.01)pick=T.filter((z,i)=>m&(1<<i))}
+  if(pick){XTFPRE=pick.map(z=>z.x.id);el.insertAdjacentHTML('beforeend',`<div class="xbwm ok">🎯 لقيت ${pick.length} إكرامية مجموعهم <b>${num(want)}</b> بالظبط:<br>${pick.map(z=>'• '+esc(xTxNm(z.o))+' ('+xDW(z.o.date)+') إكرامية '+num(z.x.amount)).join('<br>')}<br><button class="btn" style="margin-top:6px" onclick="xTipFix('${id}')">🎁 افتحهم وصلّح</button></div>`)}
+}catch(e){}}}catch(e){}
+/* زرار الإكراميات في شاشة حركة الحساب */
+try{const _bwW=xBalWhy;xBalWhy=function(id){const r=_bwW.apply(this,arguments);try{const n=xTipList(id).length,d=$('#bw-g');
+  if(n&&d&&!$('#bw-tf'))d.insertAdjacentHTML('afterend',`<button class="btn ghost" id="bw-tf" onclick="xTipFix('${id}')">🎁 الإكراميات اللي اتزوّدت على المصروف (${n})</button>`)}catch(e){}return r}}catch(e){}
+/* خانة الإكرامية: باين إنها بتتزوّد + الإجمالي */
+try{const _tfTp=txForm;txForm=function(){const r=_tfTp.apply(this,arguments);try{const tp=$('#f-tip'),l=tp&&tp.closest('label'),a=$('#f-amt');if(!l||!a)return r;
+  xLblTxt(l,'🎁 إكرامية زيادة على المبلغ');
+  if(!$('#f-tipt')){l.insertAdjacentHTML('afterend','<small class="muted xhint" id="f-tipt"></small>');
+    const up=()=>{const b=parseNum(a.value)||0,t=parseNum(tp.value)||0,e=$('#f-tipt');if(e)e.textContent=t>0?'هيتسجل: '+num(b)+' + '+num(t)+' إكرامية = '+num(r2(b+t)):''};
+    a.addEventListener('input',up);tp.addEventListener('input',up);up()}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
