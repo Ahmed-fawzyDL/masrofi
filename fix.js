@@ -10455,4 +10455,13 @@ body #view.xmorev .rbtn span{font-size:24px!important}
 `;document.head.appendChild(s)})();
 try{const _rnM4=render;render=function(){const r=_rnM4.apply(this,arguments);try{if(view==='more')document.querySelectorAll('#view .rgrid').forEach(g=>g.style.removeProperty('grid-template-columns'))}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.152 · العملاء في الصف الأول ========== */
+XVER2='2.21.152';XVBUILD2='26/10/2026 - 01:05 م';
+try{const _rnCl=render;render=function(){const r=_rnCl.apply(this,arguments);try{
+  if(view!=='more')return r;const G=document.querySelectorAll('#view .rgrid');if(G.length<2)return r;
+  const g1=G[0];if(g1.querySelector('.xclt'))return r;
+  const t=[...G[1].children].find(b=>/xcl|العملاء/.test((b.getAttribute('onclick')||'')+' '+b.textContent));
+  if(t){t.classList.add('xclt');g1.appendChild(t)}
+}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
