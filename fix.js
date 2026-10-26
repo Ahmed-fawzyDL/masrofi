@@ -10577,4 +10577,40 @@ function xBalWhy(id){const m=M(id);if(!m)return;
 try{const _pmW=xPmOpen;xPmOpen=function(id){const r=_pmW.apply(this,arguments);try{
   const g=document.querySelector('#sheet .xlna');if(g&&!document.querySelector('#sheet .xbwb'))g.insertAdjacentHTML('beforebegin',`<button class="btn xbwb" onclick="xBalWhy('${id}')">🔎 إيه اللي غيّر الرصيد؟</button>`)}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.155 · حركة الكاش بشكل أوضح ========== */
+XVER2='2.21.155';XVBUILD2='26/10/2026 - 01:50 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet .xbwr.xbwh{border:2px solid #f59e0b!important;background:rgba(245,158,11,.12)!important}
+#sheet .xbwm{border-radius:12px;padding:10px 12px;margin:8px 0;font-size:13px;line-height:1.8;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4)}
+#sheet .xbwm.ok{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.4)}
+`;document.head.appendChild(s)})();
+xBalWhy=function(id){const m=M(id);if(!m)return;const td=today(),from=xDayIso(7);let g;
+  try{g=xLedger(id,from,td,S.txs,S.cash)}catch(e){return toast('مقدرتش أقرا الحركات')}
+  const auto=t=>!t?'':t.src&&t.src.k==='r'?'🤖 البرنامج نزّله لوحده (مصروف ثابت)':t.feeOf?'🤖 البرنامج ضافه لوحده (مصاريف إنستاباي)':t.tipOf?'🤖 البرنامج فصله لوحده (إكرامية)':t.adj?'🤖 من المطابقة':'';
+  const cnt={};g.ev.forEach(e=>{const k=e.d+'|'+r2(e.a)+'|'+e.l;cnt[k]=(cnt[k]||0)+1});
+  const days={};g.ev.forEach(e=>(days[e.d]=days[e.d]||[]).push(e));
+  const html=Object.keys(days).sort().reverse().map(d=>`<div class="xpsec">📅 ${xDW(d)}</div><div class="list">${days[d].slice().reverse().map(e=>{
+    const t=e.id&&S.txs.find(x=>x.id===e.id),au=auto(t),dup=cnt[e.d+'|'+r2(e.a)+'|'+e.l]>1;
+    return `<div class="row xbwr" data-a="${r2(e.a)}" ${e.id?`onclick="editTx('${e.id}')"`:''}><div class="grow"><b>${esc(e.l)}</b><small>${au||'👤 انت سجلتها'}${dup?' · ⚠️ متسجلة مرتين':''}</small><small>الرصيد بعدها: ${num(e.r)}</small></div><div class="amt ${e.a<0?'exp':'inc'}" dir="ltr">${e.a>0?'+':'-'}${num(Math.abs(e.a))}</div></div>`}).join('')}</div>`).join('');
+  sheet(`<h2>🔎 حركة ${esc(m.name)}</h2>
+  <div class="kv"><span>💰 الرصيد في البرنامج</span><b dir="ltr">${num(xBal(id))}</b></div>
+  <label>💵 اكتب الفلوس اللي معاك فعلًا<input id="bw-r" class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" oninput="xBwGap('${id}')"></label>
+  <div id="bw-g"></div>
+  <p class="muted">دي كل فلوس دخلت أو خرجت من الحساب ده آخر 7 أيام، الأحدث فوق. دوس على أي واحدة تفتحها وتصلحها.</p>
+  ${html||'<p class="empty">مفيش حركة</p>'}`)};
+function xBwGap(id){const el=$('#bw-g'),R=document.querySelectorAll('#sheet .xbwr');R.forEach(r=>r.classList.remove('xbwh'));
+  const v=parseNum(($('#bw-r')||{}).value);if(!el)return;if(isNaN(v)||($('#bw-r').value||'').trim()===''){el.innerHTML='';return}
+  const gap=r2(xBal(id)-v);
+  if(Math.abs(gap)<.01){el.innerHTML='<div class="xbwm ok">✅ مظبوط، البرنامج زي اللي معاك بالظبط</div>';return}
+  const want=gap>0?r2(-gap):r2(-gap),rows=[...R],a=r=>+r.dataset.a;
+  let hit=rows.filter(r=>Math.abs(a(r)-(-gap))<.01&&gap<0?Math.abs(a(r)+Math.abs(gap))<.01:false);
+  if(gap<0){hit=rows.filter(r=>Math.abs(a(r)+Math.abs(gap))<.01);
+    if(!hit.length){const neg=rows.filter(r=>a(r)<0);for(let i=0;i<neg.length&&!hit.length;i++)for(let j=i+1;j<neg.length;j++)if(Math.abs(a(neg[i])+a(neg[j])+Math.abs(gap))<.01){hit=[neg[i],neg[j]];break}}}
+  hit.forEach(r=>r.classList.add('xbwh'));
+  let t;
+  if(gap<0)t=`البرنامج شايف إن معاك <b>${num(Math.abs(gap))}</b> أقل من الحقيقة.<br>يعني غالبًا فيه مصروف اتسجل من الكاش وهو اتدفع بحاجة تانية، أو اتسجل مرتين، أو مبلغه اتكتب أكبر.<br>${hit.length?'👇 اللي عليها إطار أصفر ممكن تكون هي. افتحها وصلّحها.':'مالقيتش حركة بنفس المبلغ بالظبط، قارن الحركات اللي تحت باللي صرفته فعلًا.'}`;
+  else{XGAP={id,gap,pick:null};t=`البرنامج شايف إن معاك <b>${num(gap)}</b> زيادة عن الحقيقة.<br>يعني غالبًا فيه حاجة اتدفعت كاش ومتسجلتش، أو تحصيل اتسجل كاش وهو مش كاش.<br><button class="btn ghost" style="margin-top:6px" onclick="xGapRec()">➕ سجّل الفرق مصروف (${num(gap)})</button>`}
+  el.innerHTML=`<div class="xbwm">${t}</div>`;
+  if(hit[0])setTimeout(()=>hit[0].scrollIntoView({block:'center',behavior:'smooth'}),100)}
+try{render()}catch(e){}
 /* نهاية fix.js */
