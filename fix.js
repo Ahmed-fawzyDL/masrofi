@@ -10719,4 +10719,22 @@ try{const _stTx=saveTx;saveTx=async function(){
     if(o&&x&&!isClosed(x.date)){if(tv>0)Object.assign(x,{amount:tv,date:o.date,method:o.method,via:o.via||''});else{S.txs=S.txs.filter(t=>t!==x);delete o.tipTx}save();render()}}}catch(e){}
   return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.158 · اختيار الحساب: حسابات وأشخاص بس ========== */
+XVER2='2.21.158';XVBUILD2='26/10/2026 - 02:15 م';
+if(XOAP.t!=='pp')XOAP.t='acc';
+try{const _opK=xOaPick;xOaPick=function(){const r=_opK.apply(this,arguments);try{
+  const ov=$('#xoapk');if(!ov)return r;const rc=ov.querySelector('.xoarc');if(rc)rc.remove();
+  const sg=ov.querySelector('.seg');if(sg)sg.innerHTML=[['acc','📒 الحسابات'],['pp','👤 الأشخاص']].map(([k,l])=>`<button type="button" data-t="${k}" class="${XOAP.t===k?'on':''}">${l}</button>`).join('');
+  xOaPL()}catch(e){}return r}}catch(e){}
+xOaPL=function(){const el=$('#xoap-l');if(!el||!F)return;const raw=($('#xoap-q')||{}).value||'',q=qn(raw),u=xOaUse(F.type==='inc'?'inc':'exp'),pp=XOAP.t==='pp';
+  const acc=xOaAccs().map(x=>x.c),sel=F.cat&&xTopC(F.cat);
+  const ok=c=>!q||qn([c.code||'',c.name,...(c.alias||[]),...(c.al||[])].join(' ')).includes(q);
+  const srt=(a,b)=>((u[b.id]||{}).d||'').localeCompare((u[a.id]||{}).d||'')||a.name.localeCompare(b.name,'ar');
+  let h='';
+  if(!pp)h=acc.filter(ok).sort(srt).map(c=>{const x=u[c.id],on=sel&&sel.id===c.id;
+    return `<button type="button" class="xpo ${on?'on':''}" data-a="${c.id}"><span class="xic0">${c.core?'📌':'🛒'}</span><span class="xl">${esc(c.name)}<small>${[c.code?'#'+c.code:'',x?x.n+' عملية':'جديد'].filter(Boolean).join(' · ')}</small></span>${on?'<i>✓</i>':''}</button>`}).join('');
+  else h=XPP().filter(p=>!q||qn(p.name).includes(q)).map(p=>`<button type="button" class="xpo ${F.pp===p.id?'on':''}" data-p="${p.id}"><span class="xic0">👤</span><span class="xl">${esc(p.name)}<small>${xPpItems(p.id).length} حساب</small></span>${F.pp===p.id?'<i>✓</i>':''}</button>`).join('');
+  if(!pp&&raw.trim()&&!acc.some(c=>qn(c.name)===q))h=`<button type="button" class="xpo xnew" data-n="1"><span class="xic0">➕</span><span class="xl">حساب جديد: ${esc(raw.trim())}</span></button>`+h;
+  el.innerHTML=h||'<p class="muted" style="text-align:center;margin:10px 0">مفيش نتايج</p>'};
+try{render()}catch(e){}
 /* نهاية fix.js */
