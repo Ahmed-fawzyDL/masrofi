@@ -10651,4 +10651,72 @@ try{const _tfTp=txForm;txForm=function(){const r=_tfTp.apply(this,arguments);try
     const up=()=>{const b=parseNum(a.value)||0,t=parseNum(tp.value)||0,e=$('#f-tipt');if(e)e.textContent=t>0?'هيتسجل: '+num(b)+' + '+num(t)+' إكرامية = '+num(r2(b+t)):''};
     a.addEventListener('input',up);tp.addEventListener('input',up);up()}}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.157 · الإكرامية في التعديل + شكل "على حساب" ========== */
+XVER2='2.21.157';XVBUILD2='26/10/2026 - 02:10 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet .xoa2{display:flex;align-items:center;gap:10px;padding:12px 14px;margin:8px 0;border-radius:18px;cursor:pointer;
+  background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 8px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.07)}
+#sheet .xoa2l{font-weight:800;white-space:nowrap}
+#sheet .xoa2v{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}
+#sheet .xoa2v small{opacity:.6;font-size:11.5px;margin-inline-start:4px}
+#sheet .xoa2v.e{opacity:.55}
+#sheet .xoa2c{opacity:.6;font-size:12px}
+#xoapk .xoarc{margin:0 0 8px}
+#xoapk .xoaact{display:flex;gap:6px;margin-top:8px}
+#xoapk .xoaact button{flex:1}
+#sheet .xtpx{border-radius:14px;padding:8px 10px;margin:6px 0;background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.3)}
+#sheet .xtpx small{display:block;margin-top:4px;font-weight:700}
+`;document.head.appendChild(s)})();
+
+/* ---------- 👤 على حساب: سطر واحد ---------- */
+xOaForm=function(){const sz=$('#sheet .sz');if(!sz||!xOaOk()||$('#xoa'))return;
+  const xs=sz.querySelector('button.xsel[onclick="xCatOpen()"]');if(!xs)return;
+  if(XOA.f!==F)XOA={t:'',q:'',f:F};
+  const lab=xs.closest('label');if(lab)lab.style.display='none';
+  if(F.pp===undefined){const t=F.id&&S.txs.find(x=>x.id===F.id);F.pp=(t&&t.pp)||xPpAutoOf()||''}
+  F.ppAuto=xPpAutoOf();
+  const lock=xs.disabled,c=F.cat&&F.cat!=='__new'&&C(F.cat),p=F.pp&&XPP().find(x=>x.id===F.pp);
+  let v;
+  if(c||p||F.cat==='__new'){const ic=p?'👤':c&&c.core?'📌':'🛒',nm=p?p.name:c?c.name:F.newCat;
+    const sub=[p&&c&&normAr(c.name)!==normAr(p.name)?c.name:'',c&&c.code?'#'+c.code:'',F.cat==='__new'?'جديد':''].filter(Boolean).join(' · ');
+    v=`<span class="xoa2v">${ic} ${esc(nm||'')}${sub?`<small>${esc(sub)}</small>`:''}</span>`}
+  else v='<span class="xoa2v e">اختار ▸</span>';
+  const h=`<div class="xoa2" id="xoa" ${lock?'':'onclick="xOaPick()"'}><span class="xoa2l">👤 على حساب</span>${v}${lock?'':'<span class="xoa2c">▾</span>'}</div>`;
+  const sv=[...sz.querySelectorAll('button.btn')].find(b=>/سجّل|سجل|حفظ/.test(b.textContent));
+  if(sv)sv.insertAdjacentHTML('beforebegin',h);else sz.insertAdjacentHTML('beforeend',h)};
+xOaPick=function(){try{grab()}catch(e){}XOAF=F;const ov=xOv();ov.id='xoapk';
+  const kind=F.type==='inc'?'inc':'exp',u=xOaUse(kind),c=F.cat&&F.cat!=='__new'&&C(F.cat),top=c&&xTopC(c.id);
+  const rec=Object.entries(u).sort((a,b)=>b[1].d.localeCompare(a[1].d)).map(([id])=>C(id)).filter(x=>x&&!x.mrg&&!x.cl&&x.active!==false&&(!top||x.id!==top.id)).slice(0,8);
+  ov.innerHTML=`<div class="xpb"><div class="xpt"><b>👤 على حساب</b><button type="button" class="xpx">✕</button></div>
+  <input class="xpq" id="xoap-q" placeholder="🔍 الاسم أو رقم الحساب">
+  ${rec.length?`<div class="xoarc">${rec.map(x=>`<button type="button" data-a="${x.id}">${x.ppo?'👤':x.core?'📌':'🛒'} ${esc(x.name)}</button>`).join('')}</div>`:''}
+  <div class="seg">${[['all','الكل'],['core','📌 ثابت'],['var','🛒 متغير'],['pp','👤 أشخاص']].map(([k,l])=>`<button type="button" data-t="${k}" class="${XOAP.t===k?'on':''}">${l}</button>`).join('')}</div>
+  <div class="xpl" id="xoap-l"></div>
+  ${c||F.pp?`<div class="xoaact">${c?'<button type="button" class="mini" data-act="edit">✏️ اسم الحساب</button>':''}${F.pp?'<button type="button" class="mini" data-act="nop">✕ شيل الشخص</button>':''}</div>`:''}</div>`;
+  const q=ov.querySelector('#xoap-q');q.oninput=xOaPL;
+  ov.onclick=e=>{if(e.target===ov||e.target.closest('.xpx'))return xOvClose(ov);
+    const tb=e.target.closest('[data-t]');if(tb){XOAP.t=tb.dataset.t;ov.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b===tb));return xOaPL()}
+    const o=e.target.closest('.xpo,[data-a],[data-act]');if(!o)return;const v=q.value.trim();xOvClose(ov);F=XOAF;
+    if(o.dataset.act==='edit')return xCatEdit();if(o.dataset.act==='nop')return xOaNoPer();
+    if(o.dataset.a)return xOaAcc(o.dataset.a);if(o.dataset.p)return xOaPer(o.dataset.p);if(o.dataset.n){XOA.q=v;return xOaNew()}};
+  xOaPL()};
+
+/* ---------- 🎁 الإكرامية المفصولة تتعدّل من شاشة المصروف ---------- */
+try{const _tfTx=txForm;txForm=function(){const r=_tfTx.apply(this,arguments);try{
+  const o=F&&F.id&&S.txs.find(t=>t.id===F.id),x=o&&o.tipTx&&S.txs.find(t=>t.id===o.tipTx),a=$('#f-amt');
+  if(!x||!a||$('#f-tipx'))return r;if(F.tipx==null)F.tipx=amtStr(x.amount);
+  const at=$('#xoa')||xTopOf($('#sheet .sz'),a);if(!at)return r;
+  at.insertAdjacentHTML('beforebegin',`<div class="xtpx"><label style="margin:0">🎁 الإكرامية (متسجلة لوحدها)<input id="f-tipx" inputmode="decimal" dir="ltr" value="${esc(F.tipx)}"></label><small id="f-tipxt"></small></div>`);
+  const t=$('#f-tipx'),up=()=>{const e=$('#f-tipxt');if(e)e.textContent='الإجمالي: '+num(parseNum(a.value)||0)+' + '+num(parseNum(t.value)||0)+' إكرامية = '+num(r2((parseNum(a.value)||0)+(parseNum(t.value)||0)))};
+  a.addEventListener('input',up);t.addEventListener('input',up);up();
+}catch(e){}return r}}catch(e){}
+try{const _gbTx=grab;grab=function(){_gbTx.apply(this,arguments);if(F&&$('#f-tipx'))F.tipx=$('#f-tipx').value}}catch(e){}
+try{const _stTx=saveTx;saveTx=async function(){
+  try{grab()}catch(e){}const fid=F&&F.id,tv=F&&F.tipx!=null&&$('#f-tipx')?parseNum(F.tipx)||0:null;
+  const r=await _stTx.apply(this,arguments);
+  try{if(fid&&tv!=null&&!$('#sheet').classList.contains('open')){const o=S.txs.find(t=>t.id===fid),x=o&&o.tipTx&&S.txs.find(t=>t.id===o.tipTx);
+    if(o&&x&&!isClosed(x.date)){if(tv>0)Object.assign(x,{amount:tv,date:o.date,method:o.method,via:o.via||''});else{S.txs=S.txs.filter(t=>t!==x);delete o.tipTx}save();render()}}}catch(e){}
+  return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
