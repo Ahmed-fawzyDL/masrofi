@@ -10550,4 +10550,31 @@ try{const _hbRt=handleBack;handleBack=function(){
   return _hbRt.apply(this,arguments)}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.154 · إيه اللي غيّر الرصيد ========== */
+XVER2='2.21.154';XVBUILD2='26/10/2026 - 01:40 م';
+function xCashEff(c,id){const ca=xCashAcct();if(c.method===id&&id!==ca)return -c.amount;if(id===ca&&c.method!==ca)return +c.amount;return 0}
+function xBalWhy(id){const m=M(id);if(!m)return;
+  const td0=new Date(today()+'T00:00').getTime(),t3=Date.now()-3*864e5,near=v=>Math.abs(Math.abs(v)-125)<.01;
+  const sg=v=>(v>0?'+':'-')+num(Math.abs(v));
+  const log=xBlogGet().filter(x=>x.a===id&&x.at>=t3).reverse();
+  const NT=S.txs.filter(t=>t&&!t.pend&&(t.created||0)>=td0&&Math.abs(xEffTx(t,id))>.001).sort((a,b)=>(b.created||0)-(a.created||0));
+  const NC=S.cash.filter(c=>(c.created||0)>=td0&&Math.abs(xCashEff(c,id))>.001);
+  const TR=xTrGet().map((e,i)=>({e,i})).filter(({e})=>e.at>=td0&&e.k==='txs'&&e.o&&!e.o.pend&&Math.abs(xEffTx(e.o,id))>.001).reverse();
+  const why=t=>t.src&&t.src.k==='r'?'🔄 مصروف ثابت نزل لوحده':t.feeOf?'💸 مصاريف إنستاباي اتضافت لوحدها':t.tipOf?'🎁 إكرامية اتفصلت لوحدها':t.adj?'⚖️ من المطابقة':t.payFeeOf?'💸 مصاريف دفع قسط':'';
+  const hl=v=>near(v)?' style="border:2px solid #f59e0b"':'';
+  sheet(`<h2>🔎 إيه اللي غيّر رصيد ${esc(m.name)}</h2>
+  <div class="kv"><span>💰 الرصيد دلوقتي</span><b dir="ltr">${num(xBal(id))}</b></div>
+  <p class="muted" style="font-size:11.5px">اللي فيه إطار أصفر قيمته 125</p>
+  <details class="gen" open><summary>🆕 اتسجل النهارده (${NT.length+NC.length})</summary><div class="list">
+  ${NT.map(t=>{const e=xEffTx(t,id),w=why(t);return `<div class="row"${hl(e)} onclick="editTx('${t.id}')"><div class="grow"><b>${esc(xTxLbl(t))}</b><small>${xLnTs(t.created)}${w?' · '+w:''}</small></div><div class="amt ${e<0?'exp':'inc'}" dir="ltr">${sg(e)}</div></div>`}).join('')}
+  ${NC.map(c=>{const e=xCashEff(c,id);return `<div class="row"${hl(e)} onclick="cashForm('${c.id}')"><div class="grow"><b>🏧 سحب كاش من ${esc((M(c.method)||{}).name||'')}</b><small>${xLnTs(c.created)}</small></div><div class="amt ${e<0?'exp':'inc'}" dir="ltr">${sg(e)}</div></div>`}).join('')}
+  ${NT.length+NC.length?'':'<p class="empty">مفيش</p>'}</div></details>
+  <details class="gen" ${TR.length?'open':''}><summary>🗑 اتحذف النهارده (${TR.length})</summary><div class="list">
+  ${TR.map(({e,i})=>{const v=-xEffTx(e.o,id);return `<div class="row"${hl(v)}><div class="grow"><b>${esc(e.l)}</b><small>اتحذف ${xLnTs(e.at)}</small></div><div class="amt ${v<0?'exp':'inc'}" dir="ltr">${sg(v)}</div><button class="mini" onclick="event.stopPropagation();xTrRestore(${i});xBalWhy('${id}')">♻️ رجّعه</button></div>`}).join('')||'<p class="empty">مفيش</p>'}</div></details>
+  <details class="gen"><summary>📜 كل التغييرات آخر 3 أيام (${log.length})</summary><div class="list">
+  ${log.map(x=>`<div class="row"${hl(x.d)} style="cursor:default${near(x.d)?';border:2px solid #f59e0b':''}"><div class="grow"><b class="${x.d<0?'neg':'pos'}" dir="ltr" style="text-align:right">${x.d>0?'+':''}${num(x.d)}</b><small>${xLnTs(x.at)}</small>${x.w.map(w=>`<small>${esc(w)}</small>`).join('')}</div></div>`).join('')||'<p class="empty">مفيش</p>'}</div></details>
+  <button class="btn ghost" onclick="xRecon('${id}')">⚖️ مطابقة مع الرصيد الحقيقي</button>`)}
+try{const _pmW=xPmOpen;xPmOpen=function(id){const r=_pmW.apply(this,arguments);try{
+  const g=document.querySelector('#sheet .xlna');if(g&&!document.querySelector('#sheet .xbwb'))g.insertAdjacentHTML('beforebegin',`<button class="btn xbwb" onclick="xBalWhy('${id}')">🔎 إيه اللي غيّر الرصيد؟</button>`)}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
