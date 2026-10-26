@@ -10417,4 +10417,13 @@ try{const _tfC3=txForm;txForm=function(){const r=_tfC3.apply(this,arguments);try
 }catch(e){}return r}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.149 · تصليح شاشة أكبر مصروف ========== */
+XVER2='2.21.149';XVBUILD2='26/10/2026 - 12:15 م';
+topSheet=function(){const TX=keyTx(NKM).filter(t=>t.type==='exp'),by={};
+  TX.forEach(t=>{const c=xTopC(t.cat),k=c?c.id:'_',o=by[k]=by[k]||{c,n:0,v:0};o.n++;o.v+=t.amount});
+  const A=Object.values(by).sort((a,b)=>b.v-a.v),tot=r2(TX.reduce((a,t)=>a+t.amount,0));
+  sheet(`<div class="phead"><h2>💸 ${esc(L('exp'))} · ${MONTHS[NM-1]}</h2><span class="badge late">${num(tot)}</span></div>
+  ${A.length?`<div class="list">${A.map(o=>`<div class="row" ${o.c?`onclick="cur.y=NY;cur.m=NM;openStmt('cat','${o.c.id}')"`:''}><div class="grow"><b>${esc(o.c?o.c.name:'—')}</b><small>${o.n} عملية</small></div><div class="amt exp">${num(r2(o.v))}</div></div>`).join('')}</div>`:'<div class="nempty"><div>💸</div><b>لا يوجد</b></div>'}
+  ${repBtn('التقرير الشهري',"openRep('month',()=>RF.month=NKM)")}`)};
+try{render()}catch(e){}
 /* نهاية fix.js */
