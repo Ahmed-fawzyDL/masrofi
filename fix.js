@@ -10426,4 +10426,33 @@ topSheet=function(){const TX=keyTx(NKM).filter(t=>t.type==='exp'),by={};
   ${A.length?`<div class="list">${A.map(o=>`<div class="row" ${o.c?`onclick="cur.y=NY;cur.m=NM;openStmt('cat','${o.c.id}')"`:''}><div class="grow"><b>${esc(o.c?o.c.name:'—')}</b><small>${o.n} عملية</small></div><div class="amt exp">${num(r2(o.v))}</div></div>`).join('')}</div>`:'<div class="nempty"><div>💸</div><b>لا يوجد</b></div>'}
   ${repBtn('التقرير الشهري',"openRep('month',()=>RF.month=NKM)")}`)};
 try{render()}catch(e){}
+/* ========== 2.21.150 · المزيد: كل البوكسات بنفس الحجم + خلفية و blur ========== */
+XVER2='2.21.150';XVBUILD2='26/10/2026 - 12:20 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view.xmorev{background:
+  radial-gradient(circle at 15% 12%,rgba(45,212,191,.28),transparent 42%),
+  radial-gradient(circle at 85% 38%,rgba(59,130,246,.24),transparent 45%),
+  radial-gradient(circle at 25% 80%,rgba(168,85,247,.20),transparent 45%);border-radius:18px}
+body #view.xmorev .rgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-bottom:8px!important}
+body #view.xmorev .rbtn{min-height:92px!important;padding:10px 4px!important;font-size:12px!important;font-weight:700;line-height:1.3!important;
+  border-radius:18px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:6px!important;
+  background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04))!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18)!important;
+  backdrop-filter:blur(14px) saturate(140%)!important;-webkit-backdrop-filter:blur(14px) saturate(140%)!important}
+body #view.xmorev .rbtn span{font-size:28px!important}
+body #view.xmorev .rbtn:active{transform:scale(.96)}
+`;document.head.appendChild(s)})();
+try{const _rnMv=render;render=function(){const r=_rnMv.apply(this,arguments);try{const v=$('#view');if(v)v.classList.toggle('xmorev',view==='more')}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.151 · المزيد: 4 في الصف ========== */
+XVER2='2.21.151';XVBUILD2='26/10/2026 - 12:25 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view.xmorev .rgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
+body #view.xmorev .rgrid[data-xo]{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+body #view.xmorev .rbtn{min-height:80px!important;padding:8px 2px!important;font-size:10.5px!important;gap:4px!important;border-radius:16px!important}
+body #view.xmorev .rbtn span{font-size:24px!important}
+`;document.head.appendChild(s)})();
+try{const _rnM4=render;render=function(){const r=_rnM4.apply(this,arguments);try{if(view==='more')document.querySelectorAll('#view .rgrid').forEach(g=>g.style.removeProperty('grid-template-columns'))}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
