@@ -10747,4 +10747,37 @@ try{const _bwD=xBalWhy;xBalWhy=function(id,d){if(d)XBWD=d;const o=xDayIso;xDayIs
     const k=sz.querySelector('.kv');if(k&&!$('#bw-d'))k.insertAdjacentHTML('afterend',`<div class="seg" id="bw-d">${[[7,'آخر 7 أيام'],[30,'آخر 30 يوم'],[90,'آخر 3 شهور']].map(([v,l])=>`<button type="button" class="${XBWD===v?'on':''}" onclick="xBalWhy('${id}',${v})">${l}</button>`).join('')}</div>`)}}catch(e){}
   return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.161 · قراءة الريسيت ببلاش (Gemini) ========== */
+XVER2='2.21.161';XVBUILD2='26/10/2026 - 02:40 م';
+var XGM=['gemini-3.6-flash','gemini-3.5-flash','gemini-2.5-flash'];
+var _xAiCallC=xAiCall;
+xAiCall=async function(content,max){const k=xAiKey();if(/^sk-ant/.test(k))return _xAiCallC(content,max);if(!k)throw new Error('مفيش مفتاح');
+  const parts=content.map(c=>c.type==='image'?{inline_data:{mime_type:c.source.media_type,data:c.source.data}}:{text:c.text});
+  let m=xAiModel();if(!/^gemini/.test(m))m=XGM[0];const list=[m].concat(XGM.filter(x=>x!==m));let last=null;
+  for(const md of list){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),40000);
+    try{const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+md+':generateContent',{method:'POST',signal:ctl.signal,
+        headers:{'content-type':'application/json','x-goog-api-key':k},
+        body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{maxOutputTokens:4096,temperature:0}})});
+      const j=await res.json().catch(()=>({}));
+      if(res.status===404){last=new Error('الموديل '+md+' مش متاح');continue}
+      if(res.status===429)throw new Error('خلصت القراءات المجانية دلوقتي، جرّب كمان شوية');
+      if(!res.ok)throw new Error((j.error&&j.error.message)||('HTTP '+res.status));
+      if(md!==xAiModel())localStorage.setItem('centric-aim',md);
+      return (((j.candidates||[])[0]||{}).content||{parts:[]}).parts.map(p=>p.text||'').join('');
+    }catch(e){if(e.name==='AbortError')throw new Error('الرد اتأخر');throw e}finally{clearTimeout(to)}}
+  throw last||new Error('مفيش موديل متاح')};
+xAiSave=function(){const k=(($('#ai-k')||{}).value||'').trim(),m=($('#ai-m')||{}).value||XGM[0];
+  if(k)localStorage.setItem('centric-aik',k);else localStorage.removeItem('centric-aik');localStorage.setItem('centric-aim',m);render();toast(k?'✅ اتحفظ':'اتشال المفتاح')};
+try{const _spG=spOcr;spOcr=function(){let h=_spG.apply(this,arguments);
+  h=h.replace(/<h3>🤖 قراءة الريسيت بالذكاء الاصطناعي<\/h3>[\s\S]*?<\/button><\/div>(<p[^>]*>[\s\S]*?<\/p>)?<\/div>/,'');
+  const k=xAiKey(),m=/^gemini/.test(xAiModel())?xAiModel():XGM[0];
+  return `<h3>🤖 قراءة الريسيت بالذكاء الاصطناعي (ببلاش)</h3><div class="box">
+  <p class="muted" style="margin-top:0">بيقرا اسم المحل والمبلغ والتاريخ والأصناف صح. ببلاش ومن غير كارت.<br>
+  1) افتح <b dir="ltr">aistudio.google.com</b> وادخل بحساب Gmail<br>2) دوس <b dir="ltr">Get API key</b> ← <b dir="ltr">Create API key</b><br>3) انسخ المفتاح وحطه هنا</p>
+  <label>API Key<input id="ai-k" dir="ltr" autocomplete="off" spellcheck="false" value="${esc(k)}" placeholder="AIza..."></label>
+  <label>الموديل<select id="ai-m">${XGM.map(x=>`<option value="${x}" ${m===x?'selected':''}>${x}</option>`).join('')}</select></label>
+  <div class="xlna"><button class="btn" onclick="xAiSave()">💾 حفظ</button><button class="btn ghost" onclick="xAiTest()">🧪 تجربة</button></div>
+  ${k?'<p class="xrvok" style="margin:8px 0 0">✅ شغال · الريسيت هيتقري بالذكاء الاصطناعي</p>':''}
+  <p class="muted" style="font-size:11.5px;margin:8px 0 0">النسخة المجانية ليها حد في اليوم وده كفاية جدًا للريسيتات. صور الريسيت بتتبعت لـ Google، وفي النسخة المجانية Google ممكن تستخدمها في تحسين خدماتها.</p></div>`+h}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
