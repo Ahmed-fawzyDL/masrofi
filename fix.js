@@ -10891,4 +10891,52 @@ xGBox=function(){const k=xGK(),m=xGMod(),st=xGSt(),tm=st&&st.at?new Date(st.at).
   <div class="xlna"><button class="btn" onclick="xGSave()">💾 حفظ</button><button class="btn ghost" onclick="xGTest()">🧪 تجربة</button></div>
   ${stH}<p class="muted" style="font-size:11.5px;margin:8px 0 0">النسخة المجانية ليها حد في اليوم، وصور الريسيت بتتبعت لـ Google.</p></div></div>`};
 try{const b=$('#xaibox');if(b)b.remove();render()}catch(e){}
+/* ========== 2.21.167 · Gemini أسرع + الأصناف قبل القرار ========== */
+XVER2='2.21.167';XVBUILD2='26/10/2026 - 03:35 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+.xdpb{border-radius:14px;padding:8px 10px;margin:8px 0;border:1px solid rgba(148,163,184,.3);background:rgba(255,255,255,.04)}
+.xdpb.n{border-color:rgba(45,212,191,.5);background:rgba(45,212,191,.07)}
+.xdpb>b{display:block;margin-bottom:6px}
+.xdpi{display:flex;gap:8px;padding:5px 0;border-top:1px dashed rgba(148,163,184,.25);font-size:12.5px}
+.xdpi span:first-child{flex:1;min-width:0}.xdpi small{opacity:.7}.xdpi b{white-space:nowrap}
+`;document.head.appendChild(s)})();
+if(!XGM.includes('gemini-3.1-flash-lite'))XGM.unshift('gemini-3.1-flash-lite');
+if(!XGM.includes('gemini-2.5-flash-lite'))XGM.push('gemini-2.5-flash-lite');
+if(!localStorage.getItem('centric-aim17')){localStorage.setItem('centric-aim','gemini-3.1-flash-lite');localStorage.setItem('centric-aim17','1')}
+
+/* صورة أصغر = رد أسرع */
+xGRead=async function(fid){const r=await FDB.get(fid);if(!r||!r.blob)return null;
+  const c=await fileToCanvas(r.blob),sc=Math.min(1,1100/Math.max(c.width,c.height)),cv=document.createElement('canvas');
+  cv.width=Math.round(c.width*sc);cv.height=Math.round(c.height*sc);const g=cv.getContext('2d');g.drawImage(c,0,0,cv.width,cv.height);
+  const data=cv.toDataURL('image/jpeg',.8).split(',')[1];
+  const names=[...new Set(S.cats.filter(x=>x&&!x.mrg&&!x.par&&!x.cl&&!x.ppo&&x.kind==='exp'&&x.active!==false).map(x=>x.name))].slice(0,200);
+  const prompt=`ريسيت مشتريات من مصر. رجّع JSON بس:
+{"store":"","match":"","total":0,"date":"","time":"","items":[{"n":"","q":1,"p":0,"v":0}],"phones":[],"tax_id":""}
+store: اسم المحل الحقيقي المكتوب فوق (مش الكاشير ولا الفرع). match: لو هو نفس واحد من دول اكتبه بالظبط، غير كده فاضي: ${names.join(' | ')}
+total: المبلغ النهائي المدفوع. date: YYYY-MM-DD. time: HH:MM. items: n الاسم، q الكمية، p سعر الوحدة، v الإجمالي. tax_id: رقم التسجيل الضريبي.`;
+  const tx=await xGCall([{inline_data:{mime_type:'image/jpeg',data}},{text:prompt}]);
+  const s=tx.indexOf('{'),e=tx.lastIndexOf('}');if(s<0)return null;return JSON.parse(tx.slice(s,e+1))};
+
+/* عدّاد الثواني وهو بيقرا */
+var XGTK=0;
+try{const _shTk=sheet;sheet=function(h){try{if(typeof h==='string'&&h.indexOf('🤖 بقرا الريسيت')>=0){clearInterval(XGTK);const t0=Date.now();
+  h=h.replace('ثواني والبيانات تطلع...','<span id="xgtk">⏳ 0 ثانية</span>');
+  XGTK=setInterval(()=>{const e=$('#xgtk');if(!e)return clearInterval(XGTK);e.textContent='⏳ '+Math.round((Date.now()-t0)/1000)+' ثانية'},1000)}else clearInterval(XGTK)}catch(e){}
+  return _shTk.apply(this,[h].concat([].slice.call(arguments,1)))}}catch(e){}
+
+/* شاشة "متسجل قبل كده": اللي اتقرا + المسجل قبل كده */
+function xDpItems(L){return (L||[]).length?(L||[]).map(x=>`<div class="xdpi"><span>${esc(x.n||'صنف')}<br><small>${num(+x.q||1)} × ${num(+x.p||0)}</small></span><b>${num(+x.v||0)}</b></div>`).join(''):'<small class="muted">مفيش أصناف</small>'}
+try{const _dpS=dupSheet;dupSheet=function(old){const r=_dpS.apply(this,arguments);try{
+  const sz=$('#sheet .sz'),x=XRC2;if(!sz||!x||$('#xdpn'))return r;
+  const a=parseNum(x.a)||0,tip=x.bill?0:(parseNum(x.tip)||0),its=(x.rc&&x.rc.items)||[];
+  const ob=old&&S.buys.find(b=>b.txId===old.id),oi=ob?biOf(ob):[];
+  const h=`<div class="xdpb n" id="xdpn"><b>🆕 اللي اتقرا دلوقتي</b>
+    <div class="kv"><span>المبلغ</span><b>${fmt(r2(a+tip))}</b></div><div class="kv"><span>التاريخ</span><b>${xDW(x.date)}</b></div>
+    <details class="gen" open><summary>🧾 الأصناف (${its.length})</summary>${xDpItems(its)}</details></div>
+    ${old?`<div class="xdpb"><b>📂 المسجل قبل كده</b>
+    <div class="kv"><span>المبلغ</span><b>${fmt(old.amount)}</b></div><div class="kv"><span>التاريخ</span><b>${xDW(old.date)}</b></div>
+    <details class="gen"><summary>🧾 الأصناف (${oi.length})</summary>${xDpItems(oi)}</details></div>`:''}`;
+  const h2=sz.querySelector('h2');if(h2)h2.insertAdjacentHTML('afterend',h);else sz.insertAdjacentHTML('afterbegin',h);
+}catch(e){}return r}}catch(e){}
+try{const b=$('#xaibox');if(b)b.remove();render()}catch(e){}
 /* نهاية fix.js */
