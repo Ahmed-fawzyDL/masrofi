@@ -10853,4 +10853,42 @@ xUpdGo=async function(){try{xStSave()}catch(e){}try{draftSave()}catch(e){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.filter(k=>!/share/i.test(k)).map(k=>caches.delete(k)))}}catch(e){}
   setTimeout(()=>location.replace(location.pathname+'?u='+Date.now()),400)};
 try{render()}catch(e){}
+/* ========== 2.21.166 · Gemini: إعادة المحاولة + الحالة الحقيقية ========== */
+XVER2='2.21.166';XVBUILD2='26/10/2026 - 03:20 م';
+function xGSt(o){if(o)localStorage.setItem('centric-aist',JSON.stringify(Object.assign({at:Date.now()},o)));try{return JSON.parse(localStorage.getItem('centric-aist')||'null')}catch(e){return null}}
+xGCall=async function(parts){const k=xGK();if(!k)throw new Error('مفيش مفتاح');let m=xGMod(),last=null;
+  const wait=ms=>new Promise(r=>setTimeout(r,ms)),busy=s=>s===429||s===500||s===502||s===503||s===504;
+  for(const md of [m].concat(XGM.filter(x=>x!==m))){
+    for(let a=0;a<3;a++){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),40000);let res,j;
+      try{res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+md+':generateContent',{method:'POST',signal:ctl.signal,
+          headers:{'content-type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{maxOutputTokens:4096,temperature:0}})});
+        j=await res.json().catch(()=>({}));
+      }catch(e){clearTimeout(to);last=new Error(e.name==='AbortError'?'الرد اتأخر':'مفيش نت أو الاتصال اتقطع');await wait(1500*(a+1));continue}
+      clearTimeout(to);
+      if(res.ok){const t=(((j.candidates||[])[0]||{}).content||{parts:[]}).parts.map(p=>p.text||'').join('');
+        if(t){if(md!==xGMod())localStorage.setItem('centric-aim',md);xGSt({ok:1,m:md});return t}
+        last=new Error('Gemini ما رجّعش رد');await wait(1500*(a+1));continue}
+      const msg=(j&&j.error&&j.error.message)||('HTTP '+res.status);
+      if(res.status===404){last=new Error('الموديل '+md+' مش متاح');break}
+      if(res.status===400||res.status===401||res.status===403){const e=new Error(/key|API_KEY|permission/i.test(msg)?'المفتاح غلط أو ناقص، انسخه تاني كامل':msg);xGSt({ok:0,err:e.message});throw e}
+      if(busy(res.status)){last=new Error(res.status===429?'الحد المجاني خلص دلوقتي، جرّب كمان شوية':'سيرفر Google زحمة دلوقتي');await wait(2000*(a+1));continue}
+      last=new Error(msg);break}}
+  xGSt({ok:0,err:(last&&last.message)||'مش شغال'});throw last||new Error('مفيش موديل متاح')};
+xGTest=async function(){const k=(($('#ai-k')||{}).value||'').trim(),m=($('#ai-m')||{}).value||XGM[0];
+  if(k)localStorage.setItem('centric-aik',k);localStorage.setItem('centric-aim',m);
+  toast('⏳ بجرب... ممكن ياخد لحد دقيقة لو السيرفر زحمة');
+  try{const t=await xGCall([{text:'رد بكلمة OK بس'}]);say('✅ شغال','Gemini رد: '+t,'🤖')}
+  catch(e){say('⚠️ ما اشتغلش المرة دي',(e.message||'')+'\n\nلو السبب زحمة أو الحد خلص، البرنامج هيقرا بـ OCR.space لحد ما يرجع.','🤖')}
+  const b=$('#xaibox');if(b)b.remove();try{xGInject()}catch(e){}};
+xGBox=function(){const k=xGK(),m=xGMod(),st=xGSt(),tm=st&&st.at?new Date(st.at).toLocaleString('ar-EG',{day:'numeric',month:'numeric',hour:'numeric',minute:'2-digit'}):'';
+  const stH=!k?'':st&&st.ok?`<p class="xrvok" style="margin:8px 0 0">✅ آخر قراءة نجحت · ${tm}</p>`
+    :st&&!st.ok?`<p class="xwarn" style="margin:8px 0 0">⚠️ آخر محاولة ما نجحتش (${tm}): ${esc(st.err||'')}<br>البرنامج بيقرا بـ OCR.space لحد ما يرجع</p>`
+    :'<p class="muted" style="margin:8px 0 0">🔑 المفتاح متحفظ · دوس 🧪 تجربة</p>';
+  return `<div id="xaibox"><h3>🤖 قراءة بالذكاء الاصطناعي · Gemini (ببلاش)</h3><div class="box">
+  <p class="muted" style="margin-top:0">أدق طريقة لقراءة اسم المحل والمبلغ والتاريخ والأصناف.<br>1) افتح <b dir="ltr">aistudio.google.com</b><br>2) <b dir="ltr">Create API key</b> وانسخه<br>3) حطه هنا</p>
+  <label>Gemini API Key<input id="ai-k" dir="ltr" autocomplete="off" spellcheck="false" value="${esc(k)}" placeholder="AIza..."></label>
+  <label>الموديل<select id="ai-m">${XGM.map(x=>`<option value="${x}" ${m===x?'selected':''}>${x}</option>`).join('')}</select></label>
+  <div class="xlna"><button class="btn" onclick="xGSave()">💾 حفظ</button><button class="btn ghost" onclick="xGTest()">🧪 تجربة</button></div>
+  ${stH}<p class="muted" style="font-size:11.5px;margin:8px 0 0">النسخة المجانية ليها حد في اليوم، وصور الريسيت بتتبعت لـ Google.</p></div></div>`};
+try{const b=$('#xaibox');if(b)b.remove();render()}catch(e){}
 /* نهاية fix.js */
