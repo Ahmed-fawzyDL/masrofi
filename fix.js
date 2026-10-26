@@ -10737,4 +10737,14 @@ xOaPL=function(){const el=$('#xoap-l');if(!el||!F)return;const raw=($('#xoap-q')
   if(!pp&&raw.trim()&&!acc.some(c=>qn(c.name)===q))h=`<button type="button" class="xpo xnew" data-n="1"><span class="xic0">➕</span><span class="xl">حساب جديد: ${esc(raw.trim())}</span></button>`+h;
   el.innerHTML=h||'<p class="muted" style="text-align:center;margin:10px 0">مفيش نتايج</p>'};
 try{render()}catch(e){}
+/* ========== 2.21.159 · حركة الحساب: 7 أيام / 30 يوم ========== */
+XVER2='2.21.159';XVBUILD2='26/10/2026 - 02:20 م';
+var XBWD=7;
+try{const _bwD=xBalWhy;xBalWhy=function(id,d){if(d)XBWD=d;const o=xDayIso;xDayIso=n=>o(n===7?XBWD:n);let r;
+  try{r=_bwD.call(this,id)}finally{xDayIso=o}
+  try{const sz=$('#sheet .sz');if(sz){
+    sz.querySelectorAll('p.muted').forEach(p=>{if(/آخر 7 أيام/.test(p.textContent))p.textContent=p.textContent.replace('آخر 7 أيام','آخر '+XBWD+' يوم')});
+    const k=sz.querySelector('.kv');if(k&&!$('#bw-d'))k.insertAdjacentHTML('afterend',`<div class="seg" id="bw-d">${[[7,'آخر 7 أيام'],[30,'آخر 30 يوم'],[90,'آخر 3 شهور']].map(([v,l])=>`<button type="button" class="${XBWD===v?'on':''}" onclick="xBalWhy('${id}',${v})">${l}</button>`).join('')}</div>`)}}catch(e){}
+  return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
