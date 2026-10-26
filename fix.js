@@ -10780,4 +10780,21 @@ try{const _spG=spOcr;spOcr=function(){let h=_spG.apply(this,arguments);
   ${k?'<p class="xrvok" style="margin:8px 0 0">✅ شغال · الريسيت هيتقري بالذكاء الاصطناعي</p>':''}
   <p class="muted" style="font-size:11.5px;margin:8px 0 0">النسخة المجانية ليها حد في اليوم وده كفاية جدًا للريسيتات. صور الريسيت بتتبعت لـ Google، وفي النسخة المجانية Google ممكن تستخدمها في تحسين خدماتها.</p></div>`+h}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.162 · إعدادات Gemini في شاشة قراءة الريسيت ========== */
+XVER2='2.21.162';XVBUILD2='26/10/2026 - 02:45 م';
+function xAiBox(){const k=xAiKey(),m=/^gemini/.test(xAiModel())?xAiModel():XGM[0];
+  return `<div id="xaibox"><h3>🤖 قراءة بالذكاء الاصطناعي · Gemini (ببلاش)</h3><div class="box">
+  <p class="muted" style="margin-top:0">أدق طريقة لقراءة اسم المحل والمبلغ والتاريخ والأصناف.<br>
+  1) افتح <b dir="ltr">aistudio.google.com</b><br>2) <b dir="ltr">Create API key</b> وانسخه<br>3) حطه هنا</p>
+  <label>Gemini API Key<input id="ai-k" dir="ltr" autocomplete="off" spellcheck="false" value="${esc(k)}" placeholder="AIza..."></label>
+  <label>الموديل<select id="ai-m">${XGM.map(x=>`<option value="${x}" ${m===x?'selected':''}>${x}</option>`).join('')}</select></label>
+  <div class="xlna"><button class="btn" onclick="xAiSave()">💾 حفظ</button><button class="btn ghost" onclick="xAiTest()">🧪 تجربة</button></div>
+  ${k?'<p class="xrvok" style="margin:8px 0 0">✅ شغال · الريسيت هيتقري بالذكاء الاصطناعي، ولو حصلت مشكلة بيرجع لـ OCR.space</p>':''}
+  <p class="muted" style="font-size:11.5px;margin:8px 0 0">النسخة المجانية ليها حد في اليوم، وصور الريسيت بتتبعت لـ Google.</p></div></div>`}
+try{const _rnAiB=render;render=function(){const r=_rnAiB.apply(this,arguments);try{
+  if(view!=='settings'||stab!=='ocr')return r;const v=$('#view');if(!v)return r;
+  v.querySelectorAll('h3').forEach(h=>{if(/قراءة الريسيت بالذكاء الاصطناعي/.test(h.textContent)&&!h.closest('#xaibox')){const b=h.nextElementSibling;if(b&&b.classList.contains('box'))b.remove();h.remove()}});
+  if(!$('#xaibox')){const ph=v.querySelector('.phead');if(ph)ph.insertAdjacentHTML('afterend',xAiBox());else v.insertAdjacentHTML('afterbegin',xAiBox())}
+}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
