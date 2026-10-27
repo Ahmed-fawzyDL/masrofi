@@ -11125,4 +11125,55 @@ try{const _lsS=xLnSave;xLnSave=function(){const s=XLNSEL||{};
 
 try{render()}catch(e){}
 setTimeout(()=>{try{const b=document.getElementById('xboot');if(b)b.remove();render()}catch(e){}},3000);
+/* ========== 2.21.169 ========== */
+XVER2='2.21.169';XVBUILD2='27/10/2026 - 10:40 ص';
+
+/* ---------- 🧾 الريسيت: الأصناف قبل الحفظ ---------- */
+var XRCB=false,XRCX=false,XRCTY='';
+try{const _xcB=xClose;xClose=function(){if(XRCB)XRCX=true;return _xcB.apply(this,arguments)}}catch(e){}
+xRcFinish=async function(){const x=XRC2;if(!x)return;
+  const a=parseNum(x.a),tip=x.bill?0:(parseNum(x.tip)||0),tot=r2(a+tip);
+  let items=[];
+  if((x.rc.items||[]).length){
+    const want=await ask('الأصناف',`تمت قراءة ${x.rc.items.length} صنف من الريسيت.\nهل تريد تسجيل الأصناف؟`,{icon:'🧾',ok:'نعم',cancel:'لا'});
+    if(want===null){XRC2=x;return xRcSheet()}
+    if(want){XRCB=true;XRCX=false;let r=null;
+      try{r=await biReview(x.rc.items,a)}finally{XRCB=false}
+      if(r===null){if(XRCX){XRC2=null;closeSheet();return toast('تم الإلغاء')}XRC2=x;return xRcSheet()}
+      items=r}}
+  XRC2=null;XRCTY='';closeSheet();
+  if(tip>0)items.push({n:'🎁 إكرامية',q:1,p:tip,v:tip});
+  const t={id:uid(),type:'exp',amount:tot,cat:x.cat.id,method:x.method,via:x.via,date:x.date,
+    note:x.n||('🧾'+(x.deliv?' 🛵':'')+(x.card?' •••• '+x.card.last4:'')),files:x.fid?[x.fid]:[],created:Date.now()};
+  if(x.bill){t.bill=true;x.cat.xbill=1}if(tip>0)t.tip=tip;if(x.pp){t.pp=x.pp;t.ppk='owe'}
+  S.txs.push(t);
+  try{const raw=x.rc.raw||x.rc._raw||'';if(raw){const k=xRcKeys(xRawMain(raw)||raw),c=x.cat;
+    c.xhot=[...new Set((c.xhot||[]).concat(k.hot))].slice(-6);c.xbr=[...new Set((c.xbr||[]).concat(k.br))].slice(-8);
+    S.cats.forEach(o=>{if(o===c)return;if(o.xhot)o.xhot=o.xhot.filter(h=>!k.hot.includes(h));if(o.xbr)o.xbr=o.xbr.filter(b=>!k.br.includes(b))})}
+    const tx=x.rc.aitax||xGTax(raw);if(tx){S.cats.forEach(o=>{if(o!==x.cat&&o.xtax)o.xtax=o.xtax.filter(v=>v!==tx)});x.cat.xtax=[...new Set((x.cat.xtax||[]).concat(tx))].slice(-4)}}catch(e){}
+  const b={id:uid(),date:x.date,time:x.rc.time||(x.date===today()?nowTime():''),rt:x.rc.time||'',no:x.rc.no||'',txId:t.id,catId:x.cat.id,store:x.cat.name,
+    items,total:tot,method:x.method,via:x.via,card:x.card?x.card.last4:'',deliv:x.deliv,fid:x.fid,ph:x.rc.ph||''};
+  S.buys.push(b);save();render();
+  try{if(x.rc.raw||x.rc._raw)ocrSave(b.id,x.rc.raw||x.rc._raw)}catch(e){}
+  try{contactFromReceipt(x.rc,x.cat)}catch(e){}
+  banner('🧾','تم تسجيل '+fmt(tot),x.cat.name,()=>buySheet(b.id),'ok')};
+
+/* ---------- 🧾 الفاتورة حسب النوع اللي اخترته من برا ---------- */
+try{const _srT=scanReceipt;scanReceipt=function(){XRCTY=($('#sheet').classList.contains('open')&&F&&$('#f-amt'))?(F.xtype||''):'';return _srT.apply(this,arguments)}}catch(e){}
+try{const _rfT=receiptFlow;receiptFlow=async function(){const r=await _rfT.apply(this,arguments);try{
+  const x=XRC2;if(x&&XRCTY&&$('#rc-a')){const want=XRCTY==='bill';if(x.bill!==want){x.bill=want;xRcSheet()}}}catch(e){}return r}}catch(e){}
+try{const _rsT=xRcSheet;xRcSheet=function(){const r=_rsT.apply(this,arguments);try{
+  if(XRCTY&&XRCTY!=='bill')document.querySelectorAll('#sheet .xchips').forEach(c=>{if(/فاتورة/.test(c.textContent))c.remove()})}catch(e){}return r}}catch(e){}
+
+/* ---------- 🗑 مسح الحساب ---------- */
+function xOaClear(){F=XOAF||F;if(!F)return;F.cat='';F.cq='';F.newCat='';F.pp='';F.ppAuto='';F.ppMan=1;F.fix=false;SHKEEP=1;txForm()}
+xOaPick=function(){try{grab()}catch(e){}XOAF=F;const c=F.cat&&F.cat!=='__new'&&C(F.cat),top=c&&xTopC(c.id);
+  xAP({kind:F.type==='inc'?'inc':'exp',cur:top&&top.id,curP:F.pp,
+    onAcc:id=>{F=XOAF;F.pp='';F.ppMan=1;xOaAcc(id)},
+    onPer:pid=>{F=XOAF;const p=XPP().find(x=>x.id===pid);if(!p)return;const k=xPpNewItem(pid,p.name);save();
+      F.pp=pid;F.ppMan=1;F.cat=k.id;F.cq=k.name;F.newCat='';F.fix=false;SHKEEP=1;txForm()},
+    onNewAcc:n=>{F=XOAF;XOA.q=n;xOaNew()},
+    extra:(c?'<button type="button" class="btn ghost" data-x="edit">✏️ اسم الحساب</button>':'')+(c||F.pp?'<button type="button" class="btn ghost danger" data-x="clr">🗑 مسح الحساب</button>':''),
+    onX:k=>{F=XOAF;if(k==='clr')xOaClear();else xCatEdit()}})};
+try{render()}catch(e){}
 /* نهاية fix.js */
