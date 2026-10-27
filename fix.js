@@ -11013,8 +11013,8 @@ function xRcBack(){const x=XRC2;if(!x)return closeSheet();try{xRcGrab()}catch(e)
 try{const _rsA=xRcSheet;xRcSheet=function(){const r=_rsA.apply(this,arguments);try{
   const x=XRC2,a=$('#rc-a'),l=a&&a.closest('label');
   if(x&&l&&!$('#rc-acc')){const c=x.cat,p=x.pp&&XPP().find(y=>y.id===x.pp);
-    const nm=p?'👤 '+p.name:c?(c.core?'📌 ':'🛒 ')+c.name:'';
-    l.insertAdjacentHTML('afterend',`<div class="xoa2" id="rc-acc" onclick="xRcAcc()"><span class="xoa2l">📒 الحساب</span><span class="xoa2v ${nm?'':'e'}">${nm?esc(nm):'اختار ▸'}</span><span class="xoa2c">▾</span></div>`)}
+    const lb=p?'👤 '+p.name:c?(c.core?'📌 ':'🛒 ')+c.name:'';
+    l.insertAdjacentHTML('afterend',`<div class="xoa2" id="rc-acc" onclick="xRcAcc()"><span class="xoa2l">📒 الحساب</span><span class="xoa2v ${lb?'':'e'}">${lb?esc(lb):'اختار ▸'}</span><span class="xoa2c">▾</span></div>`)}
   document.querySelectorAll('#sheet .shbar button').forEach(b=>{if(/رجوع/.test(b.textContent))b.setAttribute('onclick','xRcBack()')});
 }catch(e){}return r}}catch(e){}
 try{const _sbR=sheetBack;sheetBack=function(){if(XRC2&&$('#rc-a'))return xRcBack();return _sbR.apply(this,arguments)}}catch(e){}
@@ -11024,7 +11024,6 @@ try{const _rfA=receiptFlow;receiptFlow=async function(rc,fid){const ids=new Set(
 try{const _rfP=xRcFinish;xRcFinish=async function(){const x=XRC2,pp=x&&x.pp,cid=x&&x.cat&&x.cat.id,t0=Date.now()-1;
   const r=await _rfP.apply(this,arguments);
   try{if(pp&&cid){const t=S.txs.filter(y=>y.cat===cid&&(y.created||0)>=t0&&!y.feeOf&&!y.tipOf).pop();if(t){t.pp=pp;t.ppk='owe';save();render()}}}catch(e){}return r}}catch(e){}
-/* "تم الحفظ" بتظهر بعد ما الشاشة تتقفل بس */
 try{const _ubD=xUndoBar;xUndoBar=function(){setTimeout(()=>{if($('#sheet').classList.contains('open'))return;_ubD()},300)}}catch(e){}
 
 /* ---------- 🧾 إلغاء الفاتورة + 🎁 الإكرامية دايمًا ---------- */
@@ -11043,7 +11042,8 @@ try{const _tfB2=txForm;txForm=function(){const r=_tfB2.apply(this,arguments);try
 
 /* ---------- 📅 Today / Yesterday: اللي اتسجل في اليوم ده كمان ---------- */
 var XCRC={k:'',ids:[]};
-function xCrIds(d){const k=d+'|'+S.txs.length;if(XCRC.k!==k)XCRC={k,ids:S.txs.filter(t=>t&&t.created&&t.date!==d&&isoD(new Date(t.created))===d).map(t=>t.id)};return XCRC.ids}
+function xCrDay(t){try{return t&&t.created?isoD(new Date(t.created)):''}catch(e){return ''}}
+function xCrIds(d){const k=d+'|'+S.txs.length;if(XCRC.k!==k)XCRC={k:k,ids:S.txs.filter(t=>t&&t.date!==d&&xCrDay(t)===d).map(t=>t.id)};return XCRC.ids}
 try{const _xeD=xElDate;xElDate=function(el){const d=_xeD.apply(this,arguments);try{
   const f=XFLT[view];if(!f||!f.f||f.f!==f.t||d===f.f)return d;const ids=xCrIds(f.f);if(!ids.length)return d;
   let e=el;if(e&&e.tagName==='SUMMARY'&&e.parentElement)e=e.parentElement;const h=(e&&e.innerHTML)||'';
@@ -11052,11 +11052,12 @@ try{const _rnTd=render;render=function(){const r=_rnTd.apply(this,arguments);try
   if(view!=='col'&&view!=='exps')return r;const f=XFLT[view],b=$('#xdayb');if(!f||!b||f.f!==f.t)return r;
   const el=b.nextElementSibling;if(!el||!el.classList.contains('xflc'))return r;
   const d=f.f,ty=view==='col'?'inc':'exp';
-  const L=S.txs.filter(x=>x&&x.type===ty&&!x.pend&&!x.xpre&&!(ty==='inc'&&x.ccr)&&(x.date===d||(x.created&&isoD(new Date(x.created))===d)));
+  const L=S.txs.filter(x=>x&&x.type===ty&&!x.pend&&!x.xpre&&!(ty==='inc'&&x.ccr)&&(x.date===d||xCrDay(x)===d));
   const s=r2(L.reduce((a,x)=>a+x.amount,0)),ot=L.filter(x=>x.date!==d).length;
   el.innerHTML=`${ty==='inc'?'💰':'💸'} إجمالي ${xDW(d)}: <b>${fmt(s)}</b> · ${L.length} عملية${ot?` · منهم ${ot} اتسجلت اليوم ده بتاريخ تاني`:''}`;
 }catch(e){}return r}}catch(e){}
-/* ---------- 🏦 الأقساط قبل 01/10 = مدفوعة سابقًا (آمن) ---------- */
+
+/* ---------- 🏦 الأقساط قبل 01/10 = مدفوعة سابقًا ---------- */
 function xPreCut(){return S.settings.xpreCut||'2026-10-01'}
 function xPreHas(p,it){return !!(itTx(it)||S.txs.some(t=>t&&t.xpre&&t.src&&t.src.k==='i'&&t.src.id===p.id&&t.src.p===it.id))}
 function xPreAuto(){const cut=xPreCut();let n=0;
@@ -11071,18 +11072,19 @@ setTimeout(xPreRun,2500);
 try{const _psR=planSave;planSave=function(){const r=_psR.apply(this,arguments);XPAN=0;xPreRun();return r}}catch(e){}
 try{const _upP=unpay;unpay=async function(pid,iid){const r=await _upP.apply(this,arguments);try{
   const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(it&&!itTx(it)&&it.due&&it.due<xPreCut()){it.xnopre=1;save()}}catch(e){}return r}}catch(e){}
+
 /* ---------- 📊 التقرير: السلف لوحدها + العمليات اللي من غير حساب ---------- */
 function xRgList(ids){const L=ids.split(',').map(id=>S.txs.find(t=>t.id===id)).filter(Boolean).sort(byDesc);
   sheet(`<h2>📋 العمليات (${L.length})</h2><p class="muted">دوس على أي عملية عشان تفتحها وتحطلها حساب</p>
   <div class="list">${L.map(t=>`<div class="row" onclick="editTx('${t.id}')"><div class="grow"><b>${esc(xTxNm(t))}</b><small>${xDW(t.date)} · ${esc((M(t.method)||{}).name||'')}</small></div><div class="amt ${t.type}">${num(t.amount)}</div></div>`).join('')}</div>`)}
 xRgTable=function(list,G,fn,tot,f,t,type){
   const FORCE={loan:1,inst:1,fee:1,tip:1},acc={};
-  list.forEach(x=>{const top=xTopC(x.cat),g=fn(x);let k,nm='',fg=null;
-    if(g==='loan'){const ln=xTxLoan(x);fg='loan';if(ln){k='L|'+(ln.pp||normAr(ln.who||''));nm='🤝 '+(ln.who||'')}else k='L|'+(top?top.id:'_')}
-    else if(!top){const n=(x.note||'').trim();nm=n&&!/^🧾/.test(n)?n:'⚠️ من غير حساب';k='_|'+nm}
+  list.forEach(x=>{const top=xTopC(x.cat),g=fn(x);let k,lb='',fg=null;
+    if(g==='loan'){const ln=xTxLoan(x);fg='loan';if(ln){k='L|'+(ln.pp||normAr(ln.who||''));lb='🤝 '+(ln.who||'')}else k='L|'+(top?top.id:'_')}
+    else if(!top){const n=(x.note||'').trim();lb=n&&!/^🧾/.test(n)?n:'⚠️ من غير حساب';k='_|'+lb}
     else if(FORCE[g]){fg=g;k=g+'|'+top.id}
     else k=top.id;
-    const o=acc[k]=acc[k]||{c:top,nm,fg,n:0,v:0,g:{},ids:[]};o.n++;o.v+=x.amount;o.ids.push(x.id);o.g[g]=(o.g[g]||0)+1});
+    const o=acc[k]=acc[k]||{c:top,lb:lb,fg:fg,n:0,v:0,g:{},ids:[]};o.n++;o.v+=x.amount;o.ids.push(x.id);o.g[g]=(o.g[g]||0)+1});
   const by={};
   Object.values(acc).forEach(o=>{let g;const nmn=(o.c&&o.c.name)||'';
     if(o.fg)g=o.fg;
@@ -11092,8 +11094,35 @@ xRgTable=function(list,G,fn,tot,f,t,type){
   const rows=[];
   G.forEach(([g,l])=>{const L=by[g];if(!L)return;L.sort((a,b)=>b.v-a.v);const gs=r2(L.reduce((a,x)=>a+x.v,0)),gn=L.reduce((a,x)=>a+x.n,0);
     rows.push(`<tr class="xgh"><td colspan="4">${l} · ${gn} عملية<em>${nm(num(gs))}${tot?' · '+Math.round(gs/tot*100)+'%':''}</em></td></tr>`);
-    L.forEach(x=>{const name=x.nm||(x.c?x.c.name:'—');
-      const js=(x.nm||!x.c)?(x.ids.length===1?`editTx('${x.ids[0]}')`:`xRgList('${x.ids.join(',')}')`):`dOps('${f}','${t}','${x.c.id}','${type}')`;
-      rows.push(`<tr class="clk" onclick="${js}">${cT(esc(name))}${cC(nm(x.n))}${cN(num(r2(x.v)),ty
+    L.forEach(x=>{const name=x.lb||(x.c?x.c.name:'—');
+      const js=(x.lb||!x.c)?(x.ids.length===1?`editTx('${x.ids[0]}')`:`xRgList('${x.ids.join(',')}')`):`dOps('${f}','${t}','${x.c.id}','${type}')`;
+      rows.push(`<tr class="clk" onclick="${js}">${cT(esc(name))}${cC(nm(x.n))}${cN(num(r2(x.v)),type)}${cN(tot?Math.round(x.v/tot*100)+'%':'')}</tr>`)})});
+  return rows.length?xRgCls(rtbl(['الحساب','عدد|c','المبلغ|n','%|n'],rows,ft('الإجمالي',2,fN(num(r2(tot))),fE)),'xg4'):NONE};
+
+/* ---------- 🤝 السلفة: من غير اسم Instapay + الحساب بالاختيار ---------- */
+try{const _ipN=xIpParse;xIpParse=function(){const r=_ipN.apply(this,arguments);r.name='';return r}}catch(e){}
+var XLNSEL={};
+function xLnAccShow(){const v=$('#ln-accv'),w=$('#ln-w'),s=XLNSEL||{};let lb='',ic='';
+  if(s.pp){const p=XPP().find(x=>x.id===s.pp);if(p){lb=p.name;ic='👤'}}
+  else if(s.cat){const c=C(s.cat);if(c){lb=c.name;ic=c.core?'📌':'🛒'}}
+  if(w)w.value=lb;if(v){v.className='xoa2v'+(lb?'':' e');v.textContent=lb?ic+' '+lb:'اختار ▸'}}
+function xLnAccPick(){const s=XLNSEL||{};
+  xAP({kind:'exp',cur:s.cat,curP:s.pp,
+    onAcc:id=>{XLNSEL={cat:id};xLnAccShow()},
+    onPer:pid=>{XLNSEL={pp:pid};xLnAccShow()},
+    onNewAcc:n=>{const c=ensureCat(n,'exp');c.active=true;if(!c.code)c.code=String(xAcCodeNext());save();XLNSEL={cat:c.id};xLnAccShow()}})}
+try{const _lnA=xLnNew;xLnNew=function(){XLNSEL={};const r=_lnA.apply(this,arguments);try{
+  const w=$('#ln-w'),wl=w&&w.closest('label');if(wl&&!$('#ln-acc')){w.value='';wl.style.display='none';const wx=$('#ln-wx');if(wx)wx.style.display='none';
+    wl.insertAdjacentHTML('beforebegin','<div class="xoa2" id="ln-acc" onclick="xLnAccPick()"><span class="xoa2l">📒 الحساب</span><span class="xoa2v e" id="ln-accv">اختار ▸</span><span class="xoa2c">▾</span></div>')}
+}catch(e){}return r}}catch(e){}
+try{const _plS=xPpLoan;xPpLoan=function(pid){const r=_plS.apply(this,arguments);setTimeout(()=>{XLNSEL={pp:pid};xLnAccShow()},90);return r}}catch(e){}
+try{const _lsS=xLnSave;xLnSave=function(){const s=XLNSEL||{};
+  if($('#ln-acc')&&!s.cat&&!s.pp)return toast('اختار الحساب');
+  if(s.pp)XLNPP=s.pp;
+  const n0=XLN().length,r=_lsS.apply(this,arguments);
+  try{if(s.cat&&XLN().length>n0){const l=XLN()[XLN().length-1];l.cat=s.cat;const t=l.tx&&S.txs.find(x=>x.id===l.tx);if(t)t.cat=s.cat;save();render()}}catch(e){}
+  return r}}catch(e){}
+
+try{render()}catch(e){}
 setTimeout(()=>{try{const b=document.getElementById('xboot');if(b)b.remove();render()}catch(e){}},3000);
 /* نهاية fix.js */
