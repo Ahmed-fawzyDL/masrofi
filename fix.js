@@ -11394,4 +11394,31 @@ try{const _cfrN=contactFromReceipt;contactFromReceipt=async function(rc,cat){
 try{const _deC=xDpEdit;xDpEdit=function(){const x=XRC2;const r=_deC.apply(this,arguments);
   try{if(x&&!XRC2&&x.rc&&x.cat)setTimeout(()=>{try{contactFromReceipt(x.rc,x.cat)}catch(e){}},400)}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.177 · من غير رقم شركة البرمجة ========== */
+XVER2='2.21.177';XVBUILD2='27/10/2026 - 12:00 م';
+
+/* Gemini: أرقام المحل بس */
+try{const _gcV=xGCall;xGCall=function(parts){try{const p=parts&&parts[parts.length-1];
+  if(p&&p.text&&/ريسيت مشتريات/.test(p.text))p.text+='\nمهم: phones = أرقام المحل نفسه بس. متكتبش رقم شركة البرمجة أو سيستم الكاشير أو أي رقم مكتوب جنب Powered by أو برمجة أو Software أو POS.'}catch(e){}
+  return _gcV.apply(this,arguments)}}catch(e){}
+
+/* الأرقام اللي مش تبع المحل */
+var XVENDRX=/(برمج|سيستم|نظام|تصميم|تطوير|powered|software|system|developed|designed|solutions?|pos\b|erp|support|دعم فني)/i;
+function xPhBlk(){return S.settings.xphx=S.settings.xphx||[]}
+function xVendPh(raw){const out=[];splitLines(xLatN(raw||'')).forEach((l,i,L)=>{if(!XVENDRX.test(l))return;
+  [l,L[i+1]||''].forEach(s=>(s.match(/\d[\d\s\-]{4,}\d/g)||[]).forEach(n=>out.push(xNp(n))))});return out}
+function xPhClean(list,raw){const bad=new Set(xPhBlk().concat(xVendPh(raw)));return (list||[]).filter(p=>!bad.has(xNp(p)))}
+var XCTRC=null;
+try{const _cfrV=contactFromReceipt;contactFromReceipt=async function(rc,cat){
+  try{const raw=(rc&&(rc.raw||rc._raw))||'';rc=Object.assign({},rc,{phones:xPhClean(rc&&rc.phones,raw)});
+    if(XGLAST&&XGLAST.j)XGLAST.j.phones=xPhClean(XGLAST.j.phones,raw);XCTRC={rc,cat}}catch(e){}
+  const r=await _cfrV.call(this,rc,cat);
+  try{document.querySelectorAll('#sheet .xctd.n .kv,#sheet .sz>.kv').forEach(k=>{const s=k.querySelector('span'),b=k.querySelector('b');
+    if(!s||!b||!/📞/.test(s.textContent)||k.querySelector('.xphn'))return;const p=xNp(b.textContent);if(p.length<5)return;
+    b.insertAdjacentHTML('afterend',`<button type="button" class="mini xphn" style="margin-inline-start:6px" onclick="xPhNo('${p}')">✕ مش تبع المحل</button>`)})}catch(e){}
+  return r}}catch(e){}
+function xPhNo(p){const L=xPhBlk();if(!L.includes(p))L.push(p);
+  S.contacts.forEach(c=>{if(Array.isArray(c.phones))c.phones=c.phones.filter(x=>xNp(x)!==p)});
+  save();toast('✕ الرقم ده مش هيتجاب تاني');const x=XCTRC;closeSheet();if(x)contactFromReceipt(x.rc,x.cat)}
+try{render()}catch(e){}
 /* نهاية fix.js */
