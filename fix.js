@@ -11384,4 +11384,14 @@ try{const _dpE=dupSheet;dupSheet=function(){const r=_dpE.apply(this,arguments);t
   document.querySelectorAll('#sheet .sz .btn').forEach(b=>{if(/عدّل الموجود|عدل الموجود/.test(b.textContent))b.setAttribute('onclick','xDpEdit()')})}catch(e){}return r}}catch(e){}
 try{const _dbE=xDpBlock;xDpBlock=function(b){return String(_dbE.apply(this,arguments)).replace('<button type="button" class="btn ghost danger" onclick="xDpDel(',`<button type="button" class="btn" onclick="xDpEdit('${b.id}')">✏️ عدّله</button><button type="button" class="btn ghost danger" onclick="xDpDel(`)}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.176 · الكونتكت بعد عدّل الموجود ========== */
+XVER2='2.21.176';XVBUILD2='27/10/2026 - 11:50 ص';
+try{const _cfrN=contactFromReceipt;contactFromReceipt=async function(rc,cat){
+  try{const g=XGLAST&&Date.now()-XGLAST.at<1800000?XGLAST.j:{};
+    const ph=((rc&&rc.phones)||[]).concat(g.phones||[]).map(xNp).filter(p=>p.length>=5),addr=String((rc&&rc.address)||g.address||'').trim();
+    if(!ph.length&&!addr){await new Promise(r=>setTimeout(r,700));return toast('📇 مفيش أرقام ولا عنوان اتقروا من الريسيت')}}catch(e){}
+  return _cfrN.apply(this,arguments)}}catch(e){}
+try{const _deC=xDpEdit;xDpEdit=function(){const x=XRC2;const r=_deC.apply(this,arguments);
+  try{if(x&&!XRC2&&x.rc&&x.cat)setTimeout(()=>{try{contactFromReceipt(x.rc,x.cat)}catch(e){}},400)}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
