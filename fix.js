@@ -11421,4 +11421,20 @@ function xPhNo(p){const L=xPhBlk();if(!L.includes(p))L.push(p);
   S.contacts.forEach(c=>{if(Array.isArray(c.phones))c.phones=c.phones.filter(x=>xNp(x)!==p)});
   save();toast('✕ الرقم ده مش هيتجاب تاني');const x=XCTRC;closeSheet();if(x)contactFromReceipt(x.rc,x.cat)}
 try{render()}catch(e){}
+/* ========== 2.21.178 · صورة ريسيت واحدة ========== */
+XVER2='2.21.178';XVBUILD2='27/10/2026 - 12:10 م';
+function xIsRcImg(id){const m=(S.fmeta||{})[id]||{};return /receipt|ريسيت|scan/i.test(m.name||'')||S.buys.some(b=>b&&b.fid===id)}
+function xRcImgFix(t,keep){if(!t||!Array.isArray(t.files))return false;const R=t.files.filter(xIsRcImg);if(R.length<2&&(!keep||R.length<1||R[0]===keep))return false;
+  const k=keep&&t.files.includes(keep)?keep:R[R.length-1];const n=t.files.length;
+  t.files=t.files.filter(f=>f===k||!xIsRcImg(f));const b=S.buys.find(y=>y.txId===t.id);if(b)b.fid=k;return t.files.length!==n}
+
+/* عدّل الموجود: بيبدّل الصورة */
+try{const _deI=xDpEdit;xDpEdit=function(){const x=XRC2,fid=x&&x.fid;const r=_deI.apply(this,arguments);
+  try{if(fid&&!XRC2){const t=S.txs.find(y=>(y.files||[]).includes(fid));if(t&&xRcImgFix(t,fid)){save();try{gcFiles()}catch(e){}render()}}}catch(e){}return r}}catch(e){}
+
+/* تصليح العمليات اللي عليها أكتر من صورة ريسيت (مرة واحدة) */
+try{if(!S.settings.xrcimg1){let n=0;
+  S.txs.forEach(t=>{if(!t||!Array.isArray(t.files)||t.files.filter(xIsRcImg).length<2)return;const b=S.buys.find(y=>y.txId===t.id);if(xRcImgFix(t,b&&b.fid))n++});
+  S.settings.xrcimg1=1;save();if(n){try{gcFiles()}catch(e){}setTimeout(()=>toast('🧹 اتشال صور ريسيت مكررة من '+n+' عملية'),1500)}}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
