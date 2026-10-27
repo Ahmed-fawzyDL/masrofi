@@ -11357,4 +11357,31 @@ function xCtNewSv(){const x=XCTR;if(!x)return;const n=(($('#ctn-n')||{}).value||
 /* إضافة على الموجود */
 try{const _dbW=xDpBlock;xDpBlock=function(){return String(_dbW.apply(this,arguments)).replace('➕ حط الأصناف دي عليه','➕ إضافة على الموجود')}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.175 · عدّل الموجود ========== */
+XVER2='2.21.175';XVBUILD2='27/10/2026 - 11:40 ص';
+function xDpOldBuy(){const o=DUPX&&DUPX.old;if(!o)return null;return (o.store!=null||o.total!=null)?o:S.buys.find(y=>y.txId===o.id)||{txOnly:o}}
+function xDpEdit(bid){const x=XRC2;if(!x)return toast('ابدأ من الريسيت تاني');
+  let b=bid?S.buys.find(y=>y.id===bid):xDpOldBuy(),t=null;
+  if(b&&b.txOnly){t=b.txOnly;b=null}else if(b)t=S.txs.find(y=>y.id===b.txId);
+  if(!t)return toast('مش لاقي العملية القديمة');
+  if(isClosed(t.date)||isClosed(x.date))return toast('الشهر مقفول');
+  const a=parseNum(x.a)||0,tip=x.bill?0:(parseNum(x.tip)||0);
+  Object.assign(t,{amount:a,cat:x.cat.id,method:x.method,via:x.via,date:x.date});
+  if(x.n)t.note=x.n;
+  if(x.fid&&!(t.files||[]).includes(x.fid))t.files=(t.files||[]).concat(x.fid);
+  if(x.bill)t.bill=true;else delete t.bill;
+  if(x.pp){t.pp=x.pp;t.ppk='owe'}
+  let tp=t.tipTx&&S.txs.find(y=>y.id===t.tipTx);
+  if(tip>0){if(tp)Object.assign(tp,{amount:tip,date:x.date,method:x.method,via:x.via});
+    else{const c=xTipCat();tp={id:uid(),type:'exp',amount:tip,cat:c.id,method:x.method,via:x.via,date:x.date,note:'🎁 إكرامية · '+x.cat.name,files:[],created:Date.now(),tipOf:t.id,nofee:1};S.txs.push(tp);t.tipTx=tp.id}}
+  else if(tp){S.txs=S.txs.filter(y=>y!==tp);delete t.tipTx}
+  const its=(x.rc.items||[]).filter(i=>!xIsTipIt(i)).map(i=>({...i}));
+  if(!b){b={id:uid(),txId:t.id,items:[],time:x.rc.time||'',rt:x.rc.time||'',no:x.rc.no||'',card:x.card?x.card.last4:'',fid:x.fid||'',ph:x.rc.ph||''};S.buys.push(b)}
+  Object.assign(b,{date:x.date,catId:x.cat.id,store:x.cat.name,total:a,method:x.method,via:x.via,deliv:x.deliv});
+  if(its.length)b.items=its;if(x.fid&&!b.fid)b.fid=x.fid;
+  XRC2=null;XRCTY='';save();closeSheet();render();toast('✏️ اتعدّل الموجود');setTimeout(()=>buySheet(b.id),300)}
+try{const _dpE=dupSheet;dupSheet=function(){const r=_dpE.apply(this,arguments);try{
+  document.querySelectorAll('#sheet .sz .btn').forEach(b=>{if(/عدّل الموجود|عدل الموجود/.test(b.textContent))b.setAttribute('onclick','xDpEdit()')})}catch(e){}return r}}catch(e){}
+try{const _dbE=xDpBlock;xDpBlock=function(b){return String(_dbE.apply(this,arguments)).replace('<button type="button" class="btn ghost danger" onclick="xDpDel(',`<button type="button" class="btn" onclick="xDpEdit('${b.id}')">✏️ عدّله</button><button type="button" class="btn ghost danger" onclick="xDpDel(`)}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
