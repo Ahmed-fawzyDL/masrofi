@@ -11056,16 +11056,21 @@ try{const _rnTd=render;render=function(){const r=_rnTd.apply(this,arguments);try
   const s=r2(L.reduce((a,x)=>a+x.amount,0)),ot=L.filter(x=>x.date!==d).length;
   el.innerHTML=`${ty==='inc'?'💰':'💸'} إجمالي ${xDW(d)}: <b>${fmt(s)}</b> · ${L.length} عملية${ot?` · منهم ${ot} اتسجلت اليوم ده بتاريخ تاني`:''}`;
 }catch(e){}return r}}catch(e){}
-
-/* ---------- 🏦 الأقساط قبل 01/10 = مدفوعة سابقًا ---------- */
+/* ---------- 🏦 الأقساط قبل 01/10 = مدفوعة سابقًا (آمن) ---------- */
 function xPreCut(){return S.settings.xpreCut||'2026-10-01'}
+function xPreHas(p,it){return !!(itTx(it)||S.txs.some(t=>t&&t.xpre&&t.src&&t.src.k==='i'&&t.src.id===p.id&&t.src.p===it.id))}
 function xPreAuto(){const cut=xPreCut();let n=0;
-  S.plans.forEach(p=>(p.items||[]).forEach(it=>{if(it.k==='mnt'||!it.due||it.due>=cut||it.xnopre||itTx(it))return;xInstPre(p.id,it.id,1);n++}));return n}
-try{if(xPreAuto())save()}catch(e){}
-try{const _rnPa=render;render=function(){try{if(xPreAuto())save()}catch(e){}return _rnPa.apply(this,arguments)}}catch(e){}
+  (S.plans||[]).forEach(p=>(p.items||[]).forEach(it=>{
+    if(n>500||it.k==='mnt'||!it.due||it.due>=cut||it.xnopre||xPreHas(p,it))return;
+    xInstPre(p.id,it.id,1);n++}));return n}
+var XPAR=0,XPAN=0,XPAT=0;
+function xPreRun(){clearTimeout(XPAT);XPAT=setTimeout(()=>{
+  if(XPAR||XPAN>=3)return;XPAR=1;XPAN++;
+  try{if(xPreAuto()){save();render()}}catch(e){}finally{XPAR=0}},1500)}
+setTimeout(xPreRun,2500);
+try{const _psR=planSave;planSave=function(){const r=_psR.apply(this,arguments);XPAN=0;xPreRun();return r}}catch(e){}
 try{const _upP=unpay;unpay=async function(pid,iid){const r=await _upP.apply(this,arguments);try{
   const p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(it&&!itTx(it)&&it.due&&it.due<xPreCut()){it.xnopre=1;save()}}catch(e){}return r}}catch(e){}
-
 /* ---------- 📊 التقرير: السلف لوحدها + العمليات اللي من غير حساب ---------- */
 function xRgList(ids){const L=ids.split(',').map(id=>S.txs.find(t=>t.id===id)).filter(Boolean).sort(byDesc);
   sheet(`<h2>📋 العمليات (${L.length})</h2><p class="muted">دوس على أي عملية عشان تفتحها وتحطلها حساب</p>
@@ -11090,4 +11095,5 @@ xRgTable=function(list,G,fn,tot,f,t,type){
     L.forEach(x=>{const name=x.nm||(x.c?x.c.name:'—');
       const js=(x.nm||!x.c)?(x.ids.length===1?`editTx('${x.ids[0]}')`:`xRgList('${x.ids.join(',')}')`):`dOps('${f}','${t}','${x.c.id}','${type}')`;
       rows.push(`<tr class="clk" onclick="${js}">${cT(esc(name))}${cC(nm(x.n))}${cN(num(r2(x.v)),ty
+setTimeout(()=>{try{const b=document.getElementById('xboot');if(b)b.remove();render()}catch(e){}},3000);
 /* نهاية fix.js */
