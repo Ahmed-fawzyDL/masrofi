@@ -11176,4 +11176,64 @@ xOaPick=function(){try{grab()}catch(e){}XOAF=F;const c=F.cat&&F.cat!=='__new'&&C
     extra:(c?'<button type="button" class="btn ghost" data-x="edit">✏️ اسم الحساب</button>':'')+(c||F.pp?'<button type="button" class="btn ghost danger" data-x="clr">🗑 مسح الحساب</button>':''),
     onX:k=>{F=XOAF;if(k==='clr')xOaClear();else xCatEdit()}})};
 try{render()}catch(e){}
+/* ========== 2.21.170 ========== */
+XVER2='2.21.170';XVBUILD2='27/10/2026 - 10:50 ص';
+
+/* ---------- 🎁 الإكرامية مش صنف ---------- */
+function xIsTipIt(x){return !!x&&/إكرامية/.test(x.n||'')}
+try{const _boT=biOf;biOf=function(){return (_boT.apply(this,arguments)||[]).filter(x=>!xIsTipIt(x))}}catch(e){}
+try{if(!S.settings.xtipit1){let n=0;
+  (S.buys||[]).forEach(b=>{if(!b||!Array.isArray(b.items))return;const k=b.items.length;b.items=b.items.filter(x=>!xIsTipIt(x));
+    if(b.items.length!==k){n++;const t=S.txs.find(x=>x.id===b.txId);if(t&&t.tipTx)b.total=t.amount}});
+  S.settings.xtipit1=1;if(n)save()}}catch(e){}
+try{const _tsB=xTipSplit;xTipSplit=function(t){const r=_tsB.apply(this,arguments);try{
+  if(r){const b=S.buys.find(x=>x.txId===t.id);if(b){b.total=t.amount;if(Array.isArray(b.items))b.items=b.items.filter(x=>!xIsTipIt(x))}}}catch(e){}return r}}catch(e){}
+try{const _rfB=xRcFinish;xRcFinish=async function(){const n0=S.buys.length;const r=await _rfB.apply(this,arguments);try{
+  if(S.buys.length>n0){const b=S.buys[S.buys.length-1];if(Array.isArray(b.items)&&b.items.some(xIsTipIt)){b.items=b.items.filter(x=>!xIsTipIt(x));save()}}}catch(e){}return r}}catch(e){}
+
+/* ---------- 🔁 الريسيت المتكرر: في كل الحسابات ---------- */
+try{const _fdA=findDup;findDup=function(cat,a,date){const r=_fdA.apply(this,arguments);if(r)return r;try{
+  const x=XRC2,tip=x&&!x.bill?(parseNum(x.tip)||0):0,A=+a||0,T=r2(A+tip);
+  return S.buys.find(b=>{if(!b||b.date!==date)return false;const t=S.txs.find(y=>y.id===b.txId),v=+b.total||0,ta=t?+t.amount||0:-1;
+    return [v,ta].some(z=>Math.abs(z-A)<0.5||Math.abs(z-T)<0.5)})||null}catch(e){return r}}}catch(e){}
+
+/* ---------- 📂 بيانات المسجل قبل كده ---------- */
+try{const _dpB=dupSheet;dupSheet=function(old){const r=_dpB.apply(this,arguments);try{
+  const bx=document.querySelector('#xdpn + .xdpb');if(!bx||!old)return r;
+  const isB=old.store!=null||old.total!=null,b=isB?old:S.buys.find(y=>y.txId===old.id),t=isB?S.txs.find(y=>y.id===old.txId):old;
+  const tp=t&&t.tipTx&&S.txs.find(y=>y.id===t.tipTx),amt=t?+t.amount||0:+old.total||0,its=b?biOf(b):[];
+  const acc=t?((C(t.cat)||{}).name||''):'',st=(b&&b.store)||'';
+  bx.innerHTML=`<b>📂 المسجل قبل كده</b>
+  ${acc?`<div class="kv"><span>الحساب</span><b>${esc(acc)}</b></div>`:''}
+  ${st&&st!==acc?`<div class="kv"><span>المحل</span><b>${esc(st)}</b></div>`:''}
+  <div class="kv"><span>المبلغ</span><b>${fmt(amt)}</b></div>
+  ${tp?`<div class="kv"><span>🎁 إكرامية</span><b>${fmt(tp.amount)}</b></div>`:''}
+  <div class="kv"><span>التاريخ</span><b>${xDW((t&&t.date)||old.date)}</b></div>
+  <details class="gen"><summary>🧾 الأصناف (${its.length})</summary>${xDpItems(its)}</details>`;
+}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.171 · البحث مع Today ========== */
+XVER2='2.21.171';XVBUILD2='27/10/2026 - 11:00 ص';
+
+/* Today / Yesterday بيمسحوا البحث */
+try{const _dfS=xDayF;xDayF=function(){try{GQ[view]='';const i=$('#view .gsr input');if(i)i.value='';const v=$('#view');if(v)v.classList.remove('xsq')}catch(e){}
+  return _dfS.apply(this,arguments)}}catch(e){}
+
+/* فلتر التاريخ ميرجّعش يظهر اللي البحث خبّاه */
+try{const _faS=xFlApply;xFlApply=function(){
+  const q=((GQ&&GQ[view])||'').trim(),f=XFLT[view];
+  if(!q||!f||(!f.f&&!f.t))return _faS.apply(this,arguments);
+  const hid=[...document.querySelectorAll('#view .xl3,#view details.grp>.ckx,#view .list>*,#view details.xgr')].filter(e=>e.style.display==='none');
+  const r=_faS.apply(this,arguments);
+  try{hid.forEach(e=>{e.style.display='none'});
+    const amt=e=>parseNum(((e&&e.textContent)||'').replace(/[^\d.,]/g,''))||0;
+    document.querySelectorAll('#view details.xgr').forEach(g=>{const L=[...g.querySelectorAll('.xl3')];if(!L.length)return;
+      const V=L.filter(l=>l.style.display!=='none');if(!V.length){g.style.display='none';return}
+      g.dataset.xn=V.length;const am=g.querySelector(':scope>summary .amt');if(am)am.textContent=num(r2(V.reduce((s,l)=>s+amt(l.querySelector('.xa')),0)))});
+    document.querySelectorAll('#view details.grp').forEach(gr=>{const it=[...gr.querySelectorAll(':scope>.ckx,:scope>.list>*')];if(!it.length)return;
+      const V=it.filter(e=>e.style.display!=='none');gr.style.display=V.length?'':'none';
+      const gs=gr.querySelector(':scope>summary .gs');if(gs)gs.textContent=num(r2(V.reduce((s,e)=>s+amt(e.querySelector('.amt')),0)));
+      const bd=gr.querySelector(':scope>summary .badge');if(bd)bd.textContent=V.reduce((s,e)=>s+(e.matches('details.xgr')?(+e.dataset.xn||0):1),0)});
+  }catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
