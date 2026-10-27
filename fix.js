@@ -11283,4 +11283,78 @@ async function xDpDel(bid){const b=S.buys.find(y=>y.id===bid);if(!b)return;const
   const x=XRC2;if(!x)return closeSheet();
   const L=xDpMatches(null);if(L.length){DUPX={old:L[0],go:xRcFinish};dupSheet(L[0])}else xRcSheet()}
 try{render()}catch(e){}
+/* ========== 2.21.174 · مطابقة الكونتكت بالأرقام والعنوان ========== */
+XVER2='2.21.174';XVBUILD2='27/10/2026 - 11:30 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+.xctm{display:inline-block;padding:4px 14px;border-radius:999px;background:#dcfce7;color:#166534;font-weight:800;margin:4px 0 8px}
+.xctd{border-radius:14px;padding:8px 10px;margin:8px 0;border:1px solid rgba(148,163,184,.3)}
+.xctd.n{border-color:rgba(245,158,11,.6);background:rgba(245,158,11,.08)}
+.xctd>b{display:block;margin-bottom:4px}
+.xctd .kv b{direction:ltr;text-align:left}
+`;document.head.appendChild(s)})();
+
+/* Gemini بيقرا العنوان كمان */
+var XGLAST=null;
+xGRead=async function(fid){const r=await FDB.get(fid);if(!r||!r.blob)return null;
+  const c=await fileToCanvas(r.blob),sc=Math.min(1,1100/Math.max(c.width,c.height)),cv=document.createElement('canvas');
+  cv.width=Math.round(c.width*sc);cv.height=Math.round(c.height*sc);cv.getContext('2d').drawImage(c,0,0,cv.width,cv.height);
+  const data=cv.toDataURL('image/jpeg',.8).split(',')[1];
+  const names=[...new Set(S.cats.filter(x=>x&&!x.mrg&&!x.par&&!x.cl&&!x.ppo&&x.kind==='exp'&&x.active!==false).map(x=>x.name))].slice(0,200);
+  const prompt=`ريسيت مشتريات من مصر. رجّع JSON بس:
+{"store":"","match":"","total":0,"date":"","time":"","items":[{"n":"","q":1,"p":0,"v":0}],"phones":[],"address":"","tax_id":""}
+store: اسم المحل الحقيقي المكتوب فوق (مش الكاشير ولا الفرع). match: لو هو نفس واحد من دول اكتبه بالظبط، غير كده فاضي: ${names.join(' | ')}
+total: المبلغ النهائي المدفوع. date: YYYY-MM-DD. time: HH:MM. items: n الاسم، q الكمية، p سعر الوحدة، v الإجمالي.
+phones: كل أرقام التليفون والخط الساخن. address: عنوان المحل زي ما هو مكتوب. tax_id: رقم التسجيل الضريبي.`;
+  const tx=await xGCall([{inline_data:{mime_type:'image/jpeg',data}},{text:prompt}]);
+  const s=tx.indexOf('{'),e=tx.lastIndexOf('}');if(s<0)return null;const j=JSON.parse(tx.slice(s,e+1));XGLAST={at:Date.now(),j};return j};
+
+/* المطابقة */
+var XCTR=null;
+function xNp(p){p=String(p||'').replace(/\D/g,'');if(/^20\d{10}$/.test(p))p=p.slice(1);return p}
+function xCtFind(ph,addr){
+  for(const c of S.contacts||[]){const cp=(c.phones||[]).map(xNp);if(ph.some(p=>cp.includes(p)))return c}
+  if(addr&&xNrm(addr).length>=6)for(const c of S.contacts||[]){if(c.address&&xSim(xNrm(c.address),xNrm(addr))>=.8)return c}
+  return null}
+contactFromReceipt=async function(rc,cat){
+  await new Promise(r=>setTimeout(r,700));
+  const g=XGLAST&&Date.now()-XGLAST.at<600000?XGLAST.j:{};
+  const ph=[...new Set((rc.phones||[]).concat(g.phones||[]).map(xNp).filter(p=>p.length>=5))];
+  const addr=String(rc.address||g.address||'').trim();
+  if(!ph.length&&!addr)return;
+  const c=xCtFind(ph,addr),nm=String(g.store||(rc.names||[])[0]||(cat&&!/^أخرى$/.test(cat.name)?cat.name:'')).trim();
+  XCTR={c,ph,addr,nm,cat};
+  if(!c)return xCtNew();
+  const cp=(c.phones||[]).map(xNp),newP=ph.filter(p=>!cp.includes(p)),aDiff=!!addr&&normAr(addr)!==normAr(c.address||'');
+  if(c.catId==null&&cat&&!/^أخرى$/.test(cat.name)){c.catId=cat.id;save()}
+  const old=`<div class="xctd"><b>📇 المتسجل عندك</b>
+    <div class="kv"><span>الاسم</span><b>${esc(c.name||'')}</b></div>
+    ${(c.phones||[]).map(p=>`<div class="kv"><span>📞</span><b>${esc(p)}</b></div>`).join('')||'<div class="kv"><span>📞</span><b>—</b></div>'}
+    <div class="kv"><span>📍</span><b style="direction:rtl;text-align:right">${esc(c.address||'—')}</b></div></div>`;
+  if(!newP.length&&!aDiff)return sheet(`<h2>📇 المحل ده متسجل عندك قبل كده</h2><div class="xctm">✅ مطابق</div>${old}
+    <button class="btn" onclick="closeSheet()">تمام</button><button class="btn ghost" onclick="closeSheet();ctForm('${c.id}')">✏️ افتح الكونتكت</button>`);
+  sheet(`<h2>📇 المحل ده متسجل عندك قبل كده</h2><p class="muted">بس فيه بيانات على الريسيت مختلفة عن اللي عندك</p>${old}
+  <div class="xctd n"><b>🧾 اللي على الريسيت</b>
+    ${ph.map(p=>`<div class="kv"><span>📞 ${cp.includes(p)?'✅':'🆕'}</span><b>${esc(p)}</b></div>`).join('')}
+    ${addr?`<div class="kv"><span>📍 ${aDiff?'⚠️':'✅'}</span><b style="direction:rtl;text-align:right">${esc(addr)}</b></div>`:''}</div>
+  <button class="btn" onclick="xCtApply('edit')">✏️ عدّل (اللي على الريسيت ياخد مكان القديم)</button>
+  <button class="btn ghost" onclick="xCtApply('add')">➕ أضف الجديد (جنب القديم)</button>
+  <button class="btn ghost" onclick="closeSheet()">لأ، سيبه</button>`)};
+function xCtApply(m){const x=XCTR;if(!x||!x.c)return closeSheet();const c=x.c;
+  if(m==='edit'){if(x.ph.length)c.phones=x.ph.slice();if(x.addr)c.address=x.addr}
+  else{const cp=(c.phones||[]).map(xNp);c.phones=(c.phones||[]).concat(x.ph.filter(p=>!cp.includes(p)));
+    if(x.addr&&normAr(x.addr)!==normAr(c.address||''))c.address=c.address?c.address+' / '+x.addr:x.addr}
+  save();closeSheet();toast('📇 اتحدّث ✓')}
+function xCtNew(){const x=XCTR;if(!x)return;
+  sheet(`<h2>📇 تضيف المحل ده في Contacts؟</h2>
+  <label>الاسم<input id="ctn-n" value="${esc(x.nm)}"></label>
+  ${x.ph.map(p=>`<div class="kv"><span>📞</span><b dir="ltr">${esc(p)}</b></div>`).join('')}
+  ${x.addr?`<div class="kv"><span>📍</span><b>${esc(x.addr)}</b></div>`:''}
+  <button class="btn" onclick="xCtNewSv()">✅ أضفه</button><button class="btn ghost" onclick="closeSheet()">لأ</button>`)}
+function xCtNewSv(){const x=XCTR;if(!x)return;const n=(($('#ctn-n')||{}).value||'').trim();if(!n)return toast('اكتب الاسم');
+  S.contacts.push({id:uid(),name:n,kind:'shop',spec:'',phones:x.ph.slice(),address:x.addr,loc:'',catId:x.cat&&!/^أخرى$/.test(x.cat.name)?x.cat.id:'',at:Date.now()});
+  save();closeSheet();toast('📇 اتضاف ✓')}
+
+/* إضافة على الموجود */
+try{const _dbW=xDpBlock;xDpBlock=function(){return String(_dbW.apply(this,arguments)).replace('➕ حط الأصناف دي عليه','➕ إضافة على الموجود')}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
