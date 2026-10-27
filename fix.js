@@ -11236,4 +11236,51 @@ try{const _faS=xFlApply;xFlApply=function(){
       const bd=gr.querySelector(':scope>summary .badge');if(bd)bd.textContent=V.reduce((s,e)=>s+(e.matches('details.xgr')?(+e.dataset.xn||0):1),0)});
   }catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.172 · قفل الريسيت + النسخ المكررة ========== */
+XVER2='2.21.172';XVBUILD2='27/10/2026 - 11:10 ص';
+
+/* ---------- ✕ بيلغي الريسيت كله ---------- */
+var XRCDEAD=false;
+function xRcIn(){return !!($('#rc-a')||$('#nm-in')||$('#nm-card')||$('#xdpn'))}
+try{const _rfD2=receiptFlow;receiptFlow=function(){XRCDEAD=false;return _rfD2.apply(this,arguments)}}catch(e){}
+try{const _xcR=xClose;xClose=function(){
+  if(XRC2&&!XRCB&&xRcIn()){XRCDEAD=true;XRC2=null;XRCTY='';try{SHST.length=0}catch(e){}closeSheet();return toast('تم الإلغاء')}
+  return _xcR.apply(this,arguments)}}catch(e){}
+xRcBack=function(){const x=XRC2;if(!x)return closeSheet();try{xRcGrab()}catch(e){}
+  askStore(x.rc).then(pick=>{if(XRCDEAD)return;XRC2=x;if(!pick||!pick.name)return xRcSheet();
+    let c=S.cats.find(k=>!k.mrg&&!k.par&&k.kind==='exp'&&normAr(k.name)===normAr(pick.name));
+    if(!c){c=ensureCat(pick.name,'exp');c.active=true}xRcSetCat(c,'')})};
+
+/* ---------- 🔁 كل النسخ المتسجلة بأصنافها ---------- */
+function xDpMatches(old){const x=XRC2,d=(x&&x.date)||(old&&old.date);if(!d)return[];
+  const A=x?parseNum(x.a)||0:0,T=x?r2(A+(x.bill?0:(parseNum(x.tip)||0))):0;
+  const L=S.buys.filter(b=>{if(!b||b.date!==d)return false;const t=S.txs.find(y=>y.id===b.txId);
+    return [+b.total||0,t?+t.amount||0:-1].some(z=>Math.abs(z-A)<.5||Math.abs(z-T)<.5)});
+  if(old&&(old.store!=null||old.total!=null)&&!L.includes(old))L.unshift(old);
+  return L}
+function xDpBlock(b,i,n){const t=S.txs.find(y=>y.id===b.txId),tp=t&&t.tipTx&&S.txs.find(y=>y.id===t.tipTx),its=biOf(b);
+  const acc=t?((C(t.cat)||{}).name||''):'',st=b.store||'';
+  return `<div class="xdpb"><b>📂 المسجل قبل كده${n>1?' · نسخة '+(i+1)+' من '+n:''}</b>
+  ${acc?`<div class="kv"><span>الحساب</span><b>${esc(acc)}</b></div>`:''}
+  ${st&&st!==acc?`<div class="kv"><span>المحل</span><b>${esc(st)}</b></div>`:''}
+  <div class="kv"><span>المبلغ</span><b>${fmt(t?+t.amount||0:+b.total||0)}</b></div>
+  ${tp?`<div class="kv"><span>🎁 إكرامية</span><b>${fmt(tp.amount)}</b></div>`:''}
+  <div class="kv"><span>التاريخ</span><b>${xDW(b.date)}${b.time?' · '+fmtTime(b.time):''}</b></div>
+  ${its.length?`<details class="gen"><summary>🧾 الأصناف (${its.length})</summary>${xDpItems(its)}</details>`:'<p class="xwarn" style="margin:6px 0">⚠️ الريسيت ده اتسجل من غير أصناف</p>'}
+  <div class="xlna">${!its.length&&XRC2&&(XRC2.rc.items||[]).length?`<button type="button" class="btn" onclick="xDpUse('${b.id}')">➕ حط الأصناف دي عليه</button>`:''}<button type="button" class="btn ghost danger" onclick="xDpDel('${b.id}')">🗑 امسحه</button></div></div>`}
+try{const _dpC=dupSheet;dupSheet=function(old){const r=_dpC.apply(this,arguments);try{
+  const n0=$('#xdpn');if(!n0)return r;document.querySelectorAll('#sheet .xdpb:not(#xdpn)').forEach(e=>e.remove());
+  const L=xDpMatches(old);n0.insertAdjacentHTML('afterend',L.map((b,i)=>xDpBlock(b,i,L.length)).join(''));
+}catch(e){}return r}}catch(e){}
+function xDpUse(bid){const b=S.buys.find(y=>y.id===bid),x=XRC2;if(!b||!x)return;
+  b.items=(x.rc.items||[]).filter(i=>!xIsTipIt(i)).map(i=>({...i}));
+  XRC2=null;XRCTY='';save();closeSheet();render();toast('✅ الأصناف اتحطت على الريسيت القديم');setTimeout(()=>buySheet(bid),300)}
+async function xDpDel(bid){const b=S.buys.find(y=>y.id===bid);if(!b)return;const t=S.txs.find(y=>y.id===b.txId);
+  if(t&&isClosed(t.date))return toast('الشهر ده مقفول');
+  if(!await ask('امسح النسخة دي؟',(b.store||'')+' · '+fmt(t?t.amount:b.total)+' · '+dmy(b.date)+'\nهيتمسح المصروف وإكراميته ومصاريفه.',{danger:true,icon:'🗑',ok:'امسح'}))return;
+  if(t){const ids=new Set([t.id]);S.txs.forEach(y=>{if(y.tipOf===t.id||y.feeOf===t.id||y.payFeeOf===t.id)ids.add(y.id)});S.txs=S.txs.filter(y=>!ids.has(y.id))}
+  S.buys=S.buys.filter(y=>y.id!==bid);save();render();toast('🗑 اتمسح');
+  const x=XRC2;if(!x)return closeSheet();
+  const L=xDpMatches(null);if(L.length){DUPX={old:L[0],go:xRcFinish};dupSheet(L[0])}else xRcSheet()}
+try{render()}catch(e){}
 /* نهاية fix.js */
