@@ -11836,4 +11836,23 @@ function xBIncr4(){xLegacy('incr');const P=xPer('incr'),f=P.f.slice(0,7),t=P.t.s
 if(REPS.incr)REPS.incr.b=function(){try{return xBIncr4()}catch(e){
   return{title:'نسب الزيادة',sub:'',body:`<div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b></div>`}}};
 try{render()}catch(e){}
+/* ========== 2.21.187 · بوكس نسبة الزيادة + بوكس قيمة الزيادة ========== */
+XVER2='2.21.187';XVBUILD2='29/10/2026 - 02:10 ص';
+xIncBox=function(amtId,cid,k,txId){
+  if($('#xinc-o'))return;const A=$(amtId);if(!A)return;const l=A.closest('label')||A;
+  const t=txId&&S.txs.find(x=>x.id===txId),st=t&&t.xinc;
+  const o=st&&st.o?st.o:(xOccPrev(cid,k)||'');
+  l.insertAdjacentHTML('afterend',`<div id="xinc" data-cid="${cid}" data-k="${k}" data-tx="${txId||''}">
+  <label>المبلغ القديم<input id="xinc-o" inputmode="decimal" dir="ltr" value="${o?amtStr(o):''}"></label>
+  <div class="two"><label>نسبة الزيادة %<input id="xinc-p" inputmode="decimal" dir="ltr"></label>
+  <label>قيمة الزيادة<input id="xinc-v" inputmode="decimal" dir="ltr"></label></div></div>`);
+  const O=$('#xinc-o'),P=$('#xinc-p'),V=$('#xinc-v');
+  const setA=n=>{A.value=amtStr(r2(n));A.dispatchEvent(new Event('change',{bubbles:true}))};
+  const calc=()=>{const o2=parseNum(O.value)||0,n=parseNum(A.value)||0;
+    P.value=o2>0?xIncPct(o2,n):'';V.value=o2>0?amtStr(r2(n-o2)):''};
+  A.addEventListener('input',calc);O.addEventListener('input',calc);
+  P.addEventListener('input',()=>{const o2=parseNum(O.value)||0,p2=parseNum(P.value);if(o2>0&&!isNaN(p2)){const n=r2(o2*(1+p2/100));setA(n);V.value=amtStr(r2(n-o2))}});
+  V.addEventListener('input',()=>{const o2=parseNum(O.value)||0,v2=parseNum(V.value);if(o2>0&&!isNaN(v2)){setA(o2+v2);P.value=xIncPct(o2,o2+v2)}});
+  calc();if(st&&st.p!=null&&st.p!=='')P.value=st.p};
+try{render()}catch(e){}
 /* نهاية fix.js */
