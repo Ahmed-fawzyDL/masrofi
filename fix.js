@@ -11504,4 +11504,43 @@ try{const _rvAc=xRvItems;xRvItems=function(){return _rvAc.apply(this,arguments).
 try{const _tbAc=txBody;txBody=function(t){let h=_tbAc.apply(this,arguments);try{
   if(t&&t.rdate)h=h.replace('<div class="etbar"',`<div class="kv"><span>📥 الفلوس دخلت فعلًا</span><b>${xDW(t.rdate)}</b></div><div class="kv"><span>📅 محسوبة على شهر</span><b>${mName(t.date.slice(0,7))}</b></div><div class="etbar"`)}catch(e){}return h}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.180 · من غير توحيد البنود + النسخ على Drive لوحده ========== */
+XVER2='2.21.180';XVBUILD2='29/10/2026 - 12:30 ص';
+
+/* ---------- 🧹 شيل توحيد البنود خالص ---------- */
+try{localStorage.setItem('centric-mghint',new Date().toDateString())}catch(e){}
+try{const _toM=toast;toast=function(m){if(/شبه بعض|توحيد البنود/.test(String(m||'')))return;return _toM.apply(this,arguments)}}catch(e){}
+xMgOpen=function(){};xMgTile=function(){};
+try{const _rnMg=render;render=function(){const r=_rnMg.apply(this,arguments);try{
+  document.querySelectorAll('#view [onclick*="xMgOpen"],#view #xmg-tile').forEach(e=>e.remove());
+  document.querySelectorAll('#view .warn,#view .xlnal').forEach(e=>{if(/شبه بعض|توحيد البنود/.test(e.textContent))e.remove()});
+}catch(e){}return r}}catch(e){}
+
+/* ---------- ☁️ Drive: من غير رسايل ---------- */
+try{const _vhDr=vHome;vHome=function(){const h=_vhDr.apply(this,arguments);
+  return typeof h==='string'?h.replace(/<div class="warn xdrw">[\s\S]*?<\/button><\/div>/,''):h}}catch(e){}
+
+/* تجهيز جوجل من أول ما البرنامج يفتح */
+function xDrPrep(){try{if(DEMO||!GD.linked||!GD.cid)return;
+  loadJS('https://accounts.google.com/gsi/client').then(()=>{
+    if(!gTC||gCID!==GD.cid){gCID=GD.cid;gTC=google.accounts.oauth2.initTokenClient({client_id:GD.cid,scope:'https://www.googleapis.com/auth/drive.file',callback:()=>{}})}
+  }).catch(()=>{})}catch(e){}}
+setTimeout(xDrPrep,1500);
+
+/* أول ما تلمس أي حاجة في البرنامج، والنسخة مستحقة، بيرفع لوحده */
+var XDRT=0;
+document.addEventListener('pointerup',()=>{try{
+  if(DEMO||!GD.linked||!GD.cid||!window.google||!gTC)return;
+  if(gTok&&Date.now()<gExp-60000)return;
+  if(Date.now()-XDRT<30*60000)return;
+  if(xBkS().mode==='manual'||!xBkDue())return;
+  if(strHash(JSON.stringify(S))===GD.hash)return;
+  XDRT=Date.now();
+  gTC.callback=r=>{if(!r||r.error)return;gTok=r.access_token;gExp=Date.now()+(+r.expires_in||3600)*1000;
+    driveUpload(false).then(()=>{toast('☁️ اتعملت نسخة على Drive');try{render()}catch(e){}}).catch(()=>{})};
+  gTC.error_callback=()=>{};
+  const o={prompt:''};if(GD.email)o.hint=GD.email;
+  gTC.requestAccessToken(o);
+}catch(e){}},true);
+try{render()}catch(e){}
 /* نهاية fix.js */
