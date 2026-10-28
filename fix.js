@@ -11855,4 +11855,80 @@ xIncBox=function(amtId,cid,k,txId){
   V.addEventListener('input',()=>{const o2=parseNum(O.value)||0,v2=parseNum(V.value);if(o2>0&&!isNaN(v2)){setA(o2+v2);P.value=xIncPct(o2,o2+v2)}});
   calc();if(st&&st.p!=null&&st.p!=='')P.value=st.p};
 try{render()}catch(e){}
+/* ========== 2.21.188 · الحسابات مقفولة بمبلغها الثابت + بوكسات الزيادة في الميعاد الثابت ========== */
+XVER2='2.21.188';XVBUILD2='29/10/2026 - 02:20 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .xacd{border-radius:16px;margin:0 0 10px;background:var(--card);border:1px solid rgba(127,127,127,.25)}
+#view .xacd[open]{border-color:var(--p)}
+#view .xacd>summary{display:flex;align-items:center;gap:8px;padding:11px 12px;list-style:none;cursor:pointer}
+#view .xacd>summary::-webkit-details-marker{display:none}
+#view .xacc0{min-width:26px;height:26px;padding:0 6px;border-radius:13px;background:var(--p);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+#view .xacnm{flex:1;min-width:0;font-weight:800;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#view .xacnm small{display:block;font-weight:500;font-size:11px;opacity:.7}
+#view .xacam{font-weight:800;font-size:15px;white-space:nowrap}
+#view .xacd .xpl2{padding:9px 12px}
+#view .xact{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;font-weight:800;border-top:2px solid var(--p)}
+#view .xacb{display:flex;gap:6px;padding:8px 12px 12px}
+#view .xacb .mini{flex:1;height:34px}
+`;document.head.appendChild(s)})();
+
+/* ---------- 📒 كل بند: عدد العمليات + المبلغ الثابت، وجواه العمليات والتوتال ---------- */
+var XACOP={};
+function xAcFixAmt(c){let s=0,n=0;[c].concat(xAcKids(c.id)).forEach(x=>{if(x.fixed&&x.active!==false&&+x.amount){s+=+x.amount;n++}});return n?r2(s):null}
+function xAcRow(c){const T=xAcTxs(c.id).slice().sort(byDesc),fx=xAcFixAmt(c);let ex=0,ic=0;T.forEach(t=>{if(t.type==='inc')ic+=+t.amount||0;else ex+=+t.amount||0});
+  const net=r2(ic-ex),inc=c.kind==='inc',amt=fx!=null?fx:Math.abs(net);
+  const rows=T.slice(0,60).map(t=>`<div class="xpl2" onclick="xTxOpen('${t.id}')"><span class="xppd">${xPpD(t.date)}</span><span class="xpin"><b>${esc(xTxNm(t))}</b><small>${t.type==='inc'?'💰 تحصيل':'💸 مصروف'}${M(t.method)?' · '+esc(M(t.method).name):''}</small></span><b class="${t.type==='inc'?'pos':'neg'}" dir="ltr">${num(+t.amount||0)}</b></div>`).join('');
+  return `<details class="xacd" ${XACOP[c.id]?'open':''} ontoggle="XACOP['${c.id}']=this.open">
+  <summary><span class="xacc0">${T.length}</span><span class="xacnm">${c.code?'<span class="xsm">#'+esc(c.code)+'</span> ':''}${esc(c.name)}${fx!=null?' 📌':''}${c.active===false?' ⏸':''}<small>${fx!=null?'المبلغ الثابت':'إجمالي العمليات'}</small></span><span class="xacam ${inc?'pos':'neg'}" dir="ltr">${num(amt)}</span></summary>
+  ${rows||'<p class="muted" style="padding:10px 12px;margin:0">مفيش عمليات</p>'}
+  ${T.length>60?`<p class="muted" style="padding:4px 12px;margin:0">ظاهر آخر 60 عملية · الباقي في 📄 العمليات</p>`:''}
+  ${T.length?`<div class="xact"><span>التوتال · ${T.length} عملية</span><span dir="ltr">${ex?'<b class="neg">💸 '+num(r2(ex))+'</b> ':''}${ic?'<b class="pos">💰 '+num(r2(ic))+'</b>':''}</span></div>`:''}
+  <div class="xacb"><button class="mini" onclick="xAcGo('${c.id}')">⚙️ البند</button><button class="mini" onclick="xAcRep('${c.id}')">📄 العمليات</button></div></details>`}
+try{const _rnAc=render;render=function(){const r=_rnAc.apply(this,arguments);try{
+  if(view!=='xacc'||XAPT!=='acc')return r;
+  document.querySelectorAll('#view .xacr:not([data-xr])').forEach(e=>{const g=e.querySelector('[onclick^="xAcGo("]');if(!g)return;
+    const id=(g.getAttribute('onclick').match(/'([^']+)'/)||[])[1],c=C(id);if(!c)return;e.dataset.xr=1;e.style.opacity='';e.innerHTML=xAcRow(c)});
+}catch(e){}return r}}catch(e){}
+
+/* ---------- 📈 بوكسات الزيادة: المبلغ السابق + النسبة + القيمة ---------- */
+function xIncTrio(A,o,pre){if(!A||document.getElementById(pre+'o'))return;const l=A.closest('label')||A;
+  l.insertAdjacentHTML('afterend',`<label>المبلغ السابق<input id="${pre}o" inputmode="decimal" dir="ltr" value="${o?amtStr(o):''}"></label>
+  <div class="two"><label>نسبة الزيادة %<input id="${pre}p" inputmode="decimal" dir="ltr"></label><label>قيمة الزيادة<input id="${pre}v" inputmode="decimal" dir="ltr"></label></div>`);
+  const O=document.getElementById(pre+'o'),P=document.getElementById(pre+'p'),V=document.getElementById(pre+'v');
+  const setA=n=>{A.value=amtStr(r2(n));A.dispatchEvent(new Event('change',{bubbles:true}))};
+  const calc=()=>{const o2=parseNum(O.value)||0,n=parseNum(A.value)||0;P.value=o2>0?xIncPct(o2,n):'';V.value=o2>0?amtStr(r2(n-o2)):''};
+  A.addEventListener('input',calc);O.addEventListener('input',calc);
+  P.addEventListener('input',()=>{const o2=parseNum(O.value)||0,p2=parseNum(P.value);if(o2>0&&!isNaN(p2)){const n=r2(o2*(1+p2/100));setA(n);V.value=amtStr(r2(n-o2))}});
+  V.addEventListener('input',()=>{const o2=parseNum(O.value)||0,v2=parseNum(V.value);if(o2>0&&!isNaN(v2)){setA(o2+v2);P.value=xIncPct(o2,o2+v2)}});
+  calc()}
+function xIncRead(pre){const O=document.getElementById(pre+'o');if(!O)return null;
+  return{o:parseNum(O.value)||0,p:parseNum(document.getElementById(pre+'p').value),v:parseNum(document.getElementById(pre+'v').value)}}
+function xIncPut(k,z,A0){if(!k||!z)return;
+  if(z.o>0){k.prevAmt=z.o;k.incPct=isNaN(z.p)?xIncPct(z.o,+k.amount||0):z.p;k.incVal=isNaN(z.v)?r2((+k.amount||0)-z.o):z.v;if(Math.abs((+k.amount||0)-A0)>.001||!k.amtAt)k.amtAt=today()}
+  else{delete k.prevAmt;delete k.incPct;delete k.incVal}}
+
+/* الميعاد الثابت */
+try{const _sfT=xSubForm;xSubForm=function(par,id){const r=_sfT.apply(this,arguments);try{
+  const k=id&&C(id),pv=$('#sb-pv');if(pv){const row=pv.closest('.two');if(row)row.style.display='none'}
+  xIncTrio($('#sb-a'),k&&+k.prevAmt||'','sbx')}catch(e){}return r}}catch(e){}
+try{const _ssT=xSubSave;xSubSave=function(par,id){const z=xIncRead('sbx'),n0=new Set(S.cats.map(c=>c.id)),k0=id&&C(id),A0=k0?+k0.amount||0:0;
+  const r=_ssT.apply(this,arguments);
+  try{const k=id?C(id):S.cats.find(c=>!n0.has(c.id));if(k&&z){xIncPut(k,z,A0);save();render()}}catch(e){}return r}}catch(e){}
+
+/* البند الثابت */
+try{const _csT=catSheet;catSheet=function(){const r=_csT.apply(this,arguments);try{
+  const c=CF,A=$('#cf-amt');if(!c||!A)return r;document.querySelectorAll('#sheet .xpct').forEach(e=>e.remove());
+  const o=c._xo!=null?c._xo:(c.id&&C(c.id)&&+C(c.id).prevAmt)||'';xIncTrio(A,o,'cfx');
+  const O=$('#cfx-o');if(O)O.addEventListener('input',()=>{CF._xo=parseNum(O.value)||''})}catch(e){}return r}}catch(e){}
+try{const _cvT=catSave;catSave=function(){const z=xIncRead('cfx'),id=CF&&CF.id,k0=id&&C(id),A0=k0?+k0.amount||0:0,n0=new Set(S.cats.map(c=>c.id));
+  const r=_cvT.apply(this,arguments);
+  try{const k=id?C(id):S.cats.find(c=>!n0.has(c.id));if(k&&k.fixed&&z){xIncPut(k,z,A0);save();render()}}catch(e){}return r}}catch(e){}
+
+/* التقرير بيشوف الزيادات اللي اتكتبت في البند كمان */
+try{const _irT=xIncRows;xIncRows=function(){const R=_irT.apply(this,arguments);try{
+  S.cats.forEach(c=>{if(!c||c.mrg||!c.fixed||!(+c.prevAmt>0)||!c.amtAt)return;const m=c.amtAt.slice(0,7);
+    if(R.some(r=>r.c.id===c.id&&r.m===m))return;
+    R.push({c,id:'',cur:+c.amount||0,prev:+c.prevAmt,p:c.incPct!=null&&c.incPct!==''?+c.incPct:xIncPct(+c.prevAmt,+c.amount||0),m})})}catch(e){}return R}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
