@@ -11742,4 +11742,37 @@ if(REPS.incr)REPS.incr.b=function(){
   return r};
 
 try{render()}catch(e){}
+/* ========== 2.21.185 · تصليح تقرير نسب الزيادة ========== */
+XVER2='2.21.185';XVBUILD2='29/10/2026 - 01:40 ص';
+function xBIncr3(){
+  xLegacy('incr');const P=xPer('incr'),f=P.f,t=P.t,ty=RF.xt||'',sel=(RF.xc||[]).filter(Boolean)[0]||'';
+  const sub=(P.k?mName(P.k):P.y?'سنة '+P.y:xRngTxt(f,t))+(sel&&C(sel)?' · '+C(sel).name:'');
+  const ev=xIncrEv().filter(e=>(!ty||e.c.kind===ty)&&(!sel||e.c.id===sel||e.c.par===sel));
+  const IN=ev.filter(e=>e.d>=f&&e.d<=t),CH=IN.filter(e=>!e.first&&Math.abs(e.diff)>=.01);
+  const sm=(L,fn)=>r2(L.reduce((a,e)=>a+fn(e),0));
+  const items={};IN.forEach(e=>{(items[e.c.id]=items[e.c.id]||{c:e.c,L:[]}).L.push(e)});
+  const IT=Object.values(items).map(o=>{const before=ev.filter(e=>e.c.id===o.c.id&&e.d<f).pop(),base=before?before.a:(o.L[0].p||o.L[0].a),last=o.L[o.L.length-1].a;
+    return{c:o.c,base,last,n:o.L.filter(e=>!e.first&&Math.abs(e.diff)>=.01).length,extra:r2(o.L.reduce((a,e)=>a+(e.a-base),0)),pct:base?Math.round((last-base)/base*1000)/10:0}})
+    .filter(x=>x.n||Math.abs(x.last-x.base)>=.01).sort((a,b)=>Math.abs(b.extra)-Math.abs(a.extra));
+  const upE=sm(CH.filter(e=>e.c.kind==='exp'),e=>e.diff),upI=sm(CH.filter(e=>e.c.kind==='inc'),e=>e.diff);
+  const exE=sm(IT.filter(x=>x.c.kind==='exp'),x=>x.extra),exI=sm(IT.filter(x=>x.c.kind==='inc'),x=>x.extra);
+  let b=rkp([].concat(ty!=='inc'?[['💸 زيادة المصروف الشهري',upE,'exp'],['💸 دفعت زيادة في الفترة',exE,'exp']]:[],
+    ty!=='exp'?[['💰 زيادة التحصيل الشهري',upI,'inc'],['💰 حصّلت زيادة في الفترة',exI,'inc']]:[],[['عدد التغييرات',String(CH.length),'net']]));
+  const ms=xMonthsIn(f,t).map(k=>{const L=CH.filter(e=>e.d.startsWith(k+'-'));return[k,sm(L.filter(e=>e.c.kind==='exp'),e=>e.diff),sm(L.filter(e=>e.c.kind==='inc'),e=>e.diff),L.length]}).filter(m=>m[3]);
+  if(ms.length)b+=rsec('📅 الزيادة شهر بشهر')+xRgCls(rtbl(['الشهر','عدد|c','💸 مصروف|n','💰 تحصيل|n'],ms.map(m=>`<tr>${cT(esc(mName(m[0])))}${cC(nm(m[3]))}${cN(m[1]?(m[1]>0?'+':'')+num(m[1]):'—','exp')}${cN(m[2]?(m[2]>0?'+':'')+num(m[2]):'—','inc')}</tr>`)),'xgc');
+  const itTbl=(L,k)=>L.length?xRgCls(rtbl(['البند','كان|n','بقى|n','النسبة|c'],L.map(x=>`<tr>${cT(esc(xIncrNm(x.c)),(x.n?x.n+' مرة':'')+(Math.abs(x.extra)>=.01?' · '+(k==='exp'?'دفعت':'حصّلت')+' زيادة '+num(x.extra):''))}${cN(num(x.base))}${cN(num(x.last),k)}${cC(xIncrPct(x.pct))}</tr>`)),'xgc'):'';
+  const det=L=>L.length?xRgCls(rtbl(['التاريخ|c','البند','الزيادة|n'],L.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(e=>`<tr ${e.t&&e.t.id?`class="clk" onclick="editTx('${e.t.id}')"`:''}>${cD(e.d)}${cT(esc(xIncrNm(e.c)),num(e.p)+' ← '+num(e.a)+' · '+xIncrPct(e.pct))}${cN((e.diff>0?'+':'')+num(e.diff),e.c.kind)}</tr>`)),'xgt'):'';
+  const sec=(k,ti)=>{const L=IT.filter(x=>x.c.kind===k),D=CH.filter(e=>e.c.kind===k);if(!L.length&&!D.length)return '';
+    const h=rsec(ti)+itTbl(L,k)+(D.length?rsec('📋 كل التغييرات',String(D.length))+det(D):'');return k==='exp'?xBE(h):xBI(h)};
+  if(ty!=='inc')b+=sec('exp','💸 المصروف الثابت');
+  if(ty!=='exp')b+=sec('inc','💰 التحصيل الثابت');
+  let mon='';try{mon=xIncrMon(f,t,ty,sel)}catch(e){}
+  b+=mon;
+  if(!CH.length&&!IT.length&&!mon)b+='<div class="xbwm" style="margin:16px 0">مفيش بند اتغير مبلغه في الفترة دي.<br>جرّب تختار الفترة: <b>كل الفترات</b>.</div>';
+  return{title:'نسب الزيادة',sub,body:b,csv:{head:['التاريخ','النوع','البند','القديم','الجديد','الزيادة','النسبة %'],
+    rows:CH.map(e=>[dmy(e.d),e.c.kind==='inc'?'تحصيل':'مصروف',xIncrNm(e.c),e.p,e.a,e.diff,e.pct])}};
+}
+if(REPS.incr)REPS.incr.b=function(){try{return xBIncr3()}catch(e){
+  return{title:'نسب الزيادة',sub:'',body:`<div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b><br>صوّر الشاشة دي وابعتها</div>`}}};
+try{render()}catch(e){}
 /* نهاية fix.js */
