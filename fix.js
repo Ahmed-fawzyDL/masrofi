@@ -11982,4 +11982,13 @@ body #view.xaccv .xact{border-top:1px solid rgba(147,197,253,.3)!important;color
 body #view.xaccv .xacb .mini{background:rgba(255,255,255,.05)!important;border-color:rgba(147,197,253,.25)!important;color:inherit!important}
 `;document.head.appendChild(s)})();
 try{render()}catch(e){}
+/* ========== 2.21.191 · البند بيتقفل لما تروح لحاجة تانية ========== */
+XVER2='2.21.191';XVBUILD2='29/10/2026 - 02:50 ص';
+/* بند واحد مفتوح بس */
+document.addEventListener('toggle',e=>{try{const d=e.target;if(!d||!d.classList||!d.classList.contains('xacd')||!d.open)return;
+  document.querySelectorAll('#view .xacd[open]').forEach(o=>{if(o!==d){o.open=false}});
+  Object.keys(XACOP).forEach(k=>{if(!d.getAttribute('ontoggle').includes("'"+k+"'"))delete XACOP[k]})}catch(err){}},true);
+/* لما تخرج من الحسابات كله يتقفل */
+try{const _goAc=go;go=function(v){if(view==='xacc'&&v!=='xacc')XACOP={};return _goAc.apply(this,arguments)}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
