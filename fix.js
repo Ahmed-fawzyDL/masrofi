@@ -12007,4 +12007,18 @@ xIncTrio=function(A,o,pre){if(!A||document.getElementById(pre+'o'))return;const 
   V.addEventListener('input',()=>{const o2=parseNum(O.value)||0,v2=parseNum(V.value);if(!(o2>0)||isNaN(v2))return;oMan=true;setA(o2+v2);P.value=xIncPct(o2,o2+v2)});
   calc()};
 try{render()}catch(e){}
+/* ========== 2.21.193 · تصليح شكل بوكسات الزيادة ========== */
+XVER2='2.21.193';XVBUILD2='29/10/2026 - 03:10 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet #xinc{display:block!important;width:100%!important;box-sizing:border-box;margin:6px 0 10px;padding:8px 10px;border-radius:16px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(147,197,253,.22)}
+#sheet #xinc label{margin:4px 0!important}
+#sheet #xinc input{width:100%!important;box-sizing:border-box}
+#sheet .sz{overflow-x:hidden}
+`;document.head.appendChild(s)})();
+function xIncFix(){const b=$('#xinc'),sz=$('#sheet .sz');if(!b||!sz)return;
+  const top=xTopOf(sz,b);if(top&&top!==b)top.after(b)}
+try{const _tfFx=txForm;txForm=function(){const r=_tfFx.apply(this,arguments);try{xIncFix();setTimeout(xIncFix,50)}catch(e){}return r}}catch(e){}
+try{const _osFx=occSheet;occSheet=function(){const r=_osFx.apply(this,arguments);try{xIncFix();setTimeout(xIncFix,50)}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
