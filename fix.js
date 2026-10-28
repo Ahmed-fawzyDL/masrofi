@@ -11437,4 +11437,71 @@ try{if(!S.settings.xrcimg1){let n=0;
   S.txs.forEach(t=>{if(!t||!Array.isArray(t.files)||t.files.filter(xIsRcImg).length<2)return;const b=S.buys.find(y=>y.txId===t.id);if(xRcImgFix(t,b&&b.fid))n++});
   S.settings.xrcimg1=1;save();if(n){try{gcFiles()}catch(e){}setTimeout(()=>toast('🧹 اتشال صور ريسيت مكررة من '+n+' عملية'),1500)}}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.179 · الشهر اللي الفلوس تتحسب فيه + اسم العملية كبير ========== */
+XVER2='2.21.179';XVBUILD2='29/10/2026 - 12:15 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet .xntp{display:block!important}
+#sheet label.xnml{display:block!important;width:100%!important;grid-column:1/-1}
+#sheet label.xnml input{width:100%!important;font-size:16px!important;font-weight:700;min-height:50px!important;padding:10px 12px!important}
+#sheet #xacmh{display:block;margin:-4px 2px 8px;font-weight:700;color:#2dd4bf}
+`;document.head.appendChild(s)})();
+
+/* ---------- 📝 اسم العملية بعرض الشاشة ---------- */
+function xNmBig(){document.querySelectorAll('#sheet label').forEach(l=>{
+  const tn=[...l.childNodes].find(n=>n.nodeType===3&&n.nodeValue.trim());
+  if(!tn||!/اسم العملية/.test(tn.nodeValue)||!l.querySelector('input'))return;
+  l.classList.add('xnml');const p=l.parentElement;
+  if(p&&p.classList.contains('two')&&!p.classList.contains('xntp'))p.after(l)})}
+try{const _shNb=sheet;sheet=function(){const r=_shNb.apply(this,arguments);setTimeout(()=>{try{xNmBig()}catch(e){}},0);return r}}catch(e){}
+
+/* ---------- 📅 تدخل في حساب شهر ---------- */
+var XACMP=null;
+function xAcmAdd(id,def,due,eid){const di=document.getElementById(id);if(!di||$('#xacm'))return;const l=di.closest('label');if(!l)return;
+  const row=l.parentElement&&l.parentElement.classList.contains('two')?l.parentElement:l;
+  row.insertAdjacentHTML('afterend',`<label>📅 تدخل في حساب شهر<input type="month" id="xacm" data-for="${id}" data-due="${due||''}" data-eid="${eid||''}" value="${def}"></label><small class="muted xhint" id="xacmh"></small>`);
+  const a=$('#xacm'),up=()=>{if(F&&id==='f-d')F._acmv=a.value;const h=$('#xacmh');if(!h)return;const rm=(di.value||'').slice(0,7);
+    h.textContent=a.value&&rm&&a.value!==rm?'💰 هتتحسب في '+mName(a.value)+' بدل '+mName(rm):''};
+  a.addEventListener('change',up);a.addEventListener('input',up);di.addEventListener('change',up);up()}
+
+/* لما تدوس سجّل: التاريخ بيبقى في الشهر اللي اخترته، والتاريخ الحقيقي بيتحفظ */
+document.addEventListener('click',e=>{try{
+  const b=e.target.closest&&e.target.closest('#sheet .btn');if(!b||b.classList.contains('ghost')||/scanReceipt/.test(b.getAttribute('onclick')||''))return;
+  const a=$('#xacm');if(!a||!a.value)return;const di=document.getElementById(a.dataset.for);if(!di||!di.value)return;
+  const real=di.value,ac=a.value,rm=real.slice(0,7);let sh=real;
+  if(ac!==rm)sh=ac<rm?mRange(ac)[1]:(a.dataset.due&&a.dataset.due.startsWith(ac)?a.dataset.due:ac+'-01');
+  if(sh!==real&&isClosed(sh)){e.preventDefault();e.stopImmediatePropagation();return toast('شهر '+mName(ac)+' مقفول')}
+  XACMP={real,sh,ac,before:new Set(S.txs.map(t=>t.id)),eid:a.dataset.eid||(a.dataset.for==='f-d'&&F&&F.id)||'',at:Date.now()};
+  if(sh!==real){di.value=sh;setTimeout(()=>{if(di.isConnected)di.value=real},60)}
+}catch(err){}},true);
+try{const _svAc=save;save=function(){try{const p=XACMP;if(p&&Date.now()-p.at<120000){let hit=false;
+  S.txs.forEach(t=>{if(!t||t.type==='tr'||t.feeOf||t.payFeeOf||t.tipOf||t.pend)return;
+    const isN=!p.before.has(t.id),isE=p.eid&&t.id===p.eid;if(!isN&&!isE)return;
+    if(p.sh!==p.real){if(t.date===p.sh){t.rdate=p.real;t.acm=p.ac;hit=true}}
+    else if(isE&&t.date===p.real&&t.rdate){delete t.rdate;delete t.acm;hit=true}});
+  if(hit)XACMP=null}}catch(e){}return _svAc.apply(this,arguments)}}catch(e){}
+try{const _csAc=closeSheet;closeSheet=function(){setTimeout(()=>{if(!$('#sheet').classList.contains('open'))XACMP=null},2000);return _csAc.apply(this,arguments)}}catch(e){}
+
+/* الشاشات اللي فيها تحصيل */
+try{const _tfAc=txForm;txForm=function(){
+  try{if(F&&F.id&&!F._rdx){F._rdx=1;const o=S.txs.find(t=>t.id===F.id);if(o&&o.rdate){F.date=o.rdate;F._acmv=F._acmv||o.acm||o.date.slice(0,7);F._acmd=o.date}}}catch(e){}
+  const r=_tfAc.apply(this,arguments);
+  try{if(F&&F.type==='inc')xAcmAdd('f-d',F._acmv||(F.date||today()).slice(0,7),F._acmd||'',F.id||'')}catch(e){}return r}}catch(e){}
+try{const _lpAc=xLnPay;xLnPay=function(id){const r=_lpAc.apply(this,arguments);try{const l=xLnL(id),nx=l&&xLnNext(l);
+  xAcmAdd('lp-d',nx?nx.d.slice(0,7):today().slice(0,7),nx?nx.d:'','')}catch(e){}return r}}catch(e){}
+try{const _osAc=occSheet;occSheet=function(id,k){const r=_osAc.apply(this,arguments);try{const rr=C(id);
+  if(rr&&rr.kind==='inc'){const d=occDate(rr,k);xAcmAdd('k-d',d.slice(0,7),d,'')}}catch(e){}return r}}catch(e){}
+try{const _csAx=xColSheet;xColSheet=function(id){const r=_csAx.apply(this,arguments);try{const t=S.txs.find(x=>x.id===id);
+  if(t&&t.type==='inc')xAcmAdd('xc-d',t.date.slice(0,7),t.date,id)}catch(e){}return r}}catch(e){}
+try{const _ppAc=xPartial;xPartial=function(id){const r=_ppAc.apply(this,arguments);try{const t=S.txs.find(x=>x.id===id);
+  if(t&&t.type==='inc')xAcmAdd('pp-d',t.date.slice(0,7),t.date,'')}catch(e){}return r}}catch(e){}
+try{const _cpAc=xClPay;xClPay=function(){const r=_cpAc.apply(this,arguments);try{xAcmAdd('cp-d',today().slice(0,7),'','')}catch(e){}return r}}catch(e){}
+
+/* البنك والكاش: الفلوس بتظهر يوم ما دخلت فعلًا */
+function xRD(L){return (L||S.txs).map(t=>t&&t.rdate?Object.assign({},t,{date:t.rdate}):t)}
+try{const _baAc=xBalAt;xBalAt=function(id,d,L,Cs){return _baAc.call(this,id,d,xRD(L),Cs)}}catch(e){}
+try{const _lgAc=xLedger;xLedger=function(id,f,t,L,Cs){return _lgAc.call(this,id,f,t,xRD(L),Cs)}}catch(e){}
+try{const _rvAc=xRvItems;xRvItems=function(){return _rvAc.apply(this,arguments).filter(x=>!(x.t&&x.t.rdate&&/بعد النهارده/.test(x.why)))}}catch(e){}
+try{const _tbAc=txBody;txBody=function(t){let h=_tbAc.apply(this,arguments);try{
+  if(t&&t.rdate)h=h.replace('<div class="etbar"',`<div class="kv"><span>📥 الفلوس دخلت فعلًا</span><b>${xDW(t.rdate)}</b></div><div class="kv"><span>📅 محسوبة على شهر</span><b>${mName(t.date.slice(0,7))}</b></div><div class="etbar"`)}catch(e){}return h}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
