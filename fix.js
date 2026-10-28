@@ -11543,4 +11543,65 @@ document.addEventListener('pointerup',()=>{try{
   gTC.requestAccessToken(o);
 }catch(e){}},true);
 try{render()}catch(e){}
+/* ========== 2.21.181 · الإكرامية في الريسيت + نسبة الزيادة في الثابت ========== */
+XVER2='2.21.181';XVBUILD2='29/10/2026 - 01:00 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet .xtipT,#sheet .xpct{display:block!important;margin-top:5px;font-weight:800;font-size:12.5px}
+#sheet .xtipT{color:#f472b6}
+#sheet .xpct.up{color:#16a34a}#sheet .xpct.dn{color:#ea580c}#sheet .xpct.eq{opacity:.7}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🎁 الإجمالي تحت الإكرامية في كل الشاشات ---------- */
+var XTIPS={'f-tip':'f-amt','f-tipx':'f-amt','rc-t':'rc-a'};
+function xTipHint(){Object.keys(XTIPS).forEach(t=>{const ti=document.getElementById(t),ai=document.getElementById(XTIPS[t]);if(!ti||!ai)return;
+  const l=ti.closest('label')||ti.parentElement;let h=l.querySelector('.xtipT');
+  if(!h){h=document.createElement('small');h.className='xtipT';l.appendChild(h)}
+  const b=parseNum(ai.value)||0,v=parseNum(ti.value)||0;
+  h.textContent=v>0?'💰 الإجمالي: '+num(b)+' + '+num(v)+' إكرامية = '+num(r2(b+v)):''});
+  ['f-tipt','f-tipxt'].forEach(i=>{const e=document.getElementById(i);if(e)e.style.display='none'})}
+document.addEventListener('input',e=>{const i=e.target&&e.target.id;if(i&&(XTIPS[i]||Object.values(XTIPS).includes(i)))xTipHint()},true);
+try{const _shTh=sheet;sheet=function(){const r=_shTh.apply(this,arguments);setTimeout(()=>{try{xTipHint()}catch(e){}},80);return r}}catch(e){}
+
+/* ---------- 🧾 شاشة الريسيت: خانة الإكرامية دايمًا ---------- */
+try{const _rsTp=xRcSheet;xRcSheet=function(){const r=_rsTp.apply(this,arguments);try{
+  const x=XRC2;if(!x||$('#rc-t'))return r;const a=$('#rc-a'),at=$('#rc-acc')||(a&&a.closest('label'));if(!at)return r;
+  at.insertAdjacentHTML('afterend',`<label>🎁 إكرامية زيادة على المبلغ<input id="rc-t" inputmode="decimal" dir="ltr" placeholder="0" value="${esc(x.tip||'')}"></label>`);
+  setTimeout(xTipHint,0)}catch(e){}return r}}catch(e){}
+/* الفاتورة كمان تقبل إكرامية */
+try{const _rfTb=xRcFinish;xRcFinish=async function(){const x=XRC2;let wasB=false;
+  try{if(x){xRcGrab();if(x.bill&&(parseNum(x.tip)||0)>0){wasB=true;x.bill=false}}}catch(e){}
+  const t0=Date.now()-1,cid=x&&x.cat&&x.cat.id;const r=await _rfTb.apply(this,arguments);
+  try{if(wasB){const t=S.txs.filter(y=>y.cat===cid&&(y.created||0)>=t0&&!y.feeOf&&!y.tipOf).pop();if(t){t.bill=true;const c=C(cid);if(c)c.xbill=1;save();render()}}}catch(e){}
+  return r}}catch(e){}
+
+/* ---------- 🛒 صفحة الريسيت: الإكرامية والإجمالي ---------- */
+async function xBuyTip(bid){const b=S.buys.find(y=>y.id===bid),t=b&&S.txs.find(y=>y.id===b.txId);if(!t)return toast('مش لاقي العملية');
+  if(isClosed(t.date))return toast('الشهر ده مقفول');let tp=t.tipTx&&S.txs.find(y=>y.id===t.tipTx);
+  const v=await askIn('🎁 الإكرامية','اكتب 0 عشان تشيلها',tp?amtStr(tp.amount):'',true,'حفظ');if(v==null)return;const a=parseNum(v)||0;
+  if(a>0){if(tp)tp.amount=a;else{const c=xTipCat();tp={id:uid(),type:'exp',amount:a,cat:c.id,method:t.method,via:t.via||'',date:t.date,note:'🎁 إكرامية · '+((C(t.cat)||{}).name||''),files:[],created:Date.now(),tipOf:t.id,nofee:1};S.txs.push(tp);t.tipTx=tp.id}}
+  else if(tp){S.txs=S.txs.filter(y=>y!==tp);delete t.tipTx}
+  save();render();buySheet(bid);toast('✅ اتحفظ')}
+try{const _bsTp=buySheet;buySheet=function(id){const r=_bsTp.apply(this,arguments);try{
+  const b=S.buys.find(y=>y.id===id),t=b&&S.txs.find(y=>y.id===b.txId),sz=$('#sheet .sz');if(!t||!sz||$('#xbtip'))return r;
+  const k=[...sz.querySelectorAll('.kv')].find(e=>/المبلغ/.test((e.querySelector('span')||{}).textContent||''));if(!k)return r;
+  const tp=t.tipTx&&S.txs.find(y=>y.id===t.tipTx);
+  k.insertAdjacentHTML('afterend',tp
+    ?`<div class="kv" id="xbtip"><span>🎁 الإكرامية</span><b>${fmt(tp.amount)} <button type="button" class="mini" onclick="xBuyTip('${id}')">✏️</button></b></div><div class="kv"><span>💰 الإجمالي</span><b>${fmt(r2(t.amount+tp.amount))}</b></div>`
+    :`<div class="kv" id="xbtip"><span>🎁 الإكرامية</span><b><button type="button" class="mini" onclick="xBuyTip('${id}')">➕ إضافة إكرامية</button></b></div>`);
+}catch(e){}return r}}catch(e){}
+
+/* ---------- 📈 الثابت: المبلغ القديم ونسبة الزيادة تحت المبلغ ---------- */
+function xOccPrev(cid,k){const L=S.txs.filter(t=>t&&!t.pend&&t.src&&t.src.k==='r'&&t.src.id===cid&&t.src.p<k).sort((a,b)=>b.src.p-a.src.p);
+  if(L[0])return +L[0].amount||0;const c=C(cid);if(c&&+c.prevAmt)return +c.prevAmt;if(c&&k>0){try{return +occAmt(c,k-1)||0}catch(e){}}return 0}
+function xPctAttach(inp,prev){if(!inp||!(prev>0))return;const l=inp.closest('label')||inp.parentElement;
+  const up=()=>{let h=l.querySelector('.xpct');if(!h){h=document.createElement('small');h.className='xpct';l.appendChild(h)}
+    const v=parseNum(inp.value)||0;if(!(v>0)){h.textContent='';return}const d=r2(v-prev),p=Math.round(d/prev*1000)/10;
+    h.className='xpct '+(Math.abs(d)<.01?'eq':d>0?'up':'dn');
+    h.textContent=Math.abs(d)<.01?'= نفس المبلغ القديم ('+num(prev)+')':'القديم: '+num(prev)+' · '+(d>0?'▲ زيادة ':'▼ نقص ')+num(Math.abs(d))+' ('+(d>0?'+':'-')+Math.abs(p)+'%)'};
+  inp.addEventListener('input',up);up()}
+try{const _osPc=occSheet;occSheet=function(id,k){const r=_osPc.apply(this,arguments);try{xPctAttach($('#k-amt'),xOccPrev(id,k))}catch(e){}return r}}catch(e){}
+try{const _tfPc=txForm;txForm=function(){const r=_tfPc.apply(this,arguments);try{
+  const o=F&&F.id&&S.txs.find(t=>t.id===F.id);if(o&&o.src&&o.src.k==='r')xPctAttach($('#f-amt'),xOccPrev(o.src.id,o.src.p))}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
