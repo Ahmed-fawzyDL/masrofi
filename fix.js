@@ -11991,4 +11991,20 @@ document.addEventListener('toggle',e=>{try{const d=e.target;if(!d||!d.classList|
 /* لما تخرج من الحسابات كله يتقفل */
 try{const _goAc=go;go=function(v){if(view==='xacc'&&v!=='xacc')XACOP={};return _goAc.apply(this,arguments)}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.192 · المبلغ السابق بيتكتب لوحده ========== */
+XVER2='2.21.192';XVBUILD2='29/10/2026 - 03:00 ص';
+xIncTrio=function(A,o,pre){if(!A||document.getElementById(pre+'o'))return;const l=A.closest('label')||A;
+  l.insertAdjacentHTML('afterend',`<label>المبلغ السابق<input id="${pre}o" inputmode="decimal" dir="ltr" value="${o?amtStr(o):''}"></label>
+  <div class="two"><label>نسبة الزيادة %<input id="${pre}p" inputmode="decimal" dir="ltr"></label><label>قيمة الزيادة<input id="${pre}v" inputmode="decimal" dir="ltr"></label></div>`);
+  const O=document.getElementById(pre+'o'),P=document.getElementById(pre+'p'),V=document.getElementById(pre+'v');
+  const A0=parseNum(A.value)||0,O0=O.value;let oMan=false;
+  const setA=n=>{A.value=amtStr(r2(n));A.dispatchEvent(new Event('change',{bubbles:true}))};
+  const calc=()=>{const o2=parseNum(O.value)||0,n=parseNum(A.value)||0;P.value=o2>0?xIncPct(o2,n):'';V.value=o2>0?amtStr(r2(n-o2)):''};
+  /* لما المبلغ يتغير: المبلغ اللي كان متسجل بيتحط في السابق لوحده */
+  A.addEventListener('input',()=>{if(!oMan){const n=parseNum(A.value)||0;O.value=A0>0&&Math.abs(n-A0)>=.01?amtStr(A0):O0}calc()});
+  O.addEventListener('input',()=>{oMan=true;calc()});
+  P.addEventListener('input',()=>{const o2=parseNum(O.value)||0,p2=parseNum(P.value);if(!(o2>0)||isNaN(p2))return;oMan=true;const n=r2(o2*(1+p2/100));setA(n);V.value=amtStr(r2(n-o2))});
+  V.addEventListener('input',()=>{const o2=parseNum(O.value)||0,v2=parseNum(V.value);if(!(o2>0)||isNaN(v2))return;oMan=true;setA(o2+v2);P.value=xIncPct(o2,o2+v2)});
+  calc()};
+try{render()}catch(e){}
 /* نهاية fix.js */
