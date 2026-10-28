@@ -11931,4 +11931,36 @@ try{const _irT=xIncRows;xIncRows=function(){const R=_irT.apply(this,arguments);t
     R.push({c,id:'',cur:+c.amount||0,prev:+c.prevAmt,p:c.incPct!=null&&c.incPct!==''?+c.incPct:xIncPct(+c.prevAmt,+c.amount||0),m})})}catch(e){}return R}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.189 · رقم البند بعد التعديل + كروت زرقا ========== */
+XVER2='2.21.189';XVBUILD2='29/10/2026 - 02:30 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view.xaccv{background:
+  radial-gradient(circle at 12% 10%,rgba(59,130,246,.30),transparent 45%),
+  radial-gradient(circle at 88% 45%,rgba(14,165,233,.22),transparent 45%),
+  radial-gradient(circle at 20% 85%,rgba(99,102,241,.22),transparent 45%);border-radius:18px}
+body #view.xaccv .xacd{
+  background:linear-gradient(150deg,rgba(59,130,246,.28),rgba(30,64,175,.16))!important;
+  border:1px solid rgba(96,165,250,.45)!important;border-radius:18px!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.14)!important;
+  backdrop-filter:blur(14px) saturate(140%)!important;-webkit-backdrop-filter:blur(14px) saturate(140%)!important}
+body #view.xaccv .xacd[open]{border-color:#60a5fa!important;box-shadow:0 0 0 2px rgba(96,165,250,.35),0 10px 26px rgba(0,0,0,.30)!important}
+body #view.xaccv .xacc0{background:#2563eb!important;box-shadow:0 2px 8px rgba(37,99,235,.5)}
+body #view.xaccv .xacnm{color:#fff}
+body #view.xaccv .xacnm small{color:#bfdbfe;opacity:1}
+body #view.xaccv .xacam{color:#93c5fd!important}
+body #view.xaccv .xacd .xpl2{border-top:1px solid rgba(96,165,250,.18)}
+body #view.xaccv .xact{border-top-color:#60a5fa!important;color:#dbeafe}
+body #view.xaccv .xacb .mini{background:rgba(37,99,235,.25)!important;border-color:rgba(96,165,250,.45)!important;color:#fff!important}
+`;document.head.appendChild(s)})();
+
+/* المبلغ الثابت = آخر مبلغ اتسجل فعلًا، ولو مفيش يبقى اللي في الإعدادات */
+function xFxLast(x){let best=null;
+  S.txs.forEach(t=>{if(!t||t.pend||t.xpre||t.xvar||t.type==='tr'||t.feeOf||t.tipOf||t.payFeeOf)return;
+    if(!((t.src&&t.src.k==='r'&&t.src.id===x.id)||t.cat===x.id))return;
+    if(!best||t.date>best.date||(t.date===best.date&&(t.created||0)>(best.created||0)))best=t});
+  return best?+best.amount||0:+x.amount||0}
+xAcFixAmt=function(c){let s=0,n=0;[c].concat(xAcKids(c.id)).forEach(x=>{if(x.fixed&&x.active!==false){const a=xFxLast(x);if(a){s+=a;n++}}});return n?r2(s):null};
+
+try{const _rnBl=render;render=function(){const r=_rnBl.apply(this,arguments);try{const v=$('#view');if(v)v.classList.toggle('xaccv',view==='xacc'&&XAPT==='acc')}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
