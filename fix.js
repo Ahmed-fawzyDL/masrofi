@@ -12021,4 +12021,45 @@ function xIncFix(){const b=$('#xinc'),sz=$('#sheet .sz');if(!b||!sz)return;
 try{const _tfFx=txForm;txForm=function(){const r=_tfFx.apply(this,arguments);try{xIncFix();setTimeout(xIncFix,50)}catch(e){}return r}}catch(e){}
 try{const _osFx=occSheet;occSheet=function(){const r=_osFx.apply(this,arguments);try{xIncFix();setTimeout(xIncFix,50)}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.194 · الشاشات على قد الموبايل من غير سكرول ========== */
+XVER2='2.21.194';XVBUILD2='29/10/2026 - 03:20 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet .sz label{margin:4px 0!important}
+#sheet .sz .two{gap:6px!important}
+#sheet .sz h2{margin:0 0 6px!important}
+#sheet .sz .btn{margin-top:5px!important}
+#sheet .sz .fxin{padding:6px 10px!important}
+#sheet .sz .fxbox{margin:4px 0!important}
+`;document.head.appendChild(s)})();
+
+function xTyping(){const a=document.activeElement;return !!(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&!/^(checkbox|radio|button)$/.test(a.type))}
+function xBaseZ(el){el.style.removeProperty('zoom');return parseFloat(getComputedStyle(el).zoom)||1}
+
+/* شاشات التسجيل والتعديل */
+var XSFT=0,XSFON=false;
+function xSheetFit(){clearTimeout(XSFT);XSFT=setTimeout(()=>{try{
+  if(XSFON||xTyping())return;const sh=$('#sheet');if(!sh||!sh.classList.contains('open'))return;
+  const sz=sh.querySelector('.sz'),box=sz&&(sz.closest('.body')||sz.parentElement);if(!sz||!box)return;
+  XSFON=true;const z0=xBaseZ(sz);let z=1;
+  const over=()=>box.scrollHeight-box.clientHeight>2;
+  while(over()&&z>.72){z=Math.round((z-.03)*100)/100;sz.style.setProperty('zoom',String(z0*z),'important')}
+  XSFON=false}catch(e){XSFON=false}},80)}
+try{const _shFt=sheet;sheet=function(){const r=_shFt.apply(this,arguments);xSheetFit();setTimeout(xSheetFit,350);return r}}catch(e){}
+(()=>{const sh=$('#sheet');if(!sh)return;new MutationObserver(()=>{if(!XSFON)xSheetFit()}).observe(sh,{childList:true,subtree:true})})();
+document.addEventListener('focusout',()=>setTimeout(xSheetFit,250));
+document.addEventListener('toggle',()=>setTimeout(xSheetFit,30),true);
+
+/* الشاشات العادية: بتصغر بس لو اللي زيادة قليل */
+var XVFT=0;
+function xViewFit(){clearTimeout(XVFT);XVFT=setTimeout(()=>{try{
+  if(view==='home'||xTyping())return;const v=$('#view');if(!v)return;
+  v.style.removeProperty('zoom');const H=()=>document.documentElement.scrollHeight-innerHeight;
+  const ex=H();if(ex<=2||ex>innerHeight*.2)return;
+  let z=1;while(H()>2&&z>.82){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}
+  if(H()>2)v.style.removeProperty('zoom')}catch(e){}},120)}
+try{const _rnVf=render;render=function(){const r=_rnVf.apply(this,arguments);xViewFit();return r}}catch(e){}
+document.addEventListener('toggle',e=>{if(e.target&&e.target.closest&&e.target.closest('#view'))xViewFit()},true);
+addEventListener('resize',()=>{xSheetFit();xViewFit()});
+
+try{render()}catch(e){}
 /* نهاية fix.js */
