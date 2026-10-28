@@ -11709,4 +11709,37 @@ if(REPS.incr)REPS.incr.b=function(){
   return r};
 
 try{render()}catch(e){}
+/* ========== 2.21.184 · نسب الزيادة: المواعيد المسجلة سابقًا + الشهور الجاية ========== */
+XVER2='2.21.184';XVBUILD2='29/10/2026 - 01:30 ص';
+
+xIncrEv=function(){const ev=[],lim=addMonths(today(),14);
+  S.cats.forEach(c=>{if(!c||c.mrg||!c.fixed||!c.start)return;
+    const pts=[],used=new Set();
+    /* كل مواعيد البند: اللي اتدفع واللي متعلّم مسجّل سابقًا */
+    for(let k=0;k<600;k++){let d;try{d=occDate(c,k)}catch(e){break}if(!d||d>lim)break;
+      let s;try{s=stOf(occRec(c,k))}catch(e){continue}
+      if(s.st==='done'&&s.t&&!s.t.pend){used.add(s.t.id);pts.push({d:s.t.date,a:+s.t.amount||0,t:s.t})}
+      else if(s.st==='old'){let a=0;try{a=+occAmt(c,k)||0}catch(e){}if(a>0)pts.push({d,a,t:null,old:1})}}
+    /* العمليات اللي اتسجلت على البند يدوي */
+    S.txs.forEach(t=>{if(!t||used.has(t.id)||t.pend||t.xpre||t.type==='tr'||t.feeOf||t.payFeeOf||t.tipOf||t.xvar)return;
+      if(t.cat!==c.id&&!(t.src&&t.src.k==='r'&&t.src.id===c.id))return;used.add(t.id);pts.push({d:t.date,a:+t.amount||0,t})});
+    /* كل شهر مرة واحدة */
+    const M2={};pts.forEach(p=>{const k=p.d.slice(0,7),o=M2[k]=M2[k]||{a:0,d:p.d,t:null,old:1};o.a+=p.a;if(p.t){o.t=p.t;o.old=0}if(p.d>o.d)o.d=p.d});
+    const ks=Object.keys(M2).sort();let prev=0;
+    if(ks.length&&+c.prevAmt&&Math.abs(+c.prevAmt-M2[ks[0]].a)>=.01)prev=+c.prevAmt;
+    ks.forEach(k=>{const o=M2[k],a=r2(o.a),p=prev;
+      ev.push({c,t:o.t||{id:'',date:o.d},d:o.d,a,p,first:!p,diff:p?r2(a-p):0,pct:p?Math.round((a-p)/p*1000)/10:0,old:o.old});prev=a})});
+  return ev};
+
+/* التقرير مش بيوقف عند النهارده */
+if(REPS.incr)REPS.incr.b=function(){
+  xLegacy('incr');const P=xPer('incr'),f=P.f,t=P.t,ty=RF.xt||'',sel=(RF.xc||[]).filter(Boolean)[0]||'';
+  const td0=today;let r;today=()=>'9999-12-31';try{r=xBIncr()}finally{today=td0}
+  r.body=r.body.replace(/onclick="editTx\(''\)"/g,'');
+  const mon=xIncrMon(f,t,ty,sel),empty='<p class="muted" style="text-align:center;margin:16px 0">مفيش زيادات في الفترة دي</p>';
+  if(r.body.indexOf(empty)>=0)r.body=r.body.replace(empty,mon||'<div class="xbwm" style="margin:16px 0">مفيش بند اتغير مبلغه في الفترة دي.<br>جرّب تختار الفترة: <b>كل الفترات</b>.</div>');
+  else r.body+=mon;
+  return r};
+
+try{render()}catch(e){}
 /* نهاية fix.js */
