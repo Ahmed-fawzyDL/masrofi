@@ -11963,4 +11963,23 @@ xAcFixAmt=function(c){let s=0,n=0;[c].concat(xAcKids(c.id)).forEach(x=>{if(x.fix
 
 try{const _rnBl=render;render=function(){const r=_rnBl.apply(this,arguments);try{const v=$('#view');if(v)v.classList.toggle('xaccv',view==='xacc'&&XAPT==='acc')}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.190 · كروت الحسابات شفافة ========== */
+XVER2='2.21.190';XVBUILD2='29/10/2026 - 02:40 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+body #view.xaccv{background:none!important}
+body #view.xaccv .xacd{
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid rgba(147,197,253,.22)!important;border-radius:18px!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.06)!important;
+  backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important}
+body #view.xaccv .xacd[open]{border-color:rgba(147,197,253,.5)!important;box-shadow:0 6px 18px rgba(0,0,0,.18)!important}
+body #view.xaccv .xacc0{background:rgba(96,165,250,.18)!important;color:#93c5fd!important;border:1px solid rgba(147,197,253,.35);box-shadow:none!important}
+body #view.xaccv .xacnm{color:inherit}
+body #view.xaccv .xacnm small{color:inherit;opacity:.6}
+body #view.xaccv .xacam{color:#bfdbfe!important}
+body #view.xaccv .xacd .xpl2{border-top:1px solid rgba(255,255,255,.06)}
+body #view.xaccv .xact{border-top:1px solid rgba(147,197,253,.3)!important;color:inherit}
+body #view.xaccv .xacb .mini{background:rgba(255,255,255,.05)!important;border-color:rgba(147,197,253,.25)!important;color:inherit!important}
+`;document.head.appendChild(s)})();
+try{render()}catch(e){}
 /* نهاية fix.js */
