@@ -11775,4 +11775,65 @@ function xBIncr3(){
 if(REPS.incr)REPS.incr.b=function(){try{return xBIncr3()}catch(e){
   return{title:'نسب الزيادة',sub:'',body:`<div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b><br>صوّر الشاشة دي وابعتها</div>`}}};
 try{render()}catch(e){}
+/* ========== 2.21.186 · الزيادة: المبلغ القديم والنسبة بوكسات + تقرير بسيط ========== */
+XVER2='2.21.186';XVBUILD2='29/10/2026 - 02:00 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+#rvdoc .xgi th:nth-child(2),#rvdoc .xgi th:nth-child(3){width:78px!important}
+#rvdoc .xgi th:nth-child(4){width:58px!important}#rvdoc .xgi th:nth-child(5){width:72px!important}
+`;document.head.appendChild(s)})();
+
+/* السطر القديم تحت المبلغ اتشال */
+try{const _paO=xPctAttach;xPctAttach=function(inp){if(inp&&(inp.id==='k-amt'||inp.id==='f-amt'))return;return _paO.apply(this,arguments)}}catch(e){}
+
+/* ---------- بوكس المبلغ القديم + بوكس النسبة ---------- */
+function xIncPct(o,n){return o>0?Math.round((n-o)/o*1000)/10:''}
+function xIncBox(amtId,cid,k,txId){
+  if($('#xinc-o'))return;const A=$(amtId);if(!A)return;const l=A.closest('label')||A;
+  const t=txId&&S.txs.find(x=>x.id===txId),st=t&&t.xinc;
+  const o=st&&st.o?st.o:(xOccPrev(cid,k)||'');
+  l.insertAdjacentHTML('afterend',`<div class="two" id="xinc" data-cid="${cid}" data-k="${k}" data-tx="${txId||''}">
+  <label>المبلغ القديم<input id="xinc-o" inputmode="decimal" dir="ltr" value="${o?amtStr(o):''}"></label>
+  <label>نسبة الزيادة %<input id="xinc-p" inputmode="decimal" dir="ltr" value=""></label></div>`);
+  const O=$('#xinc-o'),P=$('#xinc-p'),calc=()=>{P.value=xIncPct(parseNum(O.value)||0,parseNum(A.value)||0)};
+  A.addEventListener('input',calc);O.addEventListener('input',calc);
+  P.addEventListener('input',()=>{const o2=parseNum(O.value)||0,p2=parseNum(P.value);if(o2>0&&!isNaN(p2)){A.value=amtStr(r2(o2*(1+p2/100)));A.dispatchEvent(new Event('change',{bubbles:true}))}});
+  if(st&&st.p!=null)P.value=st.p;else calc()}
+try{const _osIb=occSheet;occSheet=function(id,k){const r=_osIb.apply(this,arguments);try{
+  let tx='';try{const s=stOf(occRec(C(id),k));if(s&&s.t)tx=s.t.id}catch(e){}xIncBox('#k-amt',id,k,tx)}catch(e){}return r}}catch(e){}
+try{const _tfIb=txForm;txForm=function(){const r=_tfIb.apply(this,arguments);try{
+  const o=F&&F.id&&S.txs.find(t=>t.id===F.id);if(o&&o.src&&o.src.k==='r')xIncBox('#f-amt',o.src.id,o.src.p,o.id)}catch(e){}return r}}catch(e){}
+
+/* لما تدوس حفظ: اللي في البوكسات بيتحفظ زي ما هو */
+var XINCP=null;
+document.addEventListener('click',e=>{try{
+  const b=e.target.closest&&e.target.closest('#sheet .btn'),box=$('#xinc');
+  if(!b||!box||b.classList.contains('ghost')||/scanReceipt/.test(b.getAttribute('onclick')||''))return;
+  const A=$('#k-amt')||$('#f-amt'),d=$('#k-d')||$('#f-d'),ac=$('#xacm');
+  XINCP={o:parseNum($('#xinc-o').value)||0,n:parseNum(A&&A.value)||0,p:parseNum($('#xinc-p').value),
+    m:(ac&&ac.value)||((d&&d.value)||today()).slice(0,7),cid:box.dataset.cid,k:+box.dataset.k,tx:box.dataset.tx,before:new Set(S.txs.map(t=>t.id)),at:Date.now()};
+}catch(err){}},true);
+try{const _svIn=save;save=function(){try{const p=XINCP;if(p&&Date.now()-p.at<120000){
+  let L=p.tx?S.txs.filter(t=>t.id===p.tx):[];
+  if(!L.length)L=S.txs.filter(t=>t&&!p.before.has(t.id)&&!t.feeOf&&!t.tipOf&&((t.src&&t.src.k==='r'&&t.src.id===p.cid&&t.src.p==p.k)||t.cat===p.cid));
+  if(L.length){L.forEach(t=>{t.xinc=p.o>0&&Math.abs(p.n-p.o)>=.01?{o:p.o,n:p.n,p:isNaN(p.p)?xIncPct(p.o,p.n):p.p,m:p.m}:{x:1}});XINCP=null}}}catch(e){}return _svIn.apply(this,arguments)}}catch(e){}
+
+/* ---------- 📈 التقرير: البند · الحالية · السابقة · النسبة · الشهر ---------- */
+function xIncRows(){const R=[],done=new Set();
+  S.txs.forEach(t=>{if(!t||!t.xinc||t.pend)return;done.add(t.id);const z=t.xinc;if(z.x||!(z.o>0))return;const c=C(t.cat);if(!c)return;
+    R.push({c,id:t.id,cur:z.n,prev:z.o,p:z.p!==''&&z.p!=null?+z.p:xIncPct(z.o,z.n),m:z.m||t.date.slice(0,7)})});
+  try{xIncrEv().forEach(e=>{if(e.first||Math.abs(e.diff)<.01||(e.t&&e.t.id&&done.has(e.t.id)))return;
+    R.push({c:e.c,id:e.t&&e.t.id||'',cur:e.a,prev:e.p,p:e.pct,m:e.d.slice(0,7)})})}catch(e){}
+  return R}
+function xBIncr4(){xLegacy('incr');const P=xPer('incr'),f=P.f.slice(0,7),t=P.t.slice(0,7),ty=RF.xt||'',sel=(RF.xc||[]).filter(Boolean)[0]||'';
+  const sub=(P.k?mName(P.k):P.y?'سنة '+P.y:xRngTxt(P.f,P.t))+(sel&&C(sel)?' · '+C(sel).name:'');
+  const R=xIncRows().filter(r=>r.m>=f&&r.m<=t&&(!ty||r.c.kind===ty)&&(!sel||r.c.id===sel||r.c.par===sel))
+    .sort((a,b)=>b.m.localeCompare(a.m)||xIncrNm(a.c).localeCompare(xIncrNm(b.c),'ar'));
+  if(!R.length)return{title:'نسب الزيادة',sub,body:'<div class="xbwm" style="margin:16px 0">مفيش زيادات في الفترة دي.<br>جرّب تختار الفترة: <b>كل الفترات</b>.</div>'};
+  const body=xRgCls(rtbl(['البند','القيمة الحالية|n','القيمة السابقة|n','النسبة|c','الشهر|c'],R.map(r=>
+    `<tr ${r.id?`class="clk" onclick="editTx('${r.id}')"`:''}>${cT(esc(xIncrNm(r.c)),r.c.kind==='inc'?'💰 تحصيل':'💸 مصروف')}${cN(num(r.cur),r.c.kind)}${cN(num(r.prev))}${cC(xIncrPct(r.p))}${cC(esc(mName(r.m)))}</tr>`)),'xgi');
+  return{title:'نسب الزيادة',sub,body,csv:{head:['البند','النوع','القيمة الحالية','القيمة السابقة','النسبة %','الشهر'],
+    rows:R.map(r=>[xIncrNm(r.c),r.c.kind==='inc'?'تحصيل':'مصروف',r.cur,r.prev,r.p,mName(r.m)])}}}
+if(REPS.incr)REPS.incr.b=function(){try{return xBIncr4()}catch(e){
+  return{title:'نسب الزيادة',sub:'',body:`<div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b></div>`}}};
+try{render()}catch(e){}
 /* نهاية fix.js */
