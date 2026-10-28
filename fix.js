@@ -11663,4 +11663,50 @@ try{const _frIn=fixedRow;fixedRow=function(o){let h=_frIn.apply(this,arguments);
 try{const _csIn=catSheet;catSheet=function(){const r=_csIn.apply(this,arguments);try{const o=CF&&CF.id&&C(CF.id);if(o&&+o.amount>0)xPctAttach($('#cf-amt'),+o.amount)}catch(e){}return r}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.183 · نسب الزيادة: كل البنود ========== */
+XVER2='2.21.183';XVBUILD2='29/10/2026 - 01:20 ص';
+
+/* البند الثابت: كل عملياته، شهر بشهر */
+xIncrEv=function(){const ev=[];
+  S.cats.forEach(c=>{if(!c||c.mrg||!c.fixed)return;
+    const seen=new Set(),L=S.txs.filter(t=>{if(!t||t.pend||t.xpre||t.type==='tr'||t.feeOf||t.payFeeOf||t.tipOf||t.xvar)return false;
+      const ok=(t.src&&t.src.k==='r'&&t.src.id===c.id)||(t.cat===c.id&&!(t.src&&t.src.k!=='r'));
+      if(!ok||seen.has(t.id))return false;seen.add(t.id);return true});
+    const M2={};L.forEach(t=>{const k=t.date.slice(0,7),o=M2[k]=M2[k]||{a:0,t:null};o.a+=+t.amount||0;if(!o.t||t.date>=o.t.date)o.t=t});
+    const ks=Object.keys(M2).sort();let prev=0;
+    if(ks.length&&+c.prevAmt&&Math.abs(+c.prevAmt-M2[ks[0]].a)>=.01)prev=+c.prevAmt;
+    ks.forEach(k=>{const o=M2[k],a=r2(o.a),p=prev;
+      ev.push({c,t:o.t,d:o.t.date,a,p,first:!p,diff:p?r2(a-p):0,pct:p?Math.round((a-p)/p*1000)/10:0});prev=a})});
+  return ev};
+
+/* كل البنود: إجمالي الشهر مقارنة بالشهر اللي قبله */
+function xIncrMon(f,t,ty,sel){
+  const ms=xMonthsIn(f,t),I=xAcInst(),out={exp:[],inc:[]};
+  S.cats.filter(c=>c&&!c.mrg&&!c.par&&!c.cl&&!I.has(c.id)&&!/^مصاريف إنستاباي/.test(c.name)&&(!ty||c.kind===ty)&&(!sel||c.id===sel)).forEach(c=>{
+    const T=xAcTxs(c.id).filter(x=>x.type===c.kind&&!x.feeOf&&!x.tipOf);if(T.length<2)return;
+    const sumM=k=>r2(T.filter(x=>(x.date||'').startsWith(k+'-')).reduce((a,x)=>a+(+x.amount||0),0));
+    const rows=[];let up=0;
+    ms.forEach(k=>{const v=sumM(k),pv=sumM(prevKey(k));if(!v&&!pv)return;
+      const d=r2(v-pv),pc=pv?Math.round(d/pv*1000)/10:null;if(pv&&v&&Math.abs(d)>=.01)up+=d;
+      rows.push({k,v,pv,d,pc})});
+    if(rows.filter(r=>r.pv&&r.v&&Math.abs(r.d)>=.01).length)out[c.kind].push({c,rows,up:r2(up)})});
+  const tbl=(L,kind)=>{if(!L.length)return '';const tr=[];
+    L.sort((a,b)=>Math.abs(b.up)-Math.abs(a.up)).forEach(o=>{
+      tr.push(`<tr class="xgh"><td colspan="3">${esc(o.c.name)}<em>${o.up?(o.up>0?'+':'')+num(o.up):'—'}</em></td></tr>`);
+      o.rows.forEach(r=>tr.push(`<tr>${cT(esc(mName(r.k)),r.pv?'الشهر اللي قبله '+num(r.pv):'مفيش في الشهر اللي قبله')}${cN(num(r.v),kind)}${cC(r.pc==null||!r.v?'—':xIncrPct(r.pc))}</tr>`))});
+    return xRgCls(rtbl(['الشهر','المبلغ|n','التغيير|c'],tr),'xgc')};
+  let h='';
+  if(out.exp.length)h+=xBE(rsec('📒 المصروف · كل البنود شهر بشهر')+tbl(out.exp,'exp'));
+  if(out.inc.length)h+=xBI(rsec('📒 التحصيل · كل البنود شهر بشهر')+tbl(out.inc,'inc'));
+  return h}
+
+if(REPS.incr)REPS.incr.b=function(){
+  const r=xBIncr();xLegacy('incr');const P=xPer('incr'),f=P.f,t=P.t>today()?today():P.t,ty=RF.xt||'',sel=(RF.xc||[]).filter(Boolean)[0]||'';
+  const mon=xIncrMon(f,t,ty,sel),empty='<p class="muted" style="text-align:center;margin:16px 0">مفيش زيادات في الفترة دي</p>';
+  if(r.body.indexOf(empty)>=0){
+    r.body=r.body.replace(empty,mon||'<div class="xbwm" style="margin:16px 0">التقرير بيقارن كل شهر بالشهر اللي قبله.<br>لسه مفيش بند اتسجل عليه في شهرين مختلفين في الفترة دي.<br>جرّب تختار الفترة: <b>كل الفترات</b>.</div>')}
+  else r.body+=mon;
+  return r};
+
+try{render()}catch(e){}
 /* نهاية fix.js */
