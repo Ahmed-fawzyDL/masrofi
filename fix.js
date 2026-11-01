@@ -12672,4 +12672,49 @@ try{const _alS=alerts;alerts=function(){const out=_alS.apply(this,arguments);try
 try{render();updateBell()}catch(e){}
 }catch(e){console.error('fix 2.21.203',e)}
 /* ===== آخر 2.21.203 ===== */
+/* ========== 2.21.204 · الربط بيشيل الميعاد من كل مكان (مضمون) ========== */
+try{
+XVER2='2.21.204';XVBUILD2='01/11/2026 - 11:40 ص';
+
+/* قايمة الربط الخاصة: ميعاد ← عملية */
+function xLkMap(){return S.settings.xlink=S.settings.xlink||{}}
+function xLinked(rid,k){
+  const id=xLkMap()[rid+'|'+k]||(((C(rid)||{}).st||{})[k]||{}).txId;
+  if(!id)return null;const t=S.txs.find(x=>x&&x.id===id&&!x.del&&!x.pend);
+  if(!t){delete xLkMap()[rid+'|'+k];return null}return t}
+function xLkSet(r,k,t){
+  xLkMap()[r.id+'|'+k]=t.id;
+  r.st=r.st||{};r.st[k]={st:'done',txId:t.id,tx:t.id,at:Date.now()};
+  t.src={k:'r',id:r.id,p:k};delete t.xvar}
+/* الربطات القديمة تدخل القايمة */
+try{S.txs.forEach(t=>{if(t&&!t.pend&&!t.del&&t.src&&t.src.k==='r'&&C(t.src.id))xLkMap()[t.src.id+'|'+t.src.p]=t.id})}catch(e){}
+
+/* الربط بإيدك */
+window.xOccLinkDo=async function(tid){const x=XOLK,t=S.txs.find(y=>y.id===tid),r=x&&C(x.rid);if(!t||!r)return;
+  if(t.src&&t.src.k==='r'&&!(t.src.id===r.id&&t.src.p===x.k)){
+    if(!await ask('العملية دي مربوطة بميعاد تاني','لو ربطتها هنا، الميعاد التاني هيرجع غير محصّل.',{icon:'🔗',ok:'اربطها هنا'}))return;
+    const o=C(t.src.id);if(o&&o.st&&o.st[t.src.p]&&o.st[t.src.p].txId===t.id)delete o.st[t.src.p];
+    delete xLkMap()[t.src.id+'|'+t.src.p]}
+  if(t.cat!==r.id){const oc=C(t.cat);if(!t.note&&oc&&normAr(oc.name)!==normAr(r.name))t.note=oc.name;t.cat=r.id}
+  xLkSet(r,x.k,t);XOLK=null;save();render();toast('🔗 اتربطت · اتشالت من غير محصّل');pendingSheet()};
+
+/* البرنامج كله بيشوف الربط */
+try{const _paL=pendAll;pendAll=function(){return (_paL.apply(this,arguments)||[]).filter(x=>!(x&&x.o&&xLinked(x.o.r.id,x.o.k)))}}catch(e){}
+try{const _dlL=dueList;dueList=function(){return (_dlL.apply(this,arguments)||[]).map(o=>{
+  if(o&&o.s&&o.s.st==='wait'){const t=xLinked(o.r.id,o.k);if(t)return Object.assign({},o,{s:{st:'done',t}})}return o})}}catch(e){}
+try{const _frL=fixedRow;fixedRow=function(o){try{if(o&&o.s&&o.s.st==='wait'){const t=xLinked(o.r.id,o.k);if(t)o=Object.assign({},o,{s:{st:'done',t}})}}catch(e){}return _frL.call(this,o)}}catch(e){}
+try{const _alL=alerts;alerts=function(){return (_alL.apply(this,arguments)||[]).filter(a=>{const m=String(a.id||'').match(/^[fc]-(.+)-(\d+)$/);return !(m&&xLinked(m[1],+m[2]))})}}catch(e){}
+
+/* احتياطي: لو حاجة فلتت، تتشال من الشاشة نفسها */
+function xLkDom(){document.querySelectorAll('#sheet .xlnc,#view .xlnc').forEach(c=>{
+  const b=c.querySelector('[onclick*="occSheet("]');if(!b)return;
+  const m=b.getAttribute('onclick').match(/occSheet\('([^']+)',(\d+)\)/);
+  if(m&&xLinked(m[1],+m[2]))c.remove()})}
+try{const _psL=pendingSheet;pendingSheet=function(){const r=_psL.apply(this,arguments);try{xLkDom();
+  const n=document.querySelectorAll('#sheet .xlnc').length,bd=document.querySelector('#sheet .phead .badge');if(bd)bd.textContent=n||'✓'}catch(e){}return r}}catch(e){}
+try{const _rnL=render;render=function(){const r=_rnL.apply(this,arguments);try{xLkDom()}catch(e){}return r}}catch(e){}
+
+try{save();render();updateBell()}catch(e){}
+}catch(e){console.error('fix 2.21.204',e)}
+/* ===== آخر 2.21.204 ===== */
 /* نهاية fix.js */
