@@ -13266,4 +13266,5 @@ addEventListener('unhandledrejection',e=>{
     return o.apply(this,arguments);
   };
 })();
+setTimeout(()=>toast('✅ شغال على 2.21.219'),1500);
 /* نهاية fix.js */
