@@ -13223,4 +13223,36 @@ try{const _xcV=XVW.xcc;XVW.xcc=function(){let h=_xcV.apply(this,arguments);if(ty
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.216',e)}
 /* ===== آخر 2.21.216 ===== */
+/* ========== 2.21.217 ==========*/
+/* التحديث لوحده: كل ما ترجع للبرنامج من الخلفية بيشوف لو sw.js اتغير */
+(()=>{
+  if(!('serviceWorker' in navigator))return;
+  let last=0;
+  const chk=()=>{const n=Date.now();if(n-last<60000)return;last=n;navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{})};
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')chk()});
+  addEventListener('online',chk);setTimeout(chk,5000);
+})();
+/* ========== 2.21.218 ==========*/
+/* أي غلط في كود async كان بيعدّي من غير ما يبان: دلوقتي بيظهر في رسالة */
+addEventListener('unhandledrejection',e=>{
+  const m=String((e.reason&&(e.reason.stack||e.reason.message))||e.reason||'غلط مش معروف').slice(0,500);
+  try{say('حصل غلط ⚠️',m,'⚠️')}catch(_){alert(m)}
+});
+/* زرار حفظ السداد: لو حصل أي غلط يظهر بدل ما الزرار يقف ساكت */
+(()=>{
+  const show=e=>{try{say('السداد ما اتحفظش',String((e&&(e.stack||e.message))||e).slice(0,500),'⚠️')}catch(_){alert(e)}};
+  const wrap=()=>{
+    if(typeof xCsSave!=='function'||xCsSave._g)return;
+    const o=xCsSave;
+    const w=function(){
+      let r;
+      try{r=o.apply(this,arguments)}catch(e){show(e);return}
+      if(r&&typeof r.catch==='function')r.catch(show);
+      return r;
+    };
+    w._g=1;
+    try{xCsSave=w}catch(e){}
+  };
+  wrap();setTimeout(wrap,0);
+})();
 /* نهاية fix.js */

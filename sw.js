@@ -1,10 +1,10 @@
-const CACHE='centric-v8',SHARE='centric-share';
+const CACHE='centric-v9',SHARE='centric-share';
 const ASSETS=['./','app.js','more.js','fix.js','manifest.json','icon-192.png','icon-512.png','icon-maskable-512.png','wa.png'];
 const TXT=/\.(js|html|json|css)$|\/$/;
 const ROOT=new URL('./',self.registration.scope).href;
 /* لو pages.dev مش واصل، بنجيب نفس الملفات من نسخة GitHub Pages */
 const MIRROR='https://ahmed-fawzydl.github.io/masrofi/';
-/* Cloudflare بيحوّل index.html لـ / ، والرد المحوَّل ميتحفظش زي ما هو */
+/* Cloudflare بيحوّل index.html لـ / ، والرد المحوَّل ميتحفظش ومينفعش يترجع للصفحة زي ما هو */
 const clean=res=>res&&res.redirected?res.blob().then(b=>new Response(b,{status:res.status,statusText:res.statusText,headers:res.headers})):Promise.resolve(res);
 const tfetch=(u,o,ms)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),ms||10000);return fetch(u,Object.assign({},o,{signal:c.signal})).finally(()=>clearTimeout(t))};
 async function mirror(key){
@@ -28,32 +28,40 @@ async function tell(type){
   cs.forEach(c=>c.postMessage({type}));
 }
 
-// بيجيب النسخة الجديدة في الخلفية (من pages.dev، ولو مردش من GitHub Pages)، ولو اتغيرت بيقول للبرنامج
-async function refresh(r,key,old){
-  try{
-    let res,mir=false;
-    try{res=await tfetch(r.url,{cache:'no-store'},10000)}
-    catch(e){if(r.mode==='navigate')return;res=await mirror(key);mir=true}
-    if(r.mode==='navigate'&&(res.status===401||res.status===403)){await caches.delete(CACHE);return tell('locked')}
-    if(!res.ok||(!mir&&res.type!=='basic'))return;
-    res=await clean(res);
-    const c=await caches.open(CACHE);
-    if(old&&TXT.test(new URL(key).pathname)){
-      const[a,b]=await Promise.all([old.text(),res.clone().text()]);
-      await c.put(key,res);
-      if(a!==b)tell('update');
-    }else await c.put(key,res);
-  }catch(e){}
+/* الكود (html / js / json): من النت الأول دايماً.
+   لو النت مردش خلال ثواني: النسخة المحفوظة، ولو مفيش: نسخة GitHub */
+async function fresh(r,key){
+  const nav=r.mode==='navigate';
+  let res=null;
+  try{res=await tfetch(r.url,{cache:'no-store'},6000)}catch(e){}
+  if(res){
+    if(nav&&(res.status===401||res.status===403)){await caches.delete(CACHE);tell('locked');return clean(res)}
+    if(res.ok&&res.type==='basic'){
+      const out=await clean(res);
+      try{const c=await caches.open(CACHE);await c.put(key,out.clone())}catch(e){}
+      return out;
+    }
+  }
+  const hit=await caches.match(key);if(hit)return hit;
+  if(res)return clean(res);
+  if(nav)return Response.error();
+  try{const m=await mirror(key);caches.open(CACHE).then(c=>c.put(key,m.clone())).catch(()=>{});return m}catch(e){return Response.error()}
 }
 
-async function fromNet(r,key){
-  const nav=r.mode==='navigate';
+/* الصور: المحفوظة الأول، والجديدة في الخلفية */
+async function refresh(r,key){
   try{
-    const res=nav?await fetch(r):await tfetch(r,{},15000);
+    const res=await tfetch(r.url,{cache:'no-store'},10000);
+    if(!res.ok||res.type!=='basic')return;
+    const c=await caches.open(CACHE);await c.put(key,await clean(res));
+  }catch(e){}
+}
+async function fromNet(r,key){
+  try{
+    const res=await tfetch(r,{},15000);
     if(res.ok&&res.type==='basic')clean(res.clone()).then(cp=>caches.open(CACHE).then(c=>c.put(key,cp))).catch(()=>{});
     return res;
   }catch(e){
-    if(nav){const h=await caches.match(ROOT);return h||Response.error()}
     try{const m=await mirror(key);caches.open(CACHE).then(c=>c.put(key,m.clone())).catch(()=>{});return m}catch(e2){return Response.error()}
   }
 }
@@ -67,19 +75,18 @@ async function shareIn(req){
   return Response.redirect(new URL('./?share=1',self.registration.scope).href,303);
 }
 
-// البرنامج: النسخة المحفوظة الأول والتحديث في الخلفية
-// أي صفحة تانية (زي rescue.html): من النت على طول، من غير ما تتبدل بالبرنامج
 self.addEventListener('fetch',e=>{
   const r=e.request,u=new URL(r.url);
   if(u.origin!==location.origin)return;
   if(r.method==='POST'&&u.pathname.endsWith('/share-target')){e.respondWith(shareIn(r));return}
-  if(r.method!=='GET'||/rescue/.test(u.pathname))return;
+  if(r.method!=='GET'||/rescue/.test(u.pathname)||/\/sw\.js$/.test(u.pathname))return;
   const nav=r.mode==='navigate',root=/\/(index\.html)?$/.test(u.pathname);
   if(nav&&!root)return;
-  const key=nav?ROOT:u.origin+u.pathname,share=nav&&u.searchParams.has('share');
+  const key=nav?ROOT:u.origin+u.pathname;
   e.respondWith((async()=>{
+    if(nav||TXT.test(u.pathname))return fresh(r,key);
     const hit=await caches.match(key);
-    if(hit){if(!share)e.waitUntil(refresh(r,key,hit.clone()));return hit}
+    if(hit){e.waitUntil(refresh(r,key));return hit}
     return fromNet(r,key);
   })());
 });
