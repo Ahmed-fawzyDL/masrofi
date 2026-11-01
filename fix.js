@@ -13179,4 +13179,48 @@ try{new MutationObserver(()=>{try{xShInj()}catch(e){}}).observe(document.getElem
 try{xShInj()}catch(e){}
 }catch(e){console.error('fix 2.21.215',e)}
 /* ===== آخر 2.21.215 ===== */
+/* ========== 2.21.216 · سداد الكريديت: تأكيد الحفظ + فتح ومسح السدادات اللي فاتت ========== */
+try{
+XVER2='2.21.216';XVBUILD2='01/11/2026 - 02:00 م';
+
+/* تفاصيل أي سداد: تعديل أو مسح */
+window.xCsPayView=function(pid,ok){const p=S.txs.find(x=>x&&x.id===pid);if(!p)return toast('السداد ده مش موجود');
+  const L=S.txs.filter(t=>t&&t.ccpd===pid&&!t.ccfee).sort(byDesc),Fe=S.txs.filter(t=>t&&t.ccfee===pid);
+  const s=r2(L.reduce((a,t)=>a+(+t.amount||0),0)),f=r2(Fe.reduce((a,t)=>a+(+t.amount||0),0)),df=r2(p.amount-s-f);
+  sheet(`<h2>${ok?'✅ اتحفظ السداد':'💳 سداد '+xDW(p.date)}</h2>
+  <div class="kv"><span>📅 التاريخ</span><b>${xDW(p.date)}</b></div>
+  <div class="kv"><span>💵 اتخصم</span><b>${fmt(p.amount)}</b></div>
+  <div class="kv"><span>🏦 من</span><b>${esc((M(p.method)||{}).name||'')}</b></div>
+  <div class="kv"><span>✅ عمليات متعلّمة (${L.length})</span><b>${num(s)}</b></div>
+  ${f?`<div class="kv"><span>🧾 مصاريف الكريديت (${Fe.length})</span><b>${num(f)}</b></div>`:''}
+  <div class="kv"><span>الفرق</span><b class="${Math.abs(df)<.01?'pos':'neg'}">${Math.abs(df)<.01?'✅ مظبوط':(df>0?'فاضل ':'زيادة ')+num(Math.abs(df))}</b></div>
+  ${L.length?`<details class="gen"><summary>🧾 العمليات المتعلّمة (${L.length})</summary><div class="list">${L.map(t=>`<div class="row" onclick="editTx('${t.id}')"><div class="grow"><b>${esc(xTxNm(t))}</b><small>${xDW(t.date)}</small></div><div class="amt exp">${num(t.amount)}</div></div>`).join('')}</div></details>`:''}
+  <button class="btn" onclick="closeSheet();xCsInit('${p.to}','${pid}');render();scrollTo(0,0)">✏️ تعديل السداد ده</button>
+  <button class="btn ghost danger" onclick="xCsDelId('${pid}')">🗑 امسح السداد ده</button>
+  <button class="btn ghost" onclick="closeSheet()">تمام</button>`)};
+
+window.xCsDelId=async function(pid){const p=S.txs.find(x=>x&&x.id===pid);if(!p)return;
+  if(isClosed(p.date))return toast('الشهر ده مقفول');
+  if(!await ask('امسح السداد ده؟',fmt(p.amount)+' · '+dmy(p.date)+'\nالعمليات اللي كانت متعلّمة عليه هترجع مش متسددة.',{danger:true,icon:'🗑',ok:'امسح'}))return;
+  S.txs=S.txs.filter(t=>t!==p&&t.ccfee!==pid);S.txs.forEach(t=>{if(t&&t.ccpd===pid)delete t.ccpd});
+  if(XCS&&XCS.pid===pid)xCsInit(p.to,'');save();closeSheet();render();scrollTo(0,0);toast('🗑 اتمسح')};
+xCsDel=function(){if(XCS&&XCS.pid)xCsDelId(XCS.pid)};
+
+/* زرار الحفظ: يقول اتحفظ ولا لأ وليه */
+try{const _svC=xCsSave;xCsSave=function(){if(!XCS)return;let err=null,msg='';const _t=toast;
+  toast=function(m){msg=String(m==null?'':m)};
+  try{_svC.apply(this,arguments)}catch(e){err=e}finally{toast=_t}
+  if(err)return say('⚠️ الحفظ ما نجحش',(err.message||String(err))+'\nصوّر الشاشة دي وابعتها','⚠️');
+  if(msg&&!/اتحفظ/.test(msg))return say('⚠️ ما اتحفظش',msg,'⚠️');
+  const p=XCS&&XCS.pid&&S.txs.find(x=>x&&x.id===XCS.pid);if(p)xCsPayView(p.id,1);else toast(msg||'✅ اتحفظ')}}catch(e){}
+
+/* الشاشة: واضح إنك بتعدّل سداد قديم، والسدادات اللي فاتت بتفتح */
+try{const _xcV=XVW.xcc;XVW.xcc=function(){let h=_xcV.apply(this,arguments);if(typeof h!=='string')return h;
+  h=h.replace(/onclick="xCsInit\('[^']+','([^']+)'\);render\(\);scrollTo\(0,0\)"/g,`onclick="xCsPayView('$1')"`).replace(/<span class="mini">✏️<\/span>/g,'<span class="mini">›</span>');
+  if(XCS&&XCS.pid)h=h.replace(/(<b>✏️ تعديل سداد [^<]*<\/b>)/,`$1<div class="xbwm" style="margin:4px 0 8px">انت بتعدّل سداد متسجل قبل كده. لو ده سداد قديم غلط امسحه وابدأ من جديد.<div class="xlna" style="margin-top:6px"><button type="button" class="btn ghost danger" onclick="xCsDelId('${XCS.pid}')">🗑 امسحه</button><button type="button" class="btn ghost" onclick="xCsInit('${XCS.id}','');render()">➕ سداد جديد</button></div></div>`);
+  return h}}catch(e){}
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.216',e)}
+/* ===== آخر 2.21.216 ===== */
 /* نهاية fix.js */
