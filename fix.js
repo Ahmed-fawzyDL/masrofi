@@ -12632,4 +12632,44 @@ try{const _o=xCcSheet;
 }catch(e){}
 }catch(e){console.error('fix 2.21.202',e)}
 /* ===== آخر 2.21.202 ===== */
+/* ========== 2.21.203 · الربط بيشيل الميعاد من غير محصّل + حالة الإشعار ========== */
+try{
+XVER2='2.21.203';XVBUILD2='01/11/2026 - 11:30 ص';
+
+/* 1) أي ميعاد ثابت مربوط بعملية موجودة يتحسب اتعمل، في كل البرنامج */
+try{const _stD=stOf;stOf=function(rec){const s=_stD.apply(this,arguments);try{
+  if(s&&s.st==='wait'&&rec&&rec.st==='done'&&rec.txId){
+    const t=S.txs.find(x=>x&&x.id===rec.txId&&!x.del);
+    if(t&&!t.pend)return Object.assign({},s,{st:'done',t})}}catch(e){}return s}}catch(e){}
+
+/* الربط بإيدك: العملية تبقى على البند نفسه، والميعاد القديم يتفك */
+window.xOccLinkDo=async function(tid){const x=XOLK,t=S.txs.find(y=>y.id===tid),r=x&&C(x.rid);if(!t||!r)return;
+  if(t.src&&t.src.k==='r'&&!(t.src.id===r.id&&t.src.p===x.k)){
+    if(!await ask('العملية دي مربوطة بميعاد تاني','لو ربطتها هنا، الميعاد التاني هيرجع غير محصّل.',{icon:'🔗',ok:'اربطها هنا'}))return;
+    const o=C(t.src.id);if(o&&o.st&&o.st[t.src.p]&&o.st[t.src.p].txId===t.id)delete o.st[t.src.p]}
+  if(t.cat!==r.id){const oc=C(t.cat);if(!t.note&&oc&&normAr(oc.name)!==normAr(r.name))t.note=oc.name;t.cat=r.id}
+  t.src={k:'r',id:r.id,p:x.k};delete t.xvar;
+  r.st=r.st||{};r.st[x.k]={st:'done',txId:t.id,at:Date.now()};
+  XOLK=null;save();render();toast('🔗 اتربطت · اتشالت من غير محصّل');pendingSheet()};
+
+/* تنضيف مرة واحدة: العمليات اللي اتربطت قبل كده ولسه الميعاد ظاهر */
+try{if(!S.settings.xlnk203){let n=0;
+  S.txs.forEach(t=>{if(!t||t.pend||t.del||!t.src||t.src.k!=='r')return;const r=C(t.src.id);if(!r)return;
+    r.st=r.st||{};const cur=r.st[t.src.p];
+    if(!cur||cur.st!=='done'||cur.txId!==t.id){if(!cur||cur.st==='wait'||!S.txs.some(x=>x.id===cur.txId)){r.st[t.src.p]={st:'done',txId:t.id,at:Date.now()};n++}}
+    if(t.cat!==r.id&&r.par!==t.cat&&!(C(t.cat)&&C(t.cat).par===r.id)){}});
+  S.settings.xlnk203=1;save();if(n)setTimeout(()=>toast('🔗 اتصلح '+n+' ميعاد كان مربوط ومش باين'),1500)}}catch(e){}
+
+/* 2) الإشعارات: مكتوب عليها لم يُدفع / لم يُحصّل */
+try{const _alS=alerts;alerts=function(){const out=_alS.apply(this,arguments);try{
+  out.forEach(a=>{const id=String(a.id||'');if(!id||/لم يُ/.test(a.body||''))return;let st='';
+    if(id.startsWith('i-'))st='⏳ لم يُدفع بعد';
+    else if(id.startsWith('l-'))st='⏳ لم يُسدد بعد';
+    else{const m=id.match(/^[fc]-(.+)-(\d+)$/);if(m){const c=C(m[1]);if(c)st=c.kind==='inc'?'⏳ لم يُحصّل بعد':'⏳ لم يُدفع بعد'}}
+    if(st)a.body=(a.body?a.body+' · ':'')+st});
+}catch(e){}return out}}catch(e){}
+
+try{render();updateBell()}catch(e){}
+}catch(e){console.error('fix 2.21.203',e)}
+/* ===== آخر 2.21.203 ===== */
 /* نهاية fix.js */
