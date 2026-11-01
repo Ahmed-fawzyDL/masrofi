@@ -13255,4 +13255,15 @@ addEventListener('unhandledrejection',e=>{
   };
   wrap();setTimeout(wrap,0);
 })();
+/* ========== 2.21.219 ==========*/
+/* زرار حفظ السداد: لو بيانات السداد ضاعت، بيقول بدل ما يسكت */
+(()=>{
+  if(typeof xCsSave!=='function')return;
+  const o=xCsSave;
+  xCsSave=function(){
+    let x=null;try{x=XCS}catch(e){}
+    if(!x){say('السداد ما اتحفظش','بيانات شاشة السداد ضاعت.\nارجع واقفل الشاشة، وافتح السداد تاني من الكارت.','⚠️');return}
+    return o.apply(this,arguments);
+  };
+})();
 /* نهاية fix.js */
