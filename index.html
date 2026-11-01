@@ -2,6 +2,15 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>
+(function(){var E=[];
+function bar(){if(!document.body)return setTimeout(bar,200);var b=document.getElementById('xerrbar');
+ if(!b){b=document.createElement('div');b.id='xerrbar';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#c62828;color:#fff;padding:10px;font:13px sans-serif;direction:rtl';document.body.appendChild(b)}
+ b.innerHTML='⚠️ فيه غلط في التحديث:<br><small>'+E.join('<br>')+'</small><br><a href="rescue.html" style="color:#fff;font-weight:bold">فتح صفحة الإنقاذ</a>'}
+window.addEventListener('error',function(e){if(!e.filename)return;E.push(e.filename.split('/').pop()+' سطر '+e.lineno+': '+e.message);bar()});
+setTimeout(function(){var v=document.getElementById('view');if(v&&!v.innerHTML.trim()){E.push('البرنامج مااتفتحش خلال 8 ثواني');bar()}},8000);
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f766e">
 <meta name="mobile-web-app-capable" content="yes">

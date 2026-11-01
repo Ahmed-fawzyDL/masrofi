@@ -12500,55 +12500,93 @@ try{const _rnCp=render;render=function(){const r=_rnCp.apply(this,arguments);try
     if(a)a.insertAdjacentHTML('beforebegin',h);else c.insertAdjacentHTML('beforeend',h)})}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* ========== 2.21.201 · الأقساط اللي جوه مبلغ الكريديت ========== */
-XVER2='2.21.201';XVBUILD2='01/11/2026 - 10:45 ص';
+try{
+XVER2='2.21.201';XVBUILD2='01/11/2026 - 10:00 ص';
+const _r2=v=>Math.round((+v||0)*100)/100;
+const _es=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const _pn=v=>+String(v||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[,،\s]/g,'')||0;
+const _id=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const _cl=d=>{try{return typeof isClosed==='function'&&isClosed(d)}catch(e){return false}};
+const _mn=id=>((S.methods||[]).find(m=>m.id===id)||{}).name||'';
+const _pl=id=>(S.plans||[]).find(p=>p.id===id);
+const _f=v=>{try{return fmt(v)}catch(e){return String(v)}};
+const _dt=d=>{try{return xDW(d)}catch(e){return d}};
+const _td=()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')};
+const _am=(d,n)=>{try{return addMonths(d,n)}catch(e){const x=new Date(d);x.setMonth(x.getMonth()+n);return x.toISOString().slice(0,10)}};
+const _cat=p=>{if(p.catId&&(S.cats||[]).some(c=>c.id===p.catId))return p.catId;
+  let c=(S.cats||[]).find(c=>c.name===p.name&&c.type==='exp');
+  if(!c){c={id:_id(),name:p.name,type:'exp'};(S.cats=S.cats||[]).push(c)}return c.id};
 
-/* الأقساط اللي ممكن تكون جوه الدفعة: اللي لسه مادفعتش + اللي اتسجلت مدفوعة من حساب تاني */
-function xCcInstCand(id,d){const from=addMonths(d,-3),to=addMonths(d,1),U=[],O=[];
-  (S.plans||[]).forEach(p=>(p.items||[]).forEach(it=>{if(it.k==='mnt'||!it.due||it.due<from||it.due>to)return;
-    const t=itTx(it);
+window.xCcInstCand=function(id,d){const from=_am(d,-3),to=_am(d,1),U=[],O=[];
+  (S.plans||[]).forEach(p=>(p.items||[]).forEach(it=>{
+    if(it.k==='mnt'||!it.due||it.due<from||it.due>to)return;
+    let t=null;try{t=itTx(it)}catch(e){}
     if(!t)U.push({p,it,a:+it.amount||0,on:!!(p.cc&&p.acct===id)});
-    else if(!t.xpre&&!t.pend&&t.method!==id&&!xIsCr(t.method))O.push({p,it,t})}));
-  U.sort((a,b)=>a.it.due.localeCompare(b.it.due));O.sort((a,b)=>a.it.due.localeCompare(b.it.due));return{U,O}}
-function xCcInstHTML(id,d){const{U,O}=xCcInstCand(id,d);if(!U.length&&!O.length)return '';
-  return `<div class="xccb" id="cb-i"><div class="xcch">🏦 أقساط داخلة في المبلغ ده</div>
-  ${U.map(x=>`<label class="row" style="cursor:pointer"><input type="checkbox" data-ci="${x.p.id}|${x.it.id}" data-v="${x.a}" ${x.on?'checked':''} onchange="xCcBkPrev('${id}')" style="width:22px;height:22px;flex:0 0 22px;margin:0"><div class="grow"><b>${esc(x.p.name)}</b><small>قسط ${xDW(x.it.due)}</small></div><div class="amt exp">${num(x.a)}</div></label>`).join('')}
-  ${O.length?`<p class="muted" style="font-size:11.5px;margin:8px 0 4px">دي متسجلة إنها اتدفعت من حساب تاني. لو اتدفعت فعلًا من الكريديت انقلها:</p>
-  ${O.map(x=>`<label class="row" style="cursor:pointer"><input type="checkbox" data-cm="${x.t.id}" data-v="${x.t.amount}" onchange="xCcBkPrev('${id}')" style="width:22px;height:22px;flex:0 0 22px;margin:0"><div class="grow"><b>↪ ${esc(x.p.name)}</b><small>قسط ${xDW(x.it.due)} · اتسجل من ${esc((M(x.t.method)||{}).name||'')}</small></div><div class="amt exp">${num(x.t.amount)}</div></label>`).join('')}`:''}</div>`}
-function xCcInstSum(){let s=0;document.querySelectorAll('#sheet [data-ci]:checked,#sheet [data-cm]:checked').forEach(c=>{s+=+c.dataset.v||0});return r2(s)}
-function xCcInstApply(id,pay){let n=0,now=Date.now();
-  document.querySelectorAll('#sheet [data-ci]:checked').forEach(c=>{const[pid,iid]=c.dataset.ci.split('|'),p=plan(pid),it=p&&p.items.find(x=>x.id===iid);if(!it||itTx(it))return;
-    const d=it.due<=pay.date&&!isClosed(it.due)?it.due:pay.date,cat=C(p.catId)||ensureCat(p.name,'exp');
-    const t={id:uid(),type:'exp',amount:+it.amount||0,cat:cat.id,method:id,via:'card',date:d,note:`💳 قسط ${fdate(it.due)}`,files:[],created:now++,src:{k:'i',id:p.id,p:it.id},ccpd:pay.id,nofee:1};
+    else if(!t.xpre&&!t.pend&&t.method!==id&&!xIsCr(t.method))O.push({p,it,t});
+  }));
+  U.sort((a,b)=>a.it.due.localeCompare(b.it.due));O.sort((a,b)=>a.it.due.localeCompare(b.it.due));
+  return{U,O}};
+
+window.xCcInstHTML=function(id,d){const R=xCcInstCand(id,d),U=R.U,O=R.O;if(!U.length&&!O.length)return '';
+  const box='style="width:22px;height:22px;flex:0 0 22px;margin:0"';
+  let h=`<div class="xccb" id="cb-i"><div class="xcch">🏦 أقساط داخلة في المبلغ ده</div>`;
+  U.forEach(x=>{h+=`<label class="row" style="cursor:pointer"><input type="checkbox" data-ci="${x.p.id}|${x.it.id}" data-v="${x.a}" ${x.on?'checked':''} onchange="xCcBkPrev('${id}')" ${box}><div class="grow"><b>${_es(x.p.name)}</b><small>قسط ${_dt(x.it.due)}</small></div><div class="amt exp">${_f(x.a)}</div></label>`});
+  if(O.length){h+=`<p class="muted" style="font-size:11.5px;margin:8px 0 4px">دي متسجلة إنها اتدفعت من حساب تاني. لو اتدفعت فعلًا من الكريديت علّم عليها عشان تتنقل:</p>`;
+    O.forEach(x=>{h+=`<label class="row" style="cursor:pointer"><input type="checkbox" data-cm="${x.t.id}" data-v="${x.t.amount}" onchange="xCcBkPrev('${id}')" ${box}><div class="grow"><b>↪ ${_es(x.p.name)}</b><small>قسط ${_dt(x.it.due)} · من ${_es(_mn(x.t.method))}</small></div><div class="amt exp">${_f(x.t.amount)}</div></label>`})}
+  return h+'</div>'};
+
+window.xCcInstSum=function(){let s=0;document.querySelectorAll('#sheet [data-ci]:checked,#sheet [data-cm]:checked').forEach(c=>{s+=+c.dataset.v||0});return _r2(s)};
+
+window.xCcInstApply=function(id,pay){let n=0,now=Date.now();
+  document.querySelectorAll('#sheet [data-ci]:checked').forEach(c=>{
+    const a=c.dataset.ci.split('|'),p=_pl(a[0]),it=p&&(p.items||[]).find(x=>x.id===a[1]);if(!it)return;
+    try{if(itTx(it))return}catch(e){}
+    const d=(it.due<=pay.date&&!_cl(it.due))?it.due:pay.date;
+    const t={id:_id(),type:'exp',amount:+it.amount||0,cat:_cat(p),method:id,via:'card',date:d,note:'💳 قسط '+it.due,files:[],created:now++,src:{k:'i',id:p.id,p:it.id},ccpd:pay.id,nofee:1};
     S.txs.push(t);it.txId=t.id;n++});
-  document.querySelectorAll('#sheet [data-cm]:checked').forEach(c=>{const t=S.txs.find(x=>x.id===c.dataset.cm);if(!t||isClosed(t.date))return;
-    S.txs=S.txs.filter(x=>!(x.feeOf===t.id&&x.via==='instapay'));t.method=id;t.via='card';t.ccpd=pay.id;t.nofee=1;n++});
-  return n}
+  document.querySelectorAll('#sheet [data-cm]:checked').forEach(c=>{
+    const t=S.txs.find(x=>x.id===c.dataset.cm);if(!t||_cl(t.date))return;
+    S.txs=S.txs.filter(x=>!(x.feeOf===t.id&&x.via==='instapay'));
+    t.method=id;t.via='card';t.ccpd=pay.id;t.nofee=1;n++});
+  return n};
 
-/* شاشة السداد بمبلغ البنك: قسم الأقساط */
-try{const _cbI=xCcBank;xCcBank=function(id){const r=_cbI.apply(this,arguments);try{
-  const p=$('#cb-p');if(p&&!$('#cb-i'))p.insertAdjacentHTML('beforebegin',xCcInstHTML(id,today()));xCcBkPrev(id)}catch(e){}return r}}catch(e){}
-try{const _bpI=xCcBkPrev;xCcBkPrev=function(id){const inp=$('#cb-a'),s=xCcInstSum();
-  if(!inp||!s)return _bpI.apply(this,arguments);
-  const v=inp.value;inp.value=String(Math.max(0,r2((parseNum(v)||0)-s)));try{_bpI.apply(this,arguments)}finally{inp.value=v}
-  const el=$('#cb-p .xbwm');if(el)el.insertAdjacentHTML('afterbegin',`🏦 منهم أقساط: <b>${fmt(s)}</b><br>`)}}catch(e){}
-xCcBankSv=function(id){const a=parseNum(($('#cb-a')||{}).value),from=($('#cb-m')||{}).value,d=($('#cb-d')||{}).value,b=($('#cb-b')||{}).value;
-  if(!(a>0))return toast('اكتب المبلغ');if(!from)return toast('اختار الحساب');if(!d)return toast('اختار التاريخ');if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
-  let pool=[];try{pool=xCcPool(id)}catch(e){}
-  const p={id:uid(),type:'tr',amount:a,method:from,to:id,via:'',date:d,note:'💳 سداد الكريديت · مبلغ البنك',files:[],created:Date.now(),ccPay:NKM,ccbank:1};
-  S.txs.push(p);pool.forEach(t=>{t.ccUsed=1});
-  const ni=xCcInstApply(id,p);
-  S.settings.ccbase=Object.assign({},S.settings.ccbase,{[id]:b||xCcBaseOf(id)});
-  S.settings.ccpay=Object.assign({},S.settings.ccpay,{[id]:Object.assign({},(S.settings.ccpay||{})[id],{from})});
-  const n=xCcAlloc(p,b);save();closeSheet();XCCP={id,pay:p.id,t:'p'};go('xccp');
-  toast(`✅ اتسجل ${fmt(a)} · ${ni?ni+' قسط و':''}${n} عملية اتعلّمت مسددة`)};
+/* شاشة "سداد بمبلغ البنك": قسم الأقساط */
+try{const _o=xCcBank;window.xCcBank=function(id){const r=_o.apply(this,arguments);try{
+  const p=document.querySelector('#cb-p');
+  if(p&&!document.querySelector('#cb-i')){p.insertAdjacentHTML('beforebegin',xCcInstHTML(id,_td()));xCcBkPrev(id)}
+}catch(e){console.error('201 bank',e)}return r}}catch(e){}
 
-/* لو السداد اتسجل قبل كده: تضيف الأقساط عليه */
-function xCcInstAdd(pid){const pay=S.txs.find(x=>x.id===pid);if(!pay)return;const h=xCcInstHTML(pay.to,pay.date);
-  sheet(`<h2>🏦 أقساط على دفعة ${dmy(pay.date)}</h2><p class="muted">علّم على الأقساط اللي البنك خصمها ضمن ${fmt(pay.amount)}</p>
-  ${h||'<p class="empty">مفيش أقساط قريبة من ميعاد الدفعة</p>'}
-  ${h?`<button class="btn" onclick="xCcInstAddSv('${pid}')">✅ حفظ</button>`:''}<button class="btn ghost" onclick="closeSheet()">رجوع</button>`)}
-function xCcInstAddSv(pid){const pay=S.txs.find(x=>x.id===pid);if(!pay)return;const n=xCcInstApply(pay.to,pay);
-  if(!n)return toast('علّم على قسط واحد على الأقل');save();closeSheet();render();toast('✅ اتضاف '+n+' قسط على الدفعة')}
-try{const _vpI=XVW.xccp;XVW.xccp=function(){let h=_vpI.apply(this,arguments);try{
-  if(typeof h==='string'&&XCCP.pay)h=h.repl
+try{const _o=xCcBkPrev;window.xCcBkPrev=function(id){
+  const inp=document.querySelector('#cb-a'),s=xCcInstSum();
+  if(!inp||!s)return _o.apply(this,arguments);
+  const v=inp.value;inp.value=String(Math.max(0,_r2(_pn(v)-s)));
+  try{_o.apply(this,arguments)}catch(e){}finally{inp.value=v}
+  const el=document.querySelector('#cb-p');if(el)el.insertAdjacentHTML('afterbegin',`<div class="muted" style="font-size:12px">🏦 منهم أقساط: <b>${_f(s)}</b></div>`)}}catch(e){}
+
+try{const _o=xCcBankSv;window.xCcBankSv=function(id){
+  const before=S.txs.length;_o.apply(this,arguments);
+  try{const pay=S.txs.slice(before).find(t=>t.ccbank&&t.to===id);
+    if(!pay)return;
+    /* الأقساط اتسجلت بعد التوزيع، فنعيد التوزيع عشان الفرق يتحسب صح */
+    const n=xCcInstApply(id,pay);
+    if(n){try{xCcRealloc(pay.id)}catch(e){}save();render();toast('✅ واتضاف '+n+' قسط على الدفعة')}
+  }catch(e){console.error('201 save',e)}}}catch(e){}
+
+/* سداد اتسجل قبل كده: تضيف عليه أقساط */
+window.xCcInstAdd=function(pid){const pay=S.txs.find(x=>x.id===pid);if(!pay)return;
+  const h=xCcInstHTML(pay.to,pay.date);
+  sheet(`<h2>🏦 أقساط على دفعة ${pay.date}</h2><p class="muted">علّم على الأقساط اللي البنك خصمها ضمن ${_f(pay.amount)}</p>${h||'<p class="empty">مفيش أقساط قريبة من ميعاد الدفعة</p>'}${h?`<button class="btn" onclick="xCcInstAddSv('${pid}')">✅ حفظ</button>`:''}<button class="btn ghost" onclick="closeSheet()">رجوع</button>`)};
+window.xCcInstAddSv=function(pid){const pay=S.txs.find(x=>x.id===pid);if(!pay)return;
+  const n=xCcInstApply(pay.to,pay);if(!n)return toast('علّم على قسط واحد على الأقل');
+  try{xCcRealloc(pid)}catch(e){}save();closeSheet();render();toast('✅ اتضاف '+n+' قسط على الدفعة')};
+
+/* زرار في شاشة عمليات الكريديت */
+try{const _o=XVW.xccp;XVW.xccp=function(){const h=_o.apply(this,arguments);
+  const b=()=>XCCP&&XCCP.pay?`<button class="btn ghost" id="xcci-b" onclick="xCcInstAdd('${XCCP.pay}')">🏦 أقساط على الدفعة دي</button>`:'';
+  if(typeof h==='string')return h+b();
+  setTimeout(()=>{try{const v=document.querySelector('#view');if(v&&!document.querySelector('#xcci-b'))v.insertAdjacentHTML('beforeend',b())}catch(e){}},50);
+  return h}}catch(e){}
+
+}catch(e){console.error('fix 2.21.201',e)}
+/* ===== آخر 2.21.201 ===== */
 /* نهاية fix.js */
