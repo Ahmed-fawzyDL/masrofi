@@ -12878,4 +12878,119 @@ document.addEventListener('change',e=>{try{if(!e.target||e.target.id!=='cb-d')re
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.207',e)}
 /* ===== آخر 2.21.207 ===== */
+/* ========== 2.21.208 · شاشة واحدة لسداد الكريديت ========== */
+try{
+XVER2='2.21.208';XVBUILD2='01/11/2026 - 01:00 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+.xcsb{background:var(--card);border:1px solid rgba(148,163,184,.25);border-radius:16px;padding:10px 12px;margin:0 0 10px}
+.xcsb>b{display:block;margin-bottom:6px}
+.xcsm{display:flex;justify-content:space-between;align-items:center;padding:8px 2px 4px;font-weight:800;border-bottom:1px dashed rgba(148,163,184,.3)}
+.xcsr{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(148,163,184,.12);cursor:pointer}
+.xcsr input{width:22px;height:22px;flex:0 0 22px;margin:0}
+.xcsr .grow{flex:1;min-width:0}.xcsr small{display:block;opacity:.7;font-size:11.5px}
+.xcsr.on{background:rgba(22,163,74,.08)}
+#xcs-s{position:sticky;bottom:calc(var(--navh,64px) + 4px);z-index:3;background:var(--card);border:2px solid var(--p);border-radius:16px;padding:10px 12px;margin:10px 0;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#xcs-s .kv{padding:3px 0!important}
+`;document.head.appendChild(s)})();
+
+var XCS=null;
+function xCsDeb(id){const m=M(id),deb=S.methods.filter(x=>x.active!==false&&!xIsCr(x.id)),cfg=(S.settings.ccpay||{})[id]||{};
+  if(cfg.from&&M(cfg.from))return cfg.from;
+  return (deb.find(x=>xMLogo(x)&&xMLogo(x)===xMLogo(m))||deb.find(x=>/fab|أبوظبي|ابوظبي/i.test(x.name))||deb[0]||{}).id||''}
+function xCsInit(id,pid){
+  if(pid===undefined){const l=xCcPays(id)[0];pid=l&&l.date.slice(0,7)===NKM?l.id:''}
+  const p=pid&&S.txs.find(x=>x.id===pid);
+  XCS={id,pid:p?p.id:'',a:p?amtStr(p.amount):'',d:p?p.date:today(),from:p?p.method:xCsDeb(id),fee:'',sel:new Set()};
+  if(p)S.txs.forEach(t=>{if(t&&t.ccpd===p.id){if(t.ccfee===p.id)XCS.fee=amtStr(t.amount);else XCS.sel.add(t.id)}})}
+function xCsGo(id){try{closeSheet()}catch(e){}const cr=xCcAccts();id=id||(cr[0]||{}).id;if(!id)return go('xcc');
+  if(!XCS||XCS.id!==id)xCsInit(id);if(view==='xcc')render();else go('xcc')}
+
+/* المشتريات اللي لسه مش متسددة + اللي على الدفعة دي */
+function xCsItems(){const id=XCS.id,base=xCcBaseOf(id),out=[];
+  S.txs.forEach(t=>{if(!t||t.type!=='exp'||t.method!==id||t.pend||t.del||t.ccfee)return;
+    const mine=t.ccpd&&t.ccpd===XCS.pid;if(!mine&&xCcPaidT(t))return;if(!mine&&t.date<base)return;
+    out.push({k:t.id,n:xTxNm(t),sub:(t.src&&t.src.k==='i'?'🏦 قسط':'🛒 مشتريات'),d:t.date,a:+t.amount||0})});
+  (S.plans||[]).forEach(p=>{if(!xPlOnCc(p,id))return;(p.items||[]).forEach(it=>{
+    if(it.k==='mnt'||!it.due||it.due>XCS.d||it.due<base)return;let t=null;try{t=itTx(it)}catch(e){}if(t)return;
+    out.push({k:'i:'+p.id+'|'+it.id,n:p.name,sub:'🏦 قسط · لسه ما اتسجلش',d:it.due,a:+it.amount||0})})});
+  return out.sort((a,b)=>b.d.localeCompare(a.d))}
+function xCsSum(){if(!XCS)return;const L=xCsItems(),a=parseNum(XCS.a)||0,fee=parseNum(XCS.fee)||0;
+  let s=0,n=0;L.forEach(x=>{if(XCS.sel.has(x.k)){s+=x.a;n++}});s=r2(s);
+  const tot=r2(s+fee),df=r2(a-tot),el=$('#xcs-s');
+  document.querySelectorAll('#view .xcsr').forEach(r=>r.classList.toggle('on',XCS.sel.has(r.dataset.k)));
+  if(el)el.innerHTML=`<div class="kv"><span>✅ متعلّم (${n})</span><b>${num(s)}</b></div>
+  ${fee?`<div class="kv"><span>🧾 مصاريف الكريديت</span><b>${num(fee)}</b></div>`:''}
+  <div class="kv"><span>💵 اللي اتخصم</span><b>${num(a)}</b></div>
+  <div class="kv" style="border-top:1px solid rgba(148,163,184,.3)"><span>الفرق</span><b class="${Math.abs(df)<.01?'pos':'neg'}">${!a?'—':Math.abs(df)<.01?'✅ مظبوط':(df>0?'فاضل ':'زيادة ')+num(Math.abs(df))}</b></div>`}
+function xCsTog(k,on){if(on)XCS.sel.add(k);else XCS.sel.delete(k);xCsSum()}
+function xCsMonth(m){const L=xCsItems().filter(x=>x.d.startsWith(m)),all=L.every(x=>XCS.sel.has(x.k));
+  L.forEach(x=>{if(all)XCS.sel.delete(x.k);else XCS.sel.add(x.k)});
+  document.querySelectorAll('#view .xcsr').forEach(r=>{const i=r.querySelector('input');if(i)i.checked=XCS.sel.has(r.dataset.k)});xCsSum()}
+
+XVW.xcc=()=>{const cr=xCcAccts(),head=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>💳 الكريديت</h3></div>`;
+  if(!cr.length)return head+'<div class="nempty"><div>💳</div><b>مفيش حساب كريديت</b><small>علّمه من 🏦 البنوك والكاش ← ✏️ ← 💳 كريديت</small></div>';
+  if(!XCS||!M(XCS.id))xCsInit(cr[0].id);
+  const id=XCS.id,L=xCsItems(),deb=S.methods.filter(x=>x.active!==false&&!xIsCr(x.id));
+  const debt=r2(S.txs.filter(t=>t&&t.type==='exp'&&t.method===id&&!t.pend&&!t.del&&!xCcPaidT(t)&&t.date>=xCcBaseOf(id)).reduce((s,t)=>s+t.amount,0));
+  const G=new Map();L.forEach(x=>{const m=x.d.slice(0,7);if(!G.has(m))G.set(m,[]);G.get(m).push(x)});
+  const P=xCcPays(id).slice(0,12);
+  setTimeout(xCsSum,0);
+  return head+(cr.length>1?`<div class="seg">${cr.map(m=>`<button class="${m.id===id?'on':''}" onclick="xCsInit('${m.id}');render()">${esc(m.name)}</button>`).join('')}</div>`:'')
+  +`<div class="kv" style="margin:0 4px 8px"><span>⏳ مشتريات مش متسددة</span><b class="neg">${fmt(debt)}</b></div>
+  <div class="xcsb"><b>${XCS.pid?'✏️ تعديل سداد '+dmy(XCS.d):'💵 سداد جديد'}</b>
+   <label>💵 المبلغ اللي اتخصم<input class="amt-in" inputmode="decimal" dir="ltr" placeholder="0" value="${esc(XCS.a)}" oninput="XCS.a=this.value;xCsSum()"></label>
+   <div class="two"><label>📅 التاريخ<input type="date" value="${XCS.d}" onchange="XCS.d=this.value;render()"></label>
+   <label>اتخصم من<select onchange="XCS.from=this.value">${opt(deb,XCS.from)}</select></label></div>
+   <label>🧾 مصاريف الكريديت (رسايل، خدمات...)<input inputmode="decimal" dir="ltr" placeholder="0" value="${esc(XCS.fee)}" oninput="XCS.fee=this.value;xCsSum()"></label></div>
+  <div class="fl">علّم على اللي اتسدد من المبلغ ده</div>
+  ${[...G].map(([m,l])=>`<div class="xcsb"><div class="xcsm"><span>📅 ${mName(m)}</span><button type="button" class="mini" onclick="xCsMonth('${m}')">علّم الكل</button></div>
+   ${l.map(x=>`<label class="xcsr" data-k="${esc(x.k)}"><input type="checkbox" ${XCS.sel.has(x.k)?'checked':''} onchange="xCsTog(this.closest('.xcsr').dataset.k,this.checked)"><span class="grow"><b>${esc(x.n)}</b><small>${xPpD(x.d)} · ${x.sub}</small></span><b dir="ltr">${num(x.a)}</b></label>`).join('')}</div>`).join('')||'<p class="empty">مفيش مشتريات كريديت</p>'}
+  <div id="xcs-s"></div>
+  <button class="btn" onclick="xCsSave()">✅ حفظ</button>
+  ${XCS.pid?`<button class="btn ghost" onclick="xCsInit('${id}','');render()">➕ سداد جديد</button><button class="btn ghost danger" onclick="xCsDel()">🗑 امسح السداد ده</button>`:''}
+  ${P.length?`<details class="gen"><summary>📜 السدادات اللي فاتت (${P.length})</summary><div class="list">${P.map(p=>`<div class="row" onclick="xCsInit('${id}','${p.id}');render();scrollTo(0,0)"><div class="grow"><b>${xDW(p.date)}</b><small>من ${esc((M(p.method)||{}).name||'')}</small></div><div class="amt">${num(p.amount)}</div><span class="mini">✏️</span></div>`).join('')}</div></details>`:''}`};
+
+function xCsSave(){const c=XCS;if(!c)return;const a=parseNum(c.a),fee=parseNum(c.fee)||0,d=c.d;
+  if(!(a>0))return toast('اكتب المبلغ اللي اتخصم');if(!c.from)return toast('اختار الحساب');if(!d)return toast('اختار التاريخ');
+  if(isClosed(d))return toast(`شهر ${mName(d.slice(0,7))} مقفول`);
+  let p=c.pid&&S.txs.find(x=>x.id===c.pid);
+  if(p)Object.assign(p,{amount:a,method:c.from,date:d});
+  else{p={id:uid(),type:'tr',amount:a,method:c.from,to:c.id,via:'',date:d,note:'💳 سداد الكريديت',files:[],created:Date.now(),ccPay:d.slice(0,7),ccbank:1};S.txs.push(p)}
+  let now=Date.now();
+  /* أقساط لسه ما اتسجلتش */
+  [...c.sel].filter(k=>k.startsWith('i:')).forEach(k=>{const [pid,iid]=k.slice(2).split('|'),pl=plan(pid),it=pl&&pl.items.find(x=>x.id===iid);if(!it)return;
+    let t0=null;try{t0=itTx(it)}catch(e){}if(t0){c.sel.add(t0.id);return}
+    const dd=it.due<=d&&!isClosed(it.due)?it.due:d,cat=C(pl.catId)||ensureCat(pl.name,'exp');
+    const t={id:uid(),type:'exp',amount:+it.amount||0,cat:cat.id,method:c.id,via:'card',date:dd,note:'💳 قسط '+dmy(it.due),files:[],created:now++,src:{k:'i',id:pl.id,p:it.id},nofee:1};
+    S.txs.push(t);it.txId=t.id;c.sel.add(t.id)});
+  /* المتعلّم يبقى على الدفعة، واللي اتشال يرجع مش مسدد */
+  S.txs.forEach(t=>{if(!t||t.type!=='exp'||t.method!==c.id||t.ccfee)return;
+    if(c.sel.has(t.id))t.ccpd=p.id;else if(t.ccpd===p.id)delete t.ccpd});
+  /* مصاريف الكريديت */
+  let f=S.txs.find(t=>t&&t.ccfee===p.id);
+  if(fee>0){if(f)Object.assign(f,{amount:fee,date:d});
+    else{const cat=ensureCat('مصاريف الكريديت','exp');cat.active=true;
+      S.txs.push({id:uid(),type:'exp',amount:fee,cat:cat.id,method:c.id,via:'card',date:d,note:'🧾 مصاريف الكريديت',files:[],created:now++,ccpd:p.id,ccfee:p.id,nofee:1})}}
+  else if(f)S.txs=S.txs.filter(t=>t!==f);
+  try{xCcPool(c.id).forEach(t=>{t.ccUsed=1})}catch(e){}
+  S.settings.ccpay=Object.assign({},S.settings.ccpay,{[c.id]:Object.assign({},(S.settings.ccpay||{})[c.id],{from:c.from})});
+  save();xCsInit(c.id,p.id);render();toast('✅ اتحفظ السداد')}
+async function xCsDel(){const c=XCS,p=c&&c.pid&&S.txs.find(x=>x.id===c.pid);if(!p)return;
+  if(isClosed(p.date))return toast('الشهر مقفول');
+  if(!await ask('امسح السداد ده؟',fmt(p.amount)+' · '+dmy(p.date)+'\nالمشتريات اللي كانت متعلّمة عليه هترجع مش متسددة.',{danger:true,icon:'🗑',ok:'امسح'}))return;
+  S.txs=S.txs.filter(t=>t!==p&&t.ccfee!==p.id);S.txs.forEach(t=>{if(t&&t.ccpd===p.id)delete t.ccpd});
+  save();xCsInit(c.id,'');render();toast('اتمسح')}
+
+/* كل الطرق القديمة بتوصل للشاشة دي */
+xCcOpen=function(){xCsGo()};
+xCcPay=function(id){xCsGo(id)};
+xCcSheet=function(id){xCsGo(id||(XCC&&XCC.id))};
+xCcBank=function(id){xCsGo(id)};
+xCcOps=function(id){xCsGo(id)};
+XVW.xccp=()=>{setTimeout(()=>xCsGo(XCCP&&XCCP.id),0);return ''};
+try{const _goCs=go;go=function(v){if(v==='xcc'&&view!=='xcc'&&XCS&&!M(XCS.id))XCS=null;return _goCs.apply(this,arguments)}}catch(e){}
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.208',e)}
+/* ===== آخر 2.21.208 ===== */
 /* نهاية fix.js */
