@@ -12062,4 +12062,184 @@ document.addEventListener('toggle',e=>{if(e.target&&e.target.closest&&e.target.c
 addEventListener('resize',()=>{xSheetFit();xViewFit()});
 
 try{render()}catch(e){}
+/* ========== 2.21.195 ========== */
+XVER2='2.21.195';XVBUILD2='01/11/2026 - 09:30 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+#sheet .ncard b{font-size:14.5px!important;line-height:1.5}
+#sheet .ncard small{font-size:12.5px!important;opacity:.9}
+#sheet .ncard .xnb .mini{font-size:13px!important;height:36px!important}
+#sheet .sz{font-size:14px}
+#sheet label{font-size:13px!important}
+#sheet .xpays{font-size:12.5px!important}
+#sheet .sz>label,#sheet .sz .two>label{margin:3px 0!important}
+#sheet #xinc{padding:6px 8px!important;margin:4px 0 6px!important}
+#sheet #xinc label{margin:2px 0!important}
+#sheet .xpayd{padding:6px 10px!important;margin:4px 0!important}
+#sheet #xfx-b{padding:7px!important;margin:4px 0!important}
+#sheet .xisum{color:#facc15;font-size:.85em;white-space:nowrap}
+body.xhome #view .hero{padding:6px 9px!important;margin-bottom:6px!important}
+body.xhome #view .xbx .xv{min-height:22px!important;font-size:13px!important}
+body.xhome #view .xbx .xd{padding:2px!important}
+body.xhome #view .hero .hnet{padding:3px 10px!important;margin-top:3px!important}
+body.xhome #view .dash{gap:5px!important}
+body.xhome #view .dash .tile{padding:4px 7px!important}
+body.xhome #view .dash .tile .xv{min-height:20px!important;font-size:12px!important;margin:2px 0!important}
+#view .xsro{margin-top:12px}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🤝 السلف: إعادة الجدولة بالجدول الحالي ---------- */
+xLnResch=function(id){const l=xLnL(id);if(!l)return;const U=xLnAlloc(l).filter(s=>s.rem>0.009),rem=xLnRem(l);
+  const R=U.length?U:[{d:addMonths(today(),1),rem}];
+  sheet(`<h2>🗓 إعادة جدولة · ${esc(l.who)}</h2>
+  <div class="kv"><span>الباقي</span><b class="neg">${fmt(rem)}</b></div>
+  <p class="muted">ده الجدول الحالي. غيّر التواريخ أو المبالغ، أو غيّر عدد الأقساط عشان يتقسم من جديد</p>
+  <div class="two"><label>عدد الأقساط<input id="rs-c" inputmode="numeric" value="${R.length}" oninput="xLnRG('${id}')"></label><label>أول قسط<input id="rs-f" type="date" value="${R[0].d}" onchange="xLnRG('${id}')"></label></div>
+  <div id="rs-s">${R.map((s,i)=>`<div class="xlps"><label>قسط ${i+1}<input type="date" data-sd="${i}" value="${s.d}"></label><label>المبلغ<input data-sa="${i}" inputmode="decimal" dir="ltr" value="${amtStr(s.rem)}"></label></div>`).join('')}</div>
+  <button class="btn" onclick="xLnRSv('${id}')">✅ احفظ الجدول</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`)};
+
+/* ---------- 🤝 السلف: تأجيل القسط ---------- */
+xLnDefer=function(id,sid){const l=xLnL(id),s=l&&xLnAlloc(l).find(x=>x.id===sid);if(!s)return;
+  sheet(`<h2>📅 تأجيل قسط · ${esc(l.who)}</h2>
+  <div class="xbwm">القسط ده <b>${num(s.rem)}</b> كان المفروض يتسدد يوم <b>${xDW(s.d)}</b><br>(سداد شهر ${esc(mName(s.d.slice(0,7)))})<br>عايز تأجله ليوم كام؟</div>
+  <label>📅 الميعاد الجديد<input id="lf-d" type="date" value="${addMonths(s.d<today()?today():s.d,1)}"></label>
+  <button class="btn" onclick="xLnDefSv('${id}','${sid}')">✅ أجّل</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`);
+  setTimeout(()=>{const b=document.querySelector('#lf-d + .xsel');if(b)b.click()},300)};
+try{const _loR=xLnOpen;xLnOpen=function(){const r=_loR.apply(this,arguments);try{
+  document.querySelectorAll('#sheet button').forEach(b=>{if(/قسّط الباقي من جديد|إعادة جدولة الباقي/.test(b.textContent))b.textContent='🗓 إعادة جدولة'})}catch(e){}return r}}catch(e){}
+
+/* ---------- 👤 سلف الشخص ---------- */
+xLnOfP=function(pid){const p=XPP().find(x=>x.id===pid),nm=p?xNrm(p.name):'';
+  return XLN().filter(l=>{if(l.pp)return l.pp===pid;if(nm&&xNrm(l.who||'')===nm)return true;
+    const c=l.cat&&C(l.cat);if(c&&c.ppo===pid)return true;const t=l.tx&&S.txs.find(x=>x.id===l.tx);return !!(t&&t.pp===pid)})};
+try{const _ooL=xOpsOf;xOpsOf=function(k,id){const L=_ooL.apply(this,arguments);try{const set=new Set(L.map(t=>t.id));
+  S.txs.forEach(t=>{if(!t||t.del||t.xpre||set.has(t.id)||!(t.xlno||t.xlnp)||xTxLoan(t))return;
+    if(k==='acc'?xAcSet(id).has(t.cat):(t.pp===id||xCatPpo(C(t.cat))===id))L.push(t)})}catch(e){}return L}}catch(e){}
+try{const _xpoL=XVW.xppo;XVW.xppo=function(){let h=_xpoL.apply(this,arguments);try{if(typeof h!=='string'||!XPPID)return h;
+  h=h.replace(/🤝 السلف \(\d+\)/,'🤝 السلف ('+xLnOfP(XPPID).length+')').replace('<details class="gen"><summary>📁 سلف اتسددت','<details class="gen" open><summary>📁 سلف اتسددت')}catch(e){}return h}}catch(e){}
+
+/* ---------- 🔎 البحث في التحصيلات والمصروفات: كل الشهور ---------- */
+var XSROT=0;
+function xSrchOther(){const v=$('#view');if(!v)return;const old=$('#xsro');if(old)old.remove();
+  if(view!=='col'&&view!=='exps')return;const raw=((v.querySelector('.gsr input')||{}).value||'').trim();if(!raw)return;
+  const ty=view==='col'?'inc':'exp',k=ym(cur.y,cur.m),q=xqn(raw),nq=xQParse(raw);
+  const L=S.txs.filter(t=>{if(!t||t.del||t.xpre||t.type!==ty||(ty==='inc'&&t.ccr)||(t.date||'').startsWith(k+'-'))return false;
+    if(nq&&xQOk(+t.amount||0,nq))return true;if(nq&&nq.op!=='has')return false;
+    const c=C(t.cat),tp=xTopC(t.cat),p=t.pp&&XPP().find(x=>x.id===t.pp),ln=xTxLoan(t);
+    return xqn([c&&c.name,tp&&tp.name,t.note,p&&p.name,ln&&ln.who,(M(t.method)||{}).name,dmy(t.date)].filter(Boolean).join(' ')).includes(q)}).sort(byDesc);
+  if(!L.length)return;const d=document.createElement('div');d.id='xsro';d.className='xsro';
+  d.innerHTML=`<div class="xpsec">🔎 من شهور تانية (${L.length})</div><div class="xpig">${L.slice(0,40).map(t=>`<div class="xpl2" onclick="xTxOpen('${t.id}')"><span class="xppd">${xPpD(t.date)}</span><span class="xpin"><b>${esc(xTxNm(t))}</b><small>${esc((xTopC(t.cat)||{}).name||'')}${t.pend?' · ⏳ لسه':''}${M(t.method)?' · '+esc(M(t.method).name):''}</small></span><b class="${ty==='inc'?'pos':'neg'}" dir="ltr">${num(+t.amount||0)}</b></div>`).join('')}</div>${L.length>40?'<p class="muted">ظاهر أول 40</p>':''}`;
+  const b=v.querySelector(':scope>.brand');if(b)b.before(d);else v.appendChild(d)}
+document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#view .gsr')){clearTimeout(XSROT);XSROT=setTimeout(xSrchOther,250)}},true);
+try{const _rnSo=render;render=function(){const r=_rnSo.apply(this,arguments);setTimeout(()=>{try{xSrchOther()}catch(e){}},90);return r}}catch(e){}
+
+/* ---------- 🏦 الأقساط: المتبقي كله ---------- */
+function xPlRem(p){const st=planStats(p);if(+p.price){const hd=+p.hand||0,hp=hd&&xHandPaid(p);return Math.max(0,r2(+p.price-(+p.down||0)-st.paid-(hp?hd:0)))}return Math.max(0,r2(st.total-st.paid))}
+function xPlTot(p){return +p.price?+p.price:planStats(p).total}
+vInst=function(){const td=today();let rem=0,mo=0,late=0;
+  S.plans.forEach(p=>{const s=planStats(p);rem+=xPlRem(p);late+=s.late||0;(p.items||[]).forEach(it=>{if(!itTx(it)&&it.due&&it.due.startsWith(NKM)&&it.k!=='mnt')mo+=+it.amount||0})});
+  let h=`<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🏦 ${esc(L('inst'))}</h3></div><button class="btn" onclick="planNew()">➕ قسط جديد</button>`
+    +kpis([['💳 المتبقي عليك',fmt(r2(rem)),'exp'],['📅 هذا الشهر',fmt(r2(mo)),'warn'],['⚠️ متأخر',String(late),'net']]);
+  if(!S.plans.length)return h+'<p class="empty">لا توجد أقساط</p>';
+  const card=p=>{const s=planStats(p),nx=s.next,R=xPlRem(p),T=xPlTot(p),pc=T?Math.min(100,Math.max(0,Math.round((T-R)/T*100))):0;
+    return `<div class="xlnc" onclick="instPlan='${p.id}';go('plan')"><div class="xlnr"><b>${esc(p.name)}</b><span class="xlnbig" dir="ltr">${num(R)}</span></div>
+    <div class="xlnr xsm"><span>${s.paidN}/${s.n} قسط · المتبقي من ${num(T)}${+p.price?' (سعر الوحدة)':''}</span></div><div class="xbar"><i style="width:${pc}%"></i></div>
+    <div class="xlnn">${nx?(s.late?xCh('late','⚠️ '+s.late+' متأخر'):nx.due===td?xCh('tdy','🔔 اليوم'):xCh('up','⏳ القادم'))+` <b>${num(+nx.amount||0)}</b> · <b>${xDW(nx.due)}</b>`:xCh('ok','✅ انتهت')}</div>
+    ${nx?`<div class="xlna"><button class="btn" onclick="event.stopPropagation();${p.cc?`xCcPay('${p.acct}')`:`payStart('${p.id}','${nx.id}')`}">✓ ادفع القسط</button><button class="btn ghost" onclick="event.stopPropagation();instPlan='${p.id}';go('plan')">📄 التفاصيل</button></div>`:''}</div>`};
+  Object.keys(XPTN).forEach(k=>{const Lp=S.plans.filter(p=>xPType(p)===k).sort((a,b)=>{const x=planStats(a).next,y=planStats(b).next;return(x?x.due:'9')<(y?y.due:'9')?-1:1});if(!Lp.length)return;
+    const r=r2(Lp.reduce((a,p)=>a+xPlRem(p),0));
+    h+=`<details class="grp" ${XINO[k]?'open':''} ontoggle="XINO['${k}']=this.open"><summary><span>${XPTN[k][0]} ${XPTN[k][1]}</span><span class="badge soon">${Lp.length}</span><b class="gs neg">${num(r)}</b></summary>${Lp.map(card).join('')}</details>`});
+  return h};
+
+/* ---------- 🏁 آخر قسط لكل قيمة ---------- */
+try{const _vpE2=vPlan;vPlan=function(){let h=_vpE2.apply(this,arguments);try{const p=plan(instPlan);if(!p||typeof h!=='string')return h;
+  const L=(p.items||[]).filter(i=>i.k!=='mnt'&&i.k!=='ann'&&i.due).sort((a,b)=>a.due.localeCompare(b.due)),seg=[];
+  L.forEach(i=>{const a=r2(+i.amount||0),z=seg[seg.length-1];if(z&&Math.abs(z.a-a)<.01){z.d=i.due;z.n++}else seg.push({a,d:i.due,n:1})});
+  if(seg.length>1&&seg.length<=6)h=h.replace(/<div class="kv"><span>🏁 تاريخ الانتهاء<\/span><b>[^<]*<\/b><\/div>/,
+    seg.map(z=>`<div class="kv"><span>🏁 آخر قسط بـ ${num(z.a)}</span><b>${xDW(z.d)} · ${z.n} قسط</b></div>`).join(''))}catch(e){}return h}}catch(e){}
+
+/* ---------- 🏦 أقساط قريبة: الإجمالي ---------- */
+try{const _isS=instSheet;instSheet=function(){const r=_isS.apply(this,arguments);try{const h=$('#sheet .sz h2');
+  if(h&&!h.querySelector('.xisum')){const s=r2(instDue().reduce((a,o)=>a+(+o.it.amount||0),0));h.insertAdjacentHTML('beforeend',` <span class="xisum">· ${fmt(s)}</span>`)}}catch(e){}return r}}catch(e){}
+
+/* ---------- 🔐 إظهار المبالغ بالباسورد دايمًا ---------- */
+try{const _raP=revealAmts;revealAmts=function(){XBAUTH=0;XBALOK=false;return _raP.apply(this,arguments)}}catch(e){}
+try{const _rvP=xReveal;xReveal=function(){XBAUTH=0;return _rvP.apply(this,arguments)}}catch(e){}
+
+/* ---------- 💳 تحصيل مقابل دفع كريديت: شاشة بالعمليات ---------- */
+function xCcrSheet(){const seen=new Set(),L=[];xCcAccts().forEach(m=>xCcPool(m.id).forEach(t=>{if(!seen.has(t.id)){seen.add(t.id);L.push(t)}}));
+  const s=r2(L.reduce((a,t)=>a+t.amount,0));
+  sheet(`<div class="phead"><h2>💳 تحصيل مقابل دفع كريديت</h2><span class="badge soon">${fmt(s)}</span></div>
+  <p class="muted">الفلوس دي معاك وتخص الكريديت، من آخر سداد</p>
+  ${L.length?`<div class="list">${L.map(t=>`<div class="row" onclick="editTx('${t.id}')"><div class="grow"><b>${esc(xTxNm(t))}</b><small>${xDW(t.date)} · ${esc((M(t.method)||{}).name||'')}</small></div><div class="amt pos">${num(t.amount)}</div></div>`).join('')}</div>`:'<p class="empty">مفيش</p>'}
+  <button class="btn ghost" onclick="closeSheet();go('xcc')">💳 الكريديت</button>`)}
+try{const _vhCr=vHome;vHome=function(){const h=_vhCr.apply(this,arguments);
+  return typeof h==='string'?h.replace(/onclick="gocol\('[\d-]+'\)"(><div class="tth"><span class="ti">[^<]*<\/span><span class="tl">تحصيل مقابل دفع كريديت)/,'onclick="xCcrSheet()"$1'):h}}catch(e){}
+
+/* ---------- 📅 تدخل في حساب شهر: في كل الشاشات ---------- */
+try{const _tfG=txForm;txForm=function(){const r=_tfG.apply(this,arguments);try{if(F&&F.type!=='tr'&&!$('#xacm'))xAcmAdd('f-d',F._acmv||(F.date||today()).slice(0,7),F._acmd||'',F.id||'')}catch(e){}return r}}catch(e){}
+try{const _osG=occSheet;occSheet=function(id,k){const r=_osG.apply(this,arguments);try{const rr=C(id);if(rr&&!$('#xacm')){const d=occDate(rr,k);xAcmAdd('k-d',d.slice(0,7),d,'')}}catch(e){}return r}}catch(e){}
+try{const _csG=xColSheet;xColSheet=function(id){const r=_csG.apply(this,arguments);try{const t=S.txs.find(x=>x.id===id);if(t&&!$('#xacm'))xAcmAdd('xc-d',t.date.slice(0,7),t.date,id)}catch(e){}return r}}catch(e){}
+try{const _ppG=xPartial;xPartial=function(id){const r=_ppG.apply(this,arguments);try{const t=S.txs.find(x=>x.id===id);if(t&&!$('#xacm'))xAcmAdd('pp-d',t.date.slice(0,7),t.date,'')}catch(e){}return r}}catch(e){}
+try{const _psAc=paySheet;paySheet=function(){const r=_psAc.apply(this,arguments);try{const p=PAY&&plan(PAY.pid),it=p&&p.items.find(x=>x.id===PAY.iid),due=(it&&it.due)||'';
+  xAcmAdd('y-d',(due||PAY.date||today()).slice(0,7),due,'')}catch(e){}return r}}catch(e){}
+try{const _rsAc=xRcSheet;xRcSheet=function(){const r=_rsAc.apply(this,arguments);try{const x=XRC2;if(x&&!$('#xacm')){xAcmAdd('rc-d',x._acm||(x.date||today()).slice(0,7),'','');
+  const a=$('#xacm');if(a)a.addEventListener('change',()=>{if(XRC2)XRC2._acm=a.value})}}catch(e){}return r}}catch(e){}
+try{const _lnAc=xLnNew;xLnNew=function(){const r=_lnAc.apply(this,arguments);try{xAcmAdd('ln-d',today().slice(0,7),'','')}catch(e){}return r}}catch(e){}
+try{const _hpAc=xHandPay;xHandPay=function(){const r=_hpAc.apply(this,arguments);try{xAcmAdd('hp-d',today().slice(0,7),'','')}catch(e){}return r}}catch(e){}
+try{const _bfAc=xBankFee;xBankFee=function(){const r=_bfAc.apply(this,arguments);try{xAcmAdd('bk-d',today().slice(0,7),'','')}catch(e){}return r}}catch(e){}
+
+/* ---------- 📌 التحصيل اللي اتحسب على شهر تاني ميظهرش متأخر ---------- */
+function xAcmLink(){let ch=false;S.txs.forEach(t=>{
+  if(!t||t.pend||!t.acm||t.type==='tr'||t.feeOf||t.tipOf||t.payFeeOf)return;if(t.src&&t.src.k!=='xv')return;
+  const r=C(t.cat);if(!r||!r.fixed||!r.start||r.kind!==t.type)return;let k,s;
+  try{k=occK(r,t.acm);if(!(k>=0))return;s=stOf(occRec(r,k))}catch(e){return}if(!s||s.st!=='wait')return;
+  t.src={k:'r',id:r.id,p:k};delete t.xvar;r.st=r.st||{};r.st[k]={st:'done',txId:t.id,at:Date.now()};ch=true});return ch}
+try{if(xAcmLink())save()}catch(e){}
+try{const _rnAl=render;render=function(){try{if(xAcmLink())save()}catch(e){}return _rnAl.apply(this,arguments)}}catch(e){}
+
+/* ---------- 🔒 قفل الشهر: ترحيل اللي لسه ---------- */
+var XCMB=false,XCMK=null;
+function xMonPend(k){const out=[],seen=new Set();
+  S.txs.forEach(t=>{if(t&&t.pend&&!t.del&&t.type!=='tr'&&(t.date||'').startsWith(k+'-'))out.push({t,d:t.date,n:xTxNm(t),a:+t.amount||0,ty:t.type})});
+  [['m','inc'],['a','inc'],['','exp']].forEach(([g,ty])=>{try{dueList(k,g,ty).forEach(o=>{const key=o.r.id+'|'+o.k;if(seen.has(key))return;seen.add(key);
+    if(o.s&&o.s.st==='wait'&&(o.date||'').startsWith(k+'-'))out.push({o,d:o.date,n:o.r.name,a:+o.amt||0,ty:o.r.kind})})}catch(e){}});
+  return out.sort((a,b)=>a.d.localeCompare(b.d))}
+try{const _cmX=closeMonth;closeMonth=function(k){
+  if(!XCMB){try{xAcmLink()}catch(e){}let L=[];try{L=xMonPend(k)}catch(e){}
+    if(L.length){XCMK={k,L};const nk=addMonths(k+'-01',1).slice(0,7);
+      sheet(`<h2>🔒 قفل ${esc(mName(k))}</h2>
+      <div class="xbwm">فيه ${L.length} حاجة كان المفروض تتعمل في ${esc(mName(k))} ولسه ما اتعملتش:</div>
+      <div class="list">${L.map(x=>`<div class="row" style="cursor:default"><div class="grow"><b>${esc(x.n)}</b><small>${x.ty==='inc'?'💰 لسه ما اتحصّلش':'💸 لسه ما اتدفعش'} · كان المفروض يوم ${xDW(x.d)}</small></div><div class="amt ${x.ty}">${num(x.a)}</div></div>`).join('')}</div>
+      <button class="btn" onclick="xCmRoll()">↪ رحّلهم لـ ${xDW(nk+'-01')} واقفل الشهر</button>
+      <button class="btn ghost" onclick="closeSheet()">✕ متقفلش الشهر</button>`);return}}
+  const r=_cmX.apply(this,arguments);Promise.resolve(r).then(()=>{try{render()}catch(e){}});return r}}catch(e){}
+function xCmRoll(){const x=XCMK;if(!x)return closeSheet();const nk=addMonths(x.k+'-01',1).slice(0,7),d1=nk+'-01';let n=0;
+  x.L.forEach(it=>{try{if(it.t){it.t.date=d1;it.t.post=(it.t.post||0)+1;n++;return}
+    const o=it.o,r=o.r;r.st=r.st||{};r.st[o.k]={st:'skip',mv:nk,at:Date.now()};
+    S.txs.push({id:uid(),type:r.kind,amount:+o.amt||0,cat:r.id,method:r.acct&&M(r.acct)?r.acct:defMethod(),via:r.via||'',date:d1,note:'↪ مرحّل من '+mName(x.k),files:[],created:Date.now(),pend:true,src:{k:'mv',id:r.id,p:o.k}});n++}catch(e){}});
+  XCMK=null;save();closeSheet();XCMB=true;let r;try{r=closeMonth(x.k)}finally{XCMB=false}
+  Promise.resolve(r).then(()=>{try{render()}catch(e){}});toast('↪ اترحّل '+n+' لـ '+mName(nk))}
+try{const _frMv=fixedRow;fixedRow=function(o){let h=_frMv.apply(this,arguments);try{const rec=occRec(o.r,o.k);if(rec&&rec.mv)h=h.split('اتلغى الشهر ده').join('↪ اترحّل لـ '+mName(rec.mv))}catch(e){}return h}}catch(e){}
+try{const _goH=go;go=function(v){const r=_goH.apply(this,arguments);if(v==='home')setTimeout(()=>{try{render()}catch(e){}},50);return r}}catch(e){}
+
+/* ---------- 📅 الشهر الجديد من غير ما تقفل البرنامج ---------- */
+function xDayChk(){try{const k=today().slice(0,7);if(typeof NKM!=='string'||NKM===k)return;
+  try{NY=+k.slice(0,4);NM=+k.slice(5,7);NKM=k;cur.y=NY;cur.m=NM;render()}
+  catch(e){if(!$('#sheet').classList.contains('open')){try{xStSave()}catch(x){}location.reload()}}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(xDayChk,300)});
+setInterval(xDayChk,60000);
+
+/* ---------- 📱 المقاسات: خط أكبر في الشاشات + الرئيسية من غير سكرول ---------- */
+xSheetFit=function(){clearTimeout(XSFT);XSFT=setTimeout(()=>{try{
+  if(XSFON||xTyping())return;const sh=$('#sheet');if(!sh||!sh.classList.contains('open'))return;
+  const sz=sh.querySelector('.sz'),box=sz&&(sz.closest('.body')||sz.parentElement);if(!sz||!box)return;
+  XSFON=true;const z0=xBaseZ(sz);let z=1;
+  while(box.scrollHeight-box.clientHeight>2&&z>.9){z=Math.round((z-.02)*100)/100;sz.style.setProperty('zoom',String(z0*z),'important')}
+  XSFON=false}catch(e){XSFON=false}},80)};
+try{const _hfX=xHomeFit;xHomeFit=function(){_hfX.apply(this,arguments);try{if(view!=='home')return;
+  const v=$('#view'),b=v&&v.querySelector(':scope>.brand');if(!v)return;const H=()=>document.documentElement.scrollHeight-innerHeight;
+  for(let i=0;i<4&&b&&H()>1;i++){const mt=parseFloat(getComputedStyle(b).marginTop)||0;if(mt<=0)break;b.style.setProperty('margin-top',Math.max(0,mt-H())+'px','important')}
+  let z=parseFloat(v.style.zoom)||1;while(H()>1&&z>.6){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}}catch(e){}}}catch(e){}
+
+try{render()}catch(e){}
 /* نهاية fix.js */
