@@ -12360,4 +12360,50 @@ function xSnzApply(){if(XSNZBUSY)return;XSNZBUSY=1;try{const o=xSnzD();let ch=fa
 try{new MutationObserver(()=>xSnzApply()).observe(document.body,{childList:true,subtree:true,characterData:true})}catch(e){}
 try{const _rnSz=render;render=function(){const r=_rnSz.apply(this,arguments);xSnzApply();return r}}catch(e){}
 xSnzApply();
+/* ========== 2.21.199 · التحصيل على بند ثابت يتربط بميعاده على طول ========== */
+XVER2='2.21.199';XVBUILD2='01/11/2026 - 10:10 ص';
+
+/* قاعدة الـ 15 يوم اتلغت. البرنامج بيربط لوحده بس لو اخترت "تدخل في حساب شهر" */
+xOccAuto=function(){let ch=false;
+  S.txs.forEach(t=>{if(!t||t.pend||t.del||t.type!=='inc'||!t.acm||(t.src&&t.src.k!=='xv'))return;
+    xFxCats(t.cat).forEach(r=>{if(t.src&&t.src.k==='r')return;
+      for(let k=0;k<600;k++){let d;try{d=occDate(r,k)}catch(e){break}if(!d)break;const m=d.slice(0,7);if(m>t.acm)break;if(m<t.acm)continue;
+        let s;try{s=stOf(occRec(r,k))}catch(e){break}if(s&&s.st==='wait'){xOccSet(t,r,k);ch=true}break}})});
+  return ch};
+
+/* البنود الثابتة اللي التحصيل ممكن يكون تبعها */
+function xFxCats(cid){return S.cats.filter(r=>r&&!r.mrg&&r.fixed&&r.start&&r.kind==='inc'&&r.active!==false&&(r.id===cid||r.par===cid))}
+function xOccSet(t,r,k){t.src={k:'r',id:r.id,p:k};delete t.xvar;r.st=r.st||{};r.st[k]={st:'done',txId:t.id,at:Date.now()}}
+
+/* المواعيد اللي لسه ما اتحصّلتش: المتأخر كله + أول ميعاد جاي */
+function xOccOpen(r){const td=today(),out=[];
+  for(let k=0;k<600;k++){let d;try{d=occDate(r,k)}catch(e){break}if(!d)break;
+    let s;try{s=stOf(occRec(r,k))}catch(e){continue}
+    if(s&&s.st==='wait')out.push({r,k,d,late:d<td});
+    if(d>=td&&s&&s.st==='wait')break;if(d>addMonths(td,13))break}
+  return out}
+
+/* بعد ما تحفظ تحصيل جديد على بند ثابت */
+var XKN=null,XOLQ=0;
+function xTxIds(){return new Set(S.txs.map(t=>t&&t.id))}
+try{XKN=xTxIds()}catch(e){}
+try{const _svOl=save;save=function(){const r=_svOl.apply(this,arguments);if(XOLQ)return r;try{
+  const old=XKN||new Set();XKN=xTxIds();
+  const nw=S.txs.filter(t=>t&&!old.has(t.id)&&!t.pend&&!t.del&&t.type==='inc'&&!t.src&&!t.feeOf&&!t.tipOf&&!t.payFeeOf);
+  if(!nw.length||nw.length>3)return r;
+  nw.forEach(t=>{const op=[].concat(...xFxCats(t.cat).map(xOccOpen));if(!op.length)return;
+    if(op.length===1){XOLQ=1;xOccSet(t,op[0].r,op[0].k);save();XOLQ=0;XKN=xTxIds();
+      setTimeout(()=>{try{toast('🔗 اتسجل لميعاد '+dmy(op[0].d));render()}catch(e){}},300)}
+    else setTimeout(()=>xOccPick(t.id),350)})}catch(e){XOLQ=0}return r}}catch(e){}
+
+/* لو فيه أكتر من ميعاد مفتوح، بيسألك تختار */
+function xOccPick(tid){const t=S.txs.find(x=>x.id===tid);if(!t||(t.src&&t.src.k==='r'))return;
+  const op=[].concat(...xFxCats(t.cat).map(xOccOpen));if(!op.length)return;
+  sheet(`<h2>🔗 التحصيل ده تبع أنهي ميعاد؟</h2>
+  <div class="xbwm">سجلت <b>${num(t.amount)}</b> يوم <b>${xDW(t.rdate||t.date)}</b>.</div>
+  <div class="list">${op.map(o=>`<div class="row" onclick="xOccPickDo('${t.id}','${o.r.id}',${o.k})"><div class="grow"><b>${esc(o.r.name)}</b><small>${xDW(o.d)}${o.late?' · <span style="color:var(--bad)">متأخر</span>':''}</small></div><div class="amt inc">${num(occAmt(o.r,o.k))}</div></div>`).join('')}</div>
+  <button class="btn ghost" onclick="closeSheet()">مش تبع ميعاد ثابت</button>`)}
+function xOccPickDo(tid,rid,k){const t=S.txs.find(x=>x.id===tid),r=C(rid);if(!t||!r)return;
+  XOLQ=1;xOccSet(t,r,k);save();XOLQ=0;XKN=xTxIds();closeSheet();render();toast('🔗 اتسجل لميعاد '+dmy(occDate(r,k)))}
+try{render()}catch(e){}
 /* نهاية fix.js */
