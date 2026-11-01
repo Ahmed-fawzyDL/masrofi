@@ -13281,6 +13281,6 @@ document.addEventListener('click',e=>{
     const r=xCsSave();if(r&&typeof r.catch==='function')r.catch(bad);
   }catch(err){bad(err)}
 },true);
-setTimeout(()=>toast('✅ شغال على 2.21.220'),1500);
+
 /* نهاية fix.js */
 
