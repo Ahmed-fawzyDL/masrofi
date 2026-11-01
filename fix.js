@@ -13141,4 +13141,42 @@ XVER2='2.21.214';XVBUILD2='01/11/2026 - 01:20 م';
   try{window.toast=toast}catch(e){}})();
 }catch(e){console.error('fix 2.21.214',e)}
 /* ===== آخر 2.21.214 ===== */
+/* ========== 2.21.215 · شير اللينك ========== */
+try{
+XVER2='2.21.215';XVBUILD2='01/11/2026 - 01:30 م';
+
+function xShUrl(){const s=S.settings.shareUrl;return s||location.href.split('#')[0].split('?')[0]}
+function xShMsg(){return (S.settings.shareMsg||'جرّب برنامج Centric لإدارة المصاريف والتحصيلات 👇')+'\n'+xShUrl()}
+function xShSet(k,v){S.settings[k]=v.trim();save()}
+function xShWa(){window.open('https://wa.me/?text='+encodeURIComponent(xShMsg()),'_blank')}
+async function xShShare(){const t=xShMsg();
+  if(navigator.share){try{await navigator.share({title:'Centric',text:t});return}catch(e){if(e&&e.name==='AbortError')return}}
+  xShCopy()}
+async function xShCopy(){const t=xShMsg();
+  try{await navigator.clipboard.writeText(t);return toast('📋 اتنسخ')}catch(e){}
+  const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();
+  try{document.execCommand('copy');toast('📋 اتنسخ')}catch(e){toast('مقدرتش أنسخ')}a.remove()}
+
+XVW.xshare=()=>`<div class="phead"><button class="mini" onclick="go(XSH_BACK||'more')">→</button><h3>🔗 شير اللينك</h3></div>
+ <div class="xcsb"><b>🔗 لينك البرنامج</b>
+  <input dir="ltr" value="${esc(xShUrl())}" onchange="xShSet('shareUrl',this.value);render()" style="font-size:13px">
+  <small style="display:block;opacity:.7;margin-top:4px">لو اللينك ده مش اللي بتبعته للناس، اكتب اللينك الصح مكانه</small></div>
+ <div class="xcsb"><b>✉️ الرسالة</b>
+  <textarea rows="3" onchange="xShSet('shareMsg',this.value)">${esc(S.settings.shareMsg||'جرّب برنامج Centric لإدارة المصاريف والتحصيلات 👇')}</textarea>
+  <small style="display:block;opacity:.7;margin-top:4px">اللينك بيتحط تحتها لوحده</small></div>
+ <button class="btn" style="background:#25D366;border-color:#25D366" onclick="xShWa()">🟢 ابعت على واتساب</button>
+ <button class="btn ghost" onclick="xShShare()">📤 مشاركة</button>
+ <button class="btn ghost" onclick="xShCopy()">📋 نسخ اللينك</button>`;
+var XSH_BACK='more';
+function xShGo(){XSH_BACK=view;go('xshare')}
+
+/* زرار في شاشة الإعدادات */
+function xShInj(){if(view==='xshare')return;const h=$('#view .phead h3');
+  if(!h||!/الإعدادات/.test(h.textContent)||$('#xsh-btn'))return;
+  const b=document.createElement('button');b.id='xsh-btn';b.type='button';b.className='btn ghost';b.textContent='🔗 شير اللينك';
+  b.onclick=xShGo;h.closest('.phead').after(b)}
+try{new MutationObserver(()=>{try{xShInj()}catch(e){}}).observe(document.getElementById('view')||document.body,{childList:true,subtree:true})}catch(e){}
+try{xShInj()}catch(e){}
+}catch(e){console.error('fix 2.21.215',e)}
+/* ===== آخر 2.21.215 ===== */
 /* نهاية fix.js */
