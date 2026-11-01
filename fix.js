@@ -13281,6 +13281,18 @@ document.addEventListener('click',e=>{
     const r=xCsSave();if(r&&typeof r.catch==='function')r.catch(bad);
   }catch(err){bad(err)}
 },true);
+/* ========== 2.21.221 · بعد حفظ السداد الشاشة ترجع فاضية ========== */
+XVER2='2.21.221';XVBUILD2='01/11/2026 - 02:25 م';
+try{const _i=xCsInit;xCsInit=function(id,pid){return _i.call(this,id,pid===undefined?'':pid)}}catch(e){}
+try{const _pv=xCsPayView;xCsPayView=function(pid,ok){
+  if(!ok)return _pv.apply(this,arguments);
+  const p=S.txs.find(x=>x&&x.id===pid);if(!p)return;
+  const n=S.txs.filter(t=>t&&t.ccpd===pid&&!t.ccfee).length;
+  try{closeSheet()}catch(e){}
+  xCsInit(p.to,'');render();scrollTo(0,0);
+  toast('✅ اتسجل سداد '+fmt(p.amount)+' · '+n+' عملية بقت مسددة');
+}}catch(e){}
+try{XCS=null;render()}catch(e){}
 
 /* نهاية fix.js */
 
