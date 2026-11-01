@@ -13053,4 +13053,28 @@ xCsSave=function(){const c=XCS;if(!c)return;xCsFix();const a=parseNum(c.a),fee=p
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.211',e)}
 /* ===== آخر 2.21.211 ===== */
+/* ========== 2.21.212 · القسط يتربط بسداد نفس الشهر ========== */
+try{
+XVER2='2.21.212';XVBUILD2='01/11/2026 - 01:15 م';
+
+function xCsHealInst(){let ch=0;
+  xCcAccts().forEach(m=>{const id=m.id,P=xCcPays(id);if(!P.length)return;
+    S.txs.forEach(t=>{if(!t||t.type!=='exp'||t.method!==id||t.del||t.ccfee)return;
+      const inst=(t.src&&t.src.k==='i')||/قسط/.test(t.note||'');if(!inst)return;
+      const mo=t.date.slice(0,7),cur=t.ccpd&&P.find(p=>p.id===t.ccpd);
+      if(cur&&cur.date.slice(0,7)===mo)return;
+      const own=P.filter(p=>p.date.slice(0,7)===mo&&p.date>=t.date).sort((a,b)=>a.date.localeCompare(b.date))[0];
+      if(!own||own.id===t.ccpd)return;
+      t.ccpd=own.id;ch++;
+      if(XCS&&XCS.sel&&XCS.pid!==own.id)XCS.sel.delete(t.id);
+      if(XCS&&XCS.sel&&XCS.pid===own.id)XCS.sel.add(t.id)})});
+  if(ch)try{save()}catch(e){}
+  return ch}
+
+(()=>{const _v=XVW.xcc;XVW.xcc=function(){try{xCsHealInst()}catch(e){console.error(e)}return _v.apply(this,arguments)}})();
+(()=>{const _s=xCsSave;xCsSave=function(){const r=_s.apply(this,arguments);try{if(xCsHealInst())render()}catch(e){}return r}})();
+
+try{xCsHealInst();render()}catch(e){}
+}catch(e){console.error('fix 2.21.212',e)}
+/* ===== آخر 2.21.212 ===== */
 /* نهاية fix.js */
