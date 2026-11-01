@@ -12242,4 +12242,52 @@ try{const _hfX=xHomeFit;xHomeFit=function(){_hfX.apply(this,arguments);try{if(vi
   let z=parseFloat(v.style.zoom)||1;while(H()>1&&z>.6){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}}catch(e){}}}catch(e){}
 
 try{render()}catch(e){}
+/* ========== 2.21.196 · الرئيسية على قد الشاشة ========== */
+XVER2='2.21.196';XVBUILD2='01/11/2026 - 09:40 ص';
+(()=>{const s=document.createElement('style');s.textContent=`
+body.xhome header{zoom:calc(var(--z,1) * .78)!important;padding-top:2px!important;padding-bottom:2px!important;min-height:0!important}
+body.xhome main{padding-top:2px!important}
+body.xhome #view .hero{padding:5px 8px!important;margin:0 0 5px!important;border-radius:14px!important}
+body.xhome #view .hero .hero-t{font-size:11px!important;line-height:1.4!important;margin:0!important}
+body.xhome #view .hero .hero-t em{font-size:9.5px!important;padding:0 6px!important}
+body.xhome #view .xhb{gap:4px!important;margin:4px 0 2px!important}
+body.xhome #view .xbx{padding:4px 5px!important;gap:2px!important;border-radius:10px!important}
+body.xhome #view .xbx>small{font-size:10px!important}
+body.xhome #view .xbx .xv{min-height:20px!important;padding:1px 4px!important;font-size:12.5px!important;border-radius:7px!important}
+body.xhome #view .xbx .xd{padding:1px!important;font-size:9.5px!important;border-radius:6px!important}
+body.xhome #view .xcr{font-size:9.5px!important;margin:2px 0 0!important}
+body.xhome #view .hero .hnet{padding:2px 8px!important;margin-top:2px!important;font-size:11px!important;min-height:0!important}
+body.xhome #view .hero .hnet b{font-size:12.5px!important}
+body.xhome #view .dash{gap:4px!important;margin-bottom:4px!important}
+body.xhome #view .dash .tile{padding:3px 6px!important;gap:1px!important;border-radius:11px!important;min-height:0!important}
+body.xhome #view .dash .tile .tth{font-size:10px!important;gap:3px!important}
+body.xhome #view .dash .tile .ti{font-size:12px!important}
+body.xhome #view .dash .tile .xv{min-height:18px!important;padding:1px 4px!important;margin:2px 0 1px!important;font-size:11.5px!important;border-radius:6px!important}
+body.xhome #view .dash .tile>small{font-size:9.5px!important;line-height:1.25!important}
+body.xhome #view .dash .tile .xd{margin-top:1px!important;padding-top:1px!important;font-size:9px!important}
+body.xhome #view>.warn,body.xhome #view>.xlnal{padding:4px 8px!important;margin:0 0 4px!important;font-size:11px!important}
+body.xhome #view>.brand{margin-top:6px!important}
+body.xhome #view>.brand .pill{padding:2px 12px!important}
+body.xhome #view#view{padding-bottom:calc(var(--navh,64px) + 6px)!important}
+`;document.head.appendChild(s)})();
+
+/* القياس بيشوف الصفحة والجزء اللي بيسكرول جواها */
+function xHomeOver(){const d=document.documentElement,m=document.querySelector('main');
+  return Math.max(d.scrollHeight-innerHeight,m?m.scrollHeight-m.clientHeight:0,document.body.scrollHeight-innerHeight)}
+var XHFT=0;
+function xHomeFit2(){try{if(view!=='home')return;const v=$('#view');if(!v)return;const b=v.querySelector(':scope>.brand');
+  v.style.removeProperty('zoom');if(b)b.style.removeProperty('margin-top');
+  let z=1;while(xHomeOver()>1&&z>.55){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}
+  if(b){const gap=-xHomeOver();if(gap>2){const mt=parseFloat(getComputedStyle(b).marginTop)||0;b.style.setProperty('margin-top',(mt+gap/z)+'px','important')}
+    for(let i=0;i<4&&xHomeOver()>1;i++){const mt=parseFloat(getComputedStyle(b).marginTop)||0;if(mt<=0)break;b.style.setProperty('margin-top',Math.max(0,mt-xHomeOver()/z)+'px','important')}}
+  if(xHomeOver()>1){while(xHomeOver()>1&&z>.5){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}}
+}catch(e){}}
+xHomeFit=xHomeFit2;
+function xHomeFitLater(){clearTimeout(XHFT);[120,450,1000,2000].forEach(t=>setTimeout(xHomeFit2,t))}
+try{const _rnHf=render;render=function(){const r=_rnHf.apply(this,arguments);if(view==='home')xHomeFitLater();return r}}catch(e){}
+addEventListener('resize',xHomeFitLater);
+addEventListener('load',xHomeFitLater);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')xHomeFitLater()});
+try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(xHomeFitLater)}catch(e){}
+try{render()}catch(e){}
 /* نهاية fix.js */
