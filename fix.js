@@ -12589,4 +12589,47 @@ try{const _o=XVW.xccp;XVW.xccp=function(){const h=_o.apply(this,arguments);
 
 }catch(e){console.error('fix 2.21.201',e)}
 /* ===== آخر 2.21.201 ===== */
+/* ========== 2.21.202 · شاشة الكريديت المبسطة ========== */
+try{
+XVER2='2.21.202';XVBUILD2='01/11/2026 - 10:15 ص';
+const _f=v=>{try{return fmt(v)}catch(e){return String(v)}};
+const _es=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const _dt=d=>{try{return xDW(d)}catch(e){return d}};
+const _td=()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')};
+const _in=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+
+window.xCcSimple=function(id){
+  const m=(S.methods||[]).find(x=>x.id===id);if(!m)return '';
+  const base=xCcBaseOf(id),P=xCcPurch(id,base)||[];
+  const U=P.filter(t=>!xCcPaidT(t)),uT=Math.round(U.reduce((s,t)=>s+(+t.amount||0),0)*100)/100;
+  const pays=xCcPays(id)||[],last=pays[0];
+  let iT=0,iN=0;const lim=_in(35);
+  (S.plans||[]).forEach(p=>{if(!(p.cc&&p.acct===id))return;(p.items||[]).forEach(it=>{
+    if(it.k==='mnt'||!it.due||it.due>lim)return;let t=null;try{t=itTx(it)}catch(e){}
+    if(!t){iT+=+it.amount||0;iN++}})});
+  const box='background:var(--soft);border-radius:14px;padding:12px;margin:8px 0';
+  return `<h2>💳 ${_es(m.name)}</h2>
+  <div style="${box};text-align:center;padding:18px">
+    <div class="muted" style="font-size:13px">مشتريات لسه مادفعتهاش للبنك</div>
+    <div style="font-size:30px;font-weight:800;color:var(--exp);margin:4px 0">${_f(uT)}</div>
+    <div class="muted" style="font-size:12px">${U.length} عملية${base?' · من '+_dt(base):''}</div>
+  </div>
+  ${iN?`<div style="${box};display:flex;justify-content:space-between;align-items:center"><span>🏦 أقساط جاية على الكارت (${iN})</span><b>${_f(iT)}</b></div>`:''}
+  ${last?`<div style="${box};display:flex;justify-content:space-between;align-items:center"><span>✅ آخر خصم من البنك<br><small class="muted">${_dt(last.date)}</small></span><b style="color:var(--inc)">${_f(last.amount)}</b></div>`:''}
+  <p class="muted" style="font-size:12.5px;margin:10px 2px">لما البنك يخصم فلوس، دوس الزرار الأخضر واكتب المبلغ اللي اتخصم بالظبط. البرنامج هيعلّم العمليات الأقدم إنها اتدفعت.</p>
+  <button class="btn" onclick="xCcBank('${id}')">💵 البنك خصم فلوس</button>
+  <button class="btn ghost" onclick="closeSheet();xCcOps('${id}')">🧾 شوف العمليات (مسدد / مش مسدد)</button>
+  <button class="btn ghost" style="font-size:12.5px;opacity:.8" onclick="xCcAdv('${id}')">⚙️ خيارات أكتر (الكشوفات · المرتجع · المواعيد)</button>
+  <button class="btn ghost" onclick="closeSheet()">رجوع</button>`};
+
+try{const _o=xCcSheet;
+  window.xCcAdv=function(id){window.XCCSOFF=1;try{return _o.call(this,id)}finally{window.XCCSOFF=0}};
+  window.xCcSheet=function(id){
+    if(window.XCCSOFF)return _o.apply(this,arguments);
+    try{const cid=id||(window.XCC&&XCC.id);if(!cid)return _o.apply(this,arguments);
+      const h=xCcSimple(cid);if(!h)return _o.apply(this,arguments);sheet(h);
+    }catch(e){console.error('2.21.202',e);return _o.apply(this,arguments)}};
+}catch(e){}
+}catch(e){console.error('fix 2.21.202',e)}
+/* ===== آخر 2.21.202 ===== */
 /* نهاية fix.js */
