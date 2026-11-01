@@ -12836,4 +12836,46 @@ try{const _psT=pendingSheet;pendingSheet=function(){const r=_psT.apply(this,argu
 try{render();updateBell()}catch(e){}
 }catch(e){console.error('fix 2.21.206',e)}
 /* ===== آخر 2.21.206 ===== */
+/* ========== 2.21.207 · أقساط الكريديت بس في شاشة السداد ========== */
+try{
+XVER2='2.21.207';XVBUILD2='01/11/2026 - 12:45 م';
+const _es7=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const _f7=v=>{try{return fmt(v)}catch(e){return String(v)}};
+const _dt7=d=>{try{return xDW(d)}catch(e){return d}};
+const _mn7=id=>((S.methods||[]).find(m=>m.id===id)||{}).name||'';
+/* القسط ده بيتدفع على الكارت ده؟ */
+function xPlOnCc(p,id){return !!(p&&p.acct===id&&(p.cc||p.ptype==='cc'))}
+
+window.xCcInstCand=function(id,d){const from=addMonths(d,-3),U=[],O=[],X=[];
+  (S.plans||[]).forEach(p=>(p.items||[]).forEach(it=>{
+    if(it.k==='mnt'||!it.due||it.due<from||it.due>d)return;
+    let t=null;try{t=itTx(it)}catch(e){}
+    const cc=xPlOnCc(p,id);
+    if(!t){(cc?U:X).push({p,it,a:+it.amount||0,on:cc})}
+    else if(cc&&!t.xpre&&!t.pend&&t.method!==id&&!xIsCr(t.method))O.push({p,it,t});
+  }));
+  const s=(a,b)=>a.it.due.localeCompare(b.it.due);U.sort(s);O.sort(s);X.sort(s);
+  return{U,O,X}};
+
+window.xCcInstHTML=function(id,d){const R=xCcInstCand(id,d),U=R.U,O=R.O,X=R.X;if(!U.length&&!O.length&&!X.length)return '';
+  const box='style="width:22px;height:22px;flex:0 0 22px;margin:0"';
+  const row=(x,chk)=>`<label class="row" style="cursor:pointer"><input type="checkbox" data-ci="${x.p.id}|${x.it.id}" data-v="${x.a}" ${chk?'checked':''} onchange="xCcBkPrev('${id}')" ${box}><div class="grow"><b>${_es7(x.p.name)}</b><small>قسط ${_dt7(x.it.due)}${chk?'':' · بيتدفع من '+_es7(_mn7(x.p.acct)||'حساب تاني')}</small></div><div class="amt exp">${_f7(x.a)}</div></label>`;
+  let h=`<div class="xccb" id="cb-i"><div class="xcch">🏦 أقساط الكريديت في المبلغ ده</div>`;
+  h+=U.length?U.map(x=>row(x,1)).join(''):'<p class="muted" style="font-size:12px;margin:4px 0">مفيش أقساط كريديت ميعادها قبل تاريخ الخصم</p>';
+  if(O.length){h+=`<p class="muted" style="font-size:11.5px;margin:8px 0 4px">أقساط كريديت متسجلة إنها اتدفعت من حساب تاني. لو اتدفعت فعلًا من الكريديت، علّم عليها عشان تتنقل:</p>`;
+    O.forEach(x=>{h+=`<label class="row" style="cursor:pointer"><input type="checkbox" data-cm="${x.t.id}" data-v="${x.t.amount}" onchange="xCcBkPrev('${id}')" ${box}><div class="grow"><b>↪ ${_es7(x.p.name)}</b><small>قسط ${_dt7(x.it.due)} · من ${_es7(_mn7(x.t.method))}</small></div><div class="amt exp">${_f7(x.t.amount)}</div></label>`})}
+  if(X.length)h+=`<details class="gen" style="margin-top:8px"><summary>➕ قسط تاني اتدفع على الكريديت (استثناء) · ${X.length}</summary><p class="muted" style="font-size:11.5px;margin:4px 0">دول أقساط بتتدفع من حسابات تانية. علّم بس لو واحد منهم اتدفع المرة دي على الكريديت.</p>${X.map(x=>row(x,0)).join('')}</details>`;
+  return h+'</div>'};
+
+/* الشاشة لو مفتوحة تتحدث */
+try{const b=document.querySelector('#cb-i');if(b){const id=(document.querySelector('#sheet [onclick^="xCcBankSv("]')||{getAttribute:()=>''}).getAttribute('onclick').match(/'([^']+)'/);
+  const d=(document.querySelector('#cb-d')||{}).value||today();if(id){b.outerHTML=xCcInstHTML(id[1],d)||'';xCcBkPrev(id[1])}}}catch(e){}
+/* لما تغيّر تاريخ الخصم، القايمة تتحسب من جديد */
+document.addEventListener('change',e=>{try{if(!e.target||e.target.id!=='cb-d')return;const b=document.querySelector('#cb-i'),sv=document.querySelector('#sheet [onclick^="xCcBankSv("]');if(!sv)return;
+  const id=(sv.getAttribute('onclick').match(/'([^']+)'/)||[])[1];if(!id)return;const h=xCcInstHTML(id,e.target.value||today());
+  if(b)b.outerHTML=h||'';else{const p=document.querySelector('#cb-p');if(p&&h)p.insertAdjacentHTML('beforebegin',h)}xCcBkPrev(id)}catch(err){}},true);
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.207',e)}
+/* ===== آخر 2.21.207 ===== */
 /* نهاية fix.js */
