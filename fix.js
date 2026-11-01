@@ -12771,4 +12771,69 @@ try{const _olQ=xOccLink;xOccLink=function(){const r=_olQ.apply(this,arguments);t
 try{save();render();updateBell();xLkSweep()}catch(e){}
 }catch(e){console.error('fix 2.21.205',e)}
 /* ===== آخر 2.21.205 ===== */
+/* ========== 2.21.206 · الربط بالاسم والشهر + تصليح الربطات القديمة ========== */
+try{
+XVER2='2.21.206';XVBUILD2='01/11/2026 - 11:55 ص';
+
+/* البنود اللي تعتبر نفس البند: نفس الرقم، أو الأب والأبناء، أو نفس الاسم */
+function xFam(r){const s=new Set([r.id]),n=normAr(r.name||'');if(r.par)s.add(r.par);
+  S.cats.forEach(c=>{if(!c)return;if(c.par===r.id||(r.par&&c.par===r.par)||normAr(c.name||'')===n)s.add(c.id)});return s}
+function xOccM(o,p,t){try{if(o)return (occDate(o,p)||'').slice(0,7)}catch(e){}return (t.rdate||t.date||'').slice(0,7)}
+
+/* هل الميعاد ده اتحصّل؟ بالاسم والشهر مش بالرقم الداخلي بس */
+window.xLinked=function(rid,k){const r=C(rid);if(!r)return null;let d;try{d=occDate(r,k)}catch(e){return null}if(!d)return null;
+  const m=d.slice(0,7),n=normAr(r.name||''),map=S.settings.xlink||{};
+  const mid=map[rid+'|'+k];if(mid){const t=S.txs.find(x=>x&&x.id===mid&&!x.pend);if(t)return t}
+  return S.txs.find(t=>{if(!t||t.pend||t.del||t.type!==r.kind||!t.src||t.src.k!=='r')return false;
+    if(t.src.id===rid)return t.src.p===k||xOccM(r,t.src.p,t)===m;
+    const o=C(t.src.id);if(o&&normAr(o.name||'')!==n)return false;
+    return xOccM(o,t.src.p,t)===m})||null};
+
+/* تصليح الربطات: العملية تتنقل على البند والميعاد اللي ظاهرين */
+function xLkPoint(r,k,t){const o=t.src&&t.src.k==='r'&&C(t.src.id);
+  if(o&&!(o.id===r.id&&t.src.p===k)&&o.st&&o.st[t.src.p]&&o.st[t.src.p].txId===t.id)delete o.st[t.src.p];
+  t.src={k:'r',id:r.id,p:k};delete t.xvar;r.st=r.st||{};r.st[k]={st:'done',txId:t.id,at:Date.now()};
+  (S.settings.xlink=S.settings.xlink||{})[r.id+'|'+k]=t.id}
+function xLkHeal(){let n=0;const td=today(),a=addMonths(td,-3),b=addMonths(td,1);
+  S.cats.forEach(r=>{if(!r||r.mrg||!r.fixed||!r.start||r.active===false)return;
+    for(let k=0;k<600;k++){let d;try{d=occDate(r,k)}catch(e){break}if(!d||d>b)break;if(d<a)continue;
+      const rec=(r.st||{})[k];if(rec&&rec.st==='done'&&S.txs.some(x=>x&&x.id===rec.txId&&!x.pend))continue;
+      if(rec&&(rec.st==='skip'||rec.st==='old'))continue;
+      const t=xLinked(r.id,k);if(t&&!(t.src.id===r.id&&t.src.p===k&&rec&&rec.st==='done')){xLkPoint(r,k,t);n++}}});
+  return n}
+try{const n=xLkHeal();if(n){save();setTimeout(()=>{try{render();toast('🔗 اتصلح '+n+' ميعاد كان مربوط ومش باين')}catch(e){}},800)}}catch(e){}
+try{const _rnH=render;render=function(){try{if(xLkHeal())save()}catch(e){}return _rnH.apply(this,arguments)}}catch(e){}
+
+/* شاشة الربط من جديد */
+xOccLink=function(rid,k){const r=C(rid);if(!r)return;XOLK={rid,k};const d=occDate(r,k),fam=xFam(r),n=normAr(r.name||'');
+  const ok=t=>t&&!t.pend&&!t.del&&t.type===r.kind&&!t.feeOf&&!t.tipOf&&!t.payFeeOf&&Math.abs(daysBetween(d,t.rdate||t.date))<=60;
+  const A=S.txs.filter(ok).sort(byDesc);
+  const mine=A.filter(t=>fam.has(t.cat)||(t.src&&t.src.k==='r'&&fam.has(t.src.id))),oth=A.filter(t=>!mine.includes(t));
+  const row=t=>{const cn=(C(t.cat)||{}).name||'',ti=t.note&&!/^🧾/.test(t.note)?t.note:(cn||'—');let lk='';
+    if(t.src&&t.src.k==='r'){const o=C(t.src.id);let od='';try{od=o?dmy(occDate(o,t.src.p)):''}catch(e){}
+      lk=(o&&o.id===r.id&&t.src.p===k)?'✅ مربوطة بالميعاد ده':(o&&normAr(o.name||'')===n)?'🔗 مربوطة بنفس البند'+(od?' · '+od:''):'🔗 مربوطة بـ '+(o?o.name:'بند اتحذف')+(od?' · '+od:'')}
+    const sub=[xDW(t.rdate||t.date),normAr(cn)!==normAr(ti)?cn:'',lk].filter(Boolean).map(esc).join(' · ');
+    return `<div class="row" onclick="xOccLinkDo('${t.id}')"><div class="grow"><b>${esc(ti)}</b><small>${sub}</small></div><div class="amt inc">${num(t.amount)}</div></div>`};
+  sheet(`<h2>🔗 ${esc(r.name)}</h2>
+  <div class="xbwm">الميعاد <b>${num(occAmt(r,k))}</b> يوم <b>${xDW(d)}</b>.<br>اختار العملية اللي اتحصّل بيها.</div>
+  ${mine.length?`<div class="fl">📌 من نفس البند</div><div class="list">${mine.map(row).join('')}</div>`:'<p class="muted">مفيش عمليات على البند ده قريبة من الميعاد</p>'}
+  ${oth.length?`<details class="gen" ${mine.length?'':'open'}><summary>عمليات تانية (${oth.length})</summary><div class="list">${oth.map(row).join('')}</div></details>`:''}
+  <button class="btn ghost" onclick="pendingSheet()">رجوع</button>`);
+  setTimeout(()=>{const bx=document.querySelector('#sheet .body')||document.querySelector('#sheet .sz');if(bx)bx.scrollTop=0},0)};
+
+/* الربط: لو كانت مربوطة بنفس البند تتنقل من غير سؤال */
+xOccLinkDo=async function(tid){const x=XOLK,t=S.txs.find(y=>y.id===tid),r=x&&C(x.rid);if(!t||!r)return toast('افتح غير محصّل تاني');
+  const o=t.src&&t.src.k==='r'&&C(t.src.id);
+  if(o&&normAr(o.name||'')!==normAr(r.name||'')){
+    if(!await ask('العملية دي مربوطة بـ '+o.name,'لو ربطتها هنا، الميعاد ده هيرجع غير محصّل.',{icon:'🔗',ok:'اربطها هنا'}))return}
+  if(t.cat!==r.id&&!xFam(r).has(t.cat)){const oc=C(t.cat);if(!t.note&&oc)t.note=oc.name}
+  xLkPoint(r,x.k,t);XOLK=null;save();render();pendingSheet();toast('🔗 اتربطت')};
+
+/* غير محصّل بيفتح من فوق */
+try{const _psT=pendingSheet;pendingSheet=function(){const r=_psT.apply(this,arguments);
+  setTimeout(()=>{const bx=document.querySelector('#sheet .body')||document.querySelector('#sheet .sz');if(bx)bx.scrollTop=0;try{xLkSweep()}catch(e){}},0);return r}}catch(e){}
+
+try{render();updateBell()}catch(e){}
+}catch(e){console.error('fix 2.21.206',e)}
+/* ===== آخر 2.21.206 ===== */
 /* نهاية fix.js */
