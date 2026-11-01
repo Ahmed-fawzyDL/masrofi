@@ -13129,4 +13129,16 @@ try{new MutationObserver(()=>{try{xBfInj()}catch(e){}}).observe(document.getElem
 try{xCsHeal();render()}catch(e){}
 }catch(e){console.error('fix 2.21.213',e)}
 /* ===== آخر 2.21.213 ===== */
+/* ========== 2.21.214 · إخفاء رسالة تصليح المواعيد ========== */
+try{
+XVER2='2.21.214';XVBUILD2='01/11/2026 - 01:20 م';
+(()=>{const _t=toast;let sv=0;
+  toast=function(m){const s=String(m==null?'':m);
+    if(/ميعاد/.test(s)&&/(اتصلح|مربوط|مش باين)/.test(s)){
+      if(!sv){sv=1;setTimeout(()=>{sv=0;try{save()}catch(e){}},1500)}
+      return}
+    return _t.apply(this,arguments)};
+  try{window.toast=toast}catch(e){}})();
+}catch(e){console.error('fix 2.21.214',e)}
+/* ===== آخر 2.21.214 ===== */
 /* نهاية fix.js */
