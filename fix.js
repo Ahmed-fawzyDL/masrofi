@@ -13266,5 +13266,21 @@ addEventListener('unhandledrejection',e=>{
     return o.apply(this,arguments);
   };
 })();
-setTimeout(()=>toast('✅ شغال على 2.21.219'),1500);
+/* ========== 2.21.220 · زرار حفظ السداد ========== */
+XVER2='2.21.220';XVBUILD2='01/11/2026 - 02:10 م';
+(()=>{const s=document.createElement('style');s.textContent=`#xcs-s{position:static!important;box-shadow:none!important}`;document.head.appendChild(s)})();
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('#view button');
+  if(!b||!/xCsSave\(/.test(b.getAttribute('onclick')||''))return;
+  e.preventDefault();e.stopImmediatePropagation();
+  toast('⏳ بيحفظ...');
+  const bad=err=>say('السداد ما اتحفظش',String((err&&(err.stack||err.message))||err).slice(0,500),'⚠️');
+  try{
+    if(!XCS){const cr=xCcAccts();if(cr.length){xCsInit(cr[0].id);render()}
+      return say('السداد ما اتحفظش','بيانات الشاشة ضاعت. اكتب المبلغ وعلّم العمليات تاني ودوس حفظ.','⚠️')}
+    const r=xCsSave();if(r&&typeof r.catch==='function')r.catch(bad);
+  }catch(err){bad(err)}
+},true);
+setTimeout(()=>toast('✅ شغال على 2.21.220'),1500);
 /* نهاية fix.js */
+
