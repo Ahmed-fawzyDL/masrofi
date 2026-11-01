@@ -12290,4 +12290,74 @@ addEventListener('load',xHomeFitLater);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')xHomeFitLater()});
 try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(xHomeFitLater)}catch(e){}
 try{render()}catch(e){}
+/* ========== 2.21.197 · التحصيل اللي اتسجل قبل ميعاده ========== */
+XVER2='2.21.197';XVBUILD2='01/11/2026 - 09:50 ص';
+
+/* البرنامج بيربط التحصيل اللي اتسجل قبل ميعاده بالميعاد ده لوحده */
+function xOccCats(r){const s=new Set([r.id]);if(r.par)s.add(r.par);return s}
+function xOccAuto(){let ch=false;const td=today(),lim=addMonths(td,1);
+  S.cats.forEach(r=>{if(!r||r.mrg||!r.fixed||!r.start||r.kind!=='inc'||r.active===false)return;const cs=xOccCats(r);
+    for(let k=0;k<600;k++){let d;try{d=occDate(r,k)}catch(e){break}if(!d||d>lim)break;if(daysBetween(d,td)<-120)continue;
+      let s;try{s=stOf(occRec(r,k))}catch(e){continue}if(!s||s.st!=='wait')continue;
+      let ps=null;if(k>0){try{ps=stOf(occRec(r,k-1))}catch(e){}}const prevWait=!!(ps&&ps.st==='wait'),m=d.slice(0,7);
+      const t=S.txs.find(t=>{if(!t||t.pend||t.del||t.type!=='inc'||!cs.has(t.cat)||t.feeOf||t.tipOf||t.payFeeOf)return false;
+        if(t.src&&t.src.k!=='xv')return false;if(t.acm===m)return true;if(prevWait)return false;
+        const g=daysBetween(d,t.rdate||t.date);return g>=0&&g<=15});
+      if(t){t.src={k:'r',id:r.id,p:k};delete t.xvar;r.st=r.st||{};r.st[k]={st:'done',txId:t.id,at:Date.now()};ch=true}}});
+  return ch}
+try{if(xOccAuto())save()}catch(e){}
+try{const _rnOa=render;render=function(){try{if(xOccAuto())save()}catch(e){}return _rnOa.apply(this,arguments)}}catch(e){}
+
+/* 🔗 اتحصّلت قبل كده: تختار العملية بإيدك */
+var XOLK=null;
+function xOccLink(rid,k){const r=C(rid);if(!r)return;XOLK={rid,k};const d=occDate(r,k),cs=xOccCats(r);
+  const L=S.txs.filter(t=>t&&!t.pend&&!t.del&&t.type===r.kind&&!t.feeOf&&!t.tipOf&&!t.payFeeOf&&Math.abs(daysBetween(d,t.rdate||t.date))<=60)
+    .sort((a,b)=>(cs.has(b.cat)?1:0)-(cs.has(a.cat)?1:0)||byDesc(a,b)).slice(0,60);
+  sheet(`<h2>🔗 ${esc(r.name)}</h2>
+  <div class="xbwm">الميعاد ده <b>${num(occAmt(r,k))}</b> يوم <b>${xDW(d)}</b>.<br>اختار العملية اللي اتحصّل بيها، وهتتشال من غير محصّل.</div>
+  <div class="list">${L.map(t=>{const lk=t.src&&t.src.k==='r';
+    return `<div class="row" onclick="xOccLinkDo('${t.id}')"><div class="grow"><b>${esc(xTxNm(t))}</b><small>${xDW(t.rdate||t.date)} · ${esc((C(t.cat)||{}).name||'')}${lk?' · 🔗 مربوطة بميعاد '+esc(dmy(occDate(C(t.src.id)||r,t.src.p))):''}</small></div><div class="amt inc">${num(t.amount)}</div></div>`}).join('')||'<p class="empty">مفيش تحصيلات قريبة من الميعاد ده</p>'}</div>
+  <button class="btn ghost" onclick="pendingSheet()">رجوع</button>`)}
+async function xOccLinkDo(tid){const x=XOLK,t=S.txs.find(y=>y.id===tid),r=x&&C(x.rid);if(!t||!r)return;
+  if(t.src&&t.src.k==='r'){const o=C(t.src.id);
+    if(!await ask('العملية دي مربوطة بميعاد تاني','لو ربطتها هنا، الميعاد التاني هيرجع غير محصّل.',{icon:'🔗',ok:'اربطها هنا'}))return;
+    if(o&&o.st&&o.st[t.src.p]&&o.st[t.src.p].txId===t.id)delete o.st[t.src.p]}
+  t.src={k:'r',id:r.id,p:x.k};delete t.xvar;r.st=r.st||{};r.st[x.k]={st:'done',txId:t.id,at:Date.now()};
+  XOLK=null;save();render();toast('🔗 اتربطت');pendingSheet()}
+try{const _pdL=pendingSheet;pendingSheet=function(){try{if(xOccAuto())save()}catch(e){}const r=_pdL.apply(this,arguments);try{
+  document.querySelectorAll('#sheet .xlna button[onclick*="occSheet("]').forEach(b=>{const m=b.getAttribute('onclick').match(/occSheet\('([^']+)',(\d+)\)/);
+    if(!m||b.parentElement.querySelector('.xolb'))return;
+    b.parentElement.insertAdjacentHTML('beforeend',`<button class="btn ghost xolb" onclick="event.stopPropagation();xOccLink('${m[1]}',${m[2]})">🔗 اتحصّلت قبل كده</button>`)})}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ========== 2.21.198 · الإشعار اللي تدوس عليه يتأجل لبكرة ========== */
+XVER2='2.21.198';XVBUILD2='01/11/2026 - 10:00 ص';
+var XSNZSEL='#view>.xlnal,#view>.warn,#sheet .ncard';
+function xSnzD(){const t=today();let o;try{o=JSON.parse(localStorage.getItem('xSnz')||'{}')}catch(e){o={}}if(!o||o.d!==t)o={d:t,k:{}};return o}
+function xSnzSave(o){try{localStorage.setItem('xSnz',JSON.stringify(o))}catch(e){}}
+function xSnzKey(el){const c=el.cloneNode(true);c.querySelectorAll('button').forEach(b=>b.remove());return (c.textContent||'').replace(/\s+/g,' ').trim().slice(0,140)}
+
+/* أول ما تدوس على إشعار أو شريط، بيتسجل إنه متأجل لبكرة */
+document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest(XSNZSEL);if(!el)return;
+  const k=xSnzKey(el);if(!k)return;const o=xSnzD();if(o.k[k])return;
+  o.k[k]=el.matches('#sheet .ncard')?'n':'b';xSnzSave(o);setTimeout(()=>{try{toast('🔕 اتأجل لبكرة')}catch(_){}},250)},true);
+
+/* اللي اتأجل النهارده بيتشال كل ما الشاشة تترسم */
+var XSNZBUSY=0;
+function xSnzApply(){if(XSNZBUSY)return;XSNZBUSY=1;try{const o=xSnzD();let ch=false,homeCh=false;
+  const cards=[...document.querySelectorAll('#sheet .ncard')];
+  if(cards.length){const here=new Set(cards.map(xSnzKey));let pr=false;
+    Object.keys(o.k).forEach(k=>{if(o.k[k]==='n'&&!here.has(k)){delete o.k[k];pr=true}});if(pr)xSnzSave(o)}
+  if(Object.keys(o.k).length){document.querySelectorAll(XSNZSEL).forEach(el=>{if(o.k[xSnzKey(el)]){if(el.closest('#view'))homeCh=true;el.remove();ch=true}})}
+  if(cards.length&&!document.querySelector('#sheet .ncard')&&!document.querySelector('#sheet .xsnze')){
+    const h=document.querySelector('#sheet h2');if(h)h.insertAdjacentHTML('afterend','<p class="empty xsnze">🔕 مفيش إشعارات تانية النهارده</p>')}
+  const hid=Object.values(o.k).filter(v=>v==='n').length;
+  [...document.querySelectorAll('header *')].filter(e=>!e.children.length&&/^\d+$/.test(e.textContent.trim())&&e.parentElement&&/🔔/.test(e.parentElement.textContent)).forEach(e=>{
+    const cur=e.textContent.trim();const orig=(e.dataset.xsv===cur&&e.dataset.xso)?+e.dataset.xso:+cur;
+    const n=Math.max(0,orig-hid);if(String(n)===cur&&e.dataset.xso)return;
+    e.dataset.xso=String(orig);e.dataset.xsv=String(n);e.textContent=n;e.style.display=n?'':'none'});
+  if(homeCh)try{xHomeFitLater()}catch(e){}
+}catch(e){}XSNZBUSY=0}
+try{new MutationObserver(()=>xSnzApply()).observe(document.body,{childList:true,subtree:true,characterData:true})}catch(e){}
+try{const _rnSz=render;render=function(){const r=_rnSz.apply(this,arguments);xSnzApply();return r}}catch(e){}
+xSnzApply();
 /* نهاية fix.js */
