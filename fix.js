@@ -12717,4 +12717,58 @@ try{const _rnL=render;render=function(){const r=_rnL.apply(this,arguments);try{x
 try{save();render();updateBell()}catch(e){}
 }catch(e){console.error('fix 2.21.204',e)}
 /* ===== آخر 2.21.204 ===== */
+/* ========== 2.21.205 · الميعاد المربوط يختفي من أي شاشة ========== */
+try{
+XVER2='2.21.205';XVBUILD2='01/11/2026 - 11:45 ص';
+
+/* قايمة الربط */
+window.xLkMap=function(){return S.settings.xlink=S.settings.xlink||{}};
+window.xLinked=function(rid,k){
+  const id=xLkMap()[rid+'|'+k]||(((C(rid)||{}).st||{})[k]||{}).txId;
+  if(!id)return null;const t=S.txs.find(x=>x&&x.id===id&&!x.pend);
+  return t||null};
+try{S.txs.forEach(t=>{if(t&&!t.pend&&t.src&&t.src.k==='r'&&C(t.src.id))xLkMap()[t.src.id+'|'+t.src.p]=t.id})}catch(e){}
+
+/* الربط بإيدك */
+window.xOccLinkDo=async function(tid){const x=XOLK,t=S.txs.find(y=>y.id===tid),r=x&&C(x.rid);if(!t||!r)return toast('حصلت مشكلة، افتح غير محصّل تاني');
+  if(t.src&&t.src.k==='r'&&!(t.src.id===r.id&&t.src.p===x.k)){
+    if(!await ask('العملية دي مربوطة بميعاد تاني','لو ربطتها هنا، الميعاد التاني هيرجع غير محصّل.',{icon:'🔗',ok:'اربطها هنا'}))return;
+    const o=C(t.src.id);if(o&&o.st&&o.st[t.src.p]&&o.st[t.src.p].txId===t.id)delete o.st[t.src.p];
+    delete xLkMap()[t.src.id+'|'+t.src.p]}
+  if(t.cat!==r.id){const oc=C(t.cat);if(!t.note&&oc&&normAr(oc.name)!==normAr(r.name))t.note=oc.name;t.cat=r.id}
+  xLkMap()[r.id+'|'+x.k]=t.id;r.st=r.st||{};r.st[x.k]={st:'done',txId:t.id,at:Date.now()};
+  t.src={k:'r',id:r.id,p:x.k};delete t.xvar;
+  XOLK=null;save();render();pendingSheet();xLkSweep();toast('🔗 اتربطت واتشالت')};
+
+/* أي كارت مربوط يتشال من الشاشة على طول */
+window.xLkSweep=function(){try{let n=0;
+  document.querySelectorAll('#sheet .xlnc,#view .xlnc').forEach(c=>{const b=c.querySelector('[onclick*="occSheet("]');if(!b)return;
+    const m=b.getAttribute('onclick').match(/occSheet\('([^']+)',\s*(\d+)\)/);
+    if(m&&xLinked(m[1],+m[2])){c.remove();n++}});
+  if(n){const bd=document.querySelector('#sheet .phead .badge');if(bd){const k=document.querySelectorAll('#sheet .xlnc').length;bd.textContent=k||'✓'}}
+}catch(e){}};
+(()=>{let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;xLkSweep();xHomePend()})}).observe(document.body,{childList:true,subtree:true})})();
+
+/* كارت "غير محصّل" في الرئيسية يتحسب من غير المربوط */
+window.xHomePend=function(){try{if(view!=='home')return;
+  const t=[...document.querySelectorAll('#view .dash .tile')].find(x=>/غير محصّل/.test(((x.querySelector('.tl')||{}).textContent)||''));if(!t||t.dataset.xlk===String(Object.keys(xLkMap()).length))return;
+  t.dataset.xlk=String(Object.keys(xLkMap()).length);
+  const L=pendAll().filter(x=>!(x&&x.o&&xLinked(x.o.r.id,x.o.k))),s=r2(L.reduce((a,x)=>a+(+x.a||0),0));
+  const val=L.length?fmt(s):'✓ كله محصّل',v=t.querySelector('.xv'),mk=v&&v.querySelector('.xmk');
+  if(mk)mk.dataset.v=encodeURIComponent(val);else if(v)v.innerHTML='<b>'+val+'</b>';
+  const bd=t.querySelector('.tb');if(bd){if(L.length)bd.textContent=L.length;else bd.remove()}
+  const sm=t.querySelector(':scope>small');if(sm)sm.textContent=L.length?L.length+' بند':MONTHS[NM-1];
+  if(!L.length)t.classList.remove('hot');
+}catch(e){}};
+
+/* الإشعارات وشاشة التحصيلات */
+try{const _alQ=alerts;alerts=function(){return (_alQ.apply(this,arguments)||[]).filter(a=>{const m=String(a.id||'').match(/^[fc]-(.+)-(\d+)$/);return !(m&&xLinked(m[1],+m[2]))})}}catch(e){}
+try{const _frQ=fixedRow;fixedRow=function(o){try{if(o&&o.s&&o.s.st==='wait'){const t=xLinked(o.r.id,o.k);if(t)o=Object.assign({},o,{s:{st:'done',t}})}}catch(e){}return _frQ.call(this,o)}}catch(e){}
+
+/* رقم النسخة في شاشة الربط عشان تتأكد إنها شغالة */
+try{const _olQ=xOccLink;xOccLink=function(){const r=_olQ.apply(this,arguments);try{const h=document.querySelector('#sheet .sz h2');if(h)h.insertAdjacentHTML('beforeend',' <small style="font-size:10px;opacity:.5">v2.21.205</small>')}catch(e){}return r}}catch(e){}
+
+try{save();render();updateBell();xLkSweep()}catch(e){}
+}catch(e){console.error('fix 2.21.205',e)}
+/* ===== آخر 2.21.205 ===== */
 /* نهاية fix.js */
