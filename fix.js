@@ -13592,6 +13592,37 @@ xNGo=function(id){const a=alerts().find(x=>x.id===id);readAlert(id);closeSheet()
 try{updateBell();render()}catch(e){}
 }catch(e){console.error('fix 2.21.223',e)}
 /* ===== آخر 2.21.223 ===== */
+/* ========== 2.21.224 · الحساب الأساسي في التقسيم + Today/Yesterday مقفولة ========== */
+try{
+XVER2='2.21.224';XVBUILD2='02/11/2026 - 11:30 ص';
+
+/* ---------- 🔀 التقسيم: الحساب الأساسي بيتغير + الإجمالي تحت ---------- */
+function xSplPM(v){const s=$('#f-m');if(s&&s.value!==v){s.value=v;s.dispatchEvent(new Event('change',{bubbles:true}))}if(F)F.method=v;xSplCalc()}
+xSplCalc=function(){const tot=parseNum(($('#f-amt')||{}).value)||0;
+  const V=[...document.querySelectorAll('#xspl [data-sa]')].map(i=>parseNum(i.value)||0),s=r2(V.reduce((a,b)=>a+b,0)),m=r2(tot-s);
+  const e=$('#xspl-m');if(e){if(e.tagName==='INPUT')e.value=amtStr(m);else e.textContent=num(m);e.className=m>0?'':'neg'}
+  const t=$('#xspl-t');if(!t)return;
+  if(!(tot>0)){t.className='xbwm';t.innerHTML='اكتب المبلغ الإجمالي فوق';return}
+  const ok=m>0;t.className='xbwm'+(ok?' ok':'');
+  t.innerHTML=`الإجمالي <b>${num(tot)}</b> = ${[m].concat(V).map(num).join(' + ')}<br>${ok?'✅ مظبوط':'⚠️ الحسابات التانية ('+num(s)+') لازم تكون أقل من الإجمالي'}`};
+function xSplPost(){const box=$('#xspl');if(!box||box.tagName==='BUTTON'||$('#xspl-pm'))return;
+  const mn=$('#xspl-mn'),kv=mn&&mn.closest('.kv'),fm=($('#f-m')||{}).value||(F&&F.method)||'';
+  if(kv)kv.outerHTML=`<div class="two"><label>الحساب الأساسي<select id="xspl-pm" onchange="xSplPM(this.value)">${opt(S.methods.filter(m=>m.active!==false||m.id===fm),fm)}</select></label><label>المبلغ (الباقي)<input id="xspl-m" readonly dir="ltr"></label></div>`;
+  box.querySelectorAll('small.xhint').forEach(x=>x.remove());
+  const add=box.querySelector('button.mini[onclick="xSplAdd()"]');
+  if(add&&!$('#xspl-t'))add.insertAdjacentHTML('beforebegin','<div id="xspl-t" class="xbwm"></div>');
+  xSplCalc()}
+try{const _tfSp2=txForm;txForm=function(){const r=_tfSp2.apply(this,arguments);try{xSplPost()}catch(e){}return r}}catch(e){}
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='f-m'){const p=$('#xspl-pm');if(p&&p.value!==e.target.value){p.value=e.target.value;const b=p.nextElementSibling;if(b&&b.classList.contains('xsel'))b.innerHTML=xLbl(p)}setTimeout(xSplCalc,0)}},true);
+
+/* ---------- 📅 Today / Yesterday: القوايم مقفولة ---------- */
+try{const _faC=xFlApply;xFlApply=function(){const r=_faC.apply(this,arguments);try{
+  const f=XFLT[view],q=((GQ&&GQ[view])||'').trim()||(($('#view .gsr input')||{}).value||'').trim();
+  if(f&&!q)document.querySelectorAll('#view details.grp[data-xso]').forEach(g=>{delete g.dataset.xso;g.open=false})}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.224',e)}
+/* ===== آخر 2.21.224 ===== */
 
 /* نهاية fix.js */
 
