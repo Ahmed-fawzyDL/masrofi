@@ -13554,6 +13554,44 @@ try{const _rnZ2=render;render=function(){
   return r}}catch(e){}
 try{render()}catch(e){}
 /* ===== آخر 2.21.222 ===== */
+/* ========== 2.21.223 · زرار "فتح" في الإشعارات ========== */
+try{
+XVER2='2.21.223';XVBUILD2='02/11/2026 - 11:20 ص';
+
+/* 1) الدوسة على الإشعار ما بقتش بتأجّله. التأجيل من زرار ⏰ بس */
+XSNZSEL='#view>.xlnal,#view>.warn';
+try{const o=xSnzD();let ch=false;Object.keys(o.k).forEach(k=>{if(o.k[k]==='n'){delete o.k[k];ch=true}});if(ch)xSnzSave(o)}catch(e){}
+document.querySelectorAll('header [data-xso]').forEach(e=>{delete e.dataset.xso;delete e.dataset.xsv;e.style.display=''});
+
+/* 2) فتح = الحاجة نفسها */
+function xNOpen(a){const id=String(a.id||'');let m;
+  /* رصيد الكاش */
+  if(/^cashlow/.test(id)){const ca=xCashAcct();if(ca)return xPmOpen(ca);return go('pmv')}
+  /* ميعاد ثابت (تحصيل أو مصروف) */
+  if((m=id.match(/^[fc]-(.+)-(\d+)$/))&&C(m[1]))return occSheet(m[1],+m[2]);
+  /* قسط */
+  if(id.startsWith('i-')){const p=(S.plans||[]).find(x=>id.startsWith('i-'+x.id+'-'));
+    if(p){let it=(p.items||[]).find(x=>id.includes(x.id));
+      if(!it){const d=(id.match(/\d{4}-\d{2}-\d{2}/)||[])[0];it=(p.items||[]).find(x=>d&&x.due===d)}
+      if(!it){try{it=planStats(p).next}catch(e){}}
+      if(it){let t=null;try{t=itTx(it)}catch(e){}if(t)return editTx(t.id);if(p.cc)return xCcPay(p.acct);return payStart(p.id,it.id)}
+      instPlan=p.id;return go('plan')}}
+  /* سلفة */
+  if(id.startsWith('l-'))return go('xln');
+  /* تذكير */
+  if(id.startsWith('u-'))return new Function(a.go)();
+  /* عملية معلّقة: الإشعار فيه رقم العملية */
+  const t=S.txs.find(x=>x&&x.id&&x.id.length>4&&id.includes(x.id));
+  if(t)return editTx(t.id);
+  /* بند: يفتح الميعاد اللي لسه ما اتعملش */
+  const c=S.cats.find(x=>x&&x.id&&x.id.length>4&&id.includes(x.id));
+  if(c&&c.fixed){try{const op=xOccOpen(c);if(op.length)return occSheet(c.id,op[0].k)}catch(e){}}
+  return new Function(a.go)()}
+xNGo=function(id){const a=alerts().find(x=>x.id===id);readAlert(id);closeSheet();if(!a)return;
+  setTimeout(()=>{try{xNOpen(a)}catch(e){try{new Function(a.go)()}catch(_){}}},80)};
+try{updateBell();render()}catch(e){}
+}catch(e){console.error('fix 2.21.223',e)}
+/* ===== آخر 2.21.223 ===== */
 
 /* نهاية fix.js */
 
