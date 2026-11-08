@@ -14347,5 +14347,133 @@ xUiTag=function(){xU2Strip();if(!XUI2)return;const W=innerWidth,H=innerHeight;
   [...document.body.children].forEach(el=>{if(chk(el))[...el.children].forEach(chk)})};
 xU2Strip();try{render();setTimeout(xUiTag,50)}catch(e){}
 /* ===== آخر 2.21.236 ===== */
+/* ========== 2.21.237 · تصميم جديد للثيم الداكن ========== */
+XVER2='2.21.237';XVBUILD2='08/11/2026 - 04:10 م';
+(()=>{try{
+  /* شيل الستايلات القديمة بتاعة 234-236 */
+  document.querySelectorAll('style').forEach(s=>{const t=s.textContent;
+    if(t.indexOf('html.xui2{--xg1')>-1||t.indexOf('html.xui2 body,html.xui2 body *{--xgc')>-1||t.indexOf('html.xui2 .xu2t')>-1)s.remove()});
+  document.querySelectorAll('link[href*="IBM+Plex+Sans+Arabic:wght@400;500;600;700&display"]').forEach(l=>{if(!l.id)l.remove()});
+  [...document.body.children].forEach(el=>[el,...el.children].forEach(e=>{try{e.classList.remove('xtp','xbt','xov','xshp','xu2t','xu2b','xu2s','xu2o')}catch(_){}}));
+  const s=document.createElement('style');s.id='xui3';s.textContent=`
+/* ===== الأساس ===== */
+html.xui2 body.dark{--g1:#14b8a6;--g2:#0ea5e9;--gl:rgba(20,184,166,.30);--sf:rgba(20,30,50,.62);--ln:rgba(148,163,184,.13);--ln2:rgba(148,163,184,.22);
+  --bg:#070d1a;--card:#111a2c;--soft:#1b2740;--soft2:#141f34;--bd:#22304a;--tx:#e8edf5;--mu:#94a3b8;
+  background:#070d1a;background-image:radial-gradient(900px 520px at 110% -8%,rgba(20,184,166,.18),transparent 60%),radial-gradient(760px 520px at -20% 30%,rgba(99,102,241,.14),transparent 60%),radial-gradient(700px 480px at 50% 120%,rgba(14,165,233,.12),transparent 60%);
+  background-attachment:fixed;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+html.xui2 body.dark ::selection{background:rgba(20,184,166,.35)}
+html.xui2 body.dark ::-webkit-scrollbar{width:6px;height:6px}html.xui2 body.dark ::-webkit-scrollbar-thumb{background:rgba(148,163,184,.3);border-radius:9px}
+html.xui2 body.dark :is(h3,.phead h3,.phead h2,#sheet h2){letter-spacing:-.2px}
+
+/* ===== الشريط اللي فوق ===== */
+html.xui2 body.dark header{background:rgba(9,14,27,.70)!important;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border-bottom:1px solid var(--ln)!important}
+html.xui2 body.dark #bell{background:rgba(255,255,255,.06);border-color:var(--ln2)}
+
+/* ===== الشريط اللي تحت ===== */
+html.xui2 nav{display:flex!important;flex-wrap:nowrap!important;grid-template-columns:none!important}
+html.xui2 nav>button:not(.fab){flex:1 1 0!important;min-width:0!important;width:auto!important;max-width:none!important}
+html.xui2 body.dark nav{left:10px!important;right:10px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;padding:6px 4px!important;border-radius:22px!important;
+  background:rgba(13,20,36,.74)!important;backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
+  border:1px solid var(--ln2)!important;box-shadow:0 14px 36px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06)}
+html.xui2 body.dark nav>button{border-radius:15px;padding:6px 0!important;transition:background .2s,color .2s,transform .12s}
+html.xui2 body.dark nav>button span{transition:transform .2s;display:inline-block}
+html.xui2 body.dark nav>button.on{background:linear-gradient(135deg,rgba(20,184,166,.22),rgba(14,165,233,.14));color:#5eead4!important}
+html.xui2 body.dark nav>button.on span{transform:translateY(-1px) scale(1.1)}
+
+/* ===== الكارت الكبير ===== */
+html.xui2 body.dark .hero{background:linear-gradient(135deg,#0d9488 0%,#0e7490 50%,#1e3a8a 100%)!important;border:1px solid rgba(255,255,255,.14);border-radius:22px!important;
+  box-shadow:0 18px 44px rgba(13,148,136,.28),inset 0 1px 0 rgba(255,255,255,.2);position:relative;overflow:hidden}
+html.xui2 body.dark .hero::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.2),transparent);top:-130px;left:-90px;pointer-events:none}
+html.xui2 body.dark .hero>*{position:relative}
+html.xui2 body.dark .hbtns button{background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:16px!important;backdrop-filter:blur(8px)}
+html.xui2 body.dark .hnet{background:rgba(0,0,0,.20)!important;border-radius:14px!important}
+
+/* ===== الكروت ===== */
+html.xui2 body.dark :is(.box,.list,.tile,.pcard,.tbl,details.grp,.mbar,.rbtn,.rg,.xpinf,.xpmon){background:var(--sf)!important;border:1px solid var(--ln)!important;
+  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 28px rgba(0,0,0,.32)}
+html.xui2 body.dark :is(.ic2,.ncard,.xdl,.xq2r){background:var(--sf)!important;backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 28px rgba(0,0,0,.32)}
+html.xui2 body.dark :is(.box,.list,.tile,.pcard,.ic2,.ncard,.tbl,details.grp,.rbtn){border-radius:18px!important}
+html.xui2 body.dark .tile{padding:12px!important;transition:transform .15s}
+html.xui2 body.dark .tile.hot{border-color:rgba(239,68,68,.35)!important;box-shadow:inset 0 3px 0 #ef4444,0 10px 28px rgba(0,0,0,.32)!important}
+html.xui2 body.dark .tile.soon{border-color:rgba(245,158,11,.35)!important;box-shadow:inset 0 3px 0 #f59e0b,0 10px 28px rgba(0,0,0,.32)!important}
+html.xui2 body.dark .tth .tl{color:#cbd5e1!important}
+html.xui2 body.dark .mbar{border-radius:16px!important}
+html.xui2 body.dark .mbar button{background:rgba(255,255,255,.06)!important;border-radius:12px!important}
+html.xui2 body.dark .row{border-bottom-color:rgba(148,163,184,.08)!important;transition:background .15s}
+html.xui2 body.dark .row:active{background:rgba(255,255,255,.04)}
+html.xui2 body.dark .xr[open]{background:rgba(255,255,255,.03)!important}
+html.xui2 body.dark :is(.kv,.xl){border-bottom-color:rgba(148,163,184,.14)!important}
+html.xui2 body.dark details.grp>summary{background:rgba(255,255,255,.03)!important;padding:14px 16px!important}
+html.xui2 body.dark details.grp[open]>summary{background:linear-gradient(90deg,rgba(20,184,166,.18),rgba(14,165,233,.06))!important;border-bottom:1px solid var(--ln)!important}
+html.xui2 body.dark .rbtn span{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(20,184,166,.24),rgba(14,165,233,.14));box-shadow:inset 0 0 0 1px rgba(45,212,191,.25)}
+html.xui2 body.dark .rg b{color:#e2e8f0!important}html.xui2 body.dark .rg small{color:var(--mu)!important}
+html.xui2 body.dark :is(.fth,.fadd){background:rgba(255,255,255,.04)!important;border-color:var(--ln2)!important;border-radius:14px!important}
+html.xui2 body.dark .warn{background:rgba(245,158,11,.12)!important;color:#fcd34d!important;border:1px solid rgba(245,158,11,.3);border-radius:14px!important}
+
+/* ===== مربعات الأرقام ===== */
+html.xui2 body.dark .kpi{background:var(--sf)!important;border:1px solid var(--ln)!important;border-top:3px solid #64748b!important;border-radius:16px!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 22px rgba(0,0,0,.28)}
+html.xui2 body.dark .kpi small{color:var(--mu)!important}html.xui2 body.dark .kpi b{color:#e2e8f0!important;font-size:16px}
+html.xui2 body.dark .kpi.inc{border-top-color:#22c55e!important}html.xui2 body.dark .kpi.inc b{color:#4ade80!important}
+html.xui2 body.dark .kpi.exp{border-top-color:#ef4444!important}html.xui2 body.dark .kpi.exp b{color:#f87171!important}
+html.xui2 body.dark .kpi.net{border-top-color:#3b82f6!important}html.xui2 body.dark .kpi.net b{color:#60a5fa!important}
+html.xui2 body.dark .kpi.warn{border-top-color:#f59e0b!important}html.xui2 body.dark .kpi.warn b{color:#fbbf24!important}
+
+/* ===== تابات واختيارات ===== */
+html.xui2 body.dark .tabs button{background:var(--sf)!important;border:1px solid var(--ln)!important;border-radius:14px!important;transition:background .2s,transform .12s}
+html.xui2 body.dark .tabs button.on{background:linear-gradient(135deg,var(--g1),var(--g2))!important;border-color:transparent!important;color:#fff!important;box-shadow:0 6px 18px var(--gl)}
+html.xui2 body.dark :is(.seg,.sseg){background:rgba(255,255,255,.04)!important;border:1px solid var(--ln);border-radius:14px!important;padding:4px!important}
+html.xui2 body.dark :is(.seg,.sseg) button{border-radius:10px!important}
+html.xui2 body.dark :is(.seg,.sseg) button.on{background:linear-gradient(135deg,rgba(20,184,166,.28),rgba(14,165,233,.2))!important;box-shadow:inset 0 0 0 1px rgba(45,212,191,.35)!important}
+
+/* ===== العلامات ===== */
+html.xui2 body.dark :is(.badge.done,.tag.ok,.tag.inc){background:rgba(34,197,94,.15)!important;color:#4ade80!important}
+html.xui2 body.dark :is(.badge.wait,.tag.wait){background:rgba(245,158,11,.15)!important;color:#fbbf24!important}
+html.xui2 body.dark :is(.badge.late,.tag.late,.tag.exp){background:rgba(239,68,68,.15)!important;color:#f87171!important}
+html.xui2 body.dark :is(.badge.soon,.tag.tr,.tag.ctr,.chip.fx){background:rgba(59,130,246,.16)!important;color:#93c5fd!important}
+html.xui2 body.dark :is(.badge.rej,.tag.rej,.chip){background:rgba(148,163,184,.13)!important;color:#cbd5e1!important}
+html.xui2 body.dark .chip.pd{background:rgba(245,158,11,.15)!important;color:#fbbf24!important}
+html.xui2 body.dark :is(.lock.op,.hero-t em.op){background:rgba(34,197,94,.2)!important;color:#86efac!important}
+html.xui2 body.dark :is(.lock:not(.op),.hero-t em.cl){background:rgba(245,158,11,.2)!important;color:#fcd34d!important}
+
+/* ===== زراير ===== */
+html.xui2 body.dark .btn{border-radius:14px!important;font-weight:800;letter-spacing:.2px;transition:transform .12s,filter .2s}
+html.xui2 body.dark .btn:not(.ghost):not(.danger):not(.dz):not(.xdS-del){background:linear-gradient(135deg,var(--g1),var(--g2))!important;color:#fff!important;border:0!important;box-shadow:0 10px 24px var(--gl),inset 0 1px 0 rgba(255,255,255,.22)}
+html.xui2 body.dark .btn.ghost{background:rgba(255,255,255,.05)!important;color:#5eead4!important;border:1px solid var(--ln2)!important}
+html.xui2 body.dark :is(.btn.danger,.btn.xdS-del){color:#f87171!important;border:1px solid rgba(248,113,113,.35)!important;background:rgba(248,113,113,.06)!important}
+html.xui2 body.dark .btn.dz{background:linear-gradient(135deg,#ef4444,#b91c1c)!important;color:#fff!important;box-shadow:0 10px 24px rgba(239,68,68,.3)}
+html.xui2 body.dark .mini{background:rgba(255,255,255,.06)!important;border:1px solid var(--ln2)!important;border-radius:11px!important;transition:transform .12s,background .2s}
+html.xui2 body.dark .mini.pri{background:linear-gradient(135deg,var(--g1),var(--g2))!important;border-color:transparent!important;color:#fff!important;box-shadow:0 6px 16px var(--gl)}
+html.xui2 body.dark .mini.danger{color:#f87171!important}
+html.xui2 body.dark :is(.btn,.mini,.rbtn,.tile,.tabs button,nav>button,.hbtns button):active{transform:scale(.96)}
+
+/* ===== الخانات ===== */
+html.xui2 body.dark :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea,.xsel){background:rgba(8,14,28,.55)!important;border:1px solid var(--ln2)!important;border-radius:12px!important;color:var(--tx)!important;color-scheme:dark;transition:border-color .2s,box-shadow .2s}
+html.xui2 body.dark :is(input,select,textarea,.xsel):focus{border-color:#2dd4bf!important;box-shadow:0 0 0 3px rgba(45,212,191,.18)!important;outline:none}
+html.xui2 body.dark .amt-in{font-size:30px!important;font-weight:800;background:linear-gradient(180deg,rgba(20,184,166,.10),rgba(8,14,28,.55))!important}
+
+/* ===== الشاشات اللي بتطلع + الرسايل ===== */
+html.xui2 body.dark #sheet .bk{background:rgba(2,6,16,.55)!important;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+html.xui2 body.dark #sheet .body{background:rgba(14,22,38,.88)!important;backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);border:1px solid var(--ln2);border-bottom:0;border-radius:26px 26px 0 0!important;box-shadow:0 -24px 60px rgba(0,0,0,.5)}
+html.xui2 body.dark .shbar{background:rgba(14,22,38,.85)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--ln)!important}
+html.xui2 body.dark .shbar i{background:rgba(148,163,184,.45)!important;width:44px!important}
+html.xui2 body.dark #dlg{background:rgba(2,6,16,.6)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+html.xui2 body.dark .dbox{background:rgba(17,26,44,.92)!important;backdrop-filter:blur(24px);border:1px solid var(--ln2);border-radius:24px!important}
+html.xui2 body.dark #toast{background:rgba(15,23,42,.92)!important;backdrop-filter:blur(12px);border:1px solid var(--ln2);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+html.xui2 body.dark #lock{background-image:radial-gradient(700px 500px at 100% 0%,rgba(20,184,166,.18),transparent 60%),radial-gradient(600px 500px at 0% 100%,rgba(99,102,241,.14),transparent 60%)}
+
+/* ===== حركة ===== */
+@keyframes xUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+html.xui2 #view.xan>*{animation:xUp .32s cubic-bezier(.2,.8,.2,1) both}
+html.xui2 #view.xan>*:nth-child(2){animation-delay:.03s}html.xui2 #view.xan>*:nth-child(3){animation-delay:.06s}
+html.xui2 #view.xan>*:nth-child(4){animation-delay:.09s}html.xui2 #view.xan>*:nth-child(n+5){animation-delay:.12s}
+@media (prefers-reduced-motion:reduce){html.xui2 *{animation:none!important;transition:none!important}}
+.xui2tg{display:block;margin:10px auto 0;padding:8px 16px;border-radius:999px;border:1px solid rgba(148,163,184,.3);background:transparent;color:inherit;font:inherit;font-size:12px;font-weight:700}
+`;document.head.appendChild(s);
+}catch(e){}})();
+xUiTag=function(){};
+xUiTog=function(){const v=document.getElementById('view');if(!v||v.querySelector('.xui2tg'))return;const f=v.querySelector('.brand small');if(!f)return;
+  f.insertAdjacentHTML('afterend',`<button class="xui2tg" onclick="xUi2Tog()">${XUI2?'✨ الشكل الجديد شغال · رجّع القديم':'✨ شغّل الشكل الجديد'}</button>`)};
+try{render()}catch(e){}
+/* ===== آخر 2.21.237 ===== */
 /* نهاية fix.js */
 
