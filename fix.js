@@ -14583,5 +14583,27 @@ XVER2='2.21.240';XVBUILD2='08/11/2026 - 05:00 م';
    .then(done,done);
 }catch(e){try{document.body.classList.add('xfont')}catch(_){}}})();
 /* ===== آخر 2.21.240 ===== */
+/* ========== 2.21.241 · فحص الخط (مؤقت) ========== */
+XVER2='2.21.241';XVBUILD2='08/11/2026 - 05:10 م';
+var XDG=+(localStorage.getItem('xdiag')||8),XDGV=null;
+function xDgSnap(){const m=document.querySelector('main'),el=document.querySelector('#view .phead h3,#view h3,#view .tile>b,#view b');
+  const cs=el?getComputedStyle(el):null,ms=getComputedStyle(m),r=el?el.getBoundingClientRect():{width:0,height:0};
+  const k=FONTS[S.settings.font]?S.settings.font:'cairo',fam=(FONTS[k][1]||'').replace(/'/g,'');
+  let ok='-';try{ok=document.fonts&&fam?document.fonts.check('700 16px "'+fam+'"'):'-'}catch(e){}
+  return{ff:cs?cs.fontFamily.split(',')[0]:'-',fs:cs?cs.fontSize:'-',fw:cs?cs.fontWeight:'-',z:ms.zoom,
+    vz:getComputedStyle(document.documentElement).getPropertyValue('--z').trim(),w:Math.round(r.width),h:Math.round(r.height),
+    fst:document.fonts?document.fonts.status:'-',ok,cls:document.body.className}}
+function xDgShow(a,b){
+  const K=[['ff','الخط'],['fs','الحجم'],['fw','التقل'],['z','zoom'],['vz','--z'],['w','العرض'],['h','الطول'],['fst','حالة الخطوط'],['ok','الخط محمّل']];
+  let d=document.getElementById('xdg');if(!d){d=document.createElement('div');d.id='xdg';document.body.appendChild(d)}
+  d.style.cssText='position:fixed;top:70px;left:8px;right:8px;z-index:99998;background:#000e;color:#fff;font:12px/1.6 monospace;direction:ltr;padding:8px 10px;border-radius:10px';
+  d.innerHTML=`<div>view=${view} · font=${S.settings.font} · fsz=${S.settings.fsz} · ui=${XUI2?1:0}<br>body=${b.cls}</div>
+  <table style="width:100%;border-collapse:collapse"><tr><td></td><td>أول لحظة</td><td>بعد ثانية</td></tr>${K.map(([k,l])=>
+    `<tr style="${String(a[k])!==String(b[k])?'color:#f87171;font-weight:800':''}"><td>${l}</td><td>${a[k]}</td><td>${b[k]}</td></tr>`).join('')}</table>
+  <button onclick="this.parentNode.remove()" style="margin-top:6px;padding:4px 12px">✕ قفل</button>`;
+  XDG--;localStorage.setItem('xdiag',String(XDG))}
+try{const _rnDg=render;render=function(){const r=_rnDg.apply(this,arguments);try{
+  if(XDG>0&&view!==XDGV){XDGV=view;const a=xDgSnap();setTimeout(()=>{try{xDgShow(a,xDgSnap())}catch(e){}},1000)}}catch(e){}return r}}catch(e){}
+/* ===== آخر 2.21.241 ===== */
 /* نهاية fix.js */
 
