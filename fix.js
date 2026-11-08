@@ -14190,5 +14190,29 @@ setTimeout(()=>{const s=xSnapGet();if(s)xSnapApply(s)},900);
 
 try{render()}catch(e){}
 /* ===== آخر 2.21.232 ===== */
+/* ========== 2.21.233 · كروت المعاملات مقفولة ========== */
+XVER2='2.21.233';XVBUILD2='08/11/2026 - 03:15 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .xdl .xdlh{cursor:pointer;margin-bottom:0;-webkit-tap-highlight-color:transparent}
+#view .xdl.open .xdlh{margin-bottom:10px}
+#view .xdl:not(.open) .xdlb{display:none}
+#view .xdl .xdlb{animation:xdlIn .2s ease}
+@keyframes xdlIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.xdls{display:block;font-size:12px;font-weight:600;opacity:.75;margin-top:4px}
+.xdlc{font-size:13px;opacity:.6;transition:transform .2s;padding:0 4px}
+#view .xdl.open .xdlc{transform:rotate(180deg)}
+`;document.head.appendChild(s)})();
+function xDlFold(){const p=plan(instPlan);if(!p)return;const D=xDeals(p);
+  document.querySelectorAll('#view .xdl').forEach((el,i)=>{const d=D[i];if(!d||el.dataset.fold)return;
+    const hd=el.querySelector('.xdlh');if(!hd)return;el.dataset.fold=1;const k=p.id+'_c_'+d.id;
+    const body=document.createElement('div');body.className='xdlb';
+    [...el.children].forEach(c=>{if(c!==hd)body.appendChild(c)});el.appendChild(body);
+    const b=hd.querySelector('b');if(b)b.insertAdjacentHTML('beforeend',`<small class="xdls">متبقي ${num(r2(d.a-d.pa))} · ${d.pc}/${d.c} قسط</small>`);
+    hd.insertAdjacentHTML('beforeend','<span class="xdlc">▾</span>');
+    el.classList.toggle('open',!!XDLO[k]);
+    hd.onclick=e=>{if(e.target.closest('button'))return;const o=!el.classList.contains('open');el.classList.toggle('open',o);XDLO[k]=o}})}
+try{const _rnF=render;render=function(){const r=_rnF.apply(this,arguments);try{if(view==='plan')xDlFold()}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+/* ===== آخر 2.21.233 ===== */
 /* نهاية fix.js */
 
