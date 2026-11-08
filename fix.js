@@ -14214,5 +14214,85 @@ function xDlFold(){const p=plan(instPlan);if(!p)return;const D=xDeals(p);
 try{const _rnF=render;render=function(){const r=_rnF.apply(this,arguments);try{if(view==='plan')xDlFold()}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 /* ===== آخر 2.21.233 ===== */
+/* ========== 2.21.234 · واجهة جديدة ========== */
+XVER2='2.21.234';XVBUILD2='08/11/2026 - 03:30 م';
+var XUI2=localStorage.getItem('centric-ui2')!=='0',XLV2=null;
+(()=>{
+const l=document.createElement('link');l.rel='stylesheet';
+l.href='https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap';document.head.appendChild(l);
+const s=document.createElement('style');s.textContent=`
+html.xui2{--xg1:#14b8a6;--xg2:#0ea5e9;--xgl:rgba(20,184,166,.32);--xbd:rgba(148,163,184,.16);--xgc:color-mix(in srgb,var(--card) 78%,transparent)}
+html.xui2 body{font-family:'IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(1100px 600px at 105% -10%,rgba(20,184,166,.16),transparent 60%),radial-gradient(900px 520px at -15% 35%,rgba(99,102,241,.12),transparent 60%),radial-gradient(800px 500px at 50% 115%,rgba(14,165,233,.10),transparent 60%);background-attachment:fixed}
+html.xui2 button,html.xui2 input,html.xui2 select,html.xui2 textarea{font-family:inherit}
+html.xui2 ::selection{background:rgba(20,184,166,.35)}
+html.xui2 ::-webkit-scrollbar{width:6px;height:6px}html.xui2 ::-webkit-scrollbar-thumb{background:rgba(148,163,184,.3);border-radius:9px}
+
+/* كروت */
+html.xui2 #view .box,html.xui2 #view details.grp{background:var(--xgc)!important;backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);
+  border:1px solid var(--xbd)!important;border-radius:20px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 30px rgba(0,0,0,.22)}
+html.xui2 #view details.grp>summary{padding:14px 16px;font-weight:700;border-radius:18px;transition:background .25s,box-shadow .25s}
+html.xui2 #view details.grp[open]>summary{background:linear-gradient(135deg,rgba(20,184,166,.92),rgba(14,165,233,.78))!important;color:#fff;box-shadow:0 8px 22px var(--xgl)}
+html.xui2 #view .kpi,html.xui2 #view .kpis>div{background:var(--xgc)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--xbd)!important;border-radius:18px!important;position:relative;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+html.xui2 #view .kpi::before,html.xui2 #view .kpis>div::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--xg1),var(--xg2));opacity:.85}
+html.xui2 #view .list .row{transition:transform .15s ease,background .2s}
+html.xui2 #view .list .row:active,html.xui2 #view .xq2r:active{transform:scale(.985);background:rgba(148,163,184,.08)}
+html.xui2 #view .phead h3{font-weight:700;letter-spacing:-.2px}
+html.xui2 .badge{border-radius:999px!important;font-weight:700}
+
+/* زراير */
+html.xui2 .btn{border-radius:16px!important;font-weight:700;letter-spacing:.2px;transition:transform .12s ease,box-shadow .2s,filter .2s}
+html.xui2 .btn:not([class*="ghost"]):not([class*="del"]):not([class*="danger"]):not([class*="red"]){background:linear-gradient(135deg,var(--xg1),var(--xg2))!important;color:#fff!important;border:0!important;box-shadow:0 8px 24px var(--xgl),inset 0 1px 0 rgba(255,255,255,.25)}
+html.xui2 .btn[class*="ghost"]{background:var(--xgc)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--xbd)!important}
+html.xui2 .mini{border-radius:12px!important;background:var(--xgc);border:1px solid var(--xbd)!important;transition:transform .12s,background .2s}
+html.xui2 .mini.pri{background:linear-gradient(135deg,var(--xg1),var(--xg2))!important;color:#fff!important;border:0!important;box-shadow:0 4px 14px var(--xgl)}
+html.xui2 .btn:active,html.xui2 .mini:active,html.xui2 button:active{transform:scale(.96)}
+
+/* خانات */
+html.xui2 input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),html.xui2 select,html.xui2 textarea,html.xui2 .xsel{
+  border-radius:14px!important;border:1px solid rgba(148,163,184,.24)!important;background:color-mix(in srgb,var(--card) 60%,transparent)!important;transition:border-color .2s,box-shadow .2s}
+html.xui2 input:focus,html.xui2 select:focus,html.xui2 textarea:focus,html.xui2 .xsel:focus{border-color:var(--xg1)!important;box-shadow:0 0 0 3px rgba(20,184,166,.18)!important;outline:none}
+
+/* الشريط فوق وتحت + الشاشات اللي بتطلع */
+html.xui2 .xtp,html.xui2 .xbt{background:color-mix(in srgb,var(--bg,#0b1220) 70%,transparent)!important;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
+html.xui2 .xtp{border-bottom:1px solid var(--xbd)!important}
+html.xui2 .xbt{border-top:1px solid var(--xbd)!important;box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+html.xui2 .xshp{background:color-mix(in srgb,var(--card) 88%,transparent)!important;backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
+  border-top:1px solid var(--xbd)!important;border-radius:26px 26px 0 0!important;box-shadow:0 -20px 50px rgba(0,0,0,.4)}
+html.xui2 .xov{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+
+/* حركة الصفحات */
+@keyframes xUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+html.xui2 #view.xan>*{animation:xUp .32s cubic-bezier(.2,.8,.2,1) both}
+html.xui2 #view.xan>*:nth-child(2){animation-delay:.03s}html.xui2 #view.xan>*:nth-child(3){animation-delay:.06s}
+html.xui2 #view.xan>*:nth-child(4){animation-delay:.09s}html.xui2 #view.xan>*:nth-child(5){animation-delay:.12s}
+html.xui2 #view.xan>*:nth-child(6){animation-delay:.15s}html.xui2 #view.xan>*:nth-child(n+7){animation-delay:.18s}
+@media (prefers-reduced-motion:reduce){html.xui2 *{animation:none!important;transition:none!important}}
+.xui2tg{display:block;margin:10px auto 0;padding:8px 16px;border-radius:999px;border:1px solid rgba(148,163,184,.3);background:transparent;color:inherit;font:inherit;font-size:12.5px;font-weight:700}
+`;document.head.appendChild(s)})();
+document.documentElement.classList.toggle('xui2',XUI2);
+
+/* بيتعرف على الشريط فوق وتحت والشاشات اللي بتطلع */
+function xUiTag(){if(!XUI2)return;const W=innerWidth,H=innerHeight;
+  const chk=el=>{try{const cs=getComputedStyle(el);if(cs.position!=='fixed'||cs.display==='none'||cs.visibility==='hidden')return false;const r=el.getBoundingClientRect();
+    if(r.width<W*.9)return true;
+    if(r.height>=H*.95&&r.top<=1){const bg=cs.backgroundColor;if(/rgba\(.+,\s*0?\.\d+\)$/.test(bg))el.classList.add('xov');return true}
+    if(r.top<=2&&r.height<130)el.classList.add('xtp');
+    else if(Math.abs(r.bottom-H)<=2&&r.height<130)el.classList.add('xbt');
+    else if(Math.abs(r.bottom-H)<=2&&r.top>40&&el.id!=='view')el.classList.add('xshp');
+    return true}catch(e){return false}};
+  [...document.body.children].forEach(el=>{if(chk(el))[...el.children].forEach(chk)})}
+function xUiTog(){const v=document.getElementById('view');if(!v||document.querySelector('.xui2tg'))return;
+  const f=[...v.querySelectorAll('small,p,div.muted,span')].find(e=>e.children.length===0&&e.textContent.includes('الإصدار'));if(!f)return;
+  f.insertAdjacentHTML('afterend',`<button class="xui2tg" onclick="xUi2Tog()">${XUI2?'✨ الشكل الجديد شغال · رجّع القديم':'✨ شغّل الشكل الجديد'}</button>`)}
+window.xUi2Tog=function(){XUI2=!XUI2;localStorage.setItem('centric-ui2',XUI2?'1':'0');document.documentElement.classList.toggle('xui2',XUI2);
+  render();setTimeout(xUiTag,50);toast(XUI2?'✨ الشكل الجديد اشتغل':'↩ رجع الشكل القديم')};
+try{const _rnU=render;render=function(){const r=_rnU.apply(this,arguments);try{
+  if(XUI2&&view!==XLV2){XLV2=view;const v=document.getElementById('view');if(v){v.classList.remove('xan');void v.offsetWidth;v.classList.add('xan');setTimeout(()=>v.classList.remove('xan'),800)}}
+  xUiTog();setTimeout(xUiTag,30)}catch(e){}return r}}catch(e){}
+try{const _shU=sheet;sheet=function(){const r=_shU.apply(this,arguments);setTimeout(xUiTag,30);return r}}catch(e){}
+setTimeout(xUiTag,300);setTimeout(xUiTag,1500);
+try{render()}catch(e){}
+/* ===== آخر 2.21.234 ===== */
 /* نهاية fix.js */
 
