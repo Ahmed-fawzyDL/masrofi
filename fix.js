@@ -14605,30 +14605,43 @@ function xDgShow(a,b){
 try{const _rnDg=render;render=function(){const r=_rnDg.apply(this,arguments);try{
   if(XDG>0&&view!==XDGV){XDGV=view;const a=xDgSnap();setTimeout(()=>{try{xDgShow(a,xDgSnap())}catch(e){}},1000)}}catch(e){}return r}}catch(e){}
 /* ===== آخر 2.21.241 ===== */
-/* ========== 2.21.242 · تثبيت حجم الصفحة ========== */
-XVER2='2.21.242';XVBUILD2='08/11/2026 - 05:20 م';
-(()=>{try{const s=document.createElement('style');
-  s.textContent='main,#view{zoom:var(--z)!important}';document.head.appendChild(s)}catch(e){}})();
-/* قفل مربع الفحص */
-XDG=0;try{localStorage.setItem('xdiag','0');const d=document.getElementById('xdg');if(d)d.remove()}catch(e){}
-try{render()}catch(e){}
-/* ===== آخر 2.21.242 ===== */
-/* ========== 2.21.243 · قفل حجم الصفحة نهائي ========== */
-XVER2='2.21.243';XVBUILD2='08/11/2026 - 05:30 م';
-function xZWant(){return String(+(S.settings&&S.settings.fsz)||1.07)}
-function xZLock(){try{const m=document.querySelector('main');if(!m)return;const z=xZWant();
-  if(m.style.getPropertyValue('--z'))m.style.removeProperty('--z');
-  if(m.style.getPropertyValue('zoom')!==z||m.style.getPropertyPriority('zoom')!=='important')m.style.setProperty('zoom',z,'important')}catch(e){}}
-try{const m=document.querySelector('main');
-  new MutationObserver(xZLock).observe(m,{attributes:true,attributeFilter:['style','class']});
-  new MutationObserver(xZLock).observe(document.body,{attributes:true,attributeFilter:['style','class']})}catch(e){}
-try{const _rnZ=render;render=function(){const r=_rnZ.apply(this,arguments);xZLock();return r}}catch(e){}
-xZLock();
-/* فحص: لو الحجم اتغير برضه */
-var XZWARN=0;
-setInterval(()=>{try{if(XZWARN)return;const m=document.querySelector('main'),z=getComputedStyle(m).zoom;
-  if(Math.abs(parseFloat(z)-parseFloat(xZWant()))>.01){XZWARN=1;toast('⚠️ الحجم اتغير لـ '+z+' بدل '+xZWant())}}catch(e){}},1500);
-try{render()}catch(e){}
-/* ===== آخر 2.21.243 ===== */
+/* ========== 2.21.244 · الشاشة بتظهر بحجمها على طول ========== */
+try{
+XVER2='2.21.244';XVBUILD2='08/11/2026 - 04:30 م';
+try{const d=document.getElementById('xdg');if(d)d.remove();localStorage.removeItem('xdiag');XDG=0}catch(e){}
+
+/* الرئيسية: الحساب بيحصل وقت الرسم، مش بعدها بثانية */
+var XHFOK=0;const _hfReal=xHomeFit2;
+xHomeFit2=function(){if(XHFOK)_hfReal()};
+xHomeFit=function(){};
+xHomeFitLater=function(){};
+function xHFNow(){if(XHFOK)return;XHFOK=1;try{_hfReal()}catch(e){}finally{XHFOK=0}}
+
+/* باقي الشاشات: من غير تصغير */
+xViewFit=function(){};
+
+/* الشاشات اللي بتطلع من تحت: الحساب بيحصل وقت الفتح */
+xSheetFit=function(){try{
+  if(XSFON||xTyping())return;const sh=$('#sheet');if(!sh||!sh.classList.contains('open'))return;
+  const sz=sh.querySelector('.sz'),box=sz&&(sz.closest('.body')||sz.parentElement);if(!sz||!box)return;
+  XSFON=true;const z0=xBaseZ(sz);let z=1;
+  while(box.scrollHeight-box.clientHeight>2&&z>.9){z=Math.round((z-.02)*100)/100;sz.style.setProperty('zoom',String(z0*z),'important')}
+}catch(e){}XSFON=false};
+
+function xZFix(){try{const v=$('#view');if(!v)return;if(view==='home')xHFNow();else v.style.removeProperty('zoom')}catch(e){}}
+try{const _rnZf=render;render=function(){const r=_rnZf.apply(this,arguments);xZFix();return r}}catch(e){}
+
+/* لو حاجة اتضافت للرئيسية بعد الرسم، الحساب بيتعاد قبل ما تظهر */
+(()=>{let q=0;const run=()=>{q=0;xZFix()};
+  try{new MutationObserver(()=>{if(q)return;q=1;Promise.resolve().then(run)}).observe(document.getElementById('view'),{childList:true,subtree:true})}catch(e){}
+  try{new MutationObserver(run).observe(document.body,{attributes:true,attributeFilter:['class']})}catch(e){}
+  addEventListener('resize',run);
+  try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(run)}catch(e){}
+})();
+
+try{xZFix()}catch(e){}
+}catch(e){console.error('fix 2.21.244',e)}
+/* ===== آخر 2.21.244 ===== */
+
 /* نهاية fix.js */
 
