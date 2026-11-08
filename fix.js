@@ -13933,6 +13933,65 @@ window.xDealRen=async function(pid,did){const p=plan(pid);if(!p)return;const d=d
 window.xPlLim=async function(pid){const p=plan(pid);if(!p)return;const v=await askIn('💳 حد الائتمان','',p.limit?amtStr(p.limit):'',true,'حفظ');if(v==null)return;
   p.limit=parseNum(v)||0;save();render()};
 /* ===== آخر 2.21.228 ===== */
+/* ========== 2.21.229 · تفاصيل المعاملة + خطة السداد + المتاح ========== */
+XVER2='2.21.229';XVBUILD2='08/11/2026 - 02:30 م';
+var XDLO={};
+(()=>{const s=document.createElement('style');s.textContent=`
+.xdld{margin-top:10px;border-top:1px dashed rgba(148,163,184,.3);padding-top:8px}
+.xdld>summary,.xpmon>summary{cursor:pointer;font-weight:800;font-size:13px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.xdld>summary::-webkit-details-marker,.xpmon>summary::-webkit-details-marker{display:none}
+.xdld>summary::after,.xpmon>summary::after{content:'▾';opacity:.6}
+.xdld[open]>summary::after,.xpmon[open]>summary::after{content:'▴'}
+#view .xpmon{padding:12px!important;margin:8px 0}
+.xst{width:100%;border-collapse:collapse;margin:10px 0 6px;font-size:12.5px}
+.xst th{font-size:10.5px;opacity:.7;font-weight:700;padding:6px 3px;border-bottom:1px solid rgba(148,163,184,.35);text-align:center}
+.xst td{padding:8px 3px;text-align:center;border-bottom:1px dashed rgba(148,163,184,.18);font-weight:700}
+.xst td:first-child{color:#f59e0b;font-weight:800}
+.xst tfoot td{border-top:1px solid rgba(148,163,184,.35);border-bottom:0;font-weight:800;color:inherit}
+.xdkv{display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:12.5px}.xdkv>span{opacity:.75}
+.xdn{font-size:12px;padding:4px 8px;margin:4px 0;border-radius:8px;background:rgba(14,165,233,.1)}
+`;document.head.appendChild(s)})();
+
+function xMY(d){return (d||'').slice(5,7)+'/'+(d||'').slice(0,4)}
+function xDlItems(p,did){const its=(p.items||[]).filter(i=>i.k!=='mnt'&&i.k!=='ann').sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+  const am=did==='_b'?(i=>i.deal?0:(i.parts?+i.base||0:+i.amount||0)):(i=>i.deal===did?+i.amount||0:(i.parts||[]).filter(x=>x.deal===did).reduce((s,x)=>s+(+x.a||0),0));
+  return its.map(it=>({it,a:r2(am(it))})).filter(x=>x.a>0)}
+function xSegs(L){const g=[];L.forEach(x=>{const l=g[g.length-1];if(l&&Math.abs(l.a-x.a)<.01){l.n++;l.to=x.d}else g.push({a:x.a,n:1,from:x.d,to:x.d})});return g}
+function xSegTbl(segs,h1){const tot=r2(segs.reduce((s,g)=>s+g.a*g.n,0)),n=segs.reduce((s,g)=>s+g.n,0);
+  return `<table class="xst"><thead><tr><th>${h1}</th><th>العدد</th><th>الإجمالي</th><th>الفترة</th></tr></thead><tbody>${segs.map(g=>
+    `<tr><td>${num(g.a)}</td><td>${g.n}</td><td>${num(r2(g.a*g.n))}</td><td>${g.n>1?xMY(g.from)+' – '+xMY(g.to):xMY(g.to)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td>المتبقي</td><td>${n}</td><td>${num(tot)}</td><td>${xMY(segs[segs.length-1].to)}</td></tr></tfoot></table>`}
+function xSegNotes(segs,lbl){let h='';segs.forEach((g,i)=>{const nx=segs[i+1];if(!nx)return;const df=r2(g.a-nx.a);
+  h+=`<div class="xdn">📉 من ${xMY(nx.from)} ${lbl} هيبقى <b>${num(nx.a)}</b> ${df>0?'بدل '+num(g.a)+' (هيقل '+num(df)+')':'بدل '+num(g.a)}</div>`});
+  const l=segs[segs.length-1];if(l)h+=`<div class="xdn">🏁 آخر قسط ${dmy(l.to)}</div>`;return h}
+function xDlDet(p,did){const L=xDlItems(p,did),pd=L.filter(x=>xIP(x.it)),un=L.filter(x=>!xIP(x.it));let h='';
+  if(pd.length)h+=`<div class="xdkv"><span>✅ اتدفع</span><b>${pd.length} قسط · ${num(r2(pd.reduce((s,x)=>s+x.a,0)))}</b></div>`;
+  if(!un.length)return h+'<div class="xdn">🎉 المعاملة دي خلصت</div>';
+  h+=`<div class="xdkv"><span>⏭ القسط الجاي</span><b>${num(un[0].a)} · ${xDW(un[0].it.due)}</b></div>`;
+  const segs=xSegs(un.map(x=>({a:x.a,d:x.it.due})));
+  return h+xSegTbl(segs,'القسط')+xSegNotes(segs,'قسط المعاملة')}
+function xMonPlan(p){const M2={};(p.items||[]).filter(i=>i.k!=='mnt'&&i.k!=='ann'&&!xIP(i)).forEach(i=>{const k=(i.due||'').slice(0,7);if(k)M2[k]=r2((M2[k]||0)+(+i.amount||0))});
+  const ks=Object.keys(M2).sort();if(!ks.length)return '';const segs=xSegs(ks.map(k=>({a:M2[k],d:k+'-01'})));
+  const ann=(p.items||[]).filter(i=>i.k==='ann'&&!xIP(i));
+  return xSegTbl(segs,'الشهري')+xSegNotes(segs,'القسط الشهري')+ann.map(i=>`<div class="xdn">📆 دفعة سنوية ${num(+i.amount||0)} في ${dmy(i.due)}</div>`).join('')}
+function xPlDom(){const p=plan(instPlan);if(!p)return;const D=xDeals(p);
+  document.querySelectorAll('#view .xdl').forEach((el,i)=>{const d=D[i];if(!d||el.querySelector('.xdld'))return;const k=p.id+'_'+d.id;
+    el.insertAdjacentHTML('beforeend',`<details class="xdld" ${XDLO[k]?'open':''} ontoggle="XDLO['${k}']=this.open"><summary>📋 تفاصيل المعاملة</summary>${xDlDet(p,d.id)}</details>`)});
+  const inf=document.querySelector('#view .xpinf');if(inf&&!document.querySelector('#view .xpmon')){const m=xMonPlan(p);const k=p.id+'_mon';
+    if(m)inf.insertAdjacentHTML('afterend',`<details class="box xpmon" ${XDLO[k]?'open':''} ontoggle="XDLO['${k}']=this.open"><summary>📆 خطة السداد الشهرية</summary>${m}</details>`)}}
+try{const _rnD=render;render=function(){const r=_rnD.apply(this,arguments);try{if(view==='plan')xPlDom()}catch(e){}return r}}catch(e){}
+
+/* ---------- 🟢 المتاح يتظبط من الأبلكيشن ---------- */
+function xAvail(p){const R=xPlRem(p);return p.avl?r2(+p.avl.v+(+p.avl.r-R)):r2(+p.limit-R)}
+window.xAvlSet=async function(pid){const p=plan(pid);if(!p)return;
+  const v=await askIn('🔄 المتاح في الأبلكيشن','اكتب المتاح زي ما هو ظاهر في الأبلكيشن دلوقتي (سيبه فاضي ترجع للحساب العادي)',p.avl?amtStr(xAvail(p)):'',true,'حفظ');
+  if(v==null)return;if(String(v).trim()===''){delete p.avl}else{p.avl={v:parseNum(v)||0,r:xPlRem(p),d:today()}}save();render();toast('✅ اتظبط المتاح')};
+try{const _vpA=vPlan;vPlan=function(){let h=_vpA.apply(this,arguments);try{const p=plan(instPlan);if(p&&+p.limit&&typeof h==='string'){
+  const old=`<span>🟢 المتاح</span><b>${fmt(r2(+p.limit-xPlRem(p)))}</b>`;
+  h=h.replace(old,`<span>🟢 المتاح${p.avl?' <small class="muted">· متظبط '+dmy(p.avl.d)+'</small>':''}</span><b>${fmt(xAvail(p))} <button class="mini" onclick="xAvlSet('${p.id}')">🔄</button></b>`)}}catch(e){}return h}}catch(e){}
+
+try{render()}catch(e){}
+/* ===== آخر 2.21.229 ===== */
 
 /* نهاية fix.js */
 
