@@ -14550,5 +14550,17 @@ html.xui2 body.dark .rbtn{padding:16px 6px!important;font-weight:700;font-size:1
   f.then(()=>setTimeout(show,wait))})();
 try{render()}catch(e){}
 /* ===== آخر 2.21.238 ===== */
+/* ========== 2.21.239 · وقف أي حركة أو تغيير حجم ========== */
+XVER2='2.21.239';XVBUILD2='08/11/2026 - 04:50 م';
+(()=>{try{const s=document.createElement('style');s.textContent=`
+html{-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}
+#view{overflow-x:clip}
+html.xui2 #view.xan>*{animation:none!important;opacity:1!important}
+html.xui2 body.dark :is(.btn,.mini,.rbtn,.tile,.tabs button,nav>button,.hbtns button,.xq2r,.row):active{transform:none!important}
+html.xui2 body.dark nav>button.on span{transform:none!important}
+html.xui2 body.dark :is(.tile,nav>button,nav>button span,.btn,.mini,.tabs button,.xdl .xdlb){transition:none!important;animation:none!important}
+`;document.head.appendChild(s)}catch(e){}})();
+try{render()}catch(e){}
+/* ===== آخر 2.21.239 ===== */
 /* نهاية fix.js */
 
