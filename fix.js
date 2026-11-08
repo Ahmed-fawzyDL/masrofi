@@ -14475,5 +14475,80 @@ xUiTog=function(){const v=document.getElementById('view');if(!v||v.querySelector
   f.insertAdjacentHTML('afterend',`<button class="xui2tg" onclick="xUi2Tog()">${XUI2?'✨ الشكل الجديد شغال · رجّع القديم':'✨ شغّل الشكل الجديد'}</button>`)};
 try{render()}catch(e){}
 /* ===== آخر 2.21.237 ===== */
+/* ========== 2.21.238 · فتح من غير رعشة + تطوير الشكل ========== */
+XVER2='2.21.238';XVBUILD2='08/11/2026 - 04:30 م';
+(()=>{try{const s=document.createElement('style');s.id='xui4';s.textContent=`
+/* ===== أداء: خلفية خفيفة ومن غير blur على الكروت ===== */
+html.xui2 body.dark{background-image:none!important;background-attachment:scroll!important}
+html.xui2 body.dark::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(900px 520px at 110% -8%,rgba(20,184,166,.18),transparent 60%),radial-gradient(760px 520px at -20% 30%,rgba(99,102,241,.14),transparent 60%),radial-gradient(700px 480px at 50% 120%,rgba(14,165,233,.12),transparent 60%)}
+html.xui2 body.dark :is(.box,.list,.tile,.pcard,.tbl,details.grp,.mbar,.rbtn,.rg,.xpinf,.xpmon,.ic2,.ncard,.xdl,.xq2r,.kpi,.tabs button,.hbtns button,.xdS-g,.xdS-pv,.xdS-hd,.fth,.fadd){backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@keyframes xUp{from{opacity:0}to{opacity:1}}
+html.xui2 #view.xan>*{animation:xUp .22s ease both!important;animation-delay:0s!important}
+
+/* ===== العناوين ===== */
+html.xui2 body.dark .phead{margin:4px 0 14px!important}
+html.xui2 body.dark :is(.phead h3,.phead h2){font-size:19px!important;font-weight:800}
+html.xui2 body.dark #view>h3{font-size:15px;font-weight:800;padding-inline-start:10px;border-inline-start:3px solid #14b8a6;margin:18px 2px 10px}
+html.xui2 body.dark #sheet h2{font-size:19px!important;font-weight:800;margin:4px 0 12px!important}
+
+/* ===== الكارت الكبير ===== */
+html.xui2 body.dark .hero{padding:16px!important}
+html.xui2 body.dark .hbtns{gap:10px!important}
+html.xui2 body.dark .hbtns button{padding:12px!important}
+html.xui2 body.dark .hbtns small{font-weight:700;opacity:.95}
+html.xui2 body.dark .hbtns b{font-size:22px!important;font-weight:800}
+html.xui2 body.dark .hnet{padding:10px 12px!important;font-size:13px!important}
+html.xui2 body.dark .hnet b{font-size:18px!important;font-weight:800}
+
+/* ===== مربعات الرئيسية ===== */
+html.xui2 body.dark .dash{gap:10px!important}
+html.xui2 body.dark .tth{gap:8px!important}
+html.xui2 body.dark .tth .ti{width:34px;height:34px;flex:0 0 34px;border-radius:11px;display:grid;place-items:center;font-size:17px!important;
+  background:linear-gradient(135deg,rgba(20,184,166,.26),rgba(14,165,233,.12));box-shadow:inset 0 0 0 1px rgba(45,212,191,.24)}
+html.xui2 body.dark .tile.hot .tth .ti{background:linear-gradient(135deg,rgba(239,68,68,.28),rgba(239,68,68,.08));box-shadow:inset 0 0 0 1px rgba(248,113,113,.3)}
+html.xui2 body.dark .tile.soon .tth .ti{background:linear-gradient(135deg,rgba(245,158,11,.28),rgba(245,158,11,.08));box-shadow:inset 0 0 0 1px rgba(251,191,36,.3)}
+html.xui2 body.dark .tth .tl{font-size:12.5px!important;font-weight:700!important}
+html.xui2 body.dark .tile>b{font-size:20px!important;font-weight:800;margin-top:4px}
+html.xui2 body.dark .tile>small{font-size:11.5px!important}
+html.xui2 body.dark .tth .tb{background:linear-gradient(135deg,#ef4444,#dc2626)!important;box-shadow:0 3px 10px rgba(239,68,68,.4)}
+
+/* ===== القوايم ===== */
+html.xui2 body.dark .row{padding:12px 14px!important}
+html.xui2 body.dark .xr summary{padding:12px 14px!important}
+html.xui2 body.dark .amt{font-size:15px;font-weight:800}
+html.xui2 body.dark :is(.ic,.iav,.nic){background:linear-gradient(135deg,rgba(148,163,184,.18),rgba(148,163,184,.06))!important;box-shadow:inset 0 0 0 1px rgba(148,163,184,.22)}
+html.xui2 body.dark details.grp>summary .gs{background:rgba(255,255,255,.07);padding:2px 12px;border-radius:999px}
+html.xui2 body.dark :is(.bar,.prog,.pbar){background:rgba(148,163,184,.14)!important;border-radius:99px!important;height:7px!important}
+html.xui2 body.dark :is(.bar,.prog,.pbar) i{border-radius:99px;background-image:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.25))}
+html.xui2 body.dark .ncard{border-radius:16px!important}
+html.xui2 body.dark .nempty div{font-size:46px;filter:drop-shadow(0 6px 16px rgba(20,184,166,.35))}
+
+/* ===== الجداول ===== */
+html.xui2 body.dark #view .ptbl{border-color:rgba(148,163,184,.22)!important;border-radius:16px!important;background:rgba(20,30,50,.62)!important}
+html.xui2 body.dark #view .ptbl thead tr.hd th{background:linear-gradient(135deg,#0d9488,#0e7490)!important}
+html.xui2 body.dark #view .ptbl tbody tr:nth-child(even) td:not(.rn){background:rgba(255,255,255,.025)!important}
+html.xui2 body.dark #view .ptbl :is(td,th){border-color:rgba(148,163,184,.12)!important}
+html.xui2 body.dark #view .ptbl :is(.rn,thead tr.cl th){background:rgba(255,255,255,.04)!important;color:#7b8ba3!important}
+
+/* ===== الفورمز ===== */
+html.xui2 body.dark :is(label,.fl){color:#a5b4c8!important;font-weight:600;font-size:12.5px}
+html.xui2 body.dark .two{gap:10px!important}
+html.xui2 body.dark :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select){padding:11px 12px!important;margin-top:6px!important}
+html.xui2 body.dark :is(.qbox,.fxin,.fxbox){border-radius:16px!important}
+html.xui2 body.dark input[type=checkbox]{accent-color:#14b8a6}
+
+/* ===== المزيد ===== */
+html.xui2 body.dark .rgrid{gap:10px!important}
+html.xui2 body.dark .rbtn{padding:16px 6px!important;font-weight:700;font-size:13px!important}
+`;document.head.appendChild(s)}catch(e){}})();
+
+/* البرنامج يظهر مرة واحدة بعد ما كل حاجة تجهز */
+(function(){const show=()=>requestAnimationFrame(()=>document.body.classList.add('xready'));
+  let wait=120;try{if(xSnapGet())wait=1000}catch(e){}
+  const f=(document.fonts&&document.fonts.ready)?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1200))]):Promise.resolve();
+  f.then(()=>setTimeout(show,wait))})();
+try{render()}catch(e){}
+/* ===== آخر 2.21.238 ===== */
 /* نهاية fix.js */
 
