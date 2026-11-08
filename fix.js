@@ -14645,3 +14645,26 @@ try{xZFix()}catch(e){}
 
 /* نهاية fix.js */
 
+/* ===== PATCH 2.21.245 - xHomeFit2 loop guard + show after fit ===== */
+(function(){
+  if(typeof xHomeFit2!=='function'){document.body.classList.add('xready');return}
+  var F=xHomeFit2,last='',busy=0;
+  function key(){
+    var v=document.getElementById('view');if(!v)return '';
+    var w='';try{w=String(view)}catch(e){}
+    return w+'|'+innerWidth+'x'+innerHeight+'|'+v.innerHTML.length+'|'+
+      getComputedStyle(document.documentElement).getPropertyValue('--z').trim();
+  }
+  window.xHomeFit2=function(){
+    if(busy)return;
+    var k=key();if(k&&k===last)return;
+    busy=1;
+    try{return F.apply(this,arguments)}
+    finally{busy=0;last=key()}
+  };
+  try{xHomeFit2=window.xHomeFit2}catch(e){}
+  try{if(document.body.classList.contains('xhome'))window.xHomeFit2()}catch(e){}
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    document.body.classList.add('xready');
+  })});
+})();
