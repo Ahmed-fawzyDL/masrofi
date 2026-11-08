@@ -14154,6 +14154,41 @@ window.xDeDel=function(){const E=XDE;if(!E||E.did==='_b')return;const p=plan(E.p
   save();XDE=null;try{closeSheet()}catch(e){try{history.back()}catch(_){}}render();toast('🗑 اتحذفت المعاملة')};
 try{render()}catch(e){}
 /* ===== آخر 2.21.231 ===== */
+/* ========== 2.21.232 · الشاشة بتفضل 5 دقايق + جدول المعاملة ========== */
+XVER2='2.21.232';XVBUILD2='08/11/2026 - 03:10 م';
 
+/* ---------- 📋 صف المتبقي بيظهر بس لو فيه أكتر من مبلغ ---------- */
+xSegTbl=function(segs,h1){const tot=r2(segs.reduce((s,g)=>s+g.a*g.n,0)),n=segs.reduce((s,g)=>s+g.n,0);
+  return `<table class="xst"><thead><tr><th>${h1}</th><th>العدد</th><th>الإجمالي</th><th>الفترة</th></tr></thead><tbody>${segs.map(g=>
+    `<tr><td>${num(g.a)}</td><td>${g.n}</td><td>${num(r2(g.a*g.n))}</td><td>${g.n>1?xMY(g.from)+' – '+xMY(g.to):xMY(g.to)}</td></tr>`).join('')}</tbody>
+    ${segs.length>1?`<tfoot><tr><td>المتبقي</td><td>${n}</td><td>${num(tot)}</td><td>${xMY(segs[segs.length-1].to)}</td></tr></tfoot>`:''}</table>`};
+
+/* ---------- ⏱ آخر شاشة بتفضل 5 دقايق ---------- */
+var XREV=false;
+setInterval(()=>{try{let r=false;try{r=!!SHOWAMT}catch(e){}XREV=!!(r||XBALOK||XPMU||(XBSHOW&&XBSHOW.size))}catch(e){}},700);
+function xSnapSave(){try{let rev=XREV;try{const pb=document.getElementById('xpm-bal');if(pb&&pb.textContent.trim()!=='••••••')rev=true}catch(e){}
+  const sh=(document.getElementById('xd-n')&&XDL)?{k:'dl',d:XDL}:(document.getElementById('xe-q')&&XDE)?{k:'de',d:XDE}:null;
+  let ip=null;try{ip=instPlan}catch(e){}
+  localStorage.setItem('centric-snap',JSON.stringify({t:Date.now(),rev,view,ip,y:scrollY||0,sh}))}catch(e){}}
+function xSnapGet(){try{const s=JSON.parse(localStorage.getItem('centric-snap')||'null');
+  if(!s||s.rev||Date.now()-s.t>300000)return null;return s}catch(e){return null}}
+function xSnapApply(s){try{
+  const shId=s.sh?(s.sh.k==='dl'?'xd-n':'xe-q'):null;
+  if(view===s.view&&(!shId||document.getElementById(shId)))return;
+  if(s.view&&view!==s.view){try{if(s.ip!=null)instPlan=s.ip}catch(e){}
+    try{go(s.view)}catch(e){try{view=s.view;render()}catch(_){view='home';render()}}
+    setTimeout(()=>{try{scrollTo(0,s.y||0)}catch(e){}},80)}
+  if(s.sh&&!document.getElementById(shId)&&!document.querySelector('#f-amt,#y-m')){
+    if(s.sh.k==='dl'){XDL=s.sh.d;xDlSheet()}else{XDE=s.sh.d;xDeSheet()}}
+}catch(e){}}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){xSnapSave();return}
+  setTimeout(()=>{const s=xSnapGet();if(s)xSnapApply(s)},400)});
+window.addEventListener('pagehide',()=>{try{if(document.visibilityState!=='hidden')xSnapSave()}catch(e){}});
+/* لما البرنامج يتقفل خالص ويتفتح تاني */
+setTimeout(()=>{const s=xSnapGet();if(s)xSnapApply(s)},900);
+
+try{render()}catch(e){}
+/* ===== آخر 2.21.232 ===== */
 /* نهاية fix.js */
 
