@@ -14613,5 +14613,22 @@ XVER2='2.21.242';XVBUILD2='08/11/2026 - 05:20 م';
 XDG=0;try{localStorage.setItem('xdiag','0');const d=document.getElementById('xdg');if(d)d.remove()}catch(e){}
 try{render()}catch(e){}
 /* ===== آخر 2.21.242 ===== */
+/* ========== 2.21.243 · قفل حجم الصفحة نهائي ========== */
+XVER2='2.21.243';XVBUILD2='08/11/2026 - 05:30 م';
+function xZWant(){return String(+(S.settings&&S.settings.fsz)||1.07)}
+function xZLock(){try{const m=document.querySelector('main');if(!m)return;const z=xZWant();
+  if(m.style.getPropertyValue('--z'))m.style.removeProperty('--z');
+  if(m.style.getPropertyValue('zoom')!==z||m.style.getPropertyPriority('zoom')!=='important')m.style.setProperty('zoom',z,'important')}catch(e){}}
+try{const m=document.querySelector('main');
+  new MutationObserver(xZLock).observe(m,{attributes:true,attributeFilter:['style','class']});
+  new MutationObserver(xZLock).observe(document.body,{attributes:true,attributeFilter:['style','class']})}catch(e){}
+try{const _rnZ=render;render=function(){const r=_rnZ.apply(this,arguments);xZLock();return r}}catch(e){}
+xZLock();
+/* فحص: لو الحجم اتغير برضه */
+var XZWARN=0;
+setInterval(()=>{try{if(XZWARN)return;const m=document.querySelector('main'),z=getComputedStyle(m).zoom;
+  if(Math.abs(parseFloat(z)-parseFloat(xZWant()))>.01){XZWARN=1;toast('⚠️ الحجم اتغير لـ '+z+' بدل '+xZWant())}}catch(e){}},1500);
+try{render()}catch(e){}
+/* ===== آخر 2.21.243 ===== */
 /* نهاية fix.js */
 
