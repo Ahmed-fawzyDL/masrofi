@@ -14605,5 +14605,13 @@ function xDgShow(a,b){
 try{const _rnDg=render;render=function(){const r=_rnDg.apply(this,arguments);try{
   if(XDG>0&&view!==XDGV){XDGV=view;const a=xDgSnap();setTimeout(()=>{try{xDgShow(a,xDgSnap())}catch(e){}},1000)}}catch(e){}return r}}catch(e){}
 /* ===== آخر 2.21.241 ===== */
+/* ========== 2.21.242 · تثبيت حجم الصفحة ========== */
+XVER2='2.21.242';XVBUILD2='08/11/2026 - 05:20 م';
+(()=>{try{const s=document.createElement('style');
+  s.textContent='main,#view{zoom:var(--z)!important}';document.head.appendChild(s)}catch(e){}})();
+/* قفل مربع الفحص */
+XDG=0;try{localStorage.setItem('xdiag','0');const d=document.getElementById('xdg');if(d)d.remove()}catch(e){}
+try{render()}catch(e){}
+/* ===== آخر 2.21.242 ===== */
 /* نهاية fix.js */
 
