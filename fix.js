@@ -6822,7 +6822,7 @@ body.xhome #view{display:flex!important;flex-direction:column}
 body.xhome #view>.brand{margin-top:auto!important;padding-top:10px}
 body.xhome .brand small{display:block!important;font-size:10px!important;line-height:1.5!important;opacity:.8}
 `;document.head.appendChild(s)})();
-function xHomeFit(){try{
+function xHomeFit(){/*K247*/return;try{
   const v=$('#view');if(!v)return;
   if(view!=='home'){v.style.minHeight='';return}
   const z=parseFloat(getComputedStyle(document.querySelector('main')).zoom)||1;
@@ -7084,7 +7084,7 @@ body #view>.brand{margin-top:10px!important}
 `;document.head.appendChild(s)})();
 
 /* بوكس الشركة ينزل لآخر الشاشة من غير سكرول، في كل الشاشات */
-xHomeFit=function(){try{
+xHomeFit=function(){/*K247*/return;try{
   const v=$('#view');if(!v)return;v.style.minHeight='';
   const b=v.querySelector(':scope>.brand');if(!b)return;b.style.removeProperty('margin-top');
   const sm=b.querySelector('small');if(sm&&!sm.dataset.x2){sm.dataset.x2=1;sm.innerHTML=sm.innerHTML.replace(/ · (?=[^·]*$)/,'<br>')}
@@ -9203,7 +9203,7 @@ body.xhome #view .dash .tile .xd{font-size:9.5px!important;margin-top:1px!import
 `;document.head.appendChild(s)})();
 
 /* ---------- 🏠 الرئيسية من غير سكرول ---------- */
-xHomeFit=function(){try{const v=$('#view');if(!v)return;
+xHomeFit=function(){/*K247*/return;try{const v=$('#view');if(!v)return;
   v.style.zoom='';const b=v.querySelector(':scope>.brand');if(b)b.style.removeProperty('margin-top');
   if(view!=='home')return;
   const sm=b&&b.querySelector('small');if(sm&&!sm.dataset.x2){sm.dataset.x2=1;sm.innerHTML=sm.innerHTML.replace(/ · (?=[^·]*$)/,'<br>')}
@@ -12038,7 +12038,7 @@ function xBaseZ(el){el.style.removeProperty('zoom');return parseFloat(getCompute
 
 /* شاشات التسجيل والتعديل */
 var XSFT=0,XSFON=false;
-function xSheetFit(){clearTimeout(XSFT);XSFT=setTimeout(()=>{try{
+function xSheetFit(){/*K247*/return;clearTimeout(XSFT);XSFT=setTimeout(()=>{try{
   if(XSFON||xTyping())return;const sh=$('#sheet');if(!sh||!sh.classList.contains('open'))return;
   const sz=sh.querySelector('.sz'),box=sz&&(sz.closest('.body')||sz.parentElement);if(!sz||!box)return;
   XSFON=true;const z0=xBaseZ(sz);let z=1;
@@ -12052,7 +12052,7 @@ document.addEventListener('toggle',()=>setTimeout(xSheetFit,30),true);
 
 /* الشاشات العادية: بتصغر بس لو اللي زيادة قليل */
 var XVFT=0;
-function xViewFit(){clearTimeout(XVFT);XVFT=setTimeout(()=>{try{
+function xViewFit(){/*K247*/return;clearTimeout(XVFT);XVFT=setTimeout(()=>{try{
   if(view==='home'||xTyping())return;const v=$('#view');if(!v)return;
   v.style.removeProperty('zoom');const H=()=>document.documentElement.scrollHeight-innerHeight;
   const ex=H();if(ex<=2||ex>innerHeight*.2)return;
@@ -12231,13 +12231,13 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 setInterval(xDayChk,60000);
 
 /* ---------- 📱 المقاسات: خط أكبر في الشاشات + الرئيسية من غير سكرول ---------- */
-xSheetFit=function(){clearTimeout(XSFT);XSFT=setTimeout(()=>{try{
+xSheetFit=function(){/*K247*/return;clearTimeout(XSFT);XSFT=setTimeout(()=>{try{
   if(XSFON||xTyping())return;const sh=$('#sheet');if(!sh||!sh.classList.contains('open'))return;
   const sz=sh.querySelector('.sz'),box=sz&&(sz.closest('.body')||sz.parentElement);if(!sz||!box)return;
   XSFON=true;const z0=xBaseZ(sz);let z=1;
   while(box.scrollHeight-box.clientHeight>2&&z>.9){z=Math.round((z-.02)*100)/100;sz.style.setProperty('zoom',String(z0*z),'important')}
   XSFON=false}catch(e){XSFON=false}},80)};
-try{const _hfX=xHomeFit;xHomeFit=function(){_hfX.apply(this,arguments);try{if(view!=='home')return;
+try{const _hfX=xHomeFit;xHomeFit=function(){/*K247*/return;_hfX.apply(this,arguments);try{if(view!=='home')return;
   const v=$('#view'),b=v&&v.querySelector(':scope>.brand');if(!v)return;const H=()=>document.documentElement.scrollHeight-innerHeight;
   for(let i=0;i<4&&b&&H()>1;i++){const mt=parseFloat(getComputedStyle(b).marginTop)||0;if(mt<=0)break;b.style.setProperty('margin-top',Math.max(0,mt-H())+'px','important')}
   let z=parseFloat(v.style.zoom)||1;while(H()>1&&z>.6){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}}catch(e){}}}catch(e){}
@@ -12276,7 +12276,7 @@ body.xhome #view#view{padding-bottom:calc(var(--navh,64px) + 6px)!important}
 function xHomeOver(){const d=document.documentElement,m=document.querySelector('main');
   return Math.max(d.scrollHeight-innerHeight,m?m.scrollHeight-m.clientHeight:0,document.body.scrollHeight-innerHeight)}
 var XHFT=0;
-function xHomeFit2(){/*G246*/var __k=(function(){try{var v=document.getElementById('view');return String(typeof view!=='undefined'?view:'')+'|'+innerWidth+'x'+innerHeight+'|'+(v?v.innerHTML.length:0)+'|'+getComputedStyle(document.documentElement).getPropertyValue('--z').trim()}catch(e){return Math.random()}})();if(__k===window.__xhfK)return;window.__xhfK=__k;try{if(view!=='home')return;const v=$('#view');if(!v)return;const b=v.querySelector(':scope>.brand');
+function xHomeFit2(){/*K247*/return;/*G246*/var __k=(function(){try{var v=document.getElementById('view');return String(typeof view!=='undefined'?view:'')+'|'+innerWidth+'x'+innerHeight+'|'+(v?v.innerHTML.length:0)+'|'+getComputedStyle(document.documentElement).getPropertyValue('--z').trim()}catch(e){return Math.random()}})();if(__k===window.__xhfK)return;window.__xhfK=__k;try{if(view!=='home')return;const v=$('#view');if(!v)return;const b=v.querySelector(':scope>.brand');
   v.style.removeProperty('zoom');if(b)b.style.removeProperty('margin-top');
   let z=1;while(xHomeOver()>1&&z>.55){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}
   if(b){const gap=-xHomeOver();if(gap>2){const mt=parseFloat(getComputedStyle(b).marginTop)||0;b.style.setProperty('margin-top',(mt+gap/z)+'px','important')}
@@ -12284,7 +12284,7 @@ function xHomeFit2(){/*G246*/var __k=(function(){try{var v=document.getElementBy
   if(xHomeOver()>1){while(xHomeOver()>1&&z>.5){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}}
 }catch(e){}}
 xHomeFit=xHomeFit2;
-function xHomeFitLater(){clearTimeout(XHFT);[120,450,1000,2000].forEach(t=>setTimeout(xHomeFit2,t))}
+function xHomeFitLater(){/*K247*/return;clearTimeout(XHFT);[120,450,1000,2000].forEach(t=>setTimeout(xHomeFit2,t))}
 try{const _rnHf=render;render=function(){const r=_rnHf.apply(this,arguments);if(view==='home')xHomeFitLater();return r}}catch(e){}
 addEventListener('resize',xHomeFitLater);
 addEventListener('load',xHomeFitLater);
@@ -14612,23 +14612,23 @@ try{const d=document.getElementById('xdg');if(d)d.remove();localStorage.removeIt
 
 /* الرئيسية: الحساب بيحصل وقت الرسم، مش بعدها بثانية */
 var XHFOK=0;const _hfReal=xHomeFit2;
-xHomeFit2=function(){/*G246*/var __k=(function(){try{var v=document.getElementById('view');return String(typeof view!=='undefined'?view:'')+'|'+innerWidth+'x'+innerHeight+'|'+(v?v.innerHTML.length:0)+'|'+getComputedStyle(document.documentElement).getPropertyValue('--z').trim()}catch(e){return Math.random()}})();if(__k===window.__xhfK)return;window.__xhfK=__k;if(XHFOK)_hfReal()};
-xHomeFit=function(){};
-xHomeFitLater=function(){};
-function xHFNow(){if(XHFOK)return;XHFOK=1;try{_hfReal()}catch(e){}finally{XHFOK=0}}
+xHomeFit2=function(){/*K247*/return;/*G246*/var __k=(function(){try{var v=document.getElementById('view');return String(typeof view!=='undefined'?view:'')+'|'+innerWidth+'x'+innerHeight+'|'+(v?v.innerHTML.length:0)+'|'+getComputedStyle(document.documentElement).getPropertyValue('--z').trim()}catch(e){return Math.random()}})();if(__k===window.__xhfK)return;window.__xhfK=__k;if(XHFOK)_hfReal()};
+xHomeFit=function(){/*K247*/return;};
+xHomeFitLater=function(){/*K247*/return;};
+function xHFNow(){/*K247*/return;if(XHFOK)return;XHFOK=1;try{_hfReal()}catch(e){}finally{XHFOK=0}}
 
 /* باقي الشاشات: من غير تصغير */
-xViewFit=function(){};
+xViewFit=function(){/*K247*/return;};
 
 /* الشاشات اللي بتطلع من تحت: الحساب بيحصل وقت الفتح */
-xSheetFit=function(){try{
+xSheetFit=function(){/*K247*/return;try{
   if(XSFON||xTyping())return;const sh=$('#sheet');if(!sh||!sh.classList.contains('open'))return;
   const sz=sh.querySelector('.sz'),box=sz&&(sz.closest('.body')||sz.parentElement);if(!sz||!box)return;
   XSFON=true;const z0=xBaseZ(sz);let z=1;
   while(box.scrollHeight-box.clientHeight>2&&z>.9){z=Math.round((z-.02)*100)/100;sz.style.setProperty('zoom',String(z0*z),'important')}
 }catch(e){}XSFON=false};
 
-function xZFix(){try{const v=$('#view');if(!v)return;if(view==='home')xHFNow();else v.style.removeProperty('zoom')}catch(e){}}
+function xZFix(){/*K247*/return;try{const v=$('#view');if(!v)return;if(view==='home')xHFNow();else v.style.removeProperty('zoom')}catch(e){}}
 try{const _rnZf=render;render=function(){const r=_rnZf.apply(this,arguments);xZFix();return r}}catch(e){}
 
 /* لو حاجة اتضافت للرئيسية بعد الرسم، الحساب بيتعاد قبل ما تظهر */
@@ -14647,3 +14647,16 @@ try{xZFix()}catch(e){}
 
 /* ===== PATCH 2.21.246 - reveal after fit ===== */
 (function(){requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('xready')})})})();
+
+/* ===== PATCH 2.21.247 - ONE zoom source: CSS only ===== */
+(function(){
+  try{localStorage.removeItem('xdiag');localStorage.removeItem('xdiag_r')}catch(e){}
+  var st=document.createElement('style');st.id='xz247';
+  st.textContent=
+    'html body main{zoom:1!important}'+
+    'html body #view{zoom:var(--z)!important}'+
+    'html body.xhome #view{zoom:calc(var(--z) * .84)!important}';
+  document.head.appendChild(st);
+  ['main','#view'].forEach(function(s){var e=document.querySelector(s);if(e)e.style.removeProperty('zoom')});
+  requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('xready')})});
+})();
