@@ -12276,7 +12276,7 @@ body.xhome #view#view{padding-bottom:calc(var(--navh,64px) + 6px)!important}
 function xHomeOver(){const d=document.documentElement,m=document.querySelector('main');
   return Math.max(d.scrollHeight-innerHeight,m?m.scrollHeight-m.clientHeight:0,document.body.scrollHeight-innerHeight)}
 var XHFT=0;
-function xHomeFit2(){try{if(view!=='home')return;const v=$('#view');if(!v)return;const b=v.querySelector(':scope>.brand');
+function xHomeFit2(){/*G246*/var __k=(function(){try{var v=document.getElementById('view');return String(typeof view!=='undefined'?view:'')+'|'+innerWidth+'x'+innerHeight+'|'+(v?v.innerHTML.length:0)+'|'+getComputedStyle(document.documentElement).getPropertyValue('--z').trim()}catch(e){return Math.random()}})();if(__k===window.__xhfK)return;window.__xhfK=__k;try{if(view!=='home')return;const v=$('#view');if(!v)return;const b=v.querySelector(':scope>.brand');
   v.style.removeProperty('zoom');if(b)b.style.removeProperty('margin-top');
   let z=1;while(xHomeOver()>1&&z>.55){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}
   if(b){const gap=-xHomeOver();if(gap>2){const mt=parseFloat(getComputedStyle(b).marginTop)||0;b.style.setProperty('margin-top',(mt+gap/z)+'px','important')}
@@ -14612,7 +14612,7 @@ try{const d=document.getElementById('xdg');if(d)d.remove();localStorage.removeIt
 
 /* الرئيسية: الحساب بيحصل وقت الرسم، مش بعدها بثانية */
 var XHFOK=0;const _hfReal=xHomeFit2;
-xHomeFit2=function(){if(XHFOK)_hfReal()};
+xHomeFit2=function(){/*G246*/var __k=(function(){try{var v=document.getElementById('view');return String(typeof view!=='undefined'?view:'')+'|'+innerWidth+'x'+innerHeight+'|'+(v?v.innerHTML.length:0)+'|'+getComputedStyle(document.documentElement).getPropertyValue('--z').trim()}catch(e){return Math.random()}})();if(__k===window.__xhfK)return;window.__xhfK=__k;if(XHFOK)_hfReal()};
 xHomeFit=function(){};
 xHomeFitLater=function(){};
 function xHFNow(){if(XHFOK)return;XHFOK=1;try{_hfReal()}catch(e){}finally{XHFOK=0}}
@@ -14645,26 +14645,5 @@ try{xZFix()}catch(e){}
 
 /* نهاية fix.js */
 
-/* ===== PATCH 2.21.245 - xHomeFit2 loop guard + show after fit ===== */
-(function(){
-  if(typeof xHomeFit2!=='function'){document.body.classList.add('xready');return}
-  var F=xHomeFit2,last='',busy=0;
-  function key(){
-    var v=document.getElementById('view');if(!v)return '';
-    var w='';try{w=String(view)}catch(e){}
-    return w+'|'+innerWidth+'x'+innerHeight+'|'+v.innerHTML.length+'|'+
-      getComputedStyle(document.documentElement).getPropertyValue('--z').trim();
-  }
-  window.xHomeFit2=function(){
-    if(busy)return;
-    var k=key();if(k&&k===last)return;
-    busy=1;
-    try{return F.apply(this,arguments)}
-    finally{busy=0;last=key()}
-  };
-  try{xHomeFit2=window.xHomeFit2}catch(e){}
-  try{if(document.body.classList.contains('xhome'))window.xHomeFit2()}catch(e){}
-  requestAnimationFrame(function(){requestAnimationFrame(function(){
-    document.body.classList.add('xready');
-  })});
-})();
+/* ===== PATCH 2.21.246 - reveal after fit ===== */
+(function(){requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('xready')})})})();
