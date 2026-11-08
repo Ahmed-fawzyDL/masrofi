@@ -13925,6 +13925,14 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState!==
 }catch(e){console.error('fix 2.21.227',e)}
 try{XBOOTD=1;render()}catch(e){}
 /* ===== آخر 2.21.227 ===== */
+/* ========== 2.21.228 · زراير ✏️ المعاملة وحد الائتمان ========== */
+XVER2='2.21.228';XVBUILD2='08/11/2026 - 02:05 م';
+window.xDealRen=async function(pid,did){const p=plan(pid);if(!p)return;const d=did==='_b'?null:(p.deals||[]).find(x=>x.id===did);
+  const v=await askIn('📝 اسم المعاملة','',d?d.n:(p.baseName||p.note||''),false,'حفظ');if(v==null)return;const n=String(v).trim();if(!n)return;
+  if(d)d.n=n;else p.baseName=n;save();render()};
+window.xPlLim=async function(pid){const p=plan(pid);if(!p)return;const v=await askIn('💳 حد الائتمان','',p.limit?amtStr(p.limit):'',true,'حفظ');if(v==null)return;
+  p.limit=parseNum(v)||0;save();render()};
+/* ===== آخر 2.21.228 ===== */
 
 /* نهاية fix.js */
 
