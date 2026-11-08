@@ -14324,5 +14324,28 @@ xUiTag=function(){if(!XUI2)return;const W=innerWidth,H=innerHeight;
 
 try{render();setTimeout(xUiTag,50)}catch(e){}
 /* ===== آخر 2.21.235 ===== */
+/* ========== 2.21.236 · تصليح الشريط اللي تحت ========== */
+XVER2='2.21.236';XVBUILD2='08/11/2026 - 03:50 م';
+(()=>{try{const s=document.createElement('style');s.textContent=`
+html.xui2 .xu2t,html.xui2 .xu2b{background:color-mix(in srgb,var(--bg,#0b1220) 72%,transparent)!important;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
+html.xui2 .xu2t{border-bottom:1px solid rgba(148,163,184,.16)!important}
+html.xui2 .xu2b{border-top:1px solid rgba(148,163,184,.16)!important;box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+html.xui2 .xu2s{background:color-mix(in srgb,var(--card) 88%,transparent)!important;backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);border-top:1px solid rgba(148,163,184,.16)!important;border-radius:26px 26px 0 0!important;box-shadow:0 -20px 50px rgba(0,0,0,.4)}
+html.xui2 .xu2o{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+`;document.head.appendChild(s)}catch(e){}})();
+function xU2Strip(){[...document.body.children].forEach(el=>[el,...el.children].forEach(e=>{try{e.classList.remove('xtp','xbt','xov','xshp')}catch(_){}}))}
+xUiTag=function(){xU2Strip();if(!XUI2)return;const W=innerWidth,H=innerHeight;
+  const chk=el=>{try{const cs=getComputedStyle(el);if(cs.position!=='fixed'||cs.display==='none'||cs.visibility==='hidden')return false;
+    const r=el.getBoundingClientRect();if(r.width<W*.9)return true;
+    if(r.height>=H*.95&&r.top<=1){if(/rgba\(.+,\s*0?\.\d+\)$/.test(cs.backgroundColor))el.classList.add('xu2o');return true}
+    const atB=Math.abs(r.bottom-H)<=2;
+    if(r.top<=2&&r.height<130)el.classList.add('xu2t');
+    else if(atB&&r.height<170)el.classList.add('xu2b');
+    else if(atB&&r.height>=220&&r.top>40&&el.id!=='view')el.classList.add('xu2s');
+    else el.classList.remove('xu2s');
+    return true}catch(e){return false}};
+  [...document.body.children].forEach(el=>{if(chk(el))[...el.children].forEach(chk)})};
+xU2Strip();try{render();setTimeout(xUiTag,50)}catch(e){}
+/* ===== آخر 2.21.236 ===== */
 /* نهاية fix.js */
 
