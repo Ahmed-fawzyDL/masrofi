@@ -13992,6 +13992,91 @@ try{const _vpA=vPlan;vPlan=function(){let h=_vpA.apply(this,arguments);try{const
 
 try{render()}catch(e){}
 /* ===== آخر 2.21.229 ===== */
+/* ========== 2.21.230 · شاشة المعاملة الجديدة ========== */
+XVER2='2.21.230';XVBUILD2='08/11/2026 - 02:45 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+.xdS{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
+.xdS-hd{display:flex;align-items:center;gap:12px;padding:14px;border-radius:20px;background:linear-gradient(135deg,rgba(20,184,166,.28),rgba(14,165,233,.14));border:1px solid rgba(45,212,191,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.xdS-ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(20,184,166,.25);box-shadow:inset 0 0 0 1px rgba(45,212,191,.4)}
+.xdS-hd b{display:block;font-size:17px}.xdS-hd small{display:block;opacity:.75;font-size:12.5px;margin-top:2px}
+.xdS-g{padding:12px;border-radius:18px;background:color-mix(in srgb,var(--card) 80%,transparent);border:1px solid rgba(148,163,184,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.xdS-g>label,.xdS-row label{display:block;font-size:12px;font-weight:700;opacity:.8;margin:2px 4px 6px}
+.xdS-row label small{opacity:.7;font-weight:500}
+.xdS-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.xdS-in{width:100%;box-sizing:border-box;padding:13px 14px;border-radius:14px;border:1px solid rgba(148,163,184,.28);background:rgba(15,23,42,.35);color:inherit;font:inherit;font-size:15px;font-weight:700;outline:none;color-scheme:dark;transition:border-color .2s,box-shadow .2s}
+.xdS-in:focus{border-color:#2dd4bf;box-shadow:0 0 0 3px rgba(45,212,191,.18)}
+.xdS-in.num{text-align:center;direction:ltr;font-size:17px;letter-spacing:.3px}
+.xdS-in.sm{padding:8px 10px;font-size:14px;width:110px}
+.xdS-hint{font-size:11.5px;opacity:.65;margin:6px 4px 0}
+.xdS-emp{text-align:center;padding:18px;border-radius:16px;border:1px dashed rgba(148,163,184,.35);opacity:.75;font-size:13px}
+.xdS-pv{padding:12px;border-radius:18px;background:linear-gradient(160deg,rgba(245,158,11,.14),rgba(15,23,42,.2));border:1px solid rgba(245,158,11,.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.xdS-ch{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.xdS-ch>div{padding:8px 2px;border-radius:12px;background:rgba(15,23,42,.35)}
+.xdS-ch small{display:block;font-size:10.5px;opacity:.7}.xdS-ch b{display:block;font-size:13.5px;margin-top:2px;color:#fbbf24}
+.xdS-ls{margin-top:10px}.xdS-ls>summary{cursor:pointer;font-size:12.5px;font-weight:700;padding:8px 4px;list-style:none}
+.xdS-ls>summary::-webkit-details-marker{display:none}.xdS-ls>summary::after{content:' ▾';opacity:.6}.xdS-ls[open]>summary::after{content:' ▴'}
+.xdS-it{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:8px;padding:6px 4px;border-top:1px dashed rgba(148,163,184,.2)}
+.xdS-it .n{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:rgba(148,163,184,.18)}
+.xdS-it .d{font-size:13px;font-weight:700}.xdS-it .d small{display:block;font-size:11px;opacity:.65;font-weight:500}
+#view .xdl,#view .xpinf,#view .xpmon{background:color-mix(in srgb,var(--card) 82%,transparent)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.18)!important;box-shadow:0 8px 24px rgba(0,0,0,.2);border-radius:18px!important}
+#view .xdl{border-inline-start:4px solid #f59e0b!important}
+#view .xdl:first-of-type{border-inline-start-color:#14b8a6!important}
+#view .xpsec{font-weight:800;font-size:15px;margin:14px 4px 8px}
+`;document.head.appendChild(s)})();
+
+var XDL=null;
+function xAS(v){return v?String(r2(+v||0)):''}
+function xDlUid(){try{return uid()}catch(e){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}}
+function xAddM(d,n){const [y,m,dd]=(d||'').split('-').map(Number);const t=new Date(y,m-1+n,1),L=new Date(t.getFullYear(),t.getMonth()+1,0).getDate();
+  return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(Math.min(dd,L)).padStart(2,'0')}
+function xDlGen(){const D=XDL,n=Math.max(0,Math.floor(+D.months||0));if(!n){D.amts=[];return}
+  if(D.drv==='m'){const m=r2(+D.mo||0),hasL=String(D.last||'').trim()!=='',l=hasL?r2(parseNum(D.last)||0):m;
+    D.amts=Array.from({length:n},(_,i)=>i===n-1?l:m);D.total=r2(D.amts.reduce((s,x)=>s+x,0))}
+  else{const t=r2(+D.total||0),m=Math.floor(t/n*100)/100;D.mo=m;D.amts=Array.from({length:n},(_,i)=>i===n-1?r2(t-m*(n-1)):m)}}
+window.xAppDeal=function(pid){const p=plan(pid);if(!p)return;
+  XDL={pid,n:'',total:0,mo:0,months:'',last:'',first:today(),drv:'t',amts:[],ls:0};xDlSheet()};
+function xDlSheet(){const D=XDL,p=plan(D.pid);
+  sheet(`<div class="xdS">
+  <div class="xdS-hd"><div class="xdS-ic">➕</div><div><b>معاملة جديدة</b><small>على ${esc(p.name)}</small></div></div>
+  <div class="xdS-g"><label>📝 اسم المعاملة</label><input id="xd-n" class="xdS-in" placeholder="مثلًا: تكييفات الساحل من Jumia" value="${esc(D.n)}" oninput="XDL.n=this.value"></div>
+  <div class="xdS-g">
+    <div class="xdS-row"><div><label>💰 إجمالي المعاملة</label><input id="xd-t" class="xdS-in num" inputmode="decimal" placeholder="0" value="${xAS(D.total)}" oninput="xDlIn('t',this.value)"></div>
+      <div><label>🔢 عدد الشهور</label><input id="xd-c" class="xdS-in num" inputmode="numeric" placeholder="0" value="${D.months}" oninput="xDlIn('c',this.value)"></div></div>
+    <div class="xdS-row"><div><label>🧾 قيمة القسط</label><input id="xd-m" class="xdS-in num" inputmode="decimal" placeholder="0" value="${xAS(D.mo)}" oninput="xDlIn('m',this.value)"></div>
+      <div><label>🏁 آخر قسط <small>(لو مختلف)</small></label><input id="xd-l" class="xdS-in num" inputmode="decimal" placeholder="—" value="${esc(D.last)}" oninput="xDlIn('l',this.value)"></div></div>
+    <label>📅 أول قسط</label><input id="xd-f" type="date" class="xdS-in" value="${D.first}" onchange="xDlIn('f',this.value)">
+    <div class="xdS-hint">اكتب الإجمالي، أو اكتب قيمة القسط زي ما هي في الأبلكيشن والإجمالي يتحسب لوحده</div>
+  </div>
+  <div id="xd-pv"></div>
+  <button class="btn" onclick="xDlSave()">✅ أضف الأقساط</button></div>`);
+  xDlPv()}
+window.xDlIn=function(k,v){const D=XDL;if(!D)return;
+  if(k==='t'){D.drv='t';D.total=parseNum(v)||0;D.last=''}else if(k==='m'){D.drv='m';D.mo=parseNum(v)||0}
+  else if(k==='l'){D.drv='m';D.last=v}else if(k==='c'){D.months=v}else if(k==='f'){D.first=v}
+  if(k!=='f')xDlGen();
+  const s=(id,val)=>{const e=document.getElementById(id);if(e&&e!==document.activeElement)e.value=val};
+  s('xd-t',xAS(D.total));s('xd-m',xAS(D.mo));if(D.drv==='t')s('xd-l','');xDlPv()};
+function xDlChips(){const D=XDL,n=D.amts.length;
+  return `<div><small>الإجمالي</small><b id="xd-ct">${num(D.total)}</b></div><div><small>القسط</small><b>${num(D.amts[0])}</b></div><div><small>الشهور</small><b>${n}</b></div><div><small>آخر قسط</small><b>${xMY(xAddM(D.first,n-1))}</b></div>`}
+function xDlPv(){const D=XDL,el=document.getElementById('xd-pv');if(!el)return;const n=D.amts.length;
+  if(!n||!D.first||!(D.total>0)){el.innerHTML='<div class="xdS-emp">📊 هنا هيظهرلك ملخص الأقساط أول ما تكتب المبلغ وعدد الشهور</div>';return}
+  el.innerHTML=`<div class="xdS-pv"><div class="xdS-ch" id="xd-ch">${xDlChips()}</div>
+  <details class="xdS-ls" ${D.ls?'open':''} ontoggle="XDL.ls=this.open"><summary>🗓 الأقساط بالتفصيل · تقدر تعدّل أي قسط</summary>${D.amts.map((a,i)=>{const d=xAddM(D.first,i);
+    return `<div class="xdS-it"><span class="n">${i+1}</span><span class="d">${dmy(d)}<small>${XWD[new Date(d+'T00:00').getDay()]||''}</small></span><input class="xdS-in num sm" inputmode="decimal" value="${xAS(a)}" oninput="xDlIt(${i},this.value)"></div>`}).join('')}</details></div>`}
+window.xDlIt=function(i,v){const D=XDL;if(!D)return;D.amts[i]=r2(parseNum(v)||0);D.total=r2(D.amts.reduce((s,x)=>s+x,0));
+  const t=document.getElementById('xd-t');if(t)t.value=xAS(D.total);const c=document.getElementById('xd-ch');if(c)c.innerHTML=xDlChips()};
+window.xDlSave=function(){const D=XDL;if(!D)return;const p=plan(D.pid);if(!p)return;const n=String(D.n||'').trim();
+  if(!n){toast('⚠️ اكتب اسم المعاملة');return}
+  if(!D.amts.length||D.amts.some(a=>!(a>0))){toast('⚠️ راجع المبالغ وعدد الشهور');return}
+  if(!D.first){toast('⚠️ اختار تاريخ أول قسط');return}
+  const did=xDlUid();p.deals=p.deals||[];p.deals.push({id:did,n,a:r2(D.total),m:D.amts.length,at:today()});
+  p.items=p.items||[];D.amts.forEach((a,i)=>p.items.push({id:xDlUid(),due:xAddM(D.first,i),amount:r2(a),deal:did}));
+  let mg=0;try{mg=xDealMerge(p)}catch(e){}
+  p.items.sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+  const cnt=D.amts.length;save();XDL=null;try{closeSheet()}catch(e){try{history.back()}catch(_){}}
+  render();toast('✅ اتضافت '+cnt+' قسط'+(mg?' · اتجمعت على أقساط '+mg+' شهر':''))};
+try{render()}catch(e){}
+/* ===== آخر 2.21.230 ===== */
 
 /* نهاية fix.js */
 
