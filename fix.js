@@ -14562,5 +14562,26 @@ html.xui2 body.dark :is(.tile,nav>button,nav>button span,.btn,.mini,.tabs button
 `;document.head.appendChild(s)}catch(e){}})();
 try{render()}catch(e){}
 /* ===== آخر 2.21.239 ===== */
+/* ========== 2.21.240 · الخط يتحمّل كله مرة واحدة ========== */
+XVER2='2.21.240';XVBUILD2='08/11/2026 - 05:00 م';
+(()=>{try{
+  const s=document.createElement('style');
+  s.textContent='body:not(.xfont)>main,body:not(.xfont)>nav{opacity:0}body.xfont>main,body.xfont>nav{transition:opacity .25s ease}';
+  document.head.appendChild(s);
+  const done=()=>requestAnimationFrame(()=>document.body.classList.add('xfont'));
+  setTimeout(done,2500);
+  const k=FONTS[S.settings.font]?S.settings.font:'cairo',f=FONTS[k];
+  if(!f||!f[2]||!document.fonts){done();return}
+  if(!document.getElementById('gf-'+k))loadFont(k);
+  const l=document.getElementById('gf-'+k);
+  const sheetReady=new Promise(r=>{if(!l)return r();
+    try{if(l.sheet&&l.sheet.cssRules)return r()}catch(e){return r()}
+    l.addEventListener('load',r);l.addEventListener('error',r);setTimeout(r,2000)});
+  const fam=f[1].replace(/'/g,'');
+  sheetReady.then(()=>Promise.all(['400','500','600','700','800'].map(w=>
+    document.fonts.load(w+' 16px "'+fam+'"','عربي 0123').catch(()=>{}))))
+   .then(done,done);
+}catch(e){try{document.body.classList.add('xfont')}catch(_){}}})();
+/* ===== آخر 2.21.240 ===== */
 /* نهاية fix.js */
 
