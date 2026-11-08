@@ -14077,6 +14077,83 @@ window.xDlSave=function(){const D=XDL;if(!D)return;const p=plan(D.pid);if(!p)ret
   render();toast('✅ اتضافت '+cnt+' قسط'+(mg?' · اتجمعت على أقساط '+mg+' شهر':''))};
 try{render()}catch(e){}
 /* ===== آخر 2.21.230 ===== */
+/* ========== 2.21.231 · القسط بإيدك + تعديل المعاملة ========== */
+XVER2='2.21.231';XVBUILD2='08/11/2026 - 03:00 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+.xdS-in:disabled{opacity:.55}
+.xdS-tot{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);margin-top:10px}
+.xdS-tot span{font-size:12.5px;opacity:.8}.xdS-tot b{font-size:18px;color:#fbbf24;direction:ltr}
+.xdS-qf{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.xdS-it.pd .d{opacity:.6}.xdS-it .ok{font-size:12px;color:#22c55e;font-weight:800;min-width:110px;text-align:center}
+.btn.xdS-del{background:transparent!important;border:1px solid rgba(220,38,38,.5)!important;color:#ef4444!important}
+`;document.head.appendChild(s)})();
+
+/* ---------- ➕ معاملة جديدة: القسط بإيدك ---------- */
+xDlGen=function(){const D=XDL,n=Math.max(0,Math.floor(+D.months||0));if(!n){D.amts=[];D.total=0;return}
+  const m=r2(+D.mo||0),hasL=String(D.last||'').trim()!=='',l=hasL?r2(parseNum(D.last)||0):m;
+  D.amts=Array.from({length:n},(_,i)=>i===n-1?l:m);D.total=r2(D.amts.reduce((s,x)=>s+x,0))};
+window.xDlIn=function(k,v){const D=XDL;if(!D)return;
+  if(k==='m')D.mo=parseNum(v)||0;else if(k==='l')D.last=v;else if(k==='c')D.months=v;else if(k==='f')D.first=v;
+  if(k!=='f')xDlGen();const t=document.getElementById('xd-tt');if(t)t.textContent=num(D.total||0);xDlPv()};
+window.xDlIt=function(i,v){const D=XDL;if(!D)return;D.amts[i]=r2(parseNum(v)||0);D.total=r2(D.amts.reduce((s,x)=>s+x,0));
+  const t=document.getElementById('xd-tt');if(t)t.textContent=num(D.total);const c=document.getElementById('xd-ch');if(c)c.innerHTML=xDlChips()};
+xDlSheet=function(){const D=XDL,p=plan(D.pid);
+  sheet(`<div class="xdS">
+  <div class="xdS-hd"><div class="xdS-ic">➕</div><div><b>معاملة جديدة</b><small>على ${esc(p.name)}</small></div></div>
+  <div class="xdS-g"><label>📝 اسم المعاملة</label><input id="xd-n" class="xdS-in" placeholder="مثلًا: تكييفات الساحل من Jumia" value="${esc(D.n)}" oninput="XDL.n=this.value"></div>
+  <div class="xdS-g">
+    <div class="xdS-row"><div><label>🧾 قيمة القسط</label><input id="xd-m" class="xdS-in num" inputmode="decimal" placeholder="0" value="${xAS(D.mo)}" oninput="xDlIn('m',this.value)"></div>
+      <div><label>🔢 عدد الشهور</label><input id="xd-c" class="xdS-in num" inputmode="numeric" placeholder="0" value="${D.months}" oninput="xDlIn('c',this.value)"></div></div>
+    <div class="xdS-row"><div><label>🏁 آخر قسط <small>(لو مختلف)</small></label><input id="xd-l" class="xdS-in num" inputmode="decimal" placeholder="—" value="${esc(D.last)}" oninput="xDlIn('l',this.value)"></div>
+      <div><label>📅 أول قسط</label><input id="xd-f" type="date" class="xdS-in" value="${D.first}" onchange="xDlIn('f',this.value)"></div></div>
+    <div class="xdS-tot"><span>💰 إجمالي المعاملة</span><b id="xd-tt">${num(D.total||0)}</b></div>
+    <div class="xdS-hint">اكتب القسط زي ما هو في الأبلكيشن بالظبط، ولو فيه قسط مختلف عدّله من الأقساط بالتفصيل تحت</div>
+  </div>
+  <div id="xd-pv"></div>
+  <button class="btn" onclick="xDlSave()">✅ أضف الأقساط</button></div>`);
+  xDlPv()};
+window.xAppDeal=function(pid){const p=plan(pid);if(!p)return;
+  XDL={pid,n:'',total:0,mo:0,months:'',last:'',first:today(),drv:'m',amts:[],ls:0};xDlSheet()};
+
+/* ---------- ✏️ تعديل معاملة موجودة ---------- */
+var XDE=null;
+function xDeSum(){return r2(XDE.v.reduce((s,r)=>s+(+r.a||0),0))}
+window.xDealRen=function(pid,did){const p=plan(pid);if(!p)return;const d=did==='_b'?null:(p.deals||[]).find(x=>x.id===did);
+  XDE={pid,did,n:d?d.n:(p.baseName||p.note||''),v:xDlItems(p,did).map(x=>({id:x.it.id,a:x.a,due:x.it.due,pd:!!xIP(x.it)}))};xDeSheet()};
+function xDeSheet(){const E=XDE,p=plan(E.pid),pd=r2(E.v.filter(r=>r.pd).reduce((s,r)=>s+r.a,0)),T=xDeSum();
+  sheet(`<div class="xdS">
+  <div class="xdS-hd"><div class="xdS-ic">✏️</div><div><b>تعديل المعاملة</b><small>${esc(p.name)}</small></div></div>
+  <div class="xdS-g"><label>📝 اسم المعاملة</label><input class="xdS-in" value="${esc(E.n)}" oninput="XDE.n=this.value"></div>
+  <div class="xdS-pv"><div class="xdS-ch" id="xe-ch"><div><small>الإجمالي</small><b>${num(T)}</b></div><div><small>المدفوع</small><b>${num(pd)}</b></div><div><small>المتبقي</small><b>${num(r2(T-pd))}</b></div><div><small>الأقساط</small><b>${E.v.length}</b></div></div></div>
+  <div class="xdS-g"><label>⚡ مبلغ واحد لكل الأقساط الجاية</label><div class="xdS-qf"><input id="xe-q" class="xdS-in num" inputmode="decimal" placeholder="0"><button class="btn" style="margin:0;padding:12px 16px" onclick="xDeAll()">تطبيق</button></div></div>
+  <div class="xdS-g"><label>🗓 الأقساط</label>${E.v.map((r,i)=>`<div class="xdS-it ${r.pd?'pd':''}"><span class="n">${i+1}</span><span class="d">${dmy(r.due)}<small>${XWD[new Date(r.due+'T00:00').getDay()]||''}</small></span>${r.pd?`<span class="ok">✅ ${num(r.a)}</span>`:`<input class="xdS-in num sm" inputmode="decimal" value="${xAS(r.a)}" oninput="xDeIt(${i},this.value)">`}</div>`).join('')}</div>
+  <button class="btn" onclick="xDeSave()">💾 حفظ التعديلات</button>
+  ${E.did!=='_b'?`<button class="btn xdS-del" onclick="xDeDel()">🗑 حذف المعاملة</button>`:''}</div>`)}
+function xDeChips(){const E=XDE,pd=r2(E.v.filter(r=>r.pd).reduce((s,r)=>s+r.a,0)),T=xDeSum();const c=document.getElementById('xe-ch');
+  if(c)c.innerHTML=`<div><small>الإجمالي</small><b>${num(T)}</b></div><div><small>المدفوع</small><b>${num(pd)}</b></div><div><small>المتبقي</small><b>${num(r2(T-pd))}</b></div><div><small>الأقساط</small><b>${E.v.length}</b></div>`}
+window.xDeIt=function(i,v){if(!XDE)return;XDE.v[i].a=r2(parseNum(v)||0);xDeChips()};
+window.xDeAll=function(){if(!XDE)return;const q=r2(parseNum(($('#xe-q')||{}).value||'')||0);if(!(q>0)){toast('⚠️ اكتب المبلغ');return}
+  XDE.v.forEach(r=>{if(!r.pd)r.a=q});xDeSheet();toast('✅ اتطبق على الأقساط الجاية')};
+function xHostFix(it){if(!it.parts)return;it.parts=it.parts.filter(x=>+x.a>0);it.amount=r2((+it.base||0)+it.parts.reduce((s,x)=>s+(+x.a||0),0));
+  if(!it.parts.length){delete it.parts;delete it.base}}
+window.xDeSave=function(){const E=XDE;if(!E)return;const p=plan(E.pid);if(!p)return;
+  E.v.forEach(r=>{if(r.pd)return;const it=p.items.find(i=>i.id===r.id);if(!it)return;const a=r2(+r.a||0);
+    if(E.did==='_b'){if(it.parts){it.base=a;xHostFix(it)}else it.amount=a}
+    else if(it.deal===E.did)it.amount=a;
+    else{const pt=(it.parts||[]).find(x=>x.deal===E.did);if(pt){pt.a=a;xHostFix(it)}}});
+  p.items=p.items.filter(i=>!(i.deal===E.did&&!(+i.amount>0)&&!xIP(i)));
+  const n=String(E.n||'').trim();
+  if(E.did==='_b'){if(n)p.baseName=n}else{const d=(p.deals||[]).find(x=>x.id===E.did);if(d){if(n)d.n=n;d.a=xDeSum()}}
+  save();XDE=null;try{closeSheet()}catch(e){try{history.back()}catch(_){}}render();toast('✅ اتحفظت المعاملة')};
+window.xDeDel=function(){const E=XDE;if(!E||E.did==='_b')return;const p=plan(E.pid);if(!p)return;
+  if(E.v.some(r=>r.pd)){toast('⚠️ فيه أقساط مدفوعة في المعاملة دي، ألغي دفعها الأول');return}
+  if(!confirm('حذف المعاملة "'+E.n+'" وكل أقساطها؟'))return;
+  p.items=(p.items||[]).filter(i=>i.deal!==E.did);
+  p.items.forEach(i=>{if(i.parts){i.parts=i.parts.filter(x=>x.deal!==E.did);xHostFix(i)}});
+  p.deals=(p.deals||[]).filter(x=>x.id!==E.did);
+  save();XDE=null;try{closeSheet()}catch(e){try{history.back()}catch(_){}}render();toast('🗑 اتحذفت المعاملة')};
+try{render()}catch(e){}
+/* ===== آخر 2.21.231 ===== */
 
 /* نهاية fix.js */
 
