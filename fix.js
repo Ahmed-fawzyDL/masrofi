@@ -13738,6 +13738,53 @@ try{const _psD=payStart;payStart=async function(pid,iid){const r=await _psD.appl
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.225',e)}
 /* ===== آخر 2.21.225 ===== */
+/* ========== 2.21.226 · المعاملة الجديدة بتتجمع على قسط نفس الشهر ========== */
+try{
+XVER2='2.21.226';XVBUILD2='08/11/2026 - 01:45 م';
+function xItPaid(it){try{return !!itTx(it)}catch(e){return false}}
+function xDealHost(p,due,skip){const m=(due||'').slice(0,7);
+  return (p.items||[]).find(i=>i!==skip&&!i.deal&&i.k!=='ann'&&i.k!=='mnt'&&(i.due||'').slice(0,7)===m&&!xItPaid(i))}
+/* أي قسط معاملة ليه قسط أصلي في نفس الشهر لسه ما اتدفعش: يتجمع عليه */
+function xDealMerge(p){let n=0;
+  (p.items||[]).slice().forEach(it=>{if(!it.deal||xItPaid(it))return;const h=xDealHost(p,it.due,it);if(!h)return;
+    if(h.base==null)h.base=r2(+h.amount||0);
+    h.parts=(h.parts||[]).concat([{deal:it.deal,a:r2(+it.amount||0)}]);
+    h.amount=r2((+h.amount||0)+(+it.amount||0));
+    p.items=p.items.filter(x=>x!==it);n++});
+  return n}
+function xDealCnt(p,did){const L=(p.items||[]).filter(i=>i.deal===did||(i.parts||[]).some(x=>x.deal===did));
+  return{n:L.length,pd:L.filter(xItPaid).length}}
+
+/* اللي اتسجل قبل كده يتجمع */
+try{let ch=0;(S.plans||[]).forEach(p=>{ch+=xDealMerge(p)});if(ch){save();setTimeout(()=>{try{render()}catch(e){}},300)}}catch(e){}
+
+/* المعاملة الجديدة */
+try{const _adM=xAppDealSv;xAppDealSv=function(pid){const r=_adM.apply(this,arguments);try{
+  const p=plan(pid);if(p){const n=xDealMerge(p);if(n){save();render();toast('✅ اتضافت على أقساط '+n+' شهر')}}}catch(e){}return r}}catch(e){}
+
+/* تعديل القسط مايمسحش التقسيمة */
+try{const _psM=planSave;planSave=function(){const o=PF&&PF.id&&plan(PF.id),m={};
+  try{if(o)o.items.forEach(i=>{if(i.parts)m[i.id]={parts:i.parts,base:i.base}})}catch(e){}
+  const r=_psM.apply(this,arguments);
+  try{const p=plan(instPlan);if(p&&Object.keys(m).length){p.items.forEach(i=>{if(m[i.id]){i.parts=m[i.id].parts;i.base=m[i.id].base}});save()}}catch(e){}
+  return r}}catch(e){}
+
+/* صفحة القسط: عدد أقساط كل معاملة صح + تفصيلة الشهر */
+try{const _vpM=vPlan;vPlan=function(){let h=_vpM.apply(this,arguments);try{const p=plan(instPlan);if(!p||typeof h!=='string')return h;
+  (p.deals||[]).forEach(d=>{const c=xDealCnt(p,d.id);
+    h=h.split('<span>🧾 '+esc(d.n)+'</span><b>'+num(d.a)+' · 0/0 قسط</b>').join('<span>🧾 '+esc(d.n)+'</span><b>'+num(d.a)+' · '+c.pd+'/'+c.n+' قسط</b>')})}catch(e){}return h}}catch(e){}
+try{const _rnM=render;render=function(){const r=_rnM.apply(this,arguments);try{
+  if(view!=='plan')return r;const p=plan(instPlan);if(!p)return r;
+  (p.items||[]).filter(i=>i.parts&&i.parts.length).forEach(it=>{const ds=xDW(it.due);
+    document.querySelectorAll('#view .list .row').forEach(row=>{if(row.dataset.xpt)return;const b=row.querySelector('.grow>b');
+      if(!b||b.textContent.indexOf(ds)<0)return;const a=row.querySelector('.amt');if(!a||Math.abs(parseNum(a.textContent)-(+it.amount||0))>.01)return;
+      row.dataset.xpt=1;const sm=row.querySelector('.grow>small');
+      const t=num(it.base||0)+' + '+it.parts.map(x=>num(x.a)).join(' + ');
+      if(sm)sm.insertAdjacentHTML('beforeend',' · <span style="opacity:.8">'+t+'</span>');else b.insertAdjacentHTML('afterend','<small>'+t+'</small>')})})}catch(e){}return r}}catch(e){}
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.226',e)}
+/* ===== آخر 2.21.226 ===== */
 
 /* نهاية fix.js */
 
