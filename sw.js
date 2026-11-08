@@ -1,4 +1,4 @@
-const CACHE='centric-v9',SHARE='centric-share';
+const CACHE='centric-v10',SHARE='centric-share';
 const ASSETS=['./','app.js','more.js','fix.js','manifest.json','icon-192.png','icon-512.png','icon-maskable-512.png','wa.png'];
 const TXT=/\.(js|html|json|css)$|\/$/;
 const ROOT=new URL('./',self.registration.scope).href;

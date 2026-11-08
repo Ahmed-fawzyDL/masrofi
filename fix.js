@@ -1,4 +1,5 @@
 /* ========== Centric · fix.js · 2.21.0 ========== */
+var XBOOTD=0;function xR(){if(!XBOOTD)return;try{xR()}catch(e){}}
 /* بيتحمّل بعد more.js. لو حصلت مشكلة: شيل سطره من index.html والبرنامج يرجع زي ما كان */
 const XVER='2.21.139',XVBUILD='25/10/2026 - 10:00 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER} · ${XVBUILD}</small></div>`}}catch(e){}
@@ -2776,7 +2777,7 @@ if(navigator.serviceWorker)navigator.serviceWorker.addEventListener('message',e=
   if(d.type==='locked'){location.reload();return}
   if(d.type==='update'&&!XUPD){XUPD=true;setTimeout(xUpdShow,1200)}
 });
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.32 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 html,body{overscroll-behavior-y:none!important}
@@ -2832,7 +2833,7 @@ function xShareTo(id){const t=S.txs.find(x=>x.id===id);if(!t)return;t.files=[...
 
 /* --- شاشة التحميل بتختفي لما كل حاجة تحمّل --- */
 (function(){try{const b=document.getElementById('xboot');if(b)b.remove()}catch(e){}})();
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.33 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 html,body{overscroll-behavior-y:auto!important}
@@ -2938,7 +2939,7 @@ try{const _vhC=vHome;vHome=function(){let h=_vhC.apply(this,arguments);try{
   if(t)h=h.includes('<div class="dash">')?h.replace('<div class="dash">','<div class="dash">'+t):h+`<div class="dash">${t}</div>`;
 }catch(e){}return h}}catch(e){}
 XFC.cc=['💳','سداد الكريديت','xCcOpen()','#f97316,#9a3412',()=>xCcList().length,'لما يكون عليك مديونية كريديت الشهر اللي فات'];
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.35 ========== */
 /* --- سداد الكريديت: المبلغ مفتوح، والزيادة بتروح مصاريف الكريديت --- */
 function xCcFeeShow(){if(!XCC)return;const a=parseNum(($('#cc-amt')||{}).value)||0,d=r2(a-XCC.due),el=$('#cc-fee');if(el)el.innerHTML=d>.009?`<div class="kv"><span>➕ هيتسجل في مصاريف الكريديت</span><b class="neg">${fmt(d)}</b></div>`:''}
@@ -2986,7 +2987,7 @@ try{const _xidC=xInstDue;xInstDue=function(){return _xidC.apply(this,arguments).
 try{const _alC=alerts;alerts=function(){const cc=S.plans.filter(p=>p.cc).map(p=>'i-'+p.id+'-');return _alC.apply(this,arguments).filter(a=>!cc.some(k=>String(a.id).startsWith(k)))}}catch(e){}
 try{const _vpC=vPlan;vPlan=function(){let h=_vpC.apply(this,arguments);try{const p=plan(instPlan);if(p&&p.cc){const i=h.indexOf('</div>');if(i>0)h=h.slice(0,i+6)+`<p class="muted" style="margin:0 2px 8px">💳 بيتخصم لوحده من ${esc(M(p.acct)?.name||'الكريديت')} يوم الميعاد</p>`+h.slice(i+6)}}catch(e){}return h}}catch(e){}
 xCcPlanPost();
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.36 + 2.21.37 ========== */
 /* --- المطابقة: الزرار بيقولك الفرق، والفرق بيتسجل مصاريف البنك --- */
 function xReconBtn(id){const b=document.querySelector('#sheet .btn[onclick^="xReconAdj"]');if(!b)return;const a=xReconVal(id),d=a==null?null:r2(a-xBal(id));
@@ -3037,7 +3038,7 @@ function xBfSave(){
 }
 try{const _veB=vExps;vExps=function(){let h=_veB.apply(this,arguments);return h.replace('<div class="xqb">','<div class="xqb"><button class="mini" onclick="xBankFee()">🏦 مصاريف البنك</button>')}}catch(e){}
 XFC.bfee=['🏦','مصاريف البنك','xBankFee()','#64748b,#0f172a',()=>0,''];
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.38 ========== */
 /* --- آخر الشاشة مبيستخباش ورا الشريط اللي تحت --- */
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -3304,7 +3305,7 @@ try{const _rbH=xReconBase;xReconBase=function(id){const r=_rbH.apply(this,argume
   const p=document.querySelector('#sheet .sz p.muted');
   if(p)p.innerHTML='📌 اكتب رصيد <b>النهارده</b> مش رصيد يوم 1، بعد ما تسجل كل عمليات الحساب ده. البرنامج بيرجع لورا ويحسب رصيد البداية لوحده.<br>🏁 أول مرة بس: <b>اظبط رصيد البداية</b>.<br>💸 بعد كده لو طلع فرق: يتسجل مصاريف بنكية، أو تحصيل لو البنك أكتر.';
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* --- اسم اختيار الكريديت في القسط أوضح --- */
 try{const _pfL=planForm;planForm=function(){const r=_pfL.apply(this,arguments);try{const c=$('#q-cc'),l=c&&c.closest('label');if(l&&l.lastChild&&l.lastChild.nodeType===3)l.lastChild.nodeValue=' 💳 بيتضاف على كشف الكريديت (ويتسدد من الـ Debit)'}catch(e){}return r}}catch(e){}
 /* --- تصليح: البرنامج كان بيقف لو آخر شاشة كانت المصروفات --- */
@@ -3457,7 +3458,7 @@ try{const _saD=xShareAsk;xShareAsk=async function(ids){
       if(r){if(isClosed(t.date))return toast('شهر العملية القديمة مقفول');xKillTx(t);save();render();toast('اتلغت العملية القديمة')}}
   }catch(e){}
   return _saD.apply(this,arguments)}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.45 ========== */
 /* --- الأنواع والطرق: القوايم مقفولة لحد ما تفتحها --- */
 try{const _spT=spTypes;spTypes=function(){return _spT.apply(this,arguments).replace(/<details class="grp" open>/g,'<details class="grp">')}}catch(e){}
@@ -3639,7 +3640,7 @@ xCcMiss=function(d){
   F.method=c.id;F.via='card';F.amount=amtStr(d);F.date=isClosed(k.we)?today():k.we;SHKEEP=1;txForm();
   toast('سجّل المصروف الناقص على الكريديت، وبعدها هرجعك للسداد');
 };
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.46 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xlps{display:flex;gap:6px;align-items:flex-end}.xlps label{flex:1;min-width:0;margin:6px 0 0!important}
@@ -3812,7 +3813,7 @@ xLoanPost=function(id){const t=S.txs.find(x=>x.id===id);if(!t||!t.loan)return;
   if(t.loan.sched&&t.loan.sched.length){t.loan.sched.forEach(s=>{s.d=addMonths(s.d,1)});xLoanNext(t)}
   else{let d=t.loan.due||today();do{d=addMonths(d,1)}while(d<today());t.loan.due=d}
   t.loan.post=(t.loan.post||0)+1;save();closeSheet();render();toast('⏭ اترحّلت لـ '+dmy(t.loan.due))};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.47 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xln{background:var(--card,#fff);border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:12px;margin:8px 0;cursor:pointer}
@@ -3979,7 +3980,7 @@ xLedgerHTML=function(id,f,t,kp){
     +(g.ev.length?rtbl(['التاريخ|c','البيان','المبلغ|n','الرصيد|n'],g.ev.map(e=>`<tr ${e.id?`class="clk" onclick="editTx('${e.id}')"`:e.ln?`class="clk" onclick="xLnOpen('${e.ln}')"`:''}>${cD(e.d)}${cT(esc(e.l),esc(e.s||''))}${cN(sg(e.a),e.a<0?'exp':'inc')}${cN(N(e.r),e.r<0&&!cr?'exp':'')}</tr>`)):NONE);
   return h;
 };
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.48 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xclb{font-size:11px;background:#e0f2fe;color:#075985;border-radius:8px;padding:1px 6px;margin-inline-start:4px;font-weight:600;white-space:nowrap}
@@ -4244,7 +4245,7 @@ try{const _goC=go;go=function(v){if(v==='xcl'){try{XBSHOW.clear()}catch(e){}view
 try{const _rnC=render;render=function(){try{xLnSync()}catch(e){}try{if(XCL().length&&xClAuto())save()}catch(e){}
   if(view!=='xcl'){const r=_rnC.apply(this,arguments);try{xClInject()}catch(e){}return r}
   view='more';let r;try{r=_rnC.apply(this,arguments)}finally{view='xcl'}const el=$('#view')||document.querySelector('main');if(el)el.innerHTML=xClView();return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.49 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xlngr{border:1px dashed #cbd5e1;border-radius:16px;padding:8px 10px;margin:10px 0}
@@ -4335,7 +4336,7 @@ xLnView=function(){
    +(cl.length?`<details class="gen"><summary>📁 السلف المقفولة (${cl.length})</summary>${cl.map(card).join('')}</details>`:'')
    +'<p class="xnote">السلفة نفسها مش بتتحسب مصروف. السداد بيتسجل تحصيل في بند "سداد سلف". ولو حد مش هيرجعها، دوس 🧾 شطب فالباقي يتسجل مصروف.</p>';
 };
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.50 ========== */
 
 /* ================= السلفة: مصروف لما تطلع · تحصيل لما ترجع ================= */
@@ -4422,7 +4423,7 @@ try{const _lgX=xLedger;xLedger=function(){const g=_lgX.apply(this,arguments);try
   if(t&&t.xref){const r=T.find(x=>x.id===t.xref);if(r){const c=r.cl&&xClL(r.cl);e.s=(e.s?e.s+' · ':'')+'🔗 من تحصيل '+(C(r.cat)?.name||'')+(c?' · '+c.name:'')+' '+num(r.amount)+' ('+dmy(r.date)+')'}}})}catch(e){}return g}}catch(e){}
 /* زرار في الحسابات والمزيد */
 try{const _rnW=render;render=function(){const r=_rnW.apply(this,arguments);try{const el=$('#view');if(el&&(view==='pmv'||view==='more')&&!el.querySelector('[onclick*="xCashSheet"]')){const b=`<button class="btn ghost" onclick="xCashSheet('m')">🏧 سحب وإيداع كاش</button>`,h=el.querySelector('.phead');h?h.insertAdjacentHTML('afterend',b):el.insertAdjacentHTML('afterbegin',b)}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.51 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xlnc{background:var(--card,#fff);border:1px solid rgba(127,127,127,.25);border-radius:16px;padding:12px 14px;margin:10px 0;cursor:pointer}
@@ -4491,7 +4492,7 @@ function xLnExSv(id){const l=xLnL(id);if(!l)return;if(isClosed(l.d))return toast
   (l.pays||[]).forEach(p=>{const x=p.tx&&S.txs.find(y=>y.id===p.tx);if(x)delete x.xlnp});
   S.settings.xln=XLN().filter(x=>x.id!==id);save();closeSheet();render();toast('✋ اتعفى '+l.who+' · بقت مصروف عادي يوم '+dmy(l.d))}
 xDrWrap('xLnEx');
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.52 ========== */
 /* شاشة المزيد: الإضافات الجديدة مربعات زي الباقي */
 function xTileLbl(e){return(e.textContent||'').replace(/[^\u0600-\u06FFa-zA-Z ]/g,'').replace(/\s+/g,' ').trim()}
@@ -4509,7 +4510,7 @@ function xMoreTiles(){const el=$('#view');if(!el)return;const rmB=sel=>{el.query
   if(base&&!el.querySelector(':not(.btn)[onclick*="\'xcl\'"]')){const c=base.cloneNode(true);xTileSet(c,'👥','العملاء',"go('xcl')");base.insertAdjacentElement('afterend',c)}
   if(el.querySelector(':not(.btn)[onclick*="\'xcl\'"]'))rmB('button.btn[onclick*="\'xcl\'"]')}
 try{const _rnM=render;render=function(){const r=_rnM.apply(this,arguments);try{if(view==='more')xMoreTiles()}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.53 ========== */
 /* الإيداع: كل التحصيلات (الكاش الأول) + الربط ببند */
 function xCwRefOpts(){const ca=xCashAcct(),cut=new Date(Date.now()-180*864e5).toISOString().slice(0,10),dep={};
@@ -4527,7 +4528,7 @@ try{const _lgC=xLedger;xLedger=function(){const g=_lgC.apply(this,arguments);try
 /* ========== 2.21.54 ========== */
 /* شيل زرار سحب وإيداع كاش من شاشة الحسابات */
 try{const _rnP=render;render=function(){const r=_rnP.apply(this,arguments);try{if(view==='pmv'){const el=$('#view');if(el)el.querySelectorAll('button.btn[onclick*="xCashSheet"]').forEach(b=>b.remove())}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.55 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xlog{margin:12px 0}.xlog>.btn{width:100%;display:flex;justify-content:space-between;align-items:center}
@@ -4553,7 +4554,7 @@ try{const _w=xLnOpen;xLnOpen=function(id){const r=_w.apply(this,arguments);try{c
   const g=sh.querySelector('.xlna');if(g&&xLnRem(l)>0.009){g.insertAdjacentHTML('afterbegin',`<button class="btn" onclick="xLnFull('${id}')">✅ سداد كامل</button>`);const ex=g.querySelector('[onclick*="xLnEx"]');if(ex)ex.style.gridColumn='1/-1'}
   const d=[...sh.querySelectorAll('details')].find(x=>/سجل السلفة/.test(x.textContent));if(d)d.outerHTML=xLnLogHTML(l)}catch(e){}return r}}catch(e){}
 try{const _w=xLnView;xLnView=function(){const h=_w.apply(this,arguments);return typeof h==='string'?h.replace(/onclick="event\.stopPropagation\(\);xLnOpen\('([^']+)'\)">📄 التفاصيل<\/button>/g,(m,id)=>`onclick="event.stopPropagation();xLnFull('${id}')">✅ سداد كامل</button>`):h}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.56 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`.xlnc.off{opacity:.55}`;document.head.appendChild(s)})();
 
@@ -4691,7 +4692,7 @@ try{const _stK=saveTx;saveTx=function(){const eid=F&&F.id,old=eid?S.txs.find(t=>
 function xTxRe(f){F=f;txForm()}
 try{const _tfD=txForm;txForm=function(){const r=_tfD.apply(this,arguments);try{if(F&&F.id)XDR=null;else if(F)XDR={n:'xTxRe',a:[JSON.parse(JSON.stringify(F))]}}catch(e){}return r}}catch(e){}
 document.addEventListener('input',e=>{try{if(XDR&&XDR.n==='xTxRe'&&e.target.closest&&e.target.closest('#sheet')){grab();XDR.a=[JSON.parse(JSON.stringify(F))]}}catch(x){}},true);
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.57 ========== */
 /* التحصيلات والمصروفات والأقساط بشكل السلف */
 var XCOLT='pend',XEXPT='all',XVOLD={col:vCol,exps:vExps,inst:vInst};
@@ -4768,7 +4769,7 @@ vInst=function(){if(S.settings.xoldv)return xOldBar()+XVOLD.inst();
 
 /* الفلتر يشتغل على الكروت الجديدة */
 try{const _gfA=gfApply;gfApply=function(){const r=_gfA.apply(this,arguments);try{const q=qn(GQ[view]||'');document.querySelectorAll('#view .xlnc').forEach(e=>{e.style.display=!q||qn(e.textContent).includes(q)?'':'none'})}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.58 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xnmc{border:1px solid rgba(127,127,127,.3);border-radius:16px;padding:14px;text-align:center;cursor:pointer;margin:8px 0 10px}
@@ -4867,7 +4868,7 @@ try{const _dsD=docSheet;docSheet=function(id){const r=_dsD.apply(this,arguments)
 /* --- 7) زرار "+ مستند" في صف الأزرار --- */
 try{const _rnDc=render;render=function(){const r=_rnDc.apply(this,arguments);try{if(view==='docs'&&dtab==='my'){const v=$('#view'),b=v&&v.querySelector('.etbar button[onclick="addInFold()"]'),t=v&&v.querySelector('.tabs.ctabs');
   if(b&&t){const bar=b.parentElement;b.className='';b.style.fontWeight='800';t.insertBefore(b,t.firstChild);if(bar&&!bar.children.length)bar.remove()}}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.59 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xub{position:fixed;left:50%;bottom:calc(var(--navh,64px) + 12px);transform:translate(-50%,180%);z-index:3550;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:30px;background:#111827;color:#fff;font-size:13px;font-weight:700;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .3s;white-space:nowrap}
@@ -5377,7 +5378,7 @@ document.addEventListener('visibilitychange',()=>{
 /* تشغيل */
 try{save()}catch(e){}
 XLAST=localStorage.getItem(KEY);XIDS=xIdsOf(S);XUNDOING=false;
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== شكل السلف على كل الشاشات ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 #view .list,#sheet .list{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;overflow:visible!important}
@@ -5484,7 +5485,7 @@ function xDueEdit(cid,tid){const c=C(cid);if(!c||!c.start)return;
   <label>يوم السداد في الشهر<select id="xd-d">${Array.from({length:28},(_,i)=>i+1).map(d=>`<option value="${d}" ${+c.start.slice(8)===d?'selected':''}>${d}</option>`).join('')}</select></label>
   <button class="btn" onclick="xDueSv('${cid}','${tid}')">💾 حفظ</button><button class="btn ghost" onclick="editTx('${tid}')">رجوع</button>`)}
 function xDueSv(cid,tid){const c=C(cid),d=+(($('#xd-d')||{}).value);if(!c||!d)return;c.start=c.start.slice(0,8)+pad(d);save();render();toast('تم تعديل موعد السداد إلى يوم '+d);editTx(tid)}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.61 ========== */
 /* --- Undo: يظهر بعد ما انت تعمل حاجة بس، ويختفي بعد 4 ثواني، وبيسأل مرة واحدة --- */
 var XLASTTAP=0,XUCONF=false,XUPT=0;
@@ -5579,7 +5580,7 @@ try{const _tfK=txForm;txForm=function(){const r=_tfK.apply(this,arguments);try{
   const k=$('#f-clk');if(k){const cur=F&&F.cat&&F.cat!=='__new'&&C(F.cat);XCLFK=cur&&cur.fixed?(isAnn(cur)?'y':'m'):'o';
     k.outerHTML=`<div class="kv" id="f-clinf"><span>🔁 التكرار</span><b>${cur&&cur.fixed?esc(everyTxt(cur.every)):'غير ثابت'}</b></div>`}
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.62 ========== */
 /* --- Undo: فوق الشاشة، ويختفي تمامًا --- */
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -5673,7 +5674,7 @@ try{const _ulX=unlock;unlock=function(){const r=_ulX.apply(this,arguments);const
   return r}}catch(e){}
 /* المسودة القديمة (أكتر من دقيقتين) ما تفتحش */
 try{const _doX=draftOpen;draftOpen=function(){const x=draftGet();if(x&&Date.now()-x.t>120000){draftClear();return}return _doX.apply(this,arguments)}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.63 ========== */
 /* --- حذف الأقساط: اختيارات واضحة + الدفعات السنوية --- */
 xInstDelAll=function(){
@@ -5713,7 +5714,7 @@ async function xItDel(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===ii
   if(!await ask('حذف هذا القسط؟',xDW(it.due)+' · '+num(+it.amount||0),{danger:true,icon:'🗑',ok:'حذف'}))return;
   p.items=p.items.filter(x=>x.id!==iid);p.ann=(p.ann||[]).filter(x=>x.id!==iid);p.mnt=(p.mnt||[]).filter(x=>x.id!==iid);
   save();closeSheet();render();toast('تم الحذف')}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.64 ========== */
 /* القسط المدفوع: قيمته في الجدول = المبلغ اللي اتدفع فعلًا */
 function xInstSync(){let ch=0;
@@ -5760,7 +5761,7 @@ try{const _ies=xItEditSv;xItEditSv=function(pid,iid){const r=_ies.apply(this,arg
 try{const _idl=xItDel;xItDel=async function(pid,iid){const p=plan(pid),it=p&&p.items.find(x=>x.id===iid),tid=it&&it.txId;
   const r=await _idl.apply(this,arguments);try{
   if(tid&&plan(pid)&&!plan(pid).items.some(x=>x.id===iid)){const t=S.txs.find(x=>x.id===tid);if(t&&t.xpre){S.txs=S.txs.filter(x=>x!==t);save();render()}}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.68 ========== */
 /* دفع قسط قبل الشهر الحالي: يسأل مدفوع سابقًا ولا دفع فعلي */
 try{const _psB=payStart;payStart=async function(pid,iid){
@@ -5791,7 +5792,7 @@ function xNClean(){clearTimeout(XNCT);XNCT=setTimeout(()=>{try{if(!navigator.ser
     ns.forEach(n=>{const g=n.tag||'';if(g.startsWith('test-'))return;if(g==='masrofi-sum'?!al.length:!ids.has(g))n.close()})}).catch(()=>{})}catch(e){}},1000)}
 try{const _rnN=render;render=function(){const r=_rnN.apply(this,arguments);xNClean();return r}}catch(e){}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')xNClean()});
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.69 ========== */
 /* keyTx في app.js معمولة const فمينفعش تتعدّل.
    فبنصفّي العمليات عند الشاشات اللي بتستخدمها بدلها */
@@ -5813,7 +5814,7 @@ try{const _vcX=vCol;vCol=function(){
   try{const k=ym(cur.y,cur.m),l=S.txs.filter(t=>t.ccr&&t.type==='inc'&&!t.pend&&t.date.startsWith(k+'-')).sort(byDesc);
     if(l.length)h+=grp('ccr','تحصيل مقابل دفع كريديت',l.length,r2(l.reduce((a,t)=>a+t.amount,0)),'pos',l.map(txRow).join(''))}catch(e){}
   return h}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.70 ========== */
 /* كل نوع عملية له شاشة لوحده: من غير اختيارات الأنواع التانية */
 var XTYL={exp:{fix:'📌 مصروف ثابت',bill:'🧾 فاتورة',other:'🛒 أخرى',loan:'🤝 سلفة',inst:'🏦 قسط'},inc:{fix:'📌 تحصيل ثابت',cl:'👥 تحصيل عميل',other:'💵 أخرى',ccr:'💳 مقابل دفع كريديت',loan:'🤝 سداد سلفة'}};
@@ -5842,7 +5843,7 @@ try{const _tfT=txForm;txForm=function(){const r=_tfT.apply(this,arguments);try{
     if(t==='cl'){if(cm)cm.remove();const w=$('#f-clw');if(w)w.style.display=''}
     else{const cf=sz.querySelector('.xclf');if(cf)cf.remove()}}
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.71 ========== */
 /* --- وقت النسخ على Drive --- */
 function xBkS(){return Object.assign({mode:'change',h:21,wd:5},GD.sched||{})}
@@ -5863,7 +5864,7 @@ setInterval(()=>{try{
   if(DEMO||!GD.linked||!GD.cid||document.visibilityState!=='visible')return;
   const s=xBkS();if(s.mode==='change'||s.mode==='manual'||!xBkDue())return;
   if(strHash(JSON.stringify(S))===GD.hash)return;
-  driveUpload(false).then(()=>{toast('☁️ تم عمل نسخة احتياطية');try{render()}catch(e){}}).catch(()=>{});
+  driveUpload(false).then(()=>{toast('☁️ تم عمل نسخة احتياطية');try{xR()}catch(e){}}).catch(()=>{});
 }catch(e){}},60000);
 
 /* --- شاشة واحدة للنسخ الاحتياطي --- */
@@ -5886,7 +5887,7 @@ try{const _vsB=vSettings;vSettings=function(){
   return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>💾 النسخ الاحتياطي</h3></div>
   <h3>☁️ Google Drive</h3>${d}<h3>📱 نسخة يدوية</h3>${spData()}`;
 }}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.72 ========== */
 /* النسخ الاحتياطي: كل قسم قايمة مقفولة وانت اللي تفتحها */
 var XBKO={},XBKSTAB='';
@@ -5904,7 +5905,7 @@ try{const _vsC=vSettings;vSettings=function(){
     +sec('mn','📱 نسخة يدوية',m)
     +(loc?sec('lc','🕒 نسخ تلقائية على الموبايل',loc):'');
 }}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.73 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xrv h4{margin:14px 0 6px;font-size:13.5px;display:flex;align-items:center;gap:6px}
@@ -6462,7 +6463,7 @@ try{const _tfN=txForm;txForm=function(){const r=_tfN.apply(this,arguments);try{
     const i=$('#f-ifee');if(i){i.value='0';F.ifee='0';F.ifeeMan=1}}
 }catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.75 ========== */
 /* التحويل بين حساباتك بإنستاباي: المصاريف بتتعلّم لوحدها */
 document.addEventListener('change',e=>{try{
@@ -6522,7 +6523,7 @@ function xDirFix(){
 }
 (()=>{let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{xDirFix()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});try{xDirFix()}catch(e){}})();
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.77 ========== */
 /* اتجاه واحد لكل قايمة حسب أغلب الأسامي */
 xDirFix=function(){
@@ -6610,7 +6611,7 @@ try{const _vhE=vHome;vHome=function(){let h=_vhE.apply(this,arguments);try{
     h=`<div class="warn xdrw"><span onclick="xDrNow()">☁️ ${last?'آخر نسخة على Drive من '+d+' يوم':'لسه مفيش نسخة على Drive'} · اضغط للرفع</span><button class="mini" onclick="event.stopPropagation();xDrSnz()">✕</button></div>`+h}
 }catch(e){}return h}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.79 ========== */
 /* مصاريف إنستاباي: باينة من برا، وبتتسجل مع البنود الثابتة */
 function xIpNeed(t){return !!t&&!t.pend&&!t.xpre&&!t.feeOf&&!t.payFeeOf&&!t.nofee&&t.type!=='inc'&&t.via==='instapay'&&!xFeeTx(t.id)&&!(M(t.method)&&M(t.method).noIpFee)}
@@ -6637,7 +6638,7 @@ function xAutoFee(before){let n=0;S.txs.filter(t=>!before.has(t.id)&&t.src&&t.sr
 try{const _apF=autoPostFixed;autoPostFixed=function(){const b=new Set(S.txs.map(t=>t.id)),r=_apF.apply(this,arguments);try{xAutoFee(b)}catch(e){}return r}}catch(e){}
 try{const _ocF=occCollect;occCollect=async function(){const b=new Set(S.txs.map(t=>t.id)),r=await _ocF.apply(this,arguments);try{if(xAutoFee(b))render()}catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.80 ========== */
 /* خانة مصاريف إنستاباي بتقول هي متسجلة ولا لأ */
 try{const _tfS=txForm;txForm=function(){const r=_tfS.apply(this,arguments);try{
@@ -6674,7 +6675,7 @@ try{const _rnHd=render;render=function(){const r=_rnHd.apply(this,arguments);try
   });
 }catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.82 ========== */
 /* قاعدة واحدة: إنستاباي = مصاريف، ما عدا الفواتير لو مش متعلّمة */
 if(!S.settings.xipmig1){S.txs.forEach(t=>{delete t.nofee});S.methods.forEach(m=>{delete m.noIpFee});S.settings.xipmig1=1;save()}
@@ -6725,7 +6726,7 @@ try{const _arw=xAcctReview;xAcctReview=function(){const r=_arw.apply(this,argume
     h.insertAdjacentHTML('afterend','<p class="muted" style="font-size:11.5px;margin:0 0 6px">قارن كل واحدة بكشف البنك: لو البنك خصم مصاريف دوس ➕ واكتب الرقم اللي في الكشف، ولو المبلغ اللي كاتبه فيه المصاريف أصلًا دوس ✋</p>')}
 }catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.83 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 body.xhome .brand{align-items:center!important}
@@ -6813,7 +6814,7 @@ try{const _rnRv=render;render=function(){const r=_rnRv.apply(this,arguments);try
 }catch(e){}return r}}catch(e){}
 XFC.check=['✅','Check','xRvAll()','#22c55e,#166534',()=>0,''];
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.85 ========== */
 /* الرئيسية: بوكس الشركة ثابت تحت، ورقم الإصدار ظاهر */
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -6832,7 +6833,7 @@ function xHomeFit(){try{
 }catch(e){}}
 try{const _rnFit=render;render=function(){const r=_rnFit.apply(this,arguments);xHomeFit();return r}}catch(e){}
 addEventListener('resize',()=>setTimeout(xHomeFit,50));
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.86 ========== */
 /* زرار Check باين في كل مكان */
 try{const _rnCk=render;render=function(){const r=_rnCk.apply(this,arguments);try{
@@ -6846,7 +6847,7 @@ try{const _pmO2=xPmOpen;xPmOpen=function(){const r=_pmO2.apply(this,arguments);t
 try{const _arC=xAcctReview;xAcctReview=function(){const r=_arC.apply(this,arguments);try{
   const box=$('#sheet .xrv');if(box&&!box.querySelector('.xckb'))box.insertAdjacentHTML('afterbegin','<button class="btn xckb" onclick="xCheckAll()">✅ Check · صلّح كل الحسابات</button>');
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.88 ========== */
 /* الألوان: الحالة بس هي اللي ملونة */
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -6905,7 +6906,7 @@ document.addEventListener('click',e=>{try{
   document.querySelectorAll('#view details.xr[open]').forEach(o=>{if(o!==d&&!o.contains(d))o.open=false});
 }catch(err){}},true);
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.89 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xrvS{margin:10px 0 0!important}
@@ -7017,7 +7018,7 @@ document.addEventListener('click',e=>{try{
 }catch(err){}},true);
 XFC.check=['✅','Check','xRvAll()','#22c55e,#166534',()=>0,''];
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.91 ========== */
 /* الألوان: كل مستوى بشكل مختلف */
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -7069,7 +7070,7 @@ try{const _irF=xInstRowsX;xInstRowsX=function(){const r=_irF.apply(this,argument
   });
 }catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.93 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 body #view .rgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
@@ -7092,7 +7093,7 @@ xHomeFit=function(){try{
   if(gap>1)b.style.setProperty('margin-top',(parseFloat(getComputedStyle(b).marginTop)+gap/z)+'px','important');
 }catch(e){}};
 try{const _rnFt=render;render=function(){const r=_rnFt.apply(this,arguments);setTimeout(xHomeFit,300);return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.94 ========== */
 /* رصيد البداية ثابت: أي تغيير في عملية قبل تاريخه بيظبط رصيد البداية، والرصيد مبيتغيرش */
 function xAnchorFix(){
@@ -7124,7 +7125,7 @@ if(!S.settings.xanchor1){try{
   if(n)setTimeout(()=>{render();toast('💸 رجعت مصاريف إنستاباي لـ '+n+' تحويل · الرصيد زي ما هو')},1200);
 }catch(e){}}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.95 ========== */
 /* بعد "عرض كل العمليات" يرجعك للعملية اللي كنت فاتحها */
 try{const _fcX=xFocusClear;xFocusClear=function(){
@@ -7257,7 +7258,7 @@ XVW.xcw=()=>{
     +sec('p','🙋 كاش من شخص · تحويل إنستاباي',P,'neg',fees?`<p class="muted" style="margin:0 4px 8px;font-size:12px">💸 مصاريف إنستاباي على التحويلات دي: <b>${fmt(fees)}</b></p>`:'')
     +sec('i','🏦 الإيداع',D,'pos');
 };
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.101 ========== */
 /* كاش من شخص: لو الفرق كان متسجل "مصاريف بنك" من المطابقة، يتشال ويتحط مكانه مصاريف التحويل */
 xCashToPerson=async function(id){
@@ -7285,7 +7286,7 @@ try{const _cfQ=cashForm;cashForm=function(id){const r=_cfQ.apply(this,arguments)
 
 /* شاشة السحب والإيداع: الأقسام مقفولة كل مرة تدخلها */
 try{const _goW=go;go=function(v){if(v==='xcw'&&view!=='xcw'){XCWO={};XCWQ=''}return _goW.apply(this,arguments)}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.102 ========== */
 /* ---------- 💰 قراءة المبلغ من إيصال إنستاباي في الشير ---------- */
 var XSHAMT=null,XLNSH=null;
@@ -7888,7 +7889,7 @@ xMgMan=function(){const a=$('#mg-a').value,b=$('#mg-b').value;if(!a||!b||a===b)r
   if(!confirm('تنقل كل عمليات «'+A.name+'» على «'+B.name+'»؟'))return;xMgSnap();xCatMerge(a,b);save();render();toast('🔗 اتدمج');xMgOpen()};
 try{const _mdU=xMgDo;xMgDo=function(i,quiet){const g=XMG[i];if(g){const to=C(g.to);if(to&&g.ids.some(id=>{const c=C(id);return id!==g.to&&c&&c.kind!==to.kind&&c.fixed})){
   const fx=g.ids.find(id=>{const c=C(id);return c&&c.fixed});if(fx)g.to=fx}}return _mdU.apply(this,arguments)}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.115 · شاشة واحدة للبنود ========== */
 /* "البنود" القديمة بتفتح بنود الحسابات */
 try{const _goI=go;go=function(v){if(v==='items')v='xacc';if(v==='xacc'&&view!=='xacc'){XACO={};XACQ=''}return _goI.apply(this,arguments)}}catch(e){}
@@ -7922,7 +7923,7 @@ XVW.xacc=()=>{
   if(!all.length)h+='<p class="empty">لا توجد بنود</p>';
   setTimeout(xAccF,0);return h;
 };
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.117 · الحساب وجواه بنود ثابتة + تقرير العمليات ========== */
 var XACE='',XACR='',XACPAR='',XARF={p:'year',k:'all',s:'all',a:'',b:''};
 var xAcKids=id=>S.cats.filter(c=>c.par===id&&!c.mrg);
@@ -8000,7 +8001,7 @@ XVW.xacr=()=>{const c=C(XACR);if(!c){setTimeout(()=>go('xacc'),0);return ''}
   ${kpis([['💰 دخل',fmt(r2(ti)),'inc'],['💸 خرج',fmt(r2(to)),'exp'],['الصافي',fmt(r2(ti-to)),'net']])}
   <div class="xsm" style="margin:6px 4px">${R.length} عملية</div>
   ${R.length?`<table class="xart"><tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th><th>الرصيد</th></tr>${rows}</table>`:'<p class="empty">مفيش عمليات في الفترة دي</p>'}`};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.118 · بند ثابت مصروف أو تحصيل جوا الحساب ========== */
 XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
   const td=today(),F=[...(c.fixed?[c]:[]),...xAcKids(c.id)];
@@ -8015,7 +8016,7 @@ XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
     <button class="btn" onclick="XACPAR='${c.id}';catForm(null,'exp')">➕ ثابت مصروف</button>
     <button class="btn" onclick="XACPAR='${c.id}';catForm(null,'inc')">➕ ثابت تحصيل</button>
   </div>`};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.119 · بنود الحسابات: قايمة بنود بس، والثابت جوا البند ========== */
 var XACADD=false;
 xAcGo=id=>{XACE=id;XACADD=false;go('xace')};
@@ -8053,7 +8054,7 @@ XVW.xace=()=>{const c=C(XACE);if(!c){setTimeout(()=>go('xacc'),0);return ''}
   ${XACADD?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
     <button class="btn" onclick="XACADD=false;XACPAR='${c.id}';catForm(null,'exp')">💸 مصروف</button>
     <button class="btn" onclick="XACADD=false;XACPAR='${c.id}';catForm(null,'inc')">💰 تحصيل</button></div>`:''}`};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.120 · بنود الحسابات: سطر واحد + من غير أقساط + دمج الأسماء المكررة ========== */
 var xAcInst=()=>{const s=new Set();try{
   Object.keys(S).forEach(k=>{if(/inst|ins|plan|qist/i.test(k)&&Array.isArray(S[k]))S[k].forEach(o=>{if(o&&o.cat)s.add(o.cat);if(o&&o.catId)s.add(o.catId)})});
@@ -8085,7 +8086,7 @@ XVW.xacc=()=>{
   <div class="gsr">${FIC}<input id="xac-q" placeholder="اسم البند أو المبلغ" value="${esc(XACQ)}" oninput="XACQ=this.value;xAccF()"></div>
   ${L.length?L.map(row).join(''):'<p class="empty">لا توجد بنود</p>'}`;
 };
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.121 · ⭐ بند أساسي + شيل "على حساب" ========== */
 var XCFID='';
 /* ⭐ check box في فورم البند */
@@ -8128,7 +8129,7 @@ var xNoPP=()=>{try{const sz=$('#sheet .sz');if(!sz)return;
   [...sz.querySelectorAll('label,div')].filter(e=>e.children.length<=1&&/^\s*👤?\s*على حساب\s*$/.test(e.textContent)).forEach(l=>{
     const n=l.nextElementSibling;if(n&&(n.tagName==='SELECT'||(n.querySelector&&n.querySelector('select'))))n.remove();l.remove()})}catch(e){}};
 try{const _txP=txForm;txForm=function(){const r=_txP.apply(this,arguments);setTimeout(xNoPP,0);setTimeout(xNoPP,150);return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.123 · "على حساب" بدل خانة البند ========== */
 var XOA={t:'',q:'',f:null};
 xPpForm=function(){};xNoPP=function(){};
@@ -8175,7 +8176,7 @@ try{const _tfO=txForm;txForm=function(){const r=_tfO.apply(this,arguments);try{x
 .xoah{font-weight:800;margin-bottom:8px}
 .xoac{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(45,212,191,.08);margin-bottom:8px;min-height:38px}
 .xoal{max-height:45vh;overflow:auto;margin-top:6px}`;document.head.appendChild(s)})();
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.125 · البنود زي البرامج المحاسبية ========== */
 /* ➕ بند جديد: أساسي ولا متغير الأول */
 function xAcNew(){sheet(`<h2>➕ بند جديد</h2><p class="muted">نوع البند</p>
@@ -8265,7 +8266,7 @@ xOaAccs=function(){const I=xAcInst();
 try{const _olC=xOaList;xOaList=function(){const r=_olC.apply(this,arguments);try{
   if(XOA.t==='acc')document.querySelectorAll('#xoa-l .xpo[onclick^="xOaAcc("]').forEach(b=>{const id=(b.getAttribute('onclick').match(/'([^']+)'/)||[])[1],c=C(id),l=b.querySelector('.xl');
     if(c&&c.code&&l&&!l.dataset.cd){l.dataset.cd=1;l.insertAdjacentHTML('afterbegin','<small style="margin:0 0 0 6px">#'+esc(c.code)+'</small>')}})}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.126 · تصليح فتح بنود الحسابات ========== */
 var XACT=typeof XACT==='string'?XACT:'';
 /* xTrNew متعرّفة مرتين: واحدة بتعمل التحويل وواحدة بتفتح الشاشة */
@@ -8280,7 +8281,7 @@ try{const _rnZ=render;render=function(){try{xClean0()}catch(e){}return _rnZ.appl
 ['xacc','xace','xacr'].forEach(k=>{const f=XVW[k];if(!f)return;XVW[k]=function(){try{return f.apply(this,arguments)}catch(e){
   return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>📒 بنود الحسابات</h3></div>
   <div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b><br><small dir="ltr">${esc(((e&&e.stack)||'').split('\n').slice(0,3).join(' | '))}</small><br>صوّر الشاشة دي وابعتها</div>`}}});
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.127 · حسابات الأشخاص شاشة كاملة ========== */
 var XPPID='';
 function xCap(fn,args){let h='';const s=sheet;sheet=function(x){h=x};
@@ -8294,7 +8295,7 @@ xPpOpen=function(id,per){try{closeSheet()}catch(e){}XPPID=id;if(per)XPPV.per=per
 /* أسامي الإجماليات تحت الكشف */
 try{const _rnPP=render;render=function(){const r=_rnPP.apply(this,arguments);try{if(view==='xppo'){const s=$('#view .xppsum');if(s)[...s.children].forEach(d=>{const t=d.textContent;
   if(/صرفت عليه/.test(t))d.remove();else if(/عليه/.test(t)&&!d.classList.contains('xppbal'))d.firstElementChild.textContent='💸 مصروفات';else if(/رجّع/.test(t))d.firstElementChild.textContent='💰 تحصيلات'})}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.128 · الحاجات اللي كانت ناقصة من 2.21.124 ========== */
 function xAcEmpty(){const I=xAcInst(),used=new Set();
   S.txs.forEach(t=>{if(t.cat)used.add(t.cat);if(t.l&&t.l.cat)used.add(t.l.cat)});
@@ -8308,7 +8309,7 @@ async function xAcClean(){const L=xAcEmpty();if(!L.length)return toast('مفيش
 async function xAcDel(id){const c=C(id);if(!c)return;const K=xAcKids(id);
   if(K.length&&!await ask('البند ده جواه مصروفات ثابتة',`${K.length} مصروف ثابت جوا «${c.name}» هيفضلوا من غير بند. تكمّل؟`,{icon:'⚠️',ok:'كمّل',danger:true}))return;
   await delCat(id);if(!C(id)){K.forEach(k=>delete k.par);save();go('xacc')}}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.129 · البند الرئيسي + حسابات فرعية ========== */
 var XSUBP='';
 function xSubGo(id){XSUBP=id;go('xsub')}
@@ -8382,7 +8383,7 @@ xSubSave=function(par,id){const p=C(par);if(!p)return;
 xAcDel=async function(id){const c=C(id);if(!c)return;const K=xAcKids(id);
   if(K.length)return say('مينفعش يتحذف',`جواه ${K.length} حساب فرعي: ${K.map(k=>k.name).join('، ')}\nاحذفهم الأول من 🗂 تكويد حساب فرعي.`,'🗂');
   await delCat(id);if(!C(id))go('xacc')};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.130 · البند مش اسم العملية ========== */
 /* 1) كل عملية تخص شخص بتتربط بيه مباشرة، مش عن طريق البند */
 function xPpPinAll(){const L=typeof XLN==='function'?XLN():[];let n=0;
@@ -8441,7 +8442,7 @@ xPpQ=function(q){const n=xNrm(q||'');let any=0;
   document.querySelectorAll('#pp-cl .xppcat').forEach(r=>{const on=r.classList.contains('xppcon'),v=on||(n&&r.dataset.q.includes(n));r.style.display=v?'':'none';if(v)any++});
   let h=$('#pp-hint');if(!h){const i=$('#pp-q');if(i){i.insertAdjacentHTML('afterend','<div id="pp-hint" class="xckh" style="margin:6px 2px"></div>');h=$('#pp-hint')}}
   if(h)h.textContent=n?(any?'':'مفيش بند بالاسم ده'):'🔍 دوّر على البند عشان تضيفه'};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.131 · نقل عمليات على شخص + ترجيع البنود من نسخة ========== */
 var XPPM={pid:'',sel:new Set()},XRF=null,XCBS='width:22px;height:22px;flex:0 0 22px;margin:0';
 
@@ -8498,7 +8499,7 @@ try{const _rnPM=render;render=function(){const r=_rnPM.apply(this,arguments);try
   if(view==='xppo'&&!$('#ppm-b')){const per=$('#view .xppper');if(per)per.insertAdjacentHTML('beforebegin',
     `<div class="xlna" id="ppm-b"><button class="btn" onclick="xPpMove(XPPID)">📥 نقل عمليات عليه</button><button class="btn ghost" onclick="xRfOpen()">🩹 رجّع البنود من نسخة</button></div>`)}
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.132 · البند القديم يتنقل لحساب الشخص ========== */
 var XPIO={};
 function xPpItems(pid){const p=XPP().find(x=>x.id===pid),ids=new Set(Object.keys((p&&p.cats)||{}));
@@ -8590,7 +8591,7 @@ try{const _peQ=xPpEditR;xPpEditR=function(){const r=_peQ.apply(this,arguments);t
 .xpin{flex:1;display:flex;flex-direction:column;min-width:0}.xpin small{font-size:11px;opacity:.75}
 .xpir{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(148,163,184,.12);cursor:pointer}
 .xpib{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px}`;document.head.appendChild(s)})();
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.133 · السلف والثابت جوا حساب الشخص ========== */
 var XLNPP='';
 function xLnOfP(pid){const p=XPP().find(x=>x.id===pid);
@@ -8635,7 +8636,7 @@ function xPpExtra(pid){const td=today(),due=[];let h='';
   return h}
 try{const _xpE=XVW.xppo;XVW.xppo=function(){let h=_xpE.apply(this,arguments);
   try{if(typeof h==='string'&&XPPID)h=h.replace('<div class="seg">',xPpExtra(XPPID)+'<div class="seg">')}catch(e){}return h}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.134 · ترتيب الأشخاص والسلف والبنود ========== */
 (function(){const s=document.createElement('style');s.textContent=`
 .xpl2{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(148,163,184,.12);cursor:pointer}
@@ -8831,7 +8832,7 @@ try{const _stLD=saveTx;saveTx=async function(){const i=$('#f-lnd'),v=i?i.value:'
 /* شاشة السداد: واضح إنها الفلوس اللي رجعت من السلفة */
 try{const _lpT=xLnPay;xLnPay=function(id){const r=_lpT.apply(this,arguments);try{const l=xLnL(id),h=$('#sheet .sz h2');
   if(l&&h&&!$('#xlpn')){h.textContent='💵 سداد سلفة · '+l.who;h.insertAdjacentHTML('afterend',`<p class="muted" id="xlpn">سجّل هنا الفلوس اللي رجعتلك من السلفة اللي اديتها لـ ${esc(l.who)} يوم ${dmy(l.d)} (${num(l.amt)})</p>`)}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.135 · البنوك والكاش + الحسابات والأشخاص ========== */
 var XAPT='acc';
 /* الأسامي */
@@ -8861,7 +8862,7 @@ try{const _rnAP=render;render=function(){const r=_rnAP.apply(this,arguments);try
     const pp=$('#xpp-tile');if(pp)pp.remove();
     const t=xTileFind(el,'بنود الحسابات');if(t)xTileSet(t,'📒','الحسابات والأشخاص',"go('xacc')")}}
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.136 · الحساب: عمليات ثابتة ومتغيرة + نقل العمليات ========== */
 var XACTB='',XPPTB='',XMV={k:'',id:'',q:''};
 function xTxtRep(root,P){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
@@ -8978,7 +8979,7 @@ XVW.xppo=()=>{const p=XPP().find(x=>x.id===XPPID);if(!p){setTimeout(()=>go('xpp'
   return `<div class="phead"><button class="mini" onclick="XAPT='pp';go('xacc')">→</button><h3>👤 ${esc(p.name)}</h3><button class="mini" onclick="xPpEdit('${p.id}')">✏️</button><button class="mini" onclick="xPpPrint('${p.id}')">🖨️</button><button class="mini" onclick="xPpShare('${p.id}')">📤</button></div>
   <button class="btn" onclick="xMvGo('pp','${p.id}')">📥 نقل العمليات</button>
   <div class="seg"><button class="${XPPTB==='fx'?'on':''}" onclick="XPPTB='fx';render()">📌 ثابتة (${F1.length})</button><button class="${XPPTB==='var'?'on':''}" onclick="XPPTB='var';render()">🛒 متغيرة (${V1.length})</button><button class="${XPPTB==='ln'?'on':''}" onclick="XPPTB='ln';render()">🤝 السلف (${op.length})</button></div>${body}`};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.137 · القسط + الكاش + الفلتر + التقارير + شاشة العملية ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 #view .xqb{display:none!important}
@@ -9076,7 +9077,7 @@ function xTfLay2(){const sz=$('#sheet .sz');if(!sz||!F)return;if(XSTOF!==F){XSTO
 try{const _tfY2=txForm;txForm=function(){
   try{if(F&&F.type!=='tr'&&!F.id&&!F.via&&M(F.method)&&M(F.method).type==='cash')F.via='cash'}catch(e){}
   const r=_tfY2.apply(this,arguments);try{xTfLay2()}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.138 · الكريديت: الكشف الصح + المرتجع + فلوس الكاش اللي تخص الكريديت ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 .xcch{font-weight:800;font-size:13.5px;margin:4px 0 6px}
@@ -9180,7 +9181,7 @@ XVW.xcc=()=>{const cr=xCcAccts(),td=today();
     </div>`}).join('');
 };
 XFC.cc=['💳','الكريديت',"go('xcc')",'#f97316,#9a3412',()=>xCcList().length,'لما يكون فيه كشف كريديت مطلوب'];
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.139 ========== */
 (()=>{const s=document.createElement('style');s.textContent=`
 body.xhome #view .dash{gap:5px!important}
@@ -9469,13 +9470,13 @@ try{const _rnZ9=render;render=function(){const r=_rnZ9.apply(this,arguments);try
         $('#xdayb').insertAdjacentHTML('afterend',`<div class="xflc">${ty==='inc'?'💰':'💸'} إجمالي ${xDW(f.f)}: <b>${fmt(s)}</b> · ${L.length} عملية</div>`)}}}
 }catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.140 · "سجّل اللي رجع" بقت "سداد دفعة" + رقم الإصدار ========== */
 var XVER2='2.21.140',XVBUILD2='25/10/2026 - 10:15 ص';
 try{brand=function(){return `<div class="brand"><div class="pill"><b dir="ltr">${DEV.name}</b><span class="co" dir="ltr">${DEV.company}</span><span>${DEV.phones.map(p=>`<a href="tel:${p}" dir="ltr">${p}</a>`).join(' - ')}</span></div><small><span dir="ltr">${esc(appName())}</span> · الإصدار ${XVER2} · ${XVBUILD2}</small></div>`}}catch(e){}
 try{const _spA2=spAbout;spAbout=function(){return _spA2.apply(this,arguments).split(XVER).join(XVER2).split(XVBUILD).join(XVBUILD2)}}catch(e){}
 try{const _xpoS=XVW.xppo;XVW.xppo=function(){const h=_xpoS.apply(this,arguments);return typeof h==='string'?h.split('💵 سجّل اللي رجع').join('💵 سداد دفعة'):h}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.141 ========== */
 XVER2='2.21.141';XVBUILD2='25/10/2026 - 10:45 ص';
 
@@ -9542,7 +9543,7 @@ function xCashVia(){Object.keys(XACV).forEach(a=>{if(a==='f-m')return;const s=do
   if(!w||![...v.options].some(o=>o.value===w))return;v.value=w;v.dispatchEvent(new Event('change',{bubbles:true}))})}
 try{const _shCv=sheet;sheet=function(){const r=_shCv.apply(this,arguments);setTimeout(()=>{try{xCashVia()}catch(e){}},0);return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.142 · 📅 التقرير الشهري من جديد ========== */
 XVER2='2.21.142';XVBUILD2='25/10/2026 - 11:00 ص';
 
@@ -9631,7 +9632,7 @@ function xBMonth2(){
       rows:L.slice().sort(byAsc).map(x=>[dmy(x.date),x.type==='inc'?'تحصيل':'مصروف',(xTopC(x.cat)||{}).name||'',xTxNm(x),(M(x.method)||{}).name||'',x.type==='exp'?-x.amount:x.amount])}};
 }
 if(window.XB0)window.XB0.month=xBMonth2;
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.143 · التقرير الشهري: الفواتير + الأسامي + الألوان ========== */
 XVER2='2.21.143';XVBUILD2='25/10/2026 - 11:10 ص';
 
@@ -9727,7 +9728,7 @@ xBMonth2=function(){
       rows:L.slice().sort(byAsc).map(x=>[dmy(x.date),x.type==='inc'?'تحصيل':'مصروف',(xTopC(x.cat)||{}).name||'',xTxNm(x),(M(x.method)||{}).name||'',x.type==='exp'?-x.amount:x.amount])}};
 };
 if(window.XB0)window.XB0.month=xBMonth2;
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.144 · 📊 باقي التقارير بنفس الشكل ========== */
 XVER2='2.21.144';XVBUILD2='25/10/2026 - 02:00 م';
 
@@ -10042,7 +10043,7 @@ try{
   };
 }catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.145 · Receipt Scan + من غير أمثلة ========== */
 XVER2='2.21.145';XVBUILD2='25/10/2026 - 02:15 م';
 
@@ -10159,7 +10160,7 @@ try{const _rfD=receiptFlow;receiptFlow=async function(rc,fid){
   return _rfD.apply(this,arguments);
 }}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.146 · اسم المكان في الريسيت ========== */
 XVER2='2.21.146';XVBUILD2='25/10/2026 - 02:30 م';
 
@@ -10238,7 +10239,7 @@ try{const _rfL=xRcFinish;xRcFinish=async function(){
   return _rfL.apply(this,arguments);
 }}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.147 · اسم المكان: مطابقة مضمونة بس ========== */
 XVER2='2.21.147';XVBUILD2='25/10/2026 - 02:40 م';
 
@@ -10268,7 +10269,7 @@ try{const _asW=askStore;askStore=function(rc){
   return p;
 }}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.148 ========== */
 XVER2='2.21.148';XVBUILD2='26/10/2026 - 12:00 م';
 
@@ -10416,7 +10417,7 @@ try{const _tfC3=txForm;txForm=function(){const r=_tfC3.apply(this,arguments);try
   if(ln&&lt&&!ln.closest('.xntp')){const w=document.createElement('div');w.className='two xntp';ln.before(w);w.appendChild(ln);w.appendChild(lt)}
 }catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.149 · تصليح شاشة أكبر مصروف ========== */
 XVER2='2.21.149';XVBUILD2='26/10/2026 - 12:15 م';
 topSheet=function(){const TX=keyTx(NKM).filter(t=>t.type==='exp'),by={};
@@ -10425,7 +10426,7 @@ topSheet=function(){const TX=keyTx(NKM).filter(t=>t.type==='exp'),by={};
   sheet(`<div class="phead"><h2>💸 ${esc(L('exp'))} · ${MONTHS[NM-1]}</h2><span class="badge late">${num(tot)}</span></div>
   ${A.length?`<div class="list">${A.map(o=>`<div class="row" ${o.c?`onclick="cur.y=NY;cur.m=NM;openStmt('cat','${o.c.id}')"`:''}><div class="grow"><b>${esc(o.c?o.c.name:'—')}</b><small>${o.n} عملية</small></div><div class="amt exp">${num(r2(o.v))}</div></div>`).join('')}</div>`:'<div class="nempty"><div>💸</div><b>لا يوجد</b></div>'}
   ${repBtn('التقرير الشهري',"openRep('month',()=>RF.month=NKM)")}`)};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.150 · المزيد: كل البوكسات بنفس الحجم + خلفية و blur ========== */
 XVER2='2.21.150';XVBUILD2='26/10/2026 - 12:20 م';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -10444,7 +10445,7 @@ body #view.xmorev .rbtn span{font-size:28px!important}
 body #view.xmorev .rbtn:active{transform:scale(.96)}
 `;document.head.appendChild(s)})();
 try{const _rnMv=render;render=function(){const r=_rnMv.apply(this,arguments);try{const v=$('#view');if(v)v.classList.toggle('xmorev',view==='more')}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.151 · المزيد: 4 في الصف ========== */
 XVER2='2.21.151';XVBUILD2='26/10/2026 - 12:25 م';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -10454,7 +10455,7 @@ body #view.xmorev .rbtn{min-height:80px!important;padding:8px 2px!important;font
 body #view.xmorev .rbtn span{font-size:24px!important}
 `;document.head.appendChild(s)})();
 try{const _rnM4=render;render=function(){const r=_rnM4.apply(this,arguments);try{if(view==='more')document.querySelectorAll('#view .rgrid').forEach(g=>g.style.removeProperty('grid-template-columns'))}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.152 · العملاء في الصف الأول ========== */
 XVER2='2.21.152';XVBUILD2='26/10/2026 - 01:05 م';
 try{const _rnCl=render;render=function(){const r=_rnCl.apply(this,arguments);try{
@@ -10463,7 +10464,7 @@ try{const _rnCl=render;render=function(){const r=_rnCl.apply(this,arguments);try
   const t=[...G[1].children].find(b=>/xcl|العملاء/.test((b.getAttribute('onclick')||'')+' '+b.textContent));
   if(t){t.classList.add('xclt');g1.appendChild(t)}
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.153 ========== */
 XVER2='2.21.153';XVBUILD2='26/10/2026 - 01:20 م';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -10549,7 +10550,7 @@ try{const _hbRt=handleBack;handleBack=function(){
   if(!document.querySelector('.xpk')&&XOARET&&$('#sheet').classList.contains('open')&&!$('#f-amt')){xOaRet();return true}
   return _hbRt.apply(this,arguments)}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.154 · إيه اللي غيّر الرصيد ========== */
 XVER2='2.21.154';XVBUILD2='26/10/2026 - 01:40 م';
 function xCashEff(c,id){const ca=xCashAcct();if(c.method===id&&id!==ca)return -c.amount;if(id===ca&&c.method!==ca)return +c.amount;return 0}
@@ -10576,7 +10577,7 @@ function xBalWhy(id){const m=M(id);if(!m)return;
   <button class="btn ghost" onclick="xRecon('${id}')">⚖️ مطابقة مع الرصيد الحقيقي</button>`)}
 try{const _pmW=xPmOpen;xPmOpen=function(id){const r=_pmW.apply(this,arguments);try{
   const g=document.querySelector('#sheet .xlna');if(g&&!document.querySelector('#sheet .xbwb'))g.insertAdjacentHTML('beforebegin',`<button class="btn xbwb" onclick="xBalWhy('${id}')">🔎 إيه اللي غيّر الرصيد؟</button>`)}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.155 · حركة الكاش بشكل أوضح ========== */
 XVER2='2.21.155';XVBUILD2='26/10/2026 - 01:50 م';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -10612,7 +10613,7 @@ function xBwGap(id){const el=$('#bw-g'),R=document.querySelectorAll('#sheet .xbw
   else{XGAP={id,gap,pick:null};t=`البرنامج شايف إن معاك <b>${num(gap)}</b> زيادة عن الحقيقة.<br>يعني غالبًا فيه حاجة اتدفعت كاش ومتسجلتش، أو تحصيل اتسجل كاش وهو مش كاش.<br><button class="btn ghost" style="margin-top:6px" onclick="xGapRec()">➕ سجّل الفرق مصروف (${num(gap)})</button>`}
   el.innerHTML=`<div class="xbwm">${t}</div>`;
   if(hit[0])setTimeout(()=>hit[0].scrollIntoView({block:'center',behavior:'smooth'}),100)}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.156 · تصليح الإكراميات المحسوبة مرتين ========== */
 XVER2='2.21.156';XVBUILD2='26/10/2026 - 02:00 م';
 var XTFPRE=[];
@@ -10650,7 +10651,7 @@ try{const _tfTp=txForm;txForm=function(){const r=_tfTp.apply(this,arguments);try
   if(!$('#f-tipt')){l.insertAdjacentHTML('afterend','<small class="muted xhint" id="f-tipt"></small>');
     const up=()=>{const b=parseNum(a.value)||0,t=parseNum(tp.value)||0,e=$('#f-tipt');if(e)e.textContent=t>0?'هيتسجل: '+num(b)+' + '+num(t)+' إكرامية = '+num(r2(b+t)):''};
     a.addEventListener('input',up);tp.addEventListener('input',up);up()}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.157 · الإكرامية في التعديل + شكل "على حساب" ========== */
 XVER2='2.21.157';XVBUILD2='26/10/2026 - 02:10 م';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -10718,7 +10719,7 @@ try{const _stTx=saveTx;saveTx=async function(){
   try{if(fid&&tv!=null&&!$('#sheet').classList.contains('open')){const o=S.txs.find(t=>t.id===fid),x=o&&o.tipTx&&S.txs.find(t=>t.id===o.tipTx);
     if(o&&x&&!isClosed(x.date)){if(tv>0)Object.assign(x,{amount:tv,date:o.date,method:o.method,via:o.via||''});else{S.txs=S.txs.filter(t=>t!==x);delete o.tipTx}save();render()}}}catch(e){}
   return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.158 · اختيار الحساب: حسابات وأشخاص بس ========== */
 XVER2='2.21.158';XVBUILD2='26/10/2026 - 02:15 م';
 if(XOAP.t!=='pp')XOAP.t='acc';
@@ -10736,7 +10737,7 @@ xOaPL=function(){const el=$('#xoap-l');if(!el||!F)return;const raw=($('#xoap-q')
   else h=XPP().filter(p=>!q||qn(p.name).includes(q)).map(p=>`<button type="button" class="xpo ${F.pp===p.id?'on':''}" data-p="${p.id}"><span class="xic0">👤</span><span class="xl">${esc(p.name)}<small>${xPpItems(p.id).length} حساب</small></span>${F.pp===p.id?'<i>✓</i>':''}</button>`).join('');
   if(!pp&&raw.trim()&&!acc.some(c=>qn(c.name)===q))h=`<button type="button" class="xpo xnew" data-n="1"><span class="xic0">➕</span><span class="xl">حساب جديد: ${esc(raw.trim())}</span></button>`+h;
   el.innerHTML=h||'<p class="muted" style="text-align:center;margin:10px 0">مفيش نتايج</p>'};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.159 · حركة الحساب: 7 أيام / 30 يوم ========== */
 XVER2='2.21.159';XVBUILD2='26/10/2026 - 02:20 م';
 var XBWD=7;
@@ -10746,7 +10747,7 @@ try{const _bwD=xBalWhy;xBalWhy=function(id,d){if(d)XBWD=d;const o=xDayIso;xDayIs
     sz.querySelectorAll('p.muted').forEach(p=>{if(/آخر 7 أيام/.test(p.textContent))p.textContent=p.textContent.replace('آخر 7 أيام','آخر '+XBWD+' يوم')});
     const k=sz.querySelector('.kv');if(k&&!$('#bw-d'))k.insertAdjacentHTML('afterend',`<div class="seg" id="bw-d">${[[7,'آخر 7 أيام'],[30,'آخر 30 يوم'],[90,'آخر 3 شهور']].map(([v,l])=>`<button type="button" class="${XBWD===v?'on':''}" onclick="xBalWhy('${id}',${v})">${l}</button>`).join('')}</div>`)}}catch(e){}
   return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.165 · قراءة الريسيت بـ Gemini (ببلاش) ========== */
 XVER2='2.21.165';XVBUILD2='26/10/2026 - 03:10 م';
 var XGM=['gemini-3.6-flash','gemini-3.5-flash','gemini-2.5-flash'];
@@ -10852,7 +10853,7 @@ xUpdGo=async function(){try{xStSave()}catch(e){}try{draftSave()}catch(e){}
     if(reg){try{await reg.update()}catch(e){}const w=reg.waiting||reg.installing;if(w){try{w.postMessage({type:'SKIP_WAITING'});w.postMessage('skipWaiting')}catch(e){}}}}catch(e){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.filter(k=>!/share/i.test(k)).map(k=>caches.delete(k)))}}catch(e){}
   setTimeout(()=>location.replace(location.pathname+'?u='+Date.now()),400)};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.166 · Gemini: إعادة المحاولة + الحالة الحقيقية ========== */
 XVER2='2.21.166';XVBUILD2='26/10/2026 - 03:20 م';
 function xGSt(o){if(o)localStorage.setItem('centric-aist',JSON.stringify(Object.assign({at:Date.now()},o)));try{return JSON.parse(localStorage.getItem('centric-aist')||'null')}catch(e){return null}}
@@ -11123,7 +11124,7 @@ try{const _lsS=xLnSave;xLnSave=function(){const s=XLNSEL||{};
   try{if(s.cat&&XLN().length>n0){const l=XLN()[XLN().length-1];l.cat=s.cat;const t=l.tx&&S.txs.find(x=>x.id===l.tx);if(t)t.cat=s.cat;save();render()}}catch(e){}
   return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 setTimeout(()=>{try{const b=document.getElementById('xboot');if(b)b.remove();render()}catch(e){}},3000);
 /* ========== 2.21.169 ========== */
 XVER2='2.21.169';XVBUILD2='27/10/2026 - 10:40 ص';
@@ -11175,7 +11176,7 @@ xOaPick=function(){try{grab()}catch(e){}XOAF=F;const c=F.cat&&F.cat!=='__new'&&C
     onNewAcc:n=>{F=XOAF;XOA.q=n;xOaNew()},
     extra:(c?'<button type="button" class="btn ghost" data-x="edit">✏️ اسم الحساب</button>':'')+(c||F.pp?'<button type="button" class="btn ghost danger" data-x="clr">🗑 مسح الحساب</button>':''),
     onX:k=>{F=XOAF;if(k==='clr')xOaClear();else xCatEdit()}})};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.170 ========== */
 XVER2='2.21.170';XVBUILD2='27/10/2026 - 10:50 ص';
 
@@ -11211,7 +11212,7 @@ try{const _dpB=dupSheet;dupSheet=function(old){const r=_dpB.apply(this,arguments
   <div class="kv"><span>التاريخ</span><b>${xDW((t&&t.date)||old.date)}</b></div>
   <details class="gen"><summary>🧾 الأصناف (${its.length})</summary>${xDpItems(its)}</details>`;
 }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.171 · البحث مع Today ========== */
 XVER2='2.21.171';XVBUILD2='27/10/2026 - 11:00 ص';
 
@@ -11235,7 +11236,7 @@ try{const _faS=xFlApply;xFlApply=function(){
       const gs=gr.querySelector(':scope>summary .gs');if(gs)gs.textContent=num(r2(V.reduce((s,e)=>s+amt(e.querySelector('.amt')),0)));
       const bd=gr.querySelector(':scope>summary .badge');if(bd)bd.textContent=V.reduce((s,e)=>s+(e.matches('details.xgr')?(+e.dataset.xn||0):1),0)});
   }catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.172 · قفل الريسيت + النسخ المكررة ========== */
 XVER2='2.21.172';XVBUILD2='27/10/2026 - 11:10 ص';
 
@@ -11282,7 +11283,7 @@ async function xDpDel(bid){const b=S.buys.find(y=>y.id===bid);if(!b)return;const
   S.buys=S.buys.filter(y=>y.id!==bid);save();render();toast('🗑 اتمسح');
   const x=XRC2;if(!x)return closeSheet();
   const L=xDpMatches(null);if(L.length){DUPX={old:L[0],go:xRcFinish};dupSheet(L[0])}else xRcSheet()}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.174 · مطابقة الكونتكت بالأرقام والعنوان ========== */
 XVER2='2.21.174';XVBUILD2='27/10/2026 - 11:30 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -11356,7 +11357,7 @@ function xCtNewSv(){const x=XCTR;if(!x)return;const n=(($('#ctn-n')||{}).value||
 
 /* إضافة على الموجود */
 try{const _dbW=xDpBlock;xDpBlock=function(){return String(_dbW.apply(this,arguments)).replace('➕ حط الأصناف دي عليه','➕ إضافة على الموجود')}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.175 · عدّل الموجود ========== */
 XVER2='2.21.175';XVBUILD2='27/10/2026 - 11:40 ص';
 function xDpOldBuy(){const o=DUPX&&DUPX.old;if(!o)return null;return (o.store!=null||o.total!=null)?o:S.buys.find(y=>y.txId===o.id)||{txOnly:o}}
@@ -11383,7 +11384,7 @@ function xDpEdit(bid){const x=XRC2;if(!x)return toast('ابدأ من الريس�
 try{const _dpE=dupSheet;dupSheet=function(){const r=_dpE.apply(this,arguments);try{
   document.querySelectorAll('#sheet .sz .btn').forEach(b=>{if(/عدّل الموجود|عدل الموجود/.test(b.textContent))b.setAttribute('onclick','xDpEdit()')})}catch(e){}return r}}catch(e){}
 try{const _dbE=xDpBlock;xDpBlock=function(b){return String(_dbE.apply(this,arguments)).replace('<button type="button" class="btn ghost danger" onclick="xDpDel(',`<button type="button" class="btn" onclick="xDpEdit('${b.id}')">✏️ عدّله</button><button type="button" class="btn ghost danger" onclick="xDpDel(`)}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.176 · الكونتكت بعد عدّل الموجود ========== */
 XVER2='2.21.176';XVBUILD2='27/10/2026 - 11:50 ص';
 try{const _cfrN=contactFromReceipt;contactFromReceipt=async function(rc,cat){
@@ -11393,7 +11394,7 @@ try{const _cfrN=contactFromReceipt;contactFromReceipt=async function(rc,cat){
   return _cfrN.apply(this,arguments)}}catch(e){}
 try{const _deC=xDpEdit;xDpEdit=function(){const x=XRC2;const r=_deC.apply(this,arguments);
   try{if(x&&!XRC2&&x.rc&&x.cat)setTimeout(()=>{try{contactFromReceipt(x.rc,x.cat)}catch(e){}},400)}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.177 · من غير رقم شركة البرمجة ========== */
 XVER2='2.21.177';XVBUILD2='27/10/2026 - 12:00 م';
 
@@ -11420,7 +11421,7 @@ try{const _cfrV=contactFromReceipt;contactFromReceipt=async function(rc,cat){
 function xPhNo(p){const L=xPhBlk();if(!L.includes(p))L.push(p);
   S.contacts.forEach(c=>{if(Array.isArray(c.phones))c.phones=c.phones.filter(x=>xNp(x)!==p)});
   save();toast('✕ الرقم ده مش هيتجاب تاني');const x=XCTRC;closeSheet();if(x)contactFromReceipt(x.rc,x.cat)}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.178 · صورة ريسيت واحدة ========== */
 XVER2='2.21.178';XVBUILD2='27/10/2026 - 12:10 م';
 function xIsRcImg(id){const m=(S.fmeta||{})[id]||{};return /receipt|ريسيت|scan/i.test(m.name||'')||S.buys.some(b=>b&&b.fid===id)}
@@ -11436,7 +11437,7 @@ try{const _deI=xDpEdit;xDpEdit=function(){const x=XRC2,fid=x&&x.fid;const r=_deI
 try{if(!S.settings.xrcimg1){let n=0;
   S.txs.forEach(t=>{if(!t||!Array.isArray(t.files)||t.files.filter(xIsRcImg).length<2)return;const b=S.buys.find(y=>y.txId===t.id);if(xRcImgFix(t,b&&b.fid))n++});
   S.settings.xrcimg1=1;save();if(n){try{gcFiles()}catch(e){}setTimeout(()=>toast('🧹 اتشال صور ريسيت مكررة من '+n+' عملية'),1500)}}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.179 · الشهر اللي الفلوس تتحسب فيه + اسم العملية كبير ========== */
 XVER2='2.21.179';XVBUILD2='29/10/2026 - 12:15 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -11503,7 +11504,7 @@ try{const _lgAc=xLedger;xLedger=function(id,f,t,L,Cs){return _lgAc.call(this,id,
 try{const _rvAc=xRvItems;xRvItems=function(){return _rvAc.apply(this,arguments).filter(x=>!(x.t&&x.t.rdate&&/بعد النهارده/.test(x.why)))}}catch(e){}
 try{const _tbAc=txBody;txBody=function(t){let h=_tbAc.apply(this,arguments);try{
   if(t&&t.rdate)h=h.replace('<div class="etbar"',`<div class="kv"><span>📥 الفلوس دخلت فعلًا</span><b>${xDW(t.rdate)}</b></div><div class="kv"><span>📅 محسوبة على شهر</span><b>${mName(t.date.slice(0,7))}</b></div><div class="etbar"`)}catch(e){}return h}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.180 · من غير توحيد البنود + النسخ على Drive لوحده ========== */
 XVER2='2.21.180';XVBUILD2='29/10/2026 - 12:30 ص';
 
@@ -11537,12 +11538,12 @@ document.addEventListener('pointerup',()=>{try{
   if(strHash(JSON.stringify(S))===GD.hash)return;
   XDRT=Date.now();
   gTC.callback=r=>{if(!r||r.error)return;gTok=r.access_token;gExp=Date.now()+(+r.expires_in||3600)*1000;
-    driveUpload(false).then(()=>{toast('☁️ اتعملت نسخة على Drive');try{render()}catch(e){}}).catch(()=>{})};
+    driveUpload(false).then(()=>{toast('☁️ اتعملت نسخة على Drive');try{xR()}catch(e){}}).catch(()=>{})};
   gTC.error_callback=()=>{};
   const o={prompt:''};if(GD.email)o.hint=GD.email;
   gTC.requestAccessToken(o);
 }catch(e){}},true);
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.181 · الإكرامية في الريسيت + نسبة الزيادة في الثابت ========== */
 XVER2='2.21.181';XVBUILD2='29/10/2026 - 01:00 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -11603,7 +11604,7 @@ try{const _osPc=occSheet;occSheet=function(id,k){const r=_osPc.apply(this,argume
 try{const _tfPc=txForm;txForm=function(){const r=_tfPc.apply(this,arguments);try{
   const o=F&&F.id&&S.txs.find(t=>t.id===F.id);if(o&&o.src&&o.src.k==='r')xPctAttach($('#f-amt'),xOccPrev(o.src.id,o.src.p))}catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.182 · 📈 تقرير نسب الزيادة ========== */
 XVER2='2.21.182';XVBUILD2='29/10/2026 - 01:10 ص';
 
@@ -11662,7 +11663,7 @@ try{const _frIn=fixedRow;fixedRow=function(o){let h=_frIn.apply(this,arguments);
 /* تعديل البند الثابت نفسه */
 try{const _csIn=catSheet;catSheet=function(){const r=_csIn.apply(this,arguments);try{const o=CF&&CF.id&&C(CF.id);if(o&&+o.amount>0)xPctAttach($('#cf-amt'),+o.amount)}catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.183 · نسب الزيادة: كل البنود ========== */
 XVER2='2.21.183';XVBUILD2='29/10/2026 - 01:20 ص';
 
@@ -11708,7 +11709,7 @@ if(REPS.incr)REPS.incr.b=function(){
   else r.body+=mon;
   return r};
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.184 · نسب الزيادة: المواعيد المسجلة سابقًا + الشهور الجاية ========== */
 XVER2='2.21.184';XVBUILD2='29/10/2026 - 01:30 ص';
 
@@ -11741,7 +11742,7 @@ if(REPS.incr)REPS.incr.b=function(){
   else r.body+=mon;
   return r};
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.185 · تصليح تقرير نسب الزيادة ========== */
 XVER2='2.21.185';XVBUILD2='29/10/2026 - 01:40 ص';
 function xBIncr3(){
@@ -11774,7 +11775,7 @@ function xBIncr3(){
 }
 if(REPS.incr)REPS.incr.b=function(){try{return xBIncr3()}catch(e){
   return{title:'نسب الزيادة',sub:'',body:`<div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b><br>صوّر الشاشة دي وابعتها</div>`}}};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.186 · الزيادة: المبلغ القديم والنسبة بوكسات + تقرير بسيط ========== */
 XVER2='2.21.186';XVBUILD2='29/10/2026 - 02:00 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -11835,7 +11836,7 @@ function xBIncr4(){xLegacy('incr');const P=xPer('incr'),f=P.f.slice(0,7),t=P.t.s
     rows:R.map(r=>[xIncrNm(r.c),r.c.kind==='inc'?'تحصيل':'مصروف',r.cur,r.prev,r.p,mName(r.m)])}}}
 if(REPS.incr)REPS.incr.b=function(){try{return xBIncr4()}catch(e){
   return{title:'نسب الزيادة',sub:'',body:`<div class="xwarn">⚠️ حصل خطأ: <b dir="ltr">${esc((e&&e.message)||String(e))}</b></div>`}}};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.187 · بوكس نسبة الزيادة + بوكس قيمة الزيادة ========== */
 XVER2='2.21.187';XVBUILD2='29/10/2026 - 02:10 ص';
 xIncBox=function(amtId,cid,k,txId){
@@ -11854,7 +11855,7 @@ xIncBox=function(amtId,cid,k,txId){
   P.addEventListener('input',()=>{const o2=parseNum(O.value)||0,p2=parseNum(P.value);if(o2>0&&!isNaN(p2)){const n=r2(o2*(1+p2/100));setA(n);V.value=amtStr(r2(n-o2))}});
   V.addEventListener('input',()=>{const o2=parseNum(O.value)||0,v2=parseNum(V.value);if(o2>0&&!isNaN(v2)){setA(o2+v2);P.value=xIncPct(o2,o2+v2)}});
   calc();if(st&&st.p!=null&&st.p!=='')P.value=st.p};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.188 · الحسابات مقفولة بمبلغها الثابت + بوكسات الزيادة في الميعاد الثابت ========== */
 XVER2='2.21.188';XVBUILD2='29/10/2026 - 02:20 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -11930,7 +11931,7 @@ try{const _irT=xIncRows;xIncRows=function(){const R=_irT.apply(this,arguments);t
     if(R.some(r=>r.c.id===c.id&&r.m===m))return;
     R.push({c,id:'',cur:+c.amount||0,prev:+c.prevAmt,p:c.incPct!=null&&c.incPct!==''?+c.incPct:xIncPct(+c.prevAmt,+c.amount||0),m})})}catch(e){}return R}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.189 · رقم البند بعد التعديل + كروت زرقا ========== */
 XVER2='2.21.189';XVBUILD2='29/10/2026 - 02:30 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -11962,7 +11963,7 @@ function xFxLast(x){let best=null;
 xAcFixAmt=function(c){let s=0,n=0;[c].concat(xAcKids(c.id)).forEach(x=>{if(x.fixed&&x.active!==false){const a=xFxLast(x);if(a){s+=a;n++}}});return n?r2(s):null};
 
 try{const _rnBl=render;render=function(){const r=_rnBl.apply(this,arguments);try{const v=$('#view');if(v)v.classList.toggle('xaccv',view==='xacc'&&XAPT==='acc')}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.190 · كروت الحسابات شفافة ========== */
 XVER2='2.21.190';XVBUILD2='29/10/2026 - 02:40 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -11981,7 +11982,7 @@ body #view.xaccv .xacd .xpl2{border-top:1px solid rgba(255,255,255,.06)}
 body #view.xaccv .xact{border-top:1px solid rgba(147,197,253,.3)!important;color:inherit}
 body #view.xaccv .xacb .mini{background:rgba(255,255,255,.05)!important;border-color:rgba(147,197,253,.25)!important;color:inherit!important}
 `;document.head.appendChild(s)})();
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.191 · البند بيتقفل لما تروح لحاجة تانية ========== */
 XVER2='2.21.191';XVBUILD2='29/10/2026 - 02:50 ص';
 /* بند واحد مفتوح بس */
@@ -11990,7 +11991,7 @@ document.addEventListener('toggle',e=>{try{const d=e.target;if(!d||!d.classList|
   Object.keys(XACOP).forEach(k=>{if(!d.getAttribute('ontoggle').includes("'"+k+"'"))delete XACOP[k]})}catch(err){}},true);
 /* لما تخرج من الحسابات كله يتقفل */
 try{const _goAc=go;go=function(v){if(view==='xacc'&&v!=='xacc')XACOP={};return _goAc.apply(this,arguments)}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.192 · المبلغ السابق بيتكتب لوحده ========== */
 XVER2='2.21.192';XVBUILD2='29/10/2026 - 03:00 ص';
 xIncTrio=function(A,o,pre){if(!A||document.getElementById(pre+'o'))return;const l=A.closest('label')||A;
@@ -12006,7 +12007,7 @@ xIncTrio=function(A,o,pre){if(!A||document.getElementById(pre+'o'))return;const 
   P.addEventListener('input',()=>{const o2=parseNum(O.value)||0,p2=parseNum(P.value);if(!(o2>0)||isNaN(p2))return;oMan=true;const n=r2(o2*(1+p2/100));setA(n);V.value=amtStr(r2(n-o2))});
   V.addEventListener('input',()=>{const o2=parseNum(O.value)||0,v2=parseNum(V.value);if(!(o2>0)||isNaN(v2))return;oMan=true;setA(o2+v2);P.value=xIncPct(o2,o2+v2)});
   calc()};
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.193 · تصليح شكل بوكسات الزيادة ========== */
 XVER2='2.21.193';XVBUILD2='29/10/2026 - 03:10 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -12020,7 +12021,7 @@ function xIncFix(){const b=$('#xinc'),sz=$('#sheet .sz');if(!b||!sz)return;
   const top=xTopOf(sz,b);if(top&&top!==b)top.after(b)}
 try{const _tfFx=txForm;txForm=function(){const r=_tfFx.apply(this,arguments);try{xIncFix();setTimeout(xIncFix,50)}catch(e){}return r}}catch(e){}
 try{const _osFx=occSheet;occSheet=function(){const r=_osFx.apply(this,arguments);try{xIncFix();setTimeout(xIncFix,50)}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.194 · الشاشات على قد الموبايل من غير سكرول ========== */
 XVER2='2.21.194';XVBUILD2='29/10/2026 - 03:20 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -12061,7 +12062,7 @@ try{const _rnVf=render;render=function(){const r=_rnVf.apply(this,arguments);xVi
 document.addEventListener('toggle',e=>{if(e.target&&e.target.closest&&e.target.closest('#view'))xViewFit()},true);
 addEventListener('resize',()=>{xSheetFit();xViewFit()});
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.195 ========== */
 XVER2='2.21.195';XVBUILD2='01/11/2026 - 09:30 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -12212,15 +12213,15 @@ try{const _cmX=closeMonth;closeMonth=function(k){
       <div class="list">${L.map(x=>`<div class="row" style="cursor:default"><div class="grow"><b>${esc(x.n)}</b><small>${x.ty==='inc'?'💰 لسه ما اتحصّلش':'💸 لسه ما اتدفعش'} · كان المفروض يوم ${xDW(x.d)}</small></div><div class="amt ${x.ty}">${num(x.a)}</div></div>`).join('')}</div>
       <button class="btn" onclick="xCmRoll()">↪ رحّلهم لـ ${xDW(nk+'-01')} واقفل الشهر</button>
       <button class="btn ghost" onclick="closeSheet()">✕ متقفلش الشهر</button>`);return}}
-  const r=_cmX.apply(this,arguments);Promise.resolve(r).then(()=>{try{render()}catch(e){}});return r}}catch(e){}
+  const r=_cmX.apply(this,arguments);Promise.resolve(r).then(()=>{try{xR()}catch(e){}});return r}}catch(e){}
 function xCmRoll(){const x=XCMK;if(!x)return closeSheet();const nk=addMonths(x.k+'-01',1).slice(0,7),d1=nk+'-01';let n=0;
   x.L.forEach(it=>{try{if(it.t){it.t.date=d1;it.t.post=(it.t.post||0)+1;n++;return}
     const o=it.o,r=o.r;r.st=r.st||{};r.st[o.k]={st:'skip',mv:nk,at:Date.now()};
     S.txs.push({id:uid(),type:r.kind,amount:+o.amt||0,cat:r.id,method:r.acct&&M(r.acct)?r.acct:defMethod(),via:r.via||'',date:d1,note:'↪ مرحّل من '+mName(x.k),files:[],created:Date.now(),pend:true,src:{k:'mv',id:r.id,p:o.k}});n++}catch(e){}});
   XCMK=null;save();closeSheet();XCMB=true;let r;try{r=closeMonth(x.k)}finally{XCMB=false}
-  Promise.resolve(r).then(()=>{try{render()}catch(e){}});toast('↪ اترحّل '+n+' لـ '+mName(nk))}
+  Promise.resolve(r).then(()=>{try{xR()}catch(e){}});toast('↪ اترحّل '+n+' لـ '+mName(nk))}
 try{const _frMv=fixedRow;fixedRow=function(o){let h=_frMv.apply(this,arguments);try{const rec=occRec(o.r,o.k);if(rec&&rec.mv)h=h.split('اتلغى الشهر ده').join('↪ اترحّل لـ '+mName(rec.mv))}catch(e){}return h}}catch(e){}
-try{const _goH=go;go=function(v){const r=_goH.apply(this,arguments);if(v==='home')setTimeout(()=>{try{render()}catch(e){}},50);return r}}catch(e){}
+try{const _goH=go;go=function(v){const r=_goH.apply(this,arguments);if(v==='home')setTimeout(()=>{try{xR()}catch(e){}},50);return r}}catch(e){}
 
 /* ---------- 📅 الشهر الجديد من غير ما تقفل البرنامج ---------- */
 function xDayChk(){try{const k=today().slice(0,7);if(typeof NKM!=='string'||NKM===k)return;
@@ -12241,7 +12242,7 @@ try{const _hfX=xHomeFit;xHomeFit=function(){_hfX.apply(this,arguments);try{if(vi
   for(let i=0;i<4&&b&&H()>1;i++){const mt=parseFloat(getComputedStyle(b).marginTop)||0;if(mt<=0)break;b.style.setProperty('margin-top',Math.max(0,mt-H())+'px','important')}
   let z=parseFloat(v.style.zoom)||1;while(H()>1&&z>.6){z=Math.round((z-.02)*100)/100;v.style.setProperty('zoom',String(z),'important')}}catch(e){}}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.196 · الرئيسية على قد الشاشة ========== */
 XVER2='2.21.196';XVBUILD2='01/11/2026 - 09:40 ص';
 (()=>{const s=document.createElement('style');s.textContent=`
@@ -12289,7 +12290,7 @@ addEventListener('resize',xHomeFitLater);
 addEventListener('load',xHomeFitLater);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')xHomeFitLater()});
 try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(xHomeFitLater)}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.197 · التحصيل اللي اتسجل قبل ميعاده ========== */
 XVER2='2.21.197';XVBUILD2='01/11/2026 - 09:50 ص';
 
@@ -12328,7 +12329,7 @@ try{const _pdL=pendingSheet;pendingSheet=function(){try{if(xOccAuto())save()}cat
   document.querySelectorAll('#sheet .xlna button[onclick*="occSheet("]').forEach(b=>{const m=b.getAttribute('onclick').match(/occSheet\('([^']+)',(\d+)\)/);
     if(!m||b.parentElement.querySelector('.xolb'))return;
     b.parentElement.insertAdjacentHTML('beforeend',`<button class="btn ghost xolb" onclick="event.stopPropagation();xOccLink('${m[1]}',${m[2]})">🔗 اتحصّلت قبل كده</button>`)})}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.198 · الإشعار اللي تدوس عليه يتأجل لبكرة ========== */
 XVER2='2.21.198';XVBUILD2='01/11/2026 - 10:00 ص';
 var XSNZSEL='#view>.xlnal,#view>.warn,#sheet .ncard';
@@ -12405,7 +12406,7 @@ function xOccPick(tid){const t=S.txs.find(x=>x.id===tid);if(!t||(t.src&&t.src.k=
   <button class="btn ghost" onclick="closeSheet()">مش تبع ميعاد ثابت</button>`)}
 function xOccPickDo(tid,rid,k){const t=S.txs.find(x=>x.id===tid),r=C(rid);if(!t||!r)return;
   XOLQ=1;xOccSet(t,r,k);save();XOLQ=0;XKN=xTxIds();closeSheet();render();toast('🔗 اتسجل لميعاد '+dmy(occDate(r,k)))}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.200 · سداد الكريديت بمبلغ البنك + تعليم العمليات مسدد / مش مسدد ========== */
 XVER2='2.21.200';XVBUILD2='01/11/2026 - 10:30 ص';
 var XCCP={id:'',pay:'',t:'u'};
@@ -12498,7 +12499,7 @@ try{const _rnCp=render;render=function(){const r=_rnCp.apply(this,arguments);try
     const un=r2(xCcPurch(id,xCcBaseOf(id)).filter(t=>!xCcPaidT(t)).reduce((s,t)=>s+t.amount,0)),a=c.querySelector('.xlna');
     const h=`<div class="kv xccop"><span>⏳ مشتريات مش مسددة</span><b>${fmt(un)}</b></div><div class="xlna"><button class="btn ghost" onclick="event.stopPropagation();xCcBank('${id}')">💵 سداد بمبلغ البنك</button><button class="btn ghost" onclick="event.stopPropagation();xCcOps('${id}')">🧾 العمليات</button></div>`;
     if(a)a.insertAdjacentHTML('beforebegin',h);else c.insertAdjacentHTML('beforeend',h)})}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ========== 2.21.201 · الأقساط اللي جوه مبلغ الكريديت ========== */
 try{
 XVER2='2.21.201';XVBUILD2='01/11/2026 - 10:00 ص';
@@ -12875,7 +12876,7 @@ document.addEventListener('change',e=>{try{if(!e.target||e.target.id!=='cb-d')re
   const id=(sv.getAttribute('onclick').match(/'([^']+)'/)||[])[1];if(!id)return;const h=xCcInstHTML(id,e.target.value||today());
   if(b)b.outerHTML=h||'';else{const p=document.querySelector('#cb-p');if(p&&h)p.insertAdjacentHTML('beforebegin',h)}xCcBkPrev(id)}catch(err){}},true);
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 }catch(e){console.error('fix 2.21.207',e)}
 /* ===== آخر 2.21.207 ===== */
 /* ========== 2.21.208 · شاشة واحدة لسداد الكريديت ========== */
@@ -12990,7 +12991,7 @@ xCcOps=function(id){xCsGo(id)};
 XVW.xccp=()=>{setTimeout(()=>xCsGo(XCCP&&XCCP.id),0);return ''};
 try{const _goCs=go;go=function(v){if(v==='xcc'&&view!=='xcc'&&XCS&&!M(XCS.id))XCS=null;return _goCs.apply(this,arguments)}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 }catch(e){console.error('fix 2.21.208',e)}
 /* ===== آخر 2.21.208 ===== */
 /* ========== 2.21.213 · مصاريف الكريديت عملية عملية + مصاريف البنوك ========== */
@@ -13220,7 +13221,7 @@ try{const _xcV=XVW.xcc;XVW.xcc=function(){let h=_xcV.apply(this,arguments);if(ty
   if(XCS&&XCS.pid)h=h.replace(/(<b>✏️ تعديل سداد [^<]*<\/b>)/,`$1<div class="xbwm" style="margin:4px 0 8px">انت بتعدّل سداد متسجل قبل كده. لو ده سداد قديم غلط امسحه وابدأ من جديد.<div class="xlna" style="margin-top:6px"><button type="button" class="btn ghost danger" onclick="xCsDelId('${XCS.pid}')">🗑 امسحه</button><button type="button" class="btn ghost" onclick="xCsInit('${XCS.id}','');render()">➕ سداد جديد</button></div></div>`);
   return h}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 }catch(e){console.error('fix 2.21.216',e)}
 /* ===== آخر 2.21.216 ===== */
 /* ========== 2.21.217 ==========*/
@@ -13552,7 +13553,7 @@ try{const _rnZ2=render;render=function(){
     const b=`<button class="btn" id="xpreb" onclick="xPreAll()">✔ ${L.length} قسط قبل ${mName(xPreCut().slice(0,7))} · علّمهم مدفوعين سابقًا</button>`;
     if(g)g.insertAdjacentHTML('beforebegin',b)}}}catch(e){}
   return r}}catch(e){}
-try{render()}catch(e){}
+try{xR()}catch(e){}
 /* ===== آخر 2.21.222 ===== */
 /* ========== 2.21.223 · زرار "فتح" في الإشعارات ========== */
 try{
@@ -13620,7 +13621,7 @@ try{const _faC=xFlApply;xFlApply=function(){const r=_faC.apply(this,arguments);t
   const f=XFLT[view],q=((GQ&&GQ[view])||'').trim()||(($('#view .gsr input')||{}).value||'').trim();
   if(f&&!q)document.querySelectorAll('#view details.grp[data-xso]').forEach(g=>{delete g.dataset.xso;g.open=false})}catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 }catch(e){console.error('fix 2.21.224',e)}
 /* ===== آخر 2.21.224 ===== */
 /* ========== 2.21.225 ========== */
@@ -13735,7 +13736,7 @@ try{const _psD=payStart;payStart=async function(pid,iid){const r=await _psD.appl
   const d=$('#y-d');if(PAY&&PAY.iid===iid&&d&&!isClosed(today())){PAY.date=today();d.value=today();
     const b=d.nextElementSibling;if(b&&b.classList.contains('xsel'))b.innerHTML=xLbl(d);d.dispatchEvent(new Event('change',{bubbles:true}))}}catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 }catch(e){console.error('fix 2.21.225',e)}
 /* ===== آخر 2.21.225 ===== */
 /* ========== 2.21.226 · المعاملة الجديدة بتتجمع على قسط نفس الشهر ========== */
@@ -13756,7 +13757,7 @@ function xDealCnt(p,did){const L=(p.items||[]).filter(i=>i.deal===did||(i.parts|
   return{n:L.length,pd:L.filter(xItPaid).length}}
 
 /* اللي اتسجل قبل كده يتجمع */
-try{let ch=0;(S.plans||[]).forEach(p=>{ch+=xDealMerge(p)});if(ch){save();setTimeout(()=>{try{render()}catch(e){}},300)}}catch(e){}
+try{let ch=0;(S.plans||[]).forEach(p=>{ch+=xDealMerge(p)});if(ch){save();setTimeout(()=>{try{xR()}catch(e){}},300)}}catch(e){}
 
 /* المعاملة الجديدة */
 try{const _adM=xAppDealSv;xAppDealSv=function(pid){const r=_adM.apply(this,arguments);try{
@@ -13782,9 +13783,148 @@ try{const _rnM=render;render=function(){const r=_rnM.apply(this,arguments);try{
       const t=num(it.base||0)+' + '+it.parts.map(x=>num(x.a)).join(' + ');
       if(sm)sm.insertAdjacentHTML('beforeend',' · <span style="opacity:.8">'+t+'</span>');else b.insertAdjacentHTML('afterend','<small>'+t+'</small>')})})}catch(e){}return r}}catch(e){}
 
-try{render()}catch(e){}
+try{xR()}catch(e){}
 }catch(e){console.error('fix 2.21.226',e)}
 /* ===== آخر 2.21.226 ===== */
+/* ========== 2.21.227 ========== */
+try{
+XVER2='2.21.227';XVBUILD2='08/11/2026 - 02:10 م';
+(()=>{const s=document.createElement('style');s.textContent=`
+.xdl{background:var(--card);border:1px solid rgba(148,163,184,.25);border-radius:16px;padding:10px 12px;margin:0 0 8px}
+.xdlh{display:flex;align-items:center;gap:8px;margin-bottom:8px}.xdlh b{flex:1;min-width:0;font-size:14px;line-height:1.45}
+.xdlg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
+.xdlg>div{background:rgba(148,163,184,.08);border-radius:10px;padding:6px 2px}
+.xdlg small{display:block;font-size:10.5px;opacity:.7}.xdlg b{font-size:13.5px}
+.xdlf{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;opacity:.8;margin-top:6px}
+#view .xpinf{padding:4px 12px!important}
+#view .xpinf .kv{display:flex!important;justify-content:space-between;align-items:center;gap:10px;padding:9px 0!important;margin:0!important;border-bottom:1px dashed rgba(148,163,184,.25)}
+#view .xpinf .kv:last-child{border-bottom:0}#view .xpinf .kv>span{opacity:.75;white-space:nowrap}
+#view .xpinf .kv>b{font-weight:800;display:flex;align-items:center;gap:6px}
+.xq2y{display:flex;justify-content:space-between;align-items:center;padding:12px 4px 6px;font-weight:800;font-size:13px;opacity:.85}
+.xq2r{display:grid;grid-template-columns:22px minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:9px 10px;margin:0 0 6px;border-radius:14px;background:var(--card);border:1px solid rgba(148,163,184,.2);border-inline-start:4px solid #94a3b8}
+.xq2r.ok{border-inline-start-color:#16a34a}.xq2r.pre{border-inline-start-color:#0ea5e9}.xq2r.late{border-inline-start-color:#dc2626}.xq2r.wait{border-inline-start-color:#f59e0b}
+.xq2n{width:22px;height:22px;border-radius:50%;background:rgba(148,163,184,.18);font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xq2d{min-width:0}.xq2d b{display:block;font-size:13.5px}
+.xq2d small{display:block;font-size:11px;opacity:.8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xq2a{font-size:15px;font-weight:800;direction:ltr;text-align:left;min-width:56px}
+.xq2b{display:flex;gap:4px}.xq2b .mini{width:32px;height:32px;padding:0!important;display:flex;align-items:center;justify-content:center;font-size:14px}
+`;document.head.appendChild(s)})();
+
+/* ---------- 🏦 صفحة القسط ---------- */
+function xIP(it){try{return itTx(it)}catch(e){return null}}
+function xDeals(p){const its=(p.items||[]).filter(i=>i.k!=='mnt'&&i.k!=='ann').sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+  const bA=i=>i.deal?0:(i.parts?+i.base||0:+i.amount||0),out=[],B=its.filter(i=>bA(i)>0);
+  if(B.length){const pd=B.filter(xIP);out.push({id:'_b',n:p.baseName||p.note||'المعاملة الأولى',a:r2(B.reduce((s,i)=>s+bA(i),0)),c:B.length,pc:pd.length,
+    pa:r2(pd.reduce((s,i)=>s+bA(i),0)),f:B[0].due,l:B[B.length-1].due,base:1})}
+  (p.deals||[]).forEach(d=>{const am=i=>i.deal===d.id?+i.amount||0:(i.parts||[]).filter(x=>x.deal===d.id).reduce((s,x)=>s+(+x.a||0),0);
+    const L=its.filter(i=>am(i)>0),pd=L.filter(xIP);
+    out.push({id:d.id,n:d.n,a:+d.a||r2(L.reduce((s,i)=>s+am(i),0)),c:L.length,pc:pd.length,pa:r2(pd.reduce((s,i)=>s+am(i),0)),
+      f:L[0]&&L[0].due,l:L.length?L[L.length-1].due:'',m:L[0]?am(L[0]):0})});
+  return out}
+async function xDealRen(pid,did){const p=plan(pid);if(!p)return;const d=did==='_b'?null:(p.deals||[]).find(x=>x.id===did);
+  const v=await askIn('📝 اسم المعاملة','',d?d.n:(p.baseName||p.note||''),false,'حفظ');if(v==null)return;const n=String(v).trim();if(!n)return;
+  if(d)d.n=n;else p.baseName=n;save();render()}
+async function xPlLim(pid){const p=plan(pid);if(!p)return;const v=await askIn('💳 حد الائتمان','',p.limit?amtStr(p.limit):'',true,'حفظ');if(v==null)return;
+  p.limit=parseNum(v)||0;save();render()}
+vPlan=function(){const p=plan(instPlan);if(!p){view='inst';return vInst()}
+  const td=today(),st=planStats(p),T=xPlTot(p),R=xPlRem(p),app=xIsAppPlan(p);
+  const fOf=t=>{const f=t&&S.txs.find(x=>x&&x.payFeeOf===t.id);return f?+f.amount||0:0};
+  const its=[...(p.items||[])].sort((a,b)=>(a.due||'').localeCompare(b.due||'')),main=its.filter(i=>i.k!=='mnt'),mnt=its.filter(i=>i.k==='mnt');
+  let h=`<div class="phead"><button class="mini" onclick="go('inst')">→</button><h3>${esc(p.name)}</h3><button class="mini" onclick="planEdit('${p.id}')">✏️ تعديل</button></div>`;
+  h+=kpis([['الإجمالي',fmt(T),'net'],['المدفوع',fmt(r2(T-R)),'inc'],['المتبقي',fmt(R),'exp']]);
+  /* المعاملات */
+  if(app||(p.deals||[]).length){
+    h+='<div class="xpsec">🧾 المعاملات</div>'+xDeals(p).map(d=>{const rem=r2(d.a-d.pa),pc=d.a?Math.min(100,Math.round(d.pa/d.a*100)):0;
+      return `<div class="xdl"><div class="xdlh"><b>${d.base?'📄':'🧾'} ${esc(d.n)}</b><button class="mini" onclick="xDealRen('${p.id}','${d.id}')">✏️</button></div>
+      <div class="xdlg"><div><small>الإجمالي</small><b>${num(d.a)}</b></div><div><small>المدفوع</small><b class="pos">${num(d.pa)}</b></div><div><small>المتبقي</small><b class="neg">${num(rem)}</b></div></div>
+      <div class="xbar" style="margin-top:8px"><i style="width:${pc}%"></i></div>
+      <div class="xdlf"><span>${d.pc}/${d.c} قسط${d.m?' · '+num(d.m)+' شهريًا':''}</span><span>${d.f?dmy(d.f):''}${d.l&&d.l!==d.f?' – '+dmy(d.l):''}</span></div></div>`}).join('')
+      +(app?`<button class="btn" onclick="xAppDeal('${p.id}')">➕ معاملة جديدة على ${esc(p.name)}</button>`:'')}
+  /* البيانات */
+  const info=[['📊 الأقساط',`${st.paidN} مدفوع من ${st.n} · متبقي ${st.n-st.paidN}`]];
+  if(st.next)info.push(['⏭ القسط القادم',`${num(+st.next.amount||0)} · ${xDW(st.next.due)}`]);
+  const end=main.filter(i=>i.k!=='ann').map(i=>i.due).filter(Boolean).pop();if(end)info.push(['🏁 آخر قسط',xDW(end)]);
+  if(st.late)info.push(['⚠️ متأخر',st.late+' قسط']);
+  if(app){info.push(['💳 حد الائتمان',(+p.limit?fmt(+p.limit):'—')+` <button class="mini" onclick="xPlLim('${p.id}')">✏️</button>`]);
+    if(+p.limit)info.push(['🟢 المتاح',fmt(r2(+p.limit-R))])}
+  if(+p.price){info.push(['🏠 سعر الوحدة',fmt(+p.price)]);if(+p.down)info.push(['💵 المقدم',fmt(+p.down)])}
+  if(+p.hand){const hp=xHandPaid(p);info.push(['🔑 دفعة الاستلام'+(p.handD?' · '+dmy(p.handD):''),fmt(+p.hand)+' '+(hp?`<button class="mini" onclick="xHandUndo('${p.id}')">↩</button>`:`<button class="mini pri" onclick="xHandPay('${p.id}')">💵</button>`)])}
+  if(p.cc)info.push(['💳 الكريديت','مع سداد '+esc((M(p.acct)||{}).name||'الكريديت')]);
+  h+=`<div class="box xpinf">${info.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</div>`;
+  if(p.note&&!app)h+=`<p class="muted">📝 ${esc(p.note)}</p>`;
+  if((p.files||[]).length)h+=`<div class="files">${p.files.map(id=>fileThumb(id,'view')).join('')}</div>`;
+  const pre=main.filter(it=>!xIP(it)&&it.due&&it.due<NKM+'-01');
+  if(pre.length)h+=`<button class="btn ghost" onclick="xInstPreAll('${p.id}')">✔ علّم ${pre.length} قسط قبل ${MONTHS[NM-1]} مدفوعين سابقًا</button>`;
+  /* الجدول */
+  const row=(it,i)=>{const t=xIP(it),pr=t&&t.xpre,late=!t&&it.due<td,f=fOf(t),cls=pr?'pre':t?'ok':late?'late':'wait';
+    const wd=XWD[new Date(it.due+'T00:00').getDay()]||'',tag=it.k==='ann'?'📆 سنوية · ':it.k==='mnt'?'🛠 صيانة · ':'';
+    const stt=pr?'✔ مدفوع سابقًا':t?'✅ اتدفع '+dmy(t.date)+(f?' · مصاريف '+num(f):''):late?'⚠️ متأخر':'⏳ لم يُدفع';
+    const cc=p.cc&&it.due>=(p.ccFrom||'');let b;
+    if(!t)b=`<button class="mini pri" title="دفع" onclick="${cc?`xCcPay('${p.acct}')`:`payStart('${p.id}','${it.id}')`}">💵</button><button class="mini" title="مدفوع سابقًا" onclick="xInstPre('${p.id}','${it.id}')">✔</button><button class="mini" title="تعديل" onclick="xItEdit('${p.id}','${it.id}')">✏️</button>`;
+    else if(pr)b=`<button class="mini" title="تعديل" onclick="xItEdit('${p.id}','${it.id}')">✏️</button><button class="mini" title="إلغاء" onclick="unpay('${p.id}','${it.id}')">↩</button>`;
+    else b=`<button class="mini" title="العملية" onclick="editTx('${t.id}')">🧾</button>${it.due<NKM+'-01'?`<button class="mini" title="مدفوع سابقًا" onclick="xToPre('${p.id}','${it.id}')">✔</button>`:''}<button class="mini" title="إلغاء الدفع" onclick="unpay('${p.id}','${it.id}')">↩</button>`;
+    return `<div class="xq2r ${cls}"><span class="xq2n">${i+1}</span><div class="xq2d"><b>${dmy(it.due)}</b><small>${tag}${wd} · ${stt}</small></div><b class="xq2a ${t?'pos':''}">${num(+it.amount||0)}</b><div class="xq2b">${b}</div></div>`};
+  const yrs=[...new Set(main.map(i=>(i.due||'').slice(0,4)))].sort();
+  const sch=yrs.map(y=>{const L=main.map((it,i)=>({it,i})).filter(x=>(x.it.due||'').startsWith(y));
+    return `<div class="xq2y"><span>📅 ${y}</span><span>${L.length} قسط · ${num(r2(L.reduce((s,x)=>s+(+x.it.amount||0),0)))}</span></div>`+L.map(x=>row(x.it,x.i)).join('')}).join('');
+  h+=`<details class="grp" ${XPLO[instPlan]?'open':''} ontoggle="XPLO[instPlan]=this.open"><summary><span>📅 جدول الأقساط</span><span class="badge soon">${main.length}</span></summary>
+  <div class="xlna"><button class="btn ghost" onclick="planEdit(instPlan);xInstAmt()">✏️ تعديل قيمة القسط</button><button class="btn ghost danger" onclick="planEdit(instPlan);xInstDelAll()">🗑 حذف الأقساط</button></div>${sch}</details>`;
+  if(mnt.length)h+=`<details class="grp"><summary><span>🛠 الصيانة (خارج الإجمالي)</span><span class="badge soon">${mnt.length}</span></summary>${mnt.map((it,i)=>row(it,i)).join('')}</details>`;
+  return h};
+
+/* ---------- 💳 حد الائتمان: Valu وأي أبلكيشن بيتعرف لوحده ---------- */
+try{let ch=0;(S.plans||[]).forEach(p=>{if(p&&!p.cc&&(!p.ptype||p.ptype==='norm')&&xAppOf(p.name)){p.ptype='app';ch=1}});if(ch)save()}catch(e){}
+try{const _peF=planEdit;planEdit=function(id){const r=_peF.apply(this,arguments);try{const p=plan(id);if(p&&PF){let ch=0;
+  const pt=p.ptype||(p.cc?'cc':xAppOf(p.name)?'app':'norm');if(PF.ptype!==pt){PF.ptype=pt;PF.cc=pt==='cc';ch=1}
+  ['limit','price','down','hand','handD','baseName'].forEach(k=>{if(PF[k]==null&&p[k]!=null){PF[k]=p[k];ch=1}});
+  ['ann','mnt'].forEach(k=>{if((!PF[k]||!PF[k].length)&&(p[k]||[]).length){PF[k]=p[k].map(x=>({...x}));ch=1}});
+  if(ch)planForm()}}catch(e){}return r}}catch(e){}
+
+/* ---------- ⚡ البنك = إنستاباي لوحده ---------- */
+function xViaFor(id){const m=M(id);if(!m)return '';if(m.type==='cash')return 'cash';if(xIsCardAcct(id))return 'card';if(m.type==='wallet')return 'wallet';return 'instapay'}
+document.addEventListener('change',e=>{const s=e.target;if(!s||!XACV[s.id])return;if(s.id==='f-m'&&F&&F.type==='tr')return;
+  const w=xViaFor(s.value);if(w!=='instapay'&&w!=='wallet')return;const v=document.getElementById(XACV[s.id]);
+  if(!v||v.value===w||![...v.options].some(o=>o.value===w))return;v.value=w;v.dispatchEvent(new Event('change',{bubbles:true}))});
+try{const _tfV=txForm;txForm=function(){try{if(F&&!F.id&&F.type!=='tr'&&!F.via&&M(F.method)){const w=xViaFor(F.method);if(w==='instapay'||w==='wallet')F.via=w}}catch(e){}
+  const r=_tfV.apply(this,arguments);setTimeout(()=>{try{xShBankApply()}catch(e){}},0);return r}}catch(e){}
+try{const _shV=sheet;sheet=function(){const r=_shV.apply(this,arguments);setTimeout(()=>{try{Object.keys(XACV).forEach(a=>{if(a==='f-m')return;
+  const s=document.getElementById(a),v=document.getElementById(XACV[a]);if(!s||!v||v.value)return;const w=xViaFor(s.value);
+  if((w==='instapay'||w==='wallet')&&[...v.options].some(o=>o.value===w)){v.value=w;v.dispatchEvent(new Event('change',{bubbles:true}))}})}catch(e){}},30);return r}}catch(e){}
+
+/* ---------- 🏦 اسم البنك من إيصال إنستاباي ---------- */
+var XSHBK=null;
+function xBankIn(text){const L=splitLines(xLatN(text||'')).map(xNrm);
+  const A=S.methods.filter(m=>m&&m.active!==false&&!xIsCr(m.id)&&m.type!=='cash');if(!A.length)return '';
+  const keys=m=>{const n=xNrm((m.name||'')+' '+(m.bank||''));const k=n.split(' ').filter(w=>w.length>=3&&!/^(bank|بنك|account|حساب)$/.test(w));
+    if(/اهلي|ahly|nbe|national/.test(n))k.push('ahly','nbe','الاهلي','national bank');
+    if(/fab|ابوظبي|abu/.test(n))k.push('fab','first abu dhabi','ابوظبي');
+    if(/cib|تجاري/.test(n))k.push('cib','commercial international','التجاري الدولي');
+    if(/مصر|misr/.test(n))k.push('banque misr','بنك مصر');if(/qnb/.test(n))k.push('qnb');if(/hsbc/.test(n))k.push('hsbc');
+    return [...new Set(k.map(xNrm))].filter(x=>x.length>=3)};
+  const hit=ls=>{let best=null;A.forEach(m=>keys(m).forEach(k=>{if(ls.some(l=>(' '+l+' ').includes(' '+k+' ')||(k.length>=5&&l.includes(k)))&&(!best||k.length>best.l))best={id:m.id,l:k.length}}));return best&&best.id};
+  const fr=[];L.forEach((l,i)=>{if(/(from|sender|debit|المرسل|من حساب|^من )/.test(l)){fr.push(l);if(L[i+1])fr.push(L[i+1])}});
+  return hit(fr)||hit(L)||''}
+try{const _ipB=xIpParse;xIpParse=function(t){const r=_ipB.apply(this,arguments);try{const m=xBankIn(t);if(m){r.m=m;XSHBK={m,at:Date.now()}}}catch(e){}return r}}catch(e){}
+function xShBankApply(){const b=XSHBK;if(!b||Date.now()-b.at>300000||!M(b.m))return;const ids=XSHIDS||[],nm=M(b.m).name;
+  if(F&&!F.id&&$('#f-amt')&&!F._bk&&(F.files||[]).some(i=>ids.includes(i))){F._bk=1;try{grab()}catch(e){}F.method=b.m;F.via='instapay';SHKEEP=1;txForm();toast('🏦 قريت البنك: '+nm);return}
+  if(PAY&&$('#y-m')&&!PAY._bk&&(PAY.files||[]).some(i=>ids.includes(i))){PAY._bk=1;PAY.method=b.m;PAY.via='instapay';paySheet();toast('🏦 قريت البنك: '+nm);return}
+  const lm=$('#ln-m');if(lm&&XLNSH&&!lm.dataset.bk){lm.dataset.bk=1;lm.value=b.m;lm.dispatchEvent(new Event('change',{bubbles:true}));
+    const bt=lm.nextElementSibling;if(bt&&bt.classList.contains('xsel'))bt.innerHTML=xLbl(lm);toast('🏦 قريت البنك: '+nm)}}
+try{const _sfB=xShFill;xShFill=function(){const r=_sfB.apply(this,arguments);try{xShBankApply()}catch(e){}return r}}catch(e){}
+try{const _psB2=paySheet;paySheet=function(){const r=_psB2.apply(this,arguments);setTimeout(()=>{try{xShBankApply()}catch(e){}},0);return r}}catch(e){}
+
+/* ---------- ⏱ اللي بتسجله بيفضل 5 دقايق، والمبالغ بتستخبى ---------- */
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='hidden')return;try{
+  try{SHOWAMT=false}catch(e){}XBALOK=false;XBAUTH=0;XPMU=null;try{XBSHOW.clear()}catch(e){}
+  const pb=$('#xpm-bal');if(pb&&pb.dataset.id&&pb.textContent.trim()!=='••••••'){try{xPmOpen(pb.dataset.id)}catch(e){}}
+  if(['home','pmv','xcc','xacc'].includes(view)){try{render()}catch(e){}}
+  let d=null;try{d=JSON.parse(localStorage.getItem('centric-xdr')||'null')}catch(e){}
+  if(d){d.t=Date.now()+240000;localStorage.setItem('centric-xdr',JSON.stringify(d))}
+}catch(e){}});
+
+}catch(e){console.error('fix 2.21.227',e)}
+try{XBOOTD=1;render()}catch(e){}
+/* ===== آخر 2.21.227 ===== */
 
 /* نهاية fix.js */
 
