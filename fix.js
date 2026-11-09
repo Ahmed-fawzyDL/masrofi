@@ -14733,7 +14733,7 @@ function homeFit(){if(busy)return;busy=1;try{
   for(var i=0;i<3;i++){
     var r=v.getBoundingClientRect();if(r.height<=0)break;
     var avail=bottom-r.top-10;
-    z=Math.max(1,Math.min(1.35,z*avail/r.height));
+    z=Math.max(1.15,Math.min(1.5,z*avail/r.height));
     D.style.setProperty('--hz',z.toFixed(3));
   }
 }catch(e){}finally{busy=0}}
