@@ -14643,8 +14643,6 @@ try{xZFix()}catch(e){}
 }catch(e){console.error('fix 2.21.244',e)}
 /* ===== آخر 2.21.244 ===== */
 
-/* نهاية fix.js */
-
 /* ===== PATCH 2.21.246 - reveal after fit ===== */
 (function(){requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('xready')})})})();
 
@@ -14660,3 +14658,79 @@ try{xZFix()}catch(e){}
   ['main','#view'].forEach(function(s){var e=document.querySelector(s);if(e)e.style.removeProperty('zoom')});
   requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('xready')})});
 })();
+
+/* ========== 2.21.248 · الواجهة بتظهر مرة واحدة بحجمها وخطها ========== */
+(function(){
+try{XVER2='2.21.248';XVBUILD2='09/11/2026 - 10:00 ص'}catch(e){}
+var D=document.documentElement,FC='centric-font-v1',done=false;
+
+/* الشاشة مستخبية لحد ما كل حاجة تجهز، وشاشة تحميل مكانها */
+var st=document.createElement('style');st.id='xgate';
+st.textContent=
+ 'html:not(.xok) body{visibility:hidden!important}'+
+ '#xsplash{position:fixed;inset:0;z-index:2147483647;visibility:visible!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--xsbg,#070d1a);transition:opacity .2s ease}'+
+ '#xsplash i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(45,212,191,.25);border-top-color:#2dd4bf;animation:xspin .8s linear infinite}'+
+ '#xsplash b{font:700 15px system-ui,sans-serif;color:#94a3b8;letter-spacing:.5px}'+
+ '@keyframes xspin{to{transform:rotate(360deg)}}'+
+ 'html.xok #xsplash{opacity:0;pointer-events:none}';
+document.head.appendChild(st);
+try{document.body.classList.add('xfont')}catch(e){}  /* يلغي إخفاء 2.21.240 عشان مايبقاش فيه إخفاءين */
+
+function splash(){if(document.getElementById('xsplash'))return;
+  var sp=document.createElement('div');sp.id='xsplash';sp.innerHTML='<i></i><b>Centric</b>';
+  try{var bg=getComputedStyle(document.body).backgroundColor;if(bg&&bg!=='rgba(0, 0, 0, 0)')sp.style.setProperty('--xsbg',bg)}catch(e){}
+  document.body.appendChild(sp)}
+
+function reveal(){if(done)return;done=true;
+  try{if(typeof xSnapGet==='function'){var s=xSnapGet();if(s)xSnapApply(s)}}catch(e){}
+  try{var b=document.getElementById('xboot');if(b)b.remove()}catch(e){}
+  try{document.body.classList.add('xfont','xready')}catch(e){}
+  try{render()}catch(e){}
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    D.classList.add('xok');
+    setTimeout(function(){var sp=document.getElementById('xsplash');if(sp)sp.remove()},260)})})}
+
+/* بيانات الخط الحالي */
+function fontInfo(){try{
+  var k=(typeof FONTS!=='undefined'&&FONTS[S.settings.font])?S.settings.font:'cairo',f=FONTS[k];if(!f||!f[2])return null;
+  var fam=String(f[1]||'').split(',')[0].replace(/['"]/g,'').trim();
+  var l=document.getElementById('gf-'+k);
+  if(!l&&typeof loadFont==='function'){loadFont(k);l=document.getElementById('gf-'+k)}
+  return l&&l.href?{fam:fam,url:l.href}:null}catch(e){return null}}
+
+/* الخط بيتحفظ على الموبايل أول مرة، وبعد كده بيتقري من عليه */
+async function localFaces(info){
+  if(!('caches' in window)||!window.FontFace)return false;
+  var c=await caches.open(FC),r=await c.match(info.url);
+  if(!r){r=await fetch(info.url,{mode:'cors'});if(!r.ok)return false;await c.put(info.url,r.clone())}
+  var css=await r.text(),re=/(?:\/\*\s*([\w-]+)\s*\*\/\s*)?@font-face\s*\{([^}]*)\}/g,m,jobs=[];
+  while((m=re.exec(css))){
+    var sub=m[1]||'',b=m[2];if(sub&&!/^(arabic|latin|latin-ext)$/.test(sub))continue;
+    var u=(b.match(/url\(([^)]+)\)/)||[])[1];if(!u)continue;u=u.replace(/['"]/g,'');
+    var g=function(n){return((b.match(new RegExp(n+'\\s*:\\s*([^;]+)'))||[])[1]||'').trim()};
+    jobs.push((async function(u,w,s,ur){
+      var fr=await c.match(u);
+      if(!fr){fr=await fetch(u,{mode:'cors'});if(!fr.ok)return;await c.put(u,fr.clone())}
+      var o={weight:w||'400',style:s||'normal',display:'block'};if(ur)o.unicodeRange=ur;
+      var ff=new FontFace(info.fam,await fr.arrayBuffer(),o);await ff.load();document.fonts.add(ff)
+    })(u,g('font-weight'),g('font-style'),g('unicode-range')))}
+  if(!jobs.length)return false;await Promise.all(jobs);return true}
+
+/* لو الحفظ ما نجحش: يستنى ملف Google نفسه */
+async function linkFaces(info){
+  var l=[].slice.call(document.querySelectorAll('link')).find(function(x){return x.href===info.url});
+  if(l){try{if(!(l.sheet&&l.sheet.cssRules))await new Promise(function(r){l.addEventListener('load',r);l.addEventListener('error',r)})}catch(e){}}
+  await Promise.all(['400','500','600','700','800'].map(function(w){return document.fonts.load(w+' 16px "'+info.fam+'"','عربي 0123').catch(function(){})}))}
+
+async function fontsReady(info){try{if(!await localFaces(info))await linkFaces(info)}catch(e){try{await linkFaces(info)}catch(_){}}}
+
+var info=fontInfo();
+if(!info){reveal()}
+else{splash();setTimeout(reveal,3000);fontsReady(info).then(reveal,reveal)}
+
+/* لما تغيّر الخط من الإعدادات، الجديد كمان بيتحفظ على الموبايل */
+try{var _lf=loadFont;loadFont=function(k){var r=_lf.apply(this,arguments);
+  setTimeout(function(){var i=fontInfo();if(i)localFaces(i).catch(function(){})},300);return r}}catch(e){}
+})();
+/* ===== آخر 2.21.248 ===== */
+/* نهاية fix.js */

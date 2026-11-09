@@ -1,4 +1,4 @@
-const CACHE='centric-v18',SHARE='centric-share';
+const CACHE='centric-v19',SHARE='centric-share';
 const ASSETS=['./','app.js','more.js','fix.js','manifest.json','icon-192.png','icon-512.png','icon-maskable-512.png','wa.png'];
 const TXT=/\.(js|html|json|css)$|\/$/;
 const ROOT=new URL('./',self.registration.scope).href;
@@ -20,7 +20,7 @@ self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>Promise.all(ASSETS.map(u=>fetch(new Request(u,{cache:'reload'})).then(clean).then(res=>{if(res.ok&&res.type==='basic')return c.put(new URL(u,self.registration.scope).href,res)}).catch(()=>{})))).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',e=>{
-  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==SHARE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==SHARE&&k.indexOf('centric-font')!==0).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
 });
 
 async function tell(type){
