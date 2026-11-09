@@ -14713,38 +14713,6 @@ try{var _r=render;render=function(){var r=_r.apply(this,arguments);setTimeout(ol
 setTimeout(oldLook,0);setTimeout(oldLook,600);
 })();
 /* ===== آخر 2.21.250 ===== */
-/* ===== PATCH 2.21.251 - الرئيسية تملا الشاشة من غير ما تتحرك ===== */
-(function(){
-try{XVER2='2.21.251';XVBUILD2='09/11/2026'}catch(e){}
-var D=document.documentElement;
-var st=document.createElement('style');st.id='x251';
-st.textContent='html body.xhome #view,html body #view.xfit{zoom:var(--hz,1)!important}';
-document.head.appendChild(st);
-
-var busy=0;
-function homeFit(){if(busy)return;busy=1;try{
-  var v=document.getElementById('view');if(!v)return;
-  var home=(typeof view!=='undefined'&&view==='home');
-  v.classList.toggle('xfit',home);
-  if(!home){D.style.removeProperty('--hz');return}
-  var nav=document.querySelector('nav');
-  var bottom=nav?nav.getBoundingClientRect().top:innerHeight;
-  var z=1;D.style.setProperty('--hz','1');
-  for(var i=0;i<3;i++){
-    var r=v.getBoundingClientRect();if(r.height<=0)break;
-    var avail=bottom-r.top-10;
-    z=Math.max(1.25,Math.min(1.6,z*avail/r.height));
-    D.style.setProperty('--hz',z.toFixed(3));
-  }
-}catch(e){}finally{busy=0}}
-
-/* بيتحسب مع الرسم نفسه، قبل ما الشاشة تتعرض */
-try{var _r=render;render=function(){var r=_r.apply(this,arguments);homeFit();return r}}catch(e){}
-homeFit();
-try{document.fonts.ready.then(homeFit)}catch(e){}
-var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(homeFit,150)});
-})();
-/* ===== آخر 2.21.251 ===== */
 /* ===== PATCH 2.21.252 - إخفاء زرار الشكل الجديد قبل ما يبان ===== */
 (function(){
 try{XVER2='2.21.252';XVBUILD2='09/11/2026'}catch(e){}
@@ -14764,4 +14732,57 @@ try{new MutationObserver(function(recs){
 scan(document.body);
 })();
 /* ===== آخر 2.21.252 ===== */
+/* ===== PATCH 2.21.253 - الرئيسية: مقاس + بوكسات + خلفية ===== */
+(function(){
+try{XVER2='2.21.253';XVBUILD2='09/11/2026'}catch(e){}
+var D=document.documentElement;
+var st=document.createElement('style');st.id='x253';
+st.textContent=
+/* تكبير الرئيسية */
+'html body.xhome #view,html body #view.xfit{zoom:var(--hz,1)!important}'+
+/* البوكسات الصغيرة: أصغر شوية */
+'html body #view .xtiles{zoom:.86!important;gap:10px!important}'+
+/* شكل البوكسات - فاتح */
+'html body #view .xtiles>*{background:rgba(255,255,255,.72)!important;-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);border:1px solid rgba(15,118,110,.16)!important;border-radius:18px!important;box-shadow:0 6px 18px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.7)!important}'+
+/* شكل البوكسات - داكن */
+'html body.dark #view .xtiles>*{background:linear-gradient(160deg,rgba(30,44,68,.62),rgba(14,22,38,.55))!important;border:1px solid rgba(94,234,212,.15)!important;box-shadow:0 10px 26px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.06)!important}'+
+/* خلفية الشاشة كلها */
+'html body{background:var(--bg)!important}'+
+'html body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(700px 420px at 90% 0%,rgba(20,184,166,.22),transparent 65%),radial-gradient(600px 380px at 0% 100%,rgba(56,189,248,.14),transparent 65%),radial-gradient(500px 300px at 50% 55%,rgba(99,102,241,.08),transparent 70%)}'+
+'html body:not(.dark)::before{opacity:.55}'+
+'html body main,html body #view{background:transparent!important}';
+document.head.appendChild(st);
+
+/* تحديد البوكسات الصغيرة (أي مجموعة فيها 4 بوكسات أو أكتر فيهم "التفاصيل") */
+function tag(v){try{
+  if(v.querySelector('.xtiles'))return;
+  var c=v.querySelectorAll('div');
+  for(var i=0;i<c.length;i++){var e=c[i];if(e.childElementCount<4)continue;
+    var ok=0;for(var k=0;k<e.children.length;k++)if((e.children[k].textContent||'').indexOf('التفاصيل')>-1)ok++;
+    if(ok>=4){e.classList.add('xtiles');return}}
+}catch(e){}}
+
+var busy=0;
+function homeFit(){if(busy)return;busy=1;try{
+  var v=document.getElementById('view');if(!v)return;
+  var home=(typeof view!=='undefined'&&view==='home');
+  v.classList.toggle('xfit',home);
+  if(!home){D.style.removeProperty('--hz');return}
+  tag(v);
+  var nav=document.querySelector('nav');
+  var bottom=nav?nav.getBoundingClientRect().top:innerHeight;
+  var z=1;D.style.setProperty('--hz','1');
+  for(var i=0;i<3;i++){
+    var r=v.getBoundingClientRect();if(r.height<=0)break;
+    z=Math.max(1.25,Math.min(1.3,z*(bottom-r.top-10)/r.height));
+    D.style.setProperty('--hz',z.toFixed(3));
+  }
+}catch(e){}finally{busy=0}}
+
+try{var _r=render;render=function(){var r=_r.apply(this,arguments);homeFit();return r}}catch(e){}
+homeFit();
+try{document.fonts.ready.then(homeFit)}catch(e){}
+var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(homeFit,150)});
+})();
+/* ===== آخر 2.21.253 ===== */
 /* نهاية fix.js */
