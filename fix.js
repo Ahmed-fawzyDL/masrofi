@@ -14713,4 +14713,36 @@ try{var _r=render;render=function(){var r=_r.apply(this,arguments);setTimeout(ol
 setTimeout(oldLook,0);setTimeout(oldLook,600);
 })();
 /* ===== آخر 2.21.250 ===== */
+/* ===== PATCH 2.21.251 - الرئيسية تملا الشاشة من غير ما تتحرك ===== */
+(function(){
+try{XVER2='2.21.251';XVBUILD2='09/11/2026'}catch(e){}
+var D=document.documentElement;
+var st=document.createElement('style');st.id='x251';
+st.textContent='html body.xhome #view,html body #view.xfit{zoom:var(--hz,1)!important}';
+document.head.appendChild(st);
+
+var busy=0;
+function homeFit(){if(busy)return;busy=1;try{
+  var v=document.getElementById('view');if(!v)return;
+  var home=(typeof view!=='undefined'&&view==='home');
+  v.classList.toggle('xfit',home);
+  if(!home){D.style.removeProperty('--hz');return}
+  var nav=document.querySelector('nav');
+  var bottom=nav?nav.getBoundingClientRect().top:innerHeight;
+  var z=1;D.style.setProperty('--hz','1');
+  for(var i=0;i<3;i++){
+    var r=v.getBoundingClientRect();if(r.height<=0)break;
+    var avail=bottom-r.top-10;
+    z=Math.max(1,Math.min(1.35,z*avail/r.height));
+    D.style.setProperty('--hz',z.toFixed(3));
+  }
+}catch(e){}finally{busy=0}}
+
+/* بيتحسب مع الرسم نفسه، قبل ما الشاشة تتعرض */
+try{var _r=render;render=function(){var r=_r.apply(this,arguments);homeFit();return r}}catch(e){}
+homeFit();
+try{document.fonts.ready.then(homeFit)}catch(e){}
+var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(homeFit,150)});
+})();
+/* ===== آخر 2.21.251 ===== */
 /* نهاية fix.js */
