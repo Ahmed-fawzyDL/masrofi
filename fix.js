@@ -14733,7 +14733,7 @@ function homeFit(){if(busy)return;busy=1;try{
   for(var i=0;i<3;i++){
     var r=v.getBoundingClientRect();if(r.height<=0)break;
     var avail=bottom-r.top-10;
-    z=Math.max(1.15,Math.min(1.5,z*avail/r.height));
+    z=Math.max(1.35,Math.min(1.6,z*avail/r.height));
     D.style.setProperty('--hz',z.toFixed(3));
   }
 }catch(e){}finally{busy=0}}
@@ -14745,4 +14745,23 @@ try{document.fonts.ready.then(homeFit)}catch(e){}
 var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(homeFit,150)});
 })();
 /* ===== آخر 2.21.251 ===== */
+/* ===== PATCH 2.21.252 - إخفاء زرار الشكل الجديد قبل ما يبان ===== */
+(function(){
+try{XVER2='2.21.252';XVBUILD2='09/11/2026'}catch(e){}
+var RX=/الشكل (الجديد|القديم)/;
+function scan(root){try{
+  if(!root||root.nodeType!==1)return;
+  if((root.textContent||'').indexOf('الشكل ')<0)return;
+  var list=[root].concat([].slice.call(root.querySelectorAll('*')));
+  for(var i=0;i<list.length;i++){
+    var e=list[i];if(e.childElementCount>1)continue;
+    if(!RX.test(e.textContent||''))continue;
+    (e.closest('button,[onclick],a')||e).style.setProperty('display','none','important');
+  }}catch(e){}}
+try{new MutationObserver(function(recs){
+  for(var i=0;i<recs.length;i++){var n=recs[i].addedNodes;for(var j=0;j<n.length;j++)scan(n[j])}
+}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+scan(document.body);
+})();
+/* ===== آخر 2.21.252 ===== */
 /* نهاية fix.js */
