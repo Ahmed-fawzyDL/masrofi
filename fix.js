@@ -14695,4 +14695,22 @@ var t=setTimeout(show,1500);
 try{document.fonts.ready.then(function(){clearTimeout(t);requestAnimationFrame(show)})}catch(e){clearTimeout(t);show()}
 })();
 /* ===== آخر 2.21.249 ===== */
+/* ===== PATCH 2.21.250 - الشكل القديم دايمًا ===== */
+(function(){
+try{XVER2='2.21.250';XVBUILD2='09/11/2026'}catch(e){}
+var clicked=false;
+function oldLook(){try{
+  var all=document.querySelectorAll('#view *');
+  for(var i=0;i<all.length;i++){
+    var e=all[i];if(e.childElementCount>1)continue;
+    var t=(e.textContent||'').trim();
+    if(!/الشكل (الجديد|القديم)/.test(t))continue;
+    var btn=e.closest('button,[onclick],a')||e;
+    if(!clicked&&/رج[ّ]?ع القديم/.test(t)){clicked=true;try{btn.click()}catch(_){}return}
+    btn.style.setProperty('display','none','important');
+  }}catch(e){}}
+try{var _r=render;render=function(){var r=_r.apply(this,arguments);setTimeout(oldLook,0);return r}}catch(e){}
+setTimeout(oldLook,0);setTimeout(oldLook,600);
+})();
+/* ===== آخر 2.21.250 ===== */
 /* نهاية fix.js */
