@@ -14785,4 +14785,97 @@ try{document.fonts.ready.then(homeFit)}catch(e){}
 var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(homeFit,150)});
 })();
 /* ===== آخر 2.21.253 ===== */
+/* ========== 2.21.254 · الأقساط القديمة + إجمالي البنود ========== */
+try{
+XVER2='2.21.254';XVBUILD2='10/11/2026 - 10:30 ص';
+(()=>{const s=document.createElement('style');s.textContent='#view details.grp>summary .xgrem{display:inline-block;font-size:11px;font-weight:700;color:#fb923c;background:rgba(251,146,60,.12);border-radius:999px;padding:1px 8px;margin-inline-start:6px;white-space:nowrap}';document.head.appendChild(s)})();
+
+/* أي قسط قبل أكتوبر: يتعلّم مدفوع سابقًا، ولو كان متعلّم والربط ضاع يرجع يتربط */
+function xPreFix(){const cut=xPreCut();let n=0;
+  (S.plans||[]).forEach(p=>(p.items||[]).forEach(it=>{
+    if(!it||it.k==='mnt'||!it.due||it.due>=cut)return;
+    if(it.xnopre){delete it.xnopre;n++}
+    let t0=null;try{t0=itTx(it)}catch(e){}if(t0)return;
+    const L=S.txs.filter(t=>t&&!t.del&&t.src&&t.src.k==='i'&&t.src.id===p.id&&t.src.p===it.id);
+    const t=L.find(x=>!x.xpre)||L[0];
+    if(t){it.txId=t.id;n++;return}
+    try{xInstPre(p.id,it.id,1);n++}catch(e){}}));
+  return n}
+
+/* القسط القديم مايظهرش أبدًا في غير مدفوع ولا متأخر ولا القريب */
+try{const _xidK=xInstDue;xInstDue=function(){const c=xPreCut();return (_xidK.apply(this,arguments)||[]).filter(o=>!(o&&o.it&&o.it.due&&o.it.due<c))}}catch(e){}
+try{const _idK=instDue;instDue=function(){const c=xPreCut();return (_idK.apply(this,arguments)||[]).filter(o=>!(o&&o.it&&o.it.due&&o.it.due<c))}}catch(e){}
+
+/* إجمالي البنود في المصروفات = اللي اتدفع فعلًا، واللي لسه جنبه لوحده */
+function xExGrpFix(){if(view!=='exps')return;const k=ym(cur.y,cur.m);
+  const G=id=>document.querySelector('#view details.grp[ontoggle*="\''+id+'\'"]');
+  const set=(id,paid,rem)=>{const g=G(id);if(!g)return;const s=g.querySelector(':scope>summary .gs');if(!s)return;
+    s.textContent=num(r2(paid));let c=g.querySelector(':scope>summary .xgrem');
+    if(rem>0.009){if(!c){c=document.createElement('small');c.className='xgrem';s.after(c)}c.textContent='⏳ لسه '+num(r2(rem))}
+    else if(c)c.remove()};
+  const list=keyTx(k).filter(t=>t&&t.type==='exp'&&!t.xpre&&!t.pend);
+  let dl=[];try{dl=dueList(k,'','exp')}catch(e){}
+  let fp=0,fr=0;dl.forEach(o=>{if(o.s&&o.s.st==='done'&&o.s.t)fp+=+o.s.t.amount||0;else if(o.s&&o.s.st==='wait')fr+=+o.amt||0});
+  const ip=list.filter(t=>(t.src&&t.src.k==='i')||t.payFeeOf).reduce((a,t)=>a+(+t.amount||0),0);
+  let ir=0;try{ir=xInstDue(k).reduce((a,x)=>a+(+x.it.amount||0),0)}catch(e){}
+  set('ef',fp,fr);set('ei',ip,ir)}
+
+try{const _rnK=render;render=function(){
+  try{if(xPreFix()){XOLQ=1;try{save()}finally{XOLQ=0}}}catch(e){}
+  const r=_rnK.apply(this,arguments);try{xExGrpFix()}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.254',e)}
+/* ===== آخر 2.21.254 ===== */
+/* ========== 2.21.255 · أقساط الشهر بشهره + تاب الإجمالي ========== */
+try{
+XVER2='2.21.255';XVBUILD2='10/11/2026 - 10:20 ص';
+var XINT='m';
+(()=>{const s=document.createElement('style');s.textContent=`
+#view .xints{margin:6px 10px 10px}
+#view .xintk{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 10px 10px;text-align:center}
+#view .xintk>div{background:rgba(148,163,184,.08);border-radius:12px;padding:8px 2px}
+#view .xintk small{display:block;font-size:11px;opacity:.7}#view .xintk b{font-size:14px}
+#view .xintsec{font-weight:800;font-size:13px;margin:12px 12px 6px}
+#view .xintw{margin:0 10px}`;document.head.appendChild(s)})();
+
+/* أقساط الشهر = اللي ميعادها في الشهر ده بس */
+xInstDue=function(k){const out=[],cut=xPreCut();
+  (S.plans||[]).forEach(p=>{if(!p||p.cc)return;(p.items||[]).forEach(it=>{
+    if(!it||!it.due||!it.due.startsWith(k)||it.due<cut)return;if(xIP(it))return;out.push({p,it})})});
+  return out};
+
+/* متأخر من شهور فاتت */
+function xInstLate(){const out=[],cut=xPreCut(),st=NKM+'-01';
+  (S.plans||[]).forEach(p=>{if(!p||p.cc)return;(p.items||[]).forEach(it=>{
+    if(!it||!it.due||it.due>=st||it.due<cut)return;if(xIP(it))return;out.push({p,it})})});
+  return out.sort((a,b)=>a.it.due.localeCompare(b.it.due))}
+
+function xIntAll(){
+  const P=(S.plans||[]).filter(p=>p&&(p.items||[]).length);let T=0,R=0;
+  P.forEach(p=>{T+=xPlTot(p);R+=xPlRem(p)});T=r2(T);R=r2(R);
+  const late=xInstLate(),ls=r2(late.reduce((a,x)=>a+(+x.it.amount||0),0));
+  const card=p=>{const s=planStats(p),nx=s.next,t=xPlTot(p),r=xPlRem(p),pc=t?Math.min(100,Math.round((t-r)/t*100)):0;
+    return `<div class="xlnc" onclick="instPlan='${p.id}';go('plan')"><div class="xlnr"><b>${esc(p.name)}</b><span class="xlnbig" dir="ltr">${num(r)}</span></div>
+    <div class="xlnr xsm"><span>${s.paidN}/${s.n} قسط · المتبقي من ${num(t)}</span></div><div class="xbar"><i style="width:${pc}%"></i></div>
+    <div class="xlnn">${nx?xCh('up','⏳ الجاي')+` <b>${num(+nx.amount||0)}</b> · <b>${xDW(nx.due)}</b>`:xCh('ok','✅ انتهت')}</div></div>`};
+  return `<div class="xintk"><div><small>الإجمالي</small><b>${num(T)}</b></div><div><small>المدفوع</small><b class="pos">${num(r2(T-R))}</b></div><div><small>المتبقي</small><b class="neg">${num(R)}</b></div></div>
+  ${late.length?`<div class="xintsec">⚠️ متأخر من شهور فاتت (${late.length}) · ${num(ls)}</div>`+late.map(xInstDueRow).join(''):''}
+  <div class="xintsec">🏦 كل الأقساط (${P.length})</div><div class="xintw">${P.sort((a,b)=>xPlRem(b)-xPlRem(a)).map(card).join('')}</div>
+  <div style="padding:8px 12px"><button class="mini pri" onclick="planNew()">+ أقساط جديدة</button></div>`}
+
+function xIntTabs(){if(view!=='exps')return;
+  const g=document.querySelector('#view details.grp[ontoggle*="\'ei\'"]');if(!g)return;const sm=g.querySelector(':scope>summary');if(!sm)return;
+  const tabs=`<div class="seg xints"><button type="button" class="${XINT==='m'?'on':''}" onclick="XINT='m';render()">📅 ${MONTHS[cur.m-1]}</button><button type="button" class="${XINT==='all'?'on':''}" onclick="XINT='all';render()">📊 الإجمالي</button></div>`;
+  if(XINT==='all'){
+    [...g.children].forEach(c=>{if(c!==sm)c.remove()});
+    sm.insertAdjacentHTML('afterend',tabs+xIntAll());
+    const gs=sm.querySelector('.gs');if(gs){let R=0;(S.plans||[]).forEach(p=>{R+=xPlRem(p)});gs.textContent=num(r2(R))}
+    const c=sm.querySelector('.xgrem');if(c)c.textContent='المتبقي كله';
+    const bd=sm.querySelector('.badge');if(bd)bd.textContent=(S.plans||[]).length;
+  }else sm.insertAdjacentHTML('afterend',tabs);
+}
+try{const _rnInt=render;render=function(){const r=_rnInt.apply(this,arguments);try{xIntTabs()}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.255',e)}
+/* ===== آخر 2.21.255 ===== */
 /* نهاية fix.js */
