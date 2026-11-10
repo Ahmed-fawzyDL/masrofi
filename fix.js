@@ -14826,55 +14826,43 @@ try{const _rnK=render;render=function(){
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.254',e)}
 /* ===== آخر 2.21.254 ===== */
-/* ========== 2.21.255 · أقساط الشهر بشهره + تاب الإجمالي ========== */
+/* ========== 2.21.255 · الشهر بشهره + زرار الإجمالي (كل الشهور) ========== */
 try{
-XVER2='2.21.255';XVBUILD2='10/11/2026 - 10:20 ص';
-var XINT='m';
+XVER2='2.21.255';XVBUILD2='10/11/2026 - 10:30 ص';
+var XTOT=0,XTOTR=0,XTOTC=null;try{XTOT=localStorage.getItem('xtot')==='1'?1:0}catch(e){}
 (()=>{const s=document.createElement('style');s.textContent=`
-#view .xints{margin:6px 10px 10px}
-#view .xintk{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 10px 10px;text-align:center}
-#view .xintk>div{background:rgba(148,163,184,.08);border-radius:12px;padding:8px 2px}
-#view .xintk small{display:block;font-size:11px;opacity:.7}#view .xintk b{font-size:14px}
-#view .xintsec{font-weight:800;font-size:13px;margin:12px 12px 6px}
-#view .xintw{margin:0 10px}`;document.head.appendChild(s)})();
+#view .xtotbar{display:flex;align-items:center;gap:8px;margin:6px 10px 10px}
+#view .xtotbtn{flex:0 0 auto;border:1px solid rgba(148,163,184,.35);background:rgba(148,163,184,.08);color:inherit;border-radius:999px;padding:6px 14px;font-weight:800;font-size:13px;cursor:pointer}
+#view .xtotbtn.on{background:#6366f1;border-color:#6366f1;color:#fff}
+#view .xtotlbl{font-size:12px;opacity:.75}`;document.head.appendChild(s)})();
 
 /* أقساط الشهر = اللي ميعادها في الشهر ده بس */
-xInstDue=function(k){const out=[],cut=xPreCut();
+const _xidM=xInstDue;
+xInstDue=function(k){if(XTOTR)return [];const out=[],cut=xPreCut();
   (S.plans||[]).forEach(p=>{if(!p||p.cc)return;(p.items||[]).forEach(it=>{
     if(!it||!it.due||!it.due.startsWith(k)||it.due<cut)return;if(xIP(it))return;out.push({p,it})})});
   return out};
 
-/* متأخر من شهور فاتت */
-function xInstLate(){const out=[],cut=xPreCut(),st=NKM+'-01';
-  (S.plans||[]).forEach(p=>{if(!p||p.cc)return;(p.items||[]).forEach(it=>{
-    if(!it||!it.due||it.due>=st||it.due<cut)return;if(xIP(it))return;out.push({p,it})})});
-  return out.sort((a,b)=>a.it.due.localeCompare(b.it.due))}
+/* في وضع الإجمالي: كل العمليات من كل الشهور */
+const _ktT=keyTx;
+keyTx=function(k){if(!XTOTR)return _ktT.apply(this,arguments);
+  if(XTOTC)return XTOTC;const seen=new Set(),out=[];
+  for(let y=2020;y<=cur0().y;y++)for(let m=1;m<=12;m++){const kk=ym(y,m);if(kk>NKM)break;
+    (_ktT(kk)||[]).forEach(t=>{if(t&&!seen.has(t.id)){seen.add(t.id);out.push(t)}})}
+  return XTOTC=out};
+function cur0(){const d=new Date();return {y:d.getFullYear(),m:d.getMonth()+1}}
+const _dlT=dueList;dueList=function(){if(XTOTR)return [];return _dlT.apply(this,arguments)};
 
-function xIntAll(){
-  const P=(S.plans||[]).filter(p=>p&&(p.items||[]).length);let T=0,R=0;
-  P.forEach(p=>{T+=xPlTot(p);R+=xPlRem(p)});T=r2(T);R=r2(R);
-  const late=xInstLate(),ls=r2(late.reduce((a,x)=>a+(+x.it.amount||0),0));
-  const card=p=>{const s=planStats(p),nx=s.next,t=xPlTot(p),r=xPlRem(p),pc=t?Math.min(100,Math.round((t-r)/t*100)):0;
-    return `<div class="xlnc" onclick="instPlan='${p.id}';go('plan')"><div class="xlnr"><b>${esc(p.name)}</b><span class="xlnbig" dir="ltr">${num(r)}</span></div>
-    <div class="xlnr xsm"><span>${s.paidN}/${s.n} قسط · المتبقي من ${num(t)}</span></div><div class="xbar"><i style="width:${pc}%"></i></div>
-    <div class="xlnn">${nx?xCh('up','⏳ الجاي')+` <b>${num(+nx.amount||0)}</b> · <b>${xDW(nx.due)}</b>`:xCh('ok','✅ انتهت')}</div></div>`};
-  return `<div class="xintk"><div><small>الإجمالي</small><b>${num(T)}</b></div><div><small>المدفوع</small><b class="pos">${num(r2(T-R))}</b></div><div><small>المتبقي</small><b class="neg">${num(R)}</b></div></div>
-  ${late.length?`<div class="xintsec">⚠️ متأخر من شهور فاتت (${late.length}) · ${num(ls)}</div>`+late.map(xInstDueRow).join(''):''}
-  <div class="xintsec">🏦 كل الأقساط (${P.length})</div><div class="xintw">${P.sort((a,b)=>xPlRem(b)-xPlRem(a)).map(card).join('')}</div>
-  <div style="padding:8px 12px"><button class="mini pri" onclick="planNew()">+ أقساط جديدة</button></div>`}
+function xTotBar(){if(view!=='exps')return;const v=document.getElementById('view');if(!v)return;
+  const b=document.createElement('div');b.className='xtotbar';
+  b.innerHTML=`<button type="button" class="xtotbtn ${XTOT?'on':''}" onclick="XTOT=XTOT?0:1;try{localStorage.setItem('xtot',XTOT?'1':'0')}catch(e){};render()">📊 الإجمالي</button>`+
+    `<span class="xtotlbl">${XTOT?'كل الشهور لحد '+MONTHS[cur0().m-1]+' '+cur0().y:MONTHS[cur.m-1]+' '+cur.y+' بس'}</span>`;
+  v.prepend(b)}
 
-function xIntTabs(){if(view!=='exps')return;
-  const g=document.querySelector('#view details.grp[ontoggle*="\'ei\'"]');if(!g)return;const sm=g.querySelector(':scope>summary');if(!sm)return;
-  const tabs=`<div class="seg xints"><button type="button" class="${XINT==='m'?'on':''}" onclick="XINT='m';render()">📅 ${MONTHS[cur.m-1]}</button><button type="button" class="${XINT==='all'?'on':''}" onclick="XINT='all';render()">📊 الإجمالي</button></div>`;
-  if(XINT==='all'){
-    [...g.children].forEach(c=>{if(c!==sm)c.remove()});
-    sm.insertAdjacentHTML('afterend',tabs+xIntAll());
-    const gs=sm.querySelector('.gs');if(gs){let R=0;(S.plans||[]).forEach(p=>{R+=xPlRem(p)});gs.textContent=num(r2(R))}
-    const c=sm.querySelector('.xgrem');if(c)c.textContent='المتبقي كله';
-    const bd=sm.querySelector('.badge');if(bd)bd.textContent=(S.plans||[]).length;
-  }else sm.insertAdjacentHTML('afterend',tabs);
-}
-try{const _rnInt=render;render=function(){const r=_rnInt.apply(this,arguments);try{xIntTabs()}catch(e){}return r}}catch(e){}
+try{const _rnT=render;render=function(){
+  XTOTR=(view==='exps'&&XTOT)?1:0;XTOTC=null;
+  try{const r=_rnT.apply(this,arguments);try{xTotBar()}catch(e){}return r}
+  finally{XTOTR=0;XTOTC=null}}}catch(e){}
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.255',e)}
 /* ===== آخر 2.21.255 ===== */
