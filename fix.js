@@ -14866,4 +14866,130 @@ try{const _rnT=render;render=function(){
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.255',e)}
 /* ===== آخر 2.21.255 ===== */
+/* ========== 2.21.256 · إيقاف البنود + التسجيل التلقائي + تصفير الرصيد + الإعفاء + الفتح ========== */
+try{
+XVER2='2.21.256';XVBUILD2='12/11/2026 - 11:30 ص';
+
+/* ---------- 📴 الفتح بسرعة ---------- */
+(function(){var sh=function(){try{document.documentElement.classList.add('xok');document.body.classList.add('xready','xfont')}catch(e){}};
+  if(!navigator.onLine)sh();setTimeout(sh,900)})();
+
+/* ---------- 🔒 من غير نافذة جوجل لوحدها ---------- */
+try{XDRT=Infinity}catch(e){}
+try{const _alD=alerts;alerts=function(){const out=_alD.apply(this,arguments);try{
+  if(!DEMO&&GD.linked&&GD.cid&&xBkS().mode!=='manual'&&!(gTok&&Date.now()<gExp-60000)){
+    const last=GD.last?new Date(GD.last).getTime():0;
+    if(Date.now()-last>=864e5)out.push({id:'drive-'+today(),ic:'☁️',lv:'soon',title:'النسخة على Google Drive مستنياك',body:last?'آخر نسخة '+dmy(isoD(new Date(last)))+' · دوس للرفع':'لسه مفيش نسخة · دوس للرفع',go:'xDrNow()'})}
+}catch(e){}return out}}catch(e){}
+
+/* ---------- ⏸ البند الموقوف ---------- */
+function xOffR(c){return !!c&&(c.active===false||(c.par&&C(c.par)&&C(c.par).active===false))}
+try{const _dlO=dueList;dueList=function(){return (_dlO.apply(this,arguments)||[]).filter(o=>!(o&&o.r&&xOffR(o.r)&&o.s&&o.s.st==='wait'))}}catch(e){}
+try{const _paO=pendAll;pendAll=function(){return (_paO.apply(this,arguments)||[]).filter(x=>!(x&&x.o&&xOffR(x.o.r)))}}catch(e){}
+try{const _alO=alerts;alerts=function(){return (_alO.apply(this,arguments)||[]).filter(a=>{const m=String(a.id||'').match(/^[fc]-(.+)-(\d+)$/);return !(m&&xOffR(C(m[1])))})}}catch(e){}
+try{const _ooO=xOccOpen;xOccOpen=function(r){if(xOffR(r))return [];return _ooO.apply(this,arguments)}}catch(e){}
+
+window.xCatAct=async function(id){const c=C(id);if(!c)return;const on=c.active===false;
+  if(!await ask(on?'تفعيل «'+c.name+'»؟':'إيقاف «'+c.name+'»؟',
+    on?'هيرجع يظهر في البنود، ومواعيده الثابتة هترجع.':'هيختفي من اختيار البند، ومواعيده الثابتة مش هتظهر في غير مدفوع ولا هتتسجل.\nعملياته القديمة هتفضل زي ما هي.',
+    {icon:on?'▶️':'⏸',ok:on?'فعّله':'أوقفه'}))return;
+  c.active=on;xAcKids(id).forEach(k=>{k.active=on});save();
+  if($('#cf-name')&&CF&&CF.id===id){try{grabCF()}catch(e){}CF.active=on;catSheet()}else render();
+  toast(on?'▶️ اتفعّل':'⏸ اتوقف')};
+
+/* الحفظ: البند الفرعي بنفس الاسم مش بيتحسب مكرر */
+try{const _cvD=catSave;catSave=function(){const tmp=[];try{grabCF();const n=(CF.name||'').trim(),me=CF.id&&C(CF.id),par=(me&&me.par)||CF.par||XACPAR||'';
+  S.cats.forEach(x=>{if(!x||x.id===CF.id||x.kind!==CF.kind||x.name!==n)return;
+    if(x.mrg||x.ppo||(me&&me.ppo)||x.par===CF.id||(par&&(x.id===par||x.par===par))){tmp.push([x,x.name]);x.name=x.name+'\u2063'}})}catch(e){}
+  try{return _cvD.apply(this,arguments)}finally{if(tmp.length){tmp.forEach(([x,nm])=>{x.name=nm});try{save();render()}catch(e){}}}}}catch(e){}
+
+/* زرار الإيقاف في تعديل البند */
+try{const _csO=catSheet;catSheet=function(){const r=_csO.apply(this,arguments);try{
+  if(CF&&CF.id&&!$('#xcact2')){const sv=document.querySelector('#sheet .sz .btn[onclick="catSave()"]'),off=CF.active===false;
+    if(sv)sv.insertAdjacentHTML('beforebegin',`<button type="button" class="btn ghost" id="xcact2" onclick="xCatAct('${CF.id}')">${off?'▶️ تفعيل البند':'⏸ إيقاف البند'}</button>`)}
+  const a=$('#cf-auto');if(a&&!S.settings.autoFx&&!$('#xautn')){const l=a.closest('label');
+    if(l)l.insertAdjacentHTML('afterend',`<small class="muted xhint" id="xautn">🔄 التسجيل التلقائي مقفول من ⚙️ الإعدادات ← التسجيل التلقائي</small>`)}
+}catch(e){}return r}}catch(e){}
+
+/* ---------- 🔄 التسجيل التلقائي ---------- */
+function xAutoSync(){let ch=false;const on=!!S.settings.autoFx;
+  S.cats.forEach(c=>{if(!c||c.kind!=='exp'||!c.fixed)return;const want=!(on&&c.xauto===true);if(!!c.noAuto!==want){c.noAuto=want;ch=true}});return ch}
+if(!S.settings.xauto256){S.cats.forEach(c=>{if(c&&c.kind==='exp'&&c.fixed)c.xauto=false});S.settings.autoFx=false;S.settings.xauto256=1;xAutoSync();save()}
+try{const _apZ=autoPostFixed;autoPostFixed=function(){try{xAutoSync()}catch(e){}return _apZ.apply(this,arguments)}}catch(e){}
+window.xAutoSet=function(v){S.settings.autoFx=!!v;if(v)S.cats.forEach(c=>{if(c&&c.kind==='exp'&&c.fixed&&c.xauto)c.autoFrom=today()});
+  xAutoSync();save();render();toast(v?'🔄 اتشغل':'⏸ اتقفل')};
+window.xAutoOne=function(id,v){const c=C(id);if(!c)return;if(v&&!c.xauto)c.autoFrom=today();c.xauto=!!v;xAutoSync();save()};
+try{const _cvA=catSave;catSave=function(){const a=$('#cf-auto'),v=a?a.checked:null,id0=CF&&CF.id,n0=new Set(S.cats.map(c=>c.id));const r=_cvA.apply(this,arguments);
+  try{if(v!==null){const k=id0?C(id0):S.cats.find(c=>!n0.has(c.id));if(k){if(v&&!k.xauto)k.autoFrom=today();k.xauto=v;if(xAutoSync())save()}}}catch(e){}return r}}catch(e){}
+try{const _ssA=xSubSave;xSubSave=function(par,id){const a=$('#sb-au'),v=a?a.checked:null,n0=new Set(S.cats.map(c=>c.id));const r=_ssA.apply(this,arguments);
+  try{if(v!==null){const k=id?C(id):S.cats.find(c=>!n0.has(c.id));if(k){if(v&&!k.xauto)k.autoFrom=today();k.xauto=v;if(xAutoSync())save()}}}catch(e){}return r}}catch(e){}
+try{if(!SETS.some(x=>x[0]==='xauto'))SETS.splice(Math.min(5,SETS.length),0,['xauto','🔄','التسجيل التلقائي'])}catch(e){}
+try{const _vsA=vSettings;vSettings=function(){if(stab!=='xauto')return _vsA.apply(this,arguments);
+  const on=!!S.settings.autoFx,L=S.cats.filter(c=>c&&!c.mrg&&c.kind==='exp'&&c.fixed&&c.active!==false);
+  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>🔄 التسجيل التلقائي</h3></div>
+  <div class="box"><label class="chk fxbox"><input type="checkbox" ${on?'checked':''} onchange="xAutoSet(this.checked)"> 🔄 سجّل المصروف الثابت لوحده في ميعاده</label>
+  <p class="muted">${on?'شغال: البنود المتعلّم عليها تحت بتتسجل لوحدها يوم ميعادها، من النهارده وجاي.':'مقفول: مفيش مصروف بيتسجل لوحده، وانت بتسجله لما تدفع.'}</p></div>
+  ${on?`<div class="fl">البنود اللي تتسجل لوحدها</div><div class="list">${L.map(c=>`<label class="row" style="cursor:pointer"><input type="checkbox" ${c.xauto?'checked':''} onchange="xAutoOne('${c.id}',this.checked)" style="width:22px;height:22px;flex:0 0 22px;margin:0"><div class="grow"><b>${esc(xIncrNm(c))}</b><small>${esc(everyTxt(c.every))} · ${num(+c.amount||0)}</small></div></label>`).join('')||'<p class="empty">مفيش مصروف ثابت</p>'}</div>`:''}`}}catch(e){}
+
+/* ---------- ⚖️ المطابقة + تصفير الرصيد ---------- */
+xReconOpen=async function(id){const a=xReconVal(id);if(a==null)return toast('اكتب الرصيد');const m=M(id),cur=xBal(id),d=r2(a-cur);
+  if(Math.abs(d)<.01)return toast('مظبوط ✓');const o=+m.open||0;
+  if(!await ask('تظبيط رصيد البداية؟',`الرصيد في البرنامج ${fmt(cur)} هيبقى ${fmt(a)}.\nالعمليات كلها هتفضل زي ما هي، اللي هيتغير رصيد البداية بس:\n${fmt(o)} ← ${fmt(r2(o+d))}`,{icon:'🏁',ok:'ظبّطه'}))return;
+  m.openPrev={v:o,at:m.openAt||''};m.open=r2(o+d);m.openAt=today();save();closeSheet();render();toast('🏁 اتظبط · العمليات زي ما هي')};
+window.xOpenUndo=function(id){const m=M(id);if(!m||!m.openPrev)return;m.open=m.openPrev.v;m.openAt=m.openPrev.at;delete m.openPrev;save();render();xReconBase(id);toast('↩️ رجع رصيد البداية زي ما كان')};
+xReconAdj=async function(id){const a=xReconVal(id);if(a==null)return toast('اكتب الرصيد');const d=r2(a-xBal(id));if(!d)return toast('مفيش فرق ✓');
+  if(isClosed(today()))return toast('الشهر الحالي مقفول');const m=M(id),cash=m&&m.type==='cash',inc=d>0;
+  const nm0=inc?'تسوية رصيد':cash?'فرق رصيد':(xIsCr(id)?'مصاريف الكريديت':'مصاريف البنك');
+  if(!await ask(inc?'تسجيل تحصيل؟':'تسجيل مصروف؟',`${fmt(Math.abs(d))} في بند «${nm0}» على ${m.name}`,{icon:inc?'💰':'💸',ok:'سجّل'}))return;
+  const c=ensureCat(nm0,inc?'inc':'exp');c.active=true;
+  S.txs.push({id:uid(),type:inc?'inc':'exp',amount:Math.abs(d),cat:c.id,method:id,via:cash?'cash':'',date:today(),note:'⚖️ فرق المطابقة',files:[],created:Date.now(),adj:true,nofee:1});
+  save();closeSheet();render();toast('اتسجل ✓')};
+window.xReconZero=async function(id){const m=M(id);if(!m)return;const b=xBal(id);if(Math.abs(b)<.01)return toast('الرصيد صفر أصلًا');
+  if(isClosed(today()))return toast('الشهر الحالي مقفول');
+  const r=await ask('🧹 تصفير رصيد '+m.name+'؟',`الرصيد ${fmt(b)} هيبقى صفر.\n${b>0?'💸':'💰'} سجّله: يتسجل ${b>0?'مصروف':'تحصيل'} ${fmt(Math.abs(b))} النهارده.\n⚖️ من غير ما يتحسب: رصيد البداية بس يتظبط.`,
+    {icon:'🧹',ok:b>0?'💸 سجّله مصروف':'💰 سجّله تحصيل',cancel:'⚖️ من غير ما يتحسب'});
+  if(r===null)return;
+  if(r){const out=b>0,c=ensureCat(out?'فرق رصيد':'تسوية رصيد',out?'exp':'inc');c.active=true;
+    S.txs.push({id:uid(),type:out?'exp':'inc',amount:Math.abs(b),cat:c.id,method:id,via:m.type==='cash'?'cash':'',date:today(),note:'🧹 تصفير رصيد '+m.name,files:[],created:Date.now(),adj:true,nofee:1})}
+  else{m.openPrev={v:+m.open||0,at:m.openAt||''};m.open=r2((+m.open||0)-b)}
+  save();closeSheet();render();toast('🧹 الرصيد بقى صفر')};
+try{const _rbZ=xReconBase;xReconBase=function(id){const r=_rbZ.apply(this,arguments);try{const m=M(id),sz=$('#sheet .sz');if(!m||!sz)return r;
+  if(m.type==='cash'){const v=$('#rc-v'),l=v&&v.closest('label');if(l)xLblTxt(l,'💵 الفلوس اللي معاك دلوقتي (عدّها)');
+    const p=[...sz.querySelectorAll('p.muted')].pop();if(p)p.innerHTML='📌 عدّ الفلوس اللي معاك واكتبها، بعد ما تسجل كل اللي صرفته منها.<br>🔍 لاقي سبب الفرق: البرنامج يدوّر على الغلط.<br>🧹 تصفير الرصيد: لو عايز الرصيد يبقى صفر.';
+    const b=sz.querySelector('.btn[onclick^="xReconAdj"]');if(b)b.textContent='💸 سجّل الفرق مصروف'}
+  const at=sz.querySelector('.btn[onclick^="xReconAdj"]');if(at&&!$('#xrz'))at.insertAdjacentHTML('afterend',`<button class="btn ghost" id="xrz" onclick="xReconZero('${id}')">🧹 تصفير الرصيد</button>`);
+  const o=sz.querySelector('.btn[onclick^="xReconOpen"]');if(o&&m.openPrev&&!$('#xropu'))o.insertAdjacentHTML('afterend',`<button class="btn ghost" id="xropu" onclick="xOpenUndo('${id}')">↩️ رجّع رصيد البداية زي ما كان</button>`);
+}catch(e){}return r}}catch(e){}
+try{const _rbt=xReconBtn;xReconBtn=function(id){_rbt.apply(this,arguments);try{const m=M(id);if(m&&m.type==='cash'){const b=document.querySelector('#sheet .btn[onclick^="xReconAdj"]');if(b)b.textContent=b.textContent.replace('مصاريف بنكية','مصروف')}}catch(e){}}}catch(e){}
+
+/* ---------- ✋ الإعفاء يوم ما تعمله ---------- */
+xLnEx=function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l),t=l.tx&&S.txs.find(x=>x.id===l.tx),open=t&&!isClosed(t.date),ec=t?t.cat:'';
+  const cats=S.cats.filter(c=>c&&c.kind==='exp'&&!c.mrg&&!c.par&&(c.active!==false||c.id===ec)).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  sheet(`<h2>✋ إعفاء ${esc(l.who)}</h2>
+  <div class="xbwm">الباقي <b>${num(rem)}</b> مش هيرجع.<br>الإعفاء هيتسجل النهارده <b>${xDW(today())}</b> والسلفة هتتقفل.<br>الـ ${num(l.amt)} اللي طلعت يوم ${dmy(l.d)} متحسبة مصروف من ساعتها، ورصيد الحساب مش هيتغير.</div>
+  ${open?`<label>المصروف يتسجل في بند<select id="lx-c">${opt(cats,ec)}</select></label>`:`<p class="muted">شهر ${mName(l.d.slice(0,7))} مقفول، فالمصروف هيفضل في بنده زي ما هو.</p>`}
+  <button class="btn" onclick="xLnExSv('${id}')">✋ تأكيد الإعفاء</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`)};
+xLnExSv=function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l);if(!(rem>0.009))return toast('السلفة دي خلصت');
+  const t=l.tx&&S.txs.find(x=>x.id===l.tx),sel=$('#lx-c');
+  if(t&&sel&&sel.value&&!isClosed(t.date)&&sel.value!==t.cat){l.exCat=t.cat;t.cat=sel.value}
+  const d=today(),pid=uid();l.pays=l.pays||[];l.pays.push({id:pid,d,a:rem,m:l.m,wo:1,ex:1,note:'✋ إعفاء',c:Date.now()});
+  l.ex={d,a:rem,pay:pid};xLnLog(l,'✋ اتعفى من الباقي '+num(rem)+' يوم '+dmy(d));
+  save();render();xLnOpen(id);toast('✋ اتعفى · السلفة اتقفلت')};
+window.xLnUnEx=function(id){const l=xLnL(id);if(!l||!l.ex)return;l.pays=(l.pays||[]).filter(p=>p.id!==l.ex.pay);
+  const t=l.tx&&S.txs.find(x=>x.id===l.tx);if(t&&l.exCat&&!isClosed(t.date))t.cat=l.exCat;
+  delete l.exCat;delete l.ex;xLnLog(l,'↩️ اتلغى الإعفاء');save();render();xLnOpen(id);toast('↩️ السلفة رجعت مفتوحة')};
+try{const _loE=xLnOpen;xLnOpen=function(id){const r=_loE.apply(this,arguments);try{const l=xLnL(id),s=$('#sheet .xlns');
+  if(l&&l.ex&&s&&!$('#xlnex'))s.insertAdjacentHTML('afterend',`<div class="xbwm" id="xlnex">✋ اتعفى من <b>${num(l.ex.a)}</b> يوم <b>${xDW(l.ex.d)}</b><br><button type="button" class="mini" style="margin-top:6px" onclick="xLnUnEx('${id}')">↩️ إلغاء الإعفاء</button></div>`)}catch(e){}return r}}catch(e){}
+
+/* ---------- كل ما الشاشة تترسم ---------- */
+try{const _rnZ6=render;render=function(){try{if(xAutoSync())save()}catch(e){}const r=_rnZ6.apply(this,arguments);try{
+  if(view==='xln')XLN().forEach(l=>{if(!l.ex)return;const c=document.querySelector(`#view .xlnc[onclick="xLnOpen('${l.id}')"] .xlnn .xchip`);if(c)c.textContent='✋ اتعفى '+dmy(l.ex.d)});
+  if(view==='xace'){const c=C(XACE),ph=$('#view .phead');if(c&&ph&&!$('#xcact'))ph.insertAdjacentHTML('beforeend',`<button class="mini" id="xcact" onclick="xCatAct('${c.id}')">${c.active===false?'▶️ تفعيل':'⏸ إيقاف'}</button>`)}
+  if(view==='xsub')document.querySelectorAll('#view .xlna button[onclick^="xSubForm("]').forEach(b=>{if(b.parentElement.querySelector('.xsact'))return;
+    const m=b.getAttribute('onclick').match(/xSubForm\('[^']+','([^']+)'\)/),k=m&&C(m[1]);if(!k)return;
+    b.insertAdjacentHTML('afterend',`<button class="btn ghost xsact" onclick="event.stopPropagation();xCatAct('${k.id}')">${k.active===false?'▶️ تفعيل':'⏸ إيقاف'}</button>`)});
+}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.256',e)}
+/* ===== آخر 2.21.256 ===== */
 /* نهاية fix.js */
