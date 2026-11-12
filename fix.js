@@ -14992,4 +14992,159 @@ try{const _rnZ6=render;render=function(){try{if(xAutoSync())save()}catch(e){}con
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.256',e)}
 /* ===== آخر 2.21.256 ===== */
+/* ========== 2.21.257 · البند الموقوف + تاريخ الإعفاء + كشف الحساب التفصيلي + شكل التقارير ========== */
+try{
+XVER2='2.21.257';XVBUILD2='12/11/2026 - 12:30 م';
+
+/* ---------- ⏸ البند الموقوف باين ---------- */
+try{const _csF=catSheet;catSheet=function(){const r=_csF.apply(this,arguments);try{
+  if(CF&&CF.id&&CF.active===false&&!$('#xoffb')){const h=$('#sheet .sz h2');
+    if(h){h.insertAdjacentHTML('beforeend',' <span style="color:#f59e0b">· ⏸ موقوف</span>');
+      h.insertAdjacentHTML('afterend','<div class="xbwm" id="xoffb">⏸ البند ده موقوف<br><small>مش بيظهر في اختيار البند، ومواعيده مش بتظهر ولا بتتسجل. دوس ▶️ تفعيل البند عشان يرجع.</small></div>')}}
+}catch(e){}return r}}catch(e){}
+try{const _rnF2=render;render=function(){const r=_rnF2.apply(this,arguments);try{
+  if(view==='xace'){const c=C(XACE),ph=$('#view .phead');if(c&&c.active===false&&ph&&!$('#xoffc'))ph.insertAdjacentHTML('afterend','<div class="xbwm" id="xoffc">⏸ الحساب ده موقوف</div>')}
+}catch(e){}return r}}catch(e){}
+
+/* ---------- ✋ الإعفاء بتاريخ وتفاصيل ---------- */
+xLnEx=function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l),t=l.tx&&S.txs.find(x=>x.id===l.tx),open=t&&!isClosed(t.date),ec=t?t.cat:'';
+  const cats=S.cats.filter(c=>c&&c.kind==='exp'&&!c.mrg&&!c.par&&(c.active!==false||c.id===ec)).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  sheet(`<h2>✋ إعفاء ${esc(l.who)}</h2>
+  <div class="kv"><span>🤝 السلفة</span><b>${num(l.amt)} · اتصرفت ${xDW(l.d)}</b></div>
+  <div class="kv"><span>⏳ الباقي اللي هيتعفى</span><b class="neg">${num(rem)}</b></div>
+  <label>📅 تاريخ الإعفاء<input id="lx-d" type="date" value="${today()}"></label>
+  <label>📝 التفاصيل<textarea id="lx-n" rows="3"></textarea></label>
+  ${open?`<label>المصروف يتسجل في بند<select id="lx-c">${opt(cats,ec)}</select></label>`:''}
+  <div class="xbwm">الإعفاء بيتسجل في التاريخ اللي فوق والسلفة بتتقفل.<br>شهر ${mName(l.d.slice(0,7))} هو شهر الصرف بس، ورصيد الحساب مش بيتغير.</div>
+  <button class="btn" onclick="xLnExSv('${id}')">✋ تأكيد الإعفاء</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`)};
+xLnExSv=function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l);if(!(rem>0.009))return toast('السلفة دي خلصت');
+  const d=($('#lx-d')||{}).value||today(),n=(($('#lx-n')||{}).value||'').trim();if(d<l.d)return toast('تاريخ الإعفاء قبل يوم السلفة');
+  const t=l.tx&&S.txs.find(x=>x.id===l.tx),sel=$('#lx-c');
+  if(t&&sel&&sel.value&&!isClosed(t.date)&&sel.value!==t.cat){l.exCat=t.cat;t.cat=sel.value}
+  const pid=uid();l.pays=l.pays||[];l.pays.push({id:pid,d,a:rem,m:l.m,wo:1,ex:1,note:'✋ إعفاء'+(n?' · '+n:''),c:Date.now()});
+  l.ex={d,a:rem,pay:pid,n};xLnLog(l,'✋ اتعفى من الباقي '+num(rem)+' يوم '+dmy(d)+(n?' · '+n:''));
+  save();render();xLnOpen(id);toast('✋ اتعفت يوم '+dmy(d))};
+try{const _loE2=xLnOpen;xLnOpen=function(id){const r=_loE2.apply(this,arguments);try{const l=xLnL(id),b=$('#xlnex');
+  if(l&&l.ex&&b)b.innerHTML=`✋ اتعفت يوم <b>${xDW(l.ex.d)}</b> من <b>${num(l.ex.a)}</b>${l.ex.n?'<br>📝 '+esc(l.ex.n):''}<br><small>اتصرفت ${dmy(l.d)}</small><br><button type="button" class="mini" style="margin-top:6px" onclick="xLnUnEx('${id}')">↩️ إلغاء الإعفاء</button>`;
+}catch(e){}return r}}catch(e){}
+try{const _rnE=render;render=function(){const r=_rnE.apply(this,arguments);try{
+  XLN().forEach(l=>{if(!l.ex)return;const txt='✋ اتعفت يوم '+dmy(l.ex.d);
+    document.querySelectorAll(`#view .xlnc[onclick="xLnOpen('${l.id}')"]`).forEach(c=>{if(c.dataset.xex)return;c.dataset.xex=1;
+      c.innerHTML=c.innerHTML.replace('اتسددت بالكامل',txt).replace(/✅ اتسددت|✋ اتعفى[^<]*/,txt)});
+    document.querySelectorAll('#view .xlnb').forEach(c=>{if(c.dataset.xex||!c.querySelector(`[onclick="xLnOpen('${l.id}')"]`))return;c.dataset.xex=1;
+      c.innerHTML=c.innerHTML.replace('✅ اتسددت',txt);c.querySelector('.xlna').insertAdjacentHTML('beforebegin',l.ex.n?`<div class="kv"><span>📝 الإعفاء</span><b>${esc(l.ex.n)}</b></div>`:'')})});
+  document.querySelectorAll('#view details.gen>summary').forEach(s=>{if(/سلف اتسددت/.test(s.textContent)&&XLN().some(l=>l.ex))s.textContent=s.textContent.replace('سلف اتسددت','سلف اتسددت أو اتعفت')});
+}catch(e){}return r}}catch(e){}
+
+/* ---------- 📒 كشف حساب تفصيلي ---------- */
+function xLedTx(k,id){let L=[];
+  if(k==='acc'){const s=xAcSet(id);L=S.txs.filter(t=>t&&!t.del&&!t.pend&&!t.xpre&&(t.type==='inc'||t.type==='exp')&&s.has(t.cat))}
+  else if(k==='pp'){const set=new Set();try{xOpsOf('pp',id).forEach(t=>set.add(t))}catch(e){}
+    xLnOfP(id).forEach(l=>[l.tx].concat((l.pays||[]).map(p=>p.tx)).forEach(x=>{const t=x&&S.txs.find(y=>y.id===x);if(t)set.add(t)}));
+    L=[...set].filter(t=>t&&!t.pend&&!t.xpre&&!t.del&&(t.type==='inc'||t.type==='exp'))}
+  else if(k==='cl')L=S.txs.filter(t=>t&&t.cl===id&&!t.pend&&!t.del&&(t.type==='inc'||t.type==='exp'));
+  return L}
+function xLedSub(t){const a=[],c=C(t.cat),tc=xTopC(t.cat),nm=xTxNm(t);
+  if(tc&&normAr(tc.name)!==normAr(nm))a.push('📒 '+tc.name);
+  if(c&&tc&&c.id!==tc.id&&normAr(c.name)!==normAr(nm))a.push('↳ '+c.name);
+  const m=M(t.method);if(m)a.push('🏦 '+m.name+(t.via?' · '+viaTxt(t.via):''));
+  try{if(t.pp){const p=XPP().find(x=>x.id===t.pp);if(p)a.push('👤 '+p.name)}}catch(e){}
+  try{if(t.cl){const x=xClL(t.cl);if(x)a.push('👥 '+x.name)}}catch(e){}
+  if(t.xlno)a.push('🤝 سلفة');if(t.xlnp)a.push('🤝 سداد سلفة');if(t.rf)a.push('↩️ مرتجع');
+  if(t.src&&t.src.k==='r')a.push('📌 ميعاد ثابت');if(t.src&&t.src.k==='i')a.push('🏦 قسط');
+  if(t.rdate&&t.rdate!==t.date)a.push('📥 دخلت فعليًا '+dmy(t.rdate));
+  try{const fe=xFeeTx(t.id);if(fe)a.push('💸 مصاريف '+num(fe.amount))}catch(e){}
+  if((t.files||[]).length)a.push('📎 '+t.files.length);
+  let h=a.length?'<span>'+esc(a.join(' · '))+'</span>':'';
+  const n=(t.note||'').trim();if(n&&!/^🧾/.test(n)&&n!==nm)h+='<span>📝 '+esc(n)+'</span>';
+  try{const b=S.buys.find(x=>x.txId===t.id),its=b?biOf(b):[];
+    if(b&&b.store&&normAr(b.store)!==normAr(nm))h+='<span>🏪 '+esc(b.store)+'</span>';
+    if(its.length)h+='<div class="xlit">'+its.slice(0,10).map(i=>esc(i.n)+' <em>'+num(+i.q||1)+' × '+num(+i.p||0)+' = '+num(+i.v||0)+'</em>').join('<br>')+(its.length>10?'<br>… و'+(its.length-10)+' صنف تاني':'')+'</div>'}catch(e){}
+  return h}
+function xLedBuild(L,syn,f,t){
+  const all=L.map(x=>({d:x.date,c:x.created||0,dr:x.type==='exp'?r2(+x.amount||0):0,cr:x.type==='inc'?r2(+x.amount||0):0,n:xTxNm(x),s:xLedSub(x),id:x.id,x}))
+    .concat(syn||[]).sort((a,b)=>a.d.localeCompare(b.d)||a.c-b.c);
+  const ob=r2(all.filter(r=>r.d<f).reduce((s,r)=>s+r.dr-r.cr,0)),IN=all.filter(r=>r.d>=f&&r.d<=t);
+  const B=v=>`${num(Math.abs(v))}<i>${Math.abs(v)<.005?'':v>0?'م':'د'}</i>`,sd=d=>d.slice(8)+'/'+d.slice(5,7)+'/'+d.slice(2,4);
+  const multi=new Set(IN.map(r=>r.d.slice(0,7))).size>1;
+  let run=ob,td=0,tc=0,md=0,mc=0,mk='',h='';
+  const mrow=()=>`<tr class="ms"><td colspan="2">إجمالي ${esc(mName(mk))}</td><td class="m dr">${md?num(r2(md)):''}</td><td class="m cr">${mc?num(r2(mc)):''}</td><td class="m b">${B(run)}</td></tr>`;
+  h+=`<tr class="ob"><td class="d">${sd(f)}</td><td class="ds" colspan="3"><b>رصيد أول المدة</b></td><td class="m b">${B(ob)}</td></tr>`;
+  IN.forEach(r=>{const m=r.d.slice(0,7);if(multi&&mk&&m!==mk){h+=mrow();md=mc=0}mk=m;
+    run=r2(run+r.dr-r.cr);td+=r.dr;tc+=r.cr;md+=r.dr;mc+=r.cr;
+    h+=`<tr ${r.id?`class="clk" onclick="editTx('${r.id}')"`:''}><td class="d">${sd(r.d)}</td><td class="ds"><b>${esc(r.n)}</b>${r.s?`<div class="sb">${r.s}</div>`:''}</td><td class="m dr">${r.dr?num(r.dr):''}</td><td class="m cr">${r.cr?num(r.cr):''}</td><td class="m b">${B(run)}</td></tr>`});
+  if(multi&&mk)h+=mrow();
+  h+=`<tr class="cb"><td class="d">${sd(t)}</td><td class="ds"><b>رصيد آخر المدة</b></td><td class="m dr">${num(r2(td))}</td><td class="m cr">${num(r2(tc))}</td><td class="m b">${B(run)}</td></tr>`;
+  return{h,ob,cb:r2(run),td:r2(td),tc:r2(tc),n:IN.length,IN,B}}
+function xBLed(){try{xLegacy('xled');const k=RF.xlk||'acc',id=RF.xlid,P=xPer('xled'),f=P.f,t=P.t>today()?today():P.t;
+  const nm=k==='pp'?(XPP().find(x=>x.id===id)||{}).name:k==='cl'?(xClL(id)||{}).name:(C(id)||{}).name,kl={acc:'📒 الحساب',pp:'👤 الشخص',cl:'👥 العميل'}[k];
+  if(!nm)return{title:'كشف حساب تفصيلي',sub:'',body:'<p class="xlnote">اختار الحساب من الفلاتر فوق</p>'};
+  const syn=[];if(k==='pp')xLnOfP(id).forEach(l=>{if(l.ex)syn.push({d:l.ex.d,c:0,dr:0,cr:+l.ex.a||0,n:'✋ إعفاء من سلفة '+dmy(l.d),s:'<span>'+esc(l.ex.n||'من غير فلوس · السلفة اتقفلت')+'</span>',id:''})});
+  const g=xLedBuild(xLedTx(k,id),syn,f,t),B=g.B;
+  const body=`<div class="xlhd"><div><small>${kl}</small><b>${esc(nm)}</b></div><div><small>الفترة</small><b>${dmy(f)} – ${dmy(t)}</b></div><div><small>تاريخ الكشف</small><b>${dmy(today())}</b></div><div><small>عدد العمليات</small><b>${g.n}</b></div></div>
+  <table class="xled"><colgroup><col class="cd"><col><col class="cm"><col class="cm"><col class="cb"></colgroup>
+  <thead><tr><th>التاريخ</th><th>البيان والتفاصيل</th><th>مدين<small>صرف</small></th><th>دائن<small>تحصيل</small></th><th>الرصيد</th></tr></thead><tbody>${g.h}</tbody></table>
+  <p class="xlnote">م = مدين (الصرف أكتر) · د = دائن (التحصيل أكتر) · دوس على أي عملية تفتحها</p>
+  <table class="xlsm"><tr><td>رصيد أول المدة · ${dmy(f)}</td><td>${B(g.ob)}</td></tr><tr><td>+ إجمالي المدين (صرف)</td><td>${num(g.td)}</td></tr><tr><td>− إجمالي الدائن (تحصيل)</td><td>${num(g.tc)}</td></tr><tr class="t"><td>= رصيد آخر المدة · ${dmy(t)}</td><td>${B(g.cb)}</td></tr></table>`;
+  let run=g.ob;
+  return{title:'كشف حساب تفصيلي',sub:nm+' · '+dmy(f)+' – '+dmy(t),body,csv:{head:['التاريخ','البيان','التفاصيل','مدين','دائن','الرصيد'],
+    rows:[[dmy(f),'رصيد أول المدة','','','',g.ob]].concat(g.IN.map(r=>{run=r2(run+r.dr-r.cr);return[dmy(r.d),r.n,r.s.replace(/<br>/g,' / ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(),r.dr||'',r.cr||'',run]}))}}
+}catch(e){return{title:'كشف حساب تفصيلي',sub:'',body:`<div class="xwarn">⚠️ ${esc((e&&e.message)||String(e))}</div>`}}}
+XPD.xled='m';
+if(!REPS.xled){const tmp={...REPS};Object.keys(REPS).forEach(k=>delete REPS[k]);let ok=false;
+  Object.entries(tmp).forEach(([k,v])=>{REPS[k]=v;if(k==='stmt'){REPS.xled={ic:'📒',t:'كشف حساب تفصيلي',b:xBLed};ok=true}});
+  if(!ok)REPS.xled={ic:'📒',t:'كشف حساب تفصيلي',b:xBLed}}
+try{const _pfL=xPreFields;xPreFields=function(){if(rtab!=='xled')return _pfL.apply(this,arguments);xLegacy('xled');const R=RF;R.xlk=R.xlk||'acc';
+  const ents=R.xlk==='pp'?XPP().map(p=>[p.id,p.name]):R.xlk==='cl'?XCL().slice().sort((a,b)=>(+a.no||0)-(+b.no||0)).map(c=>[c.id,'#'+c.no+' · '+c.name])
+    :S.cats.filter(c=>c&&!c.mrg&&!c.par&&!c.cl).sort((a,b)=>a.name.localeCompare(b.name,'ar')).map(c=>[c.id,(c.code?'#'+c.code+' · ':'')+c.name]);
+  if(!ents.some(e=>e[0]===R.xlid))R.xlid=(ents[0]||[''])[0];
+  return xSel('🔀 النوع','xlk',xOptL([['acc','📒 حساب'],['pp','👤 شخص'],['cl','👥 عميل']],R.xlk))+xSel('📋 الاسم','xlid',xOptL(ents,R.xlid))+xPerSel(R)}}catch(e){}
+try{const _pfK=xPF;xPF=function(k,v){if(k==='xlk'){RF.xlk=v;RF.xlid='';return xPreDraw(true)}return _pfK.apply(this,arguments)}}catch(e){}
+window.xLedOpen=function(k,id){try{closeSheet()}catch(e){}rtab='xled';RF={...RFDEF,xp:'m',xlk:k,xlid:id};RVST=[];XRVBACK=view==='reports'?'':view;openRV()};
+xAcRep=function(id){xLedOpen('acc',id)};
+xPpPrint=function(pid){xLedOpen('pp',pid)};
+try{const _clR=xClRep;xClRep=function(k,id){if(k==='clst'&&id)return xLedOpen('cl',id);return _clR.apply(this,arguments)}}catch(e){}
+
+/* ---------- 📊 شكل التقارير ---------- */
+(()=>{const s=document.createElement('style');s.textContent=`
+html body #rvdoc .paper{background:#fff!important;color:#0f172a!important;font-size:12.5px;line-height:1.55}
+html body #rvdoc .paper :is(h1,h2){color:#0f172a!important;font-weight:800;letter-spacing:0}
+html body #rvdoc .rs{background:#f1f5f9!important;border-inline-start:5px solid #0f766e!important;border-radius:4px!important;color:#0f172a!important;font-weight:800;padding:8px 10px!important;margin:16px 0 6px!important}
+html body #rvdoc .rtb{border:1px solid #94a3b8!important;border-radius:4px!important;overflow:hidden;background:#fff!important}
+html body #rvdoc .rtb table{border-collapse:collapse!important;width:100%}
+html body #rvdoc .rtb th{background:#0f766e!important;color:#fff!important;font-weight:700!important;font-size:11.5px!important;padding:8px 6px!important;border:1px solid #0b5e58!important;text-align:center!important}
+html body #rvdoc .rtb td{border:1px solid #e2e8f0!important;padding:7px 6px!important;font-size:12px!important;color:#0f172a}
+html body #rvdoc .rtb td.n{text-align:left!important;direction:ltr;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+html body #rvdoc .rtb tbody tr:nth-child(even):not(.xgh) td{background:#f8fafc}
+html body #rvdoc .rtb tfoot td,html body #rvdoc .rtb tr.xsub td{background:#e2e8f0!important;font-weight:800!important;border-top:2px solid #0f766e!important}
+html body #rvdoc .rtb tr.xgh td{background:#ccfbf1!important;color:#134e4a!important;font-weight:800;border-top:2px solid #0f766e!important}
+.xlhd{display:grid;grid-template-columns:1fr 1fr;border:1px solid #94a3b8;border-radius:4px;margin:6px 0 10px;overflow:hidden}
+.xlhd>div{padding:6px 8px;border:1px solid #e2e8f0}.xlhd small{display:block;color:#64748b;font-size:10.5px}.xlhd b{font-size:13px;color:#0f172a}
+table.xled{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11.5px;color:#0f172a;border:1px solid #94a3b8}
+table.xled col.cd{width:58px}table.xled col.cm{width:66px}table.xled col.cb{width:78px}
+table.xled th{background:#0f766e;color:#fff;font-weight:700;padding:7px 3px;border:1px solid #0b5e58;font-size:11px;text-align:center}
+table.xled th small{display:block;font-weight:500;opacity:.85;font-size:9.5px}
+table.xled td{border:1px solid #e2e8f0;padding:6px 4px;vertical-align:top}
+table.xled td.d{text-align:center;white-space:nowrap;direction:ltr;color:#334155}
+table.xled td.m{text-align:left;direction:ltr;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:700}
+table.xled td.dr{color:#c2410c}table.xled td.cr{color:#15803d}table.xled td.b{background:#f8fafc;color:#0f172a}
+table.xled td.b i{font-style:normal;font-size:9.5px;color:#64748b;margin-inline-start:2px}
+table.xled td.ds b{display:block;font-weight:700;white-space:normal;word-break:break-word}
+table.xled .sb span{display:block;color:#64748b;font-size:10.5px;line-height:1.5;word-break:break-word}
+table.xled .xlit{margin-top:3px;padding:3px 6px;border-inline-start:2px solid #cbd5e1;background:#f8fafc;font-size:10.5px;color:#334155}
+table.xled .xlit em{font-style:normal;color:#64748b;direction:ltr;unicode-bidi:isolate}
+table.xled tr:nth-child(even) td:not(.b){background:#fcfcfd}
+table.xled tr.ob td,table.xled tr.cb td{background:#ccfbf1!important;font-weight:800;border-top:2px solid #0f766e}
+table.xled tr.ms td{background:#f1f5f9!important;font-weight:800;color:#334155}
+table.xled tr.clk{cursor:pointer}
+.xlnote{font-size:10.5px;color:#64748b;margin:6px 2px}
+table.xlsm{width:100%;border-collapse:collapse;margin-top:8px;border:1px solid #94a3b8;font-size:12px;color:#0f172a}
+table.xlsm td{border:1px solid #e2e8f0;padding:7px 8px}table.xlsm td:last-child{text-align:left;direction:ltr;font-weight:700;white-space:nowrap;width:110px}
+table.xlsm tr.t td{background:#0f766e;color:#fff;font-weight:800}table.xlsm i{font-style:normal;font-size:10px;opacity:.8;margin-inline-start:3px}
+@media print{table.xled,table.xlsm,.rtb{page-break-inside:auto}table.xled tr{page-break-inside:avoid}}
+`;document.head.appendChild(s)})();
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.257',e)}
+/* ===== آخر 2.21.257 ===== */
 /* نهاية fix.js */
