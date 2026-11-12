@@ -15147,4 +15147,150 @@ table.xlsm tr.t td{background:#0f766e;color:#fff;font-weight:800}table.xlsm i{fo
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.257',e)}
 /* ===== آخر 2.21.257 ===== */
+/* ========== 2.21.258 · شاشة البنود الموقوفة + التفعيل من غير تسجيل تلقائي ========== */
+try{
+XVER2='2.21.258';XVBUILD2='12/11/2026 - 12:45 م';
+var XSTP='exp';
+
+/* التسجيل التلقائي مقفول على كل البنود إلا اللي انت تشغّله */
+if(!S.settings.xauto258){S.cats.forEach(c=>{if(c&&c.fixed){c.xauto=false;c.noAuto=true}});S.settings.autoFx=false;S.settings.xauto258=1;save()}
+
+/* المواعيد اللي فاتت وانت موقف البند */
+function xStopPast(c){const td=today(),P=[];
+  [c].concat(xAcKids(c.id)).forEach(r=>{if(!r||!r.fixed||!r.start)return;const from=r.offAt||c.offAt||'';
+    for(let k=0;k<600;k++){let d;try{d=occDate(r,k)}catch(e){break}if(!d||d>=td)break;if(from&&d<from)continue;
+      let s;try{s=stOf(occRec(r,k))}catch(e){continue}if(s&&s.st==='wait')P.push({r,k,d})}});
+  return P}
+
+/* التفعيل */
+window.xStopOn=async function(id){const c=C(id);if(!c)return;const fam=[c].concat(xAcKids(id)),P=xStopPast(c),inc=c.kind==='inc';
+  let skip=false;
+  if(P.length){const a=await ask('فيه '+P.length+' ميعاد فات وانت موقف البند',
+      P.slice(0,6).map(x=>'• '+x.r.name+' · '+dmy(x.d)).join('\n')+(P.length>6?'\n…':'')+'\nتشيلهم ولا يفضلوا '+(inc?'غير محصّلين':'غير مدفوعين')+'؟',
+      {icon:'📅',ok:'🗑 شيلهم',cancel:'سيبهم'});
+    if(a===null)return;skip=!!a}
+  if(skip)P.forEach(({r,k})=>{r.st=r.st||{};r.st[k]={st:'skip',at:Date.now()}});
+  const td=today();fam.forEach(r=>{r.active=true;r.xauto=false;r.noAuto=true;r.autoFrom=td;delete r.offAt});
+  save();
+  if($('#cf-name')&&CF&&CF.id===id){CF.active=true;CF.noAuto=true;catSheet()}
+  else{try{closeSheet()}catch(e){}render()}
+  toast('▶️ اتفعّل · مش هيتسجل لوحده')};
+
+/* زرار الإيقاف بيسجل يوم الإيقاف، والتفعيل بيروح للتفعيل الجديد */
+try{const _caS=xCatAct;xCatAct=async function(id){const c=C(id);if(!c)return;
+  if(c.active===false)return xStopOn(id);
+  await _caS.apply(this,arguments);
+  const c2=C(id);if(c2&&c2.active===false){[c2].concat(xAcKids(id)).forEach(r=>{if(!r.offAt)r.offAt=today()});save()}}}catch(e){}
+
+/* لو اتوقف من علامة "مفعّل" وحفظ */
+try{const _cvS=catSave;catSave=function(){const id0=CF&&CF.id,was=id0&&C(id0)?C(id0).active!==false:true;const r=_cvS.apply(this,arguments);
+  try{const c=id0&&C(id0);if(c){if(was&&c.active===false){c.offAt=today();save()}
+    else if(!was&&c.active!==false){c.xauto=false;c.noAuto=true;c.autoFrom=today();delete c.offAt;save()}}}catch(e){}return r}}catch(e){}
+
+/* تفاصيل البند الموقوف */
+window.xStopView=function(id){const c=C(id);if(!c)return;const par=c.par&&C(c.par),n=S.txs.filter(t=>t&&!t.del&&(t.cat===id||xAcKids(id).some(k=>k.id===t.cat))).length,P=xStopPast(c);
+  sheet(`<h2>⏸ ${esc(c.name)}</h2>
+  <div class="kv"><span>النوع</span><b>${c.kind==='inc'?'💰 تحصيل':'💸 مصروف'}</b></div>
+  ${par?`<div class="kv"><span>تحت حساب</span><b>${esc(par.name)}</b></div>`:''}
+  ${c.fixed?`<div class="kv"><span>📌 ثابت</span><b>${num(+c.amount||0)} · ${esc(everyTxt(c.every))}</b></div>`:''}
+  <div class="kv"><span>⏸ موقوف من</span><b>${c.offAt?xDW(c.offAt):'—'}</b></div>
+  <div class="kv"><span>العمليات</span><b>${n}</b></div>
+  ${P.length?`<div class="kv"><span>📅 مواعيد فاتت وقت الإيقاف</span><b>${P.length}</b></div>`:''}
+  <div class="xbwm">لما تفعّله هيرجع يظهر في البنود ومواعيده، ومش هيتسجل لوحده.</div>
+  <button class="btn" onclick="xStopOn('${id}')">▶️ تفعيل</button>
+  <button class="btn ghost" onclick="${c.par?`xSubForm('${c.par}','${id}')`:`catForm('${id}')`}">⚙️ تعديل البند</button>`)};
+
+/* شاشة الإعدادات */
+try{if(!SETS.some(x=>x[0]==='xstop'))SETS.splice(Math.min(5,SETS.length),0,['xstop','⏸','البنود الموقوفة'])}catch(e){}
+try{const _vsS=vSettings;vSettings=function(){if(stab!=='xstop')return _vsS.apply(this,arguments);
+  const L=S.cats.filter(c=>c&&!c.mrg&&c.active===false),E=L.filter(c=>c.kind!=='inc'),I=L.filter(c=>c.kind==='inc'),A=(XSTP==='inc'?I:E).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  const row=c=>{const par=c.par&&C(c.par),sub=[par?'↳ '+par.name:'',c.fixed?'📌 '+num(+c.amount||0)+' · '+everyTxt(c.every):'متغير',c.offAt?'⏸ من '+dmy(c.offAt):''].filter(Boolean).join(' · ');
+    return `<div class="row" onclick="xStopView('${c.id}')"><span class="ic" style="background:var(--soft)">⏸</span><div class="grow"><b>${c.code?'<span class="xsm">#'+esc(c.code)+'</span> ':''}${esc(c.name)}</b><small>${esc(sub)}</small></div><button class="mini pri" onclick="event.stopPropagation();xStopOn('${c.id}')">▶️ تفعيل</button></div>`};
+  return `<div class="phead"><button class="mini" onclick="stab='';render()">→</button><h3>⏸ البنود الموقوفة</h3></div>
+  <div class="seg"><button class="${XSTP==='exp'?'on':''}" onclick="XSTP='exp';render()">💸 مصروف (${E.length})</button><button class="${XSTP==='inc'?'on':''}" onclick="XSTP='inc';render()">💰 تحصيل (${I.length})</button></div>
+  ${A.length?`<div class="list">${A.map(row).join('')}</div>`:`<div class="nempty"><div>✅</div><b>مفيش بنود ${XSTP==='inc'?'تحصيل':'مصروف'} موقوفة</b></div>`}
+  <p class="muted" style="font-size:11.5px">البند اللي بتفعّله بيرجع يظهر ومش بيتسجل لوحده. التسجيل التلقائي بيشتغل بس من ⚙️ الإعدادات ← 🔄 التسجيل التلقائي.</p>`}}catch(e){}
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.258',e)}
+/* ===== آخر 2.21.258 ===== */
+/* ========== 2.21.259 · إعفاء جزء من السلفة + ميعاد الباقي + شكل خانة التفاصيل ========== */
+try{
+XVER2='2.21.259';XVBUILD2='12/11/2026 - 01:00 م';
+
+/* شكل الخانة الكبيرة زي باقي الخانات */
+window.xTaFix=function(refSel,taSel){try{const ref=$(refSel),ta=$(taSel);if(!ref||!ta)return;const cs=getComputedStyle(ref);
+  ['backgroundColor','backgroundImage','borderTop','borderRight','borderBottom','borderLeft','borderRadius','color','paddingTop','paddingRight','paddingBottom','paddingLeft','fontSize','fontFamily','boxShadow'].forEach(p=>{ta.style[p]=cs[p]});
+  Object.assign(ta.style,{display:'block',width:'100%',boxSizing:'border-box',minHeight:'84px',resize:'vertical',outline:'none',lineHeight:'1.6',margin:'6px 0 12px'})}catch(e){}};
+
+/* أقرب ميعاد جاي في السلفة */
+function xLnNext(l){try{const td=today(),s=(l.sch||[]).map(x=>x.d||x.date).filter(d=>d&&d>=td).sort()[0];if(s)return s;if(l.due&&l.due>=td)return l.due}catch(e){}
+  const x=new Date();x.setMonth(x.getMonth()+1);return x.toISOString().slice(0,10)}
+
+/* إعادة ترتيب المواعيد: اللي اتدفع أو اتعفى يفضل، والباقي ميعاد واحد */
+function xLnResch(l,due,left){const s0=(l.sch||[])[0]||{},dk=('date' in s0&&!('d' in s0))?'date':'d',ak=('amount' in s0&&!('a' in s0))?'amount':'a';
+  const P=r2((l.pays||[]).reduce((s,p)=>s+(+p.a||0),0)),N=[];let cum=0;
+  (l.sch||[]).slice().sort((a,b)=>String(a[dk]).localeCompare(String(b[dk]))).forEach(it=>{const v=+it[ak]||0;if(cum>=P-.009)return;
+    const take=Math.min(v,r2(P-cum));if(take>.009){const o={...it};o[ak]=r2(take);N.push(o);cum=r2(cum+take)}});
+  const o={id:uid()};o[dk]=due;o[ak]=r2(left);N.push(o);l.sch=N;if('due' in l||!l.sch.length)l.due=due}
+
+/* شاشة الإعفاء */
+xLnEx=function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l),t=l.tx&&S.txs.find(x=>x.id===l.tx),open=t&&!isClosed(t.date),ec=t?t.cat:'';
+  const cats=S.cats.filter(c=>c&&c.kind==='exp'&&!c.mrg&&!c.par&&(c.active!==false||c.id===ec)).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  sheet(`<h2>✋ إعفاء ${esc(l.who)}</h2>
+  <div class="kv"><span>🤝 السلفة</span><b>${num(l.amt)} · اتصرفت ${xDW(l.d)}</b></div>
+  <div class="kv"><span>⏳ الباقي دلوقتي</span><b class="neg">${num(rem)}</b></div>
+  <label>💵 المبلغ اللي هيتعفى<input id="lx-a" type="number" inputmode="decimal" step="0.01" value="${rem}" oninput="xLnExCalc('${id}')"></label>
+  <div class="kv"><span>⏳ الباقي اللي هيتحصل</span><b id="lx-left">0</b></div>
+  <div id="lx-db" style="display:none"><label>📅 الباقي يتحصل يوم<input id="lx-due" type="date" value="${xLnNext(l)}"></label></div>
+  <label>📅 تاريخ الإعفاء<input id="lx-d" type="date" value="${today()}"></label>
+  <label style="display:block;margin-bottom:0">📝 التفاصيل</label><textarea id="lx-n" rows="3"></textarea>
+  ${open?`<div id="lx-cb"><label>المصروف يتسجل في بند<select id="lx-c">${opt(cats,ec)}</select></label></div>`:''}
+  <div class="xbwm" id="lx-msg"></div>
+  <button class="btn" onclick="xLnExSv('${id}')">✋ تأكيد الإعفاء</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`);
+  xTaFix('#lx-a','#lx-n');xLnExCalc(id)};
+window.xLnExCalc=function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l),a=r2(+(($('#lx-a')||{}).value)||0),left=r2(Math.max(0,rem-a)),part=a>0&&left>.009;
+  const e=$('#lx-left');if(e){e.textContent=num(left);e.className=left>.009?'neg':'pos'}
+  const db=$('#lx-db');if(db)db.style.display=part?'':'none';const cb=$('#lx-cb');if(cb)cb.style.display=part?'none':'';
+  const m=$('#lx-msg');if(m)m.innerHTML=a>rem+.009?'⚠️ المبلغ أكبر من الباقي '+num(rem)
+    :part?`هيتعفى <b>${num(a)}</b> والسلفة هتفضل مفتوحة.<br>الباقي <b>${num(left)}</b> هيبقى ميعاد سداد في اليوم اللي تختاره.<br>رصيد الحساب مش هيتغير.`
+    :`هيتعفى الباقي كله والسلفة هتتقفل في تاريخ الإعفاء.<br>شهر ${mName(l.d.slice(0,7))} هو شهر الصرف بس، ورصيد الحساب مش هيتغير.`};
+
+xLnExSv=function(id){const l=xLnL(id);if(!l)return;const rem=xLnRem(l);if(!(rem>0.009))return toast('السلفة دي خلصت');
+  const a=r2(+(($('#lx-a')||{}).value)||0),d=($('#lx-d')||{}).value||today(),n=(($('#lx-n')||{}).value||'').trim();
+  if(!(a>0))return toast('اكتب المبلغ اللي هيتعفى');if(a>rem+.009)return toast('المبلغ أكبر من الباقي '+num(rem));if(d<l.d)return toast('تاريخ الإعفاء قبل يوم السلفة');
+  const left=r2(rem-a);let due='';
+  if(left>.009){due=($('#lx-due')||{}).value;if(!due)return toast('اختار ميعاد تحصيل الباقي');if(due<d)return toast('ميعاد الباقي قبل يوم الإعفاء')}
+  const prev=JSON.stringify({sch:l.sch||null,due:l.due||null});
+  if(left<=.009){const t=l.tx&&S.txs.find(x=>x.id===l.tx),sel=$('#lx-c');if(t&&sel&&sel.value&&!isClosed(t.date)&&sel.value!==t.cat){l.exCat=t.cat;t.cat=sel.value}}
+  const pid=uid();l.pays=l.pays||[];l.pays.push({id:pid,d,a,m:l.m,wo:1,ex:1,note:'✋ إعفاء'+(n?' · '+n:''),c:Date.now()});
+  if(left<=.009){l.ex={d,a,pay:pid,n};xLnLog(l,'✋ اتعفى من الباقي '+num(a)+' يوم '+dmy(d)+(n?' · '+n:''))}
+  else{xLnResch(l,due,left);l.exP=l.exP||[];l.exP.push({d,a,n,pay:pid,due,left,prev});
+    xLnLog(l,'✋ اتعفى من '+num(a)+' يوم '+dmy(d)+' · الباقي '+num(left)+' يتحصل '+dmy(due)+(n?' · '+n:''))}
+  save();render();xLnOpen(id);toast(left>.009?'✋ اتعفى '+num(a)+' · الباقي يوم '+dmy(due):'✋ اتعفت يوم '+dmy(d))};
+
+/* إلغاء إعفاء جزئي */
+window.xLnUnExP=async function(id,pid){const l=xLnL(id);if(!l||!l.exP)return;const e=l.exP.find(x=>x.pay===pid);if(!e)return;
+  if(!await ask('إلغاء الإعفاء','يرجع الـ '+num(e.a)+' للباقي والمواعيد ترجع زي ما كانت؟',{icon:'↩️',ok:'إلغاء الإعفاء',cancel:'رجوع'}))return;
+  l.pays=(l.pays||[]).filter(p=>p.id!==pid);try{const p=JSON.parse(e.prev||'{}');if(p.sch)l.sch=p.sch;else delete l.sch;if(p.due)l.due=p.due}catch(x){}
+  l.exP=l.exP.filter(x=>x.pay!==pid);if(!l.exP.length)delete l.exP;xLnLog(l,'↩️ اتلغى إعفاء '+num(e.a));save();render();xLnOpen(id);toast('↩️ اتلغى')};
+
+/* صفحة السلفة: الإعفاءات الجزئية */
+try{const _loP=xLnOpen;xLnOpen=function(id){const r=_loP.apply(this,arguments);try{const l=xLnL(id),h=$('#sheet .sz h2');
+  if(l&&(l.exP||[]).length&&h&&!$('#xlnexp'))h.insertAdjacentHTML('afterend',`<div class="xbwm" id="xlnexp">${l.exP.map(e=>`✋ اتعفى <b>${num(e.a)}</b> يوم ${dmy(e.d)} · الباقي ${num(e.left)} يتحصل ${dmy(e.due)}${e.n?'<br>📝 '+esc(e.n):''} <button type="button" class="mini" onclick="xLnUnExP('${id}','${e.pay}')">↩️ إلغاء</button>`).join('<hr style="opacity:.2">')}</div>`)
+}catch(e){}return r}}catch(e){}
+
+/* الكروت */
+try{const _rnP=render;render=function(){const r=_rnP.apply(this,arguments);try{XLN().forEach(l=>{if(!(l.exP||[]).length||l.ex)return;const s=r2(l.exP.reduce((a,e)=>a+(+e.a||0),0));
+  document.querySelectorAll(`#view [onclick="xLnOpen('${l.id}')"]`).forEach(b=>{const c=b.closest('.xlnb,.xlnc');if(!c||c.dataset.xexp)return;c.dataset.xexp=1;
+    (c.querySelector('.xlna')||c.lastElementChild).insertAdjacentHTML('beforebegin',`<div class="kv"><span>✋ اتعفى</span><b>${num(s)}</b></div>`)})})}catch(e){}return r}}catch(e){}
+
+/* كشف حساب الشخص: سطر الإعفاء الجزئي */
+try{const _lbP=xLedBuild;xLedBuild=function(L,syn,f,t){try{if(rtab==='xled'&&RF.xlk==='pp'){syn=(syn||[]).slice();
+  xLnOfP(RF.xlid).forEach(l=>(l.exP||[]).forEach(e=>syn.push({d:e.d,c:0,dr:0,cr:+e.a||0,n:'✋ إعفاء جزئي من سلفة '+dmy(l.d),s:'<span>'+esc((e.n?e.n+' · ':'')+'الباقي '+num(e.left)+' يتحصل '+dmy(e.due))+'</span>',id:''})))}}catch(x){}
+  return _lbP.call(this,L,syn,f,t)}}catch(e){}
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.259',e)}
+/* ===== آخر 2.21.259 ===== */
 /* نهاية fix.js */
