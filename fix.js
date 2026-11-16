@@ -15981,7 +15981,50 @@ try{if(zFeeSync())save()}catch(e){}
 if(view==='xln'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.274',e)}
 /* ===== آخر 2.21.274 ===== */
+/* ========== 2.21.275 · طريقة الدفع + مصاريف إنستاباي ========== */
+try{
+XVER2='2.21.275';XVBUILD2='16/11/2026';
+function zIsCash(id){const m=M(id);return !!m&&m.type==='cash'}
+function zSplSum(){let s=0;document.querySelectorAll('#xspl [data-sa]').forEach(i=>{s+=parseNum(i.value)||0});return r2(s)}
+function zFee(){try{const fi=document.getElementById('xip-a');if(!fi||!F)return;
+  const amt=parseNum((document.getElementById('f-amt')||{}).value)||0;
+  const tp=document.getElementById('f-tip')||document.getElementById('f-tipx'),tip=parseNum((tp||{}).value)||0;
+  const tc=document.getElementById('f-tipc'),tipCash=tc?tc.checked:!!F.tipCash;
+  const base=r2(Math.max(0,amt-zSplSum())+(tipCash?0:tip));
+  if(!F.ipMan){const v=amtStr(xFeeCalc(base));fi.value=v;F.ipAmt=v}
+  document.querySelectorAll('#sheet summary').forEach(s=>{const w=document.createTreeWalker(s,NodeFilter.SHOW_TEXT);let n;
+    while((n=w.nextNode())){if(/💸\s*[\d.,]+/.test(n.nodeValue))n.nodeValue=n.nodeValue.replace(/💸\s*[\d.,]+/,'💸 '+fi.value)}});
+}catch(e){}}
+document.addEventListener('input',e=>{const t=e.target;if(!t)return;
+  if(t.id==='f-amt'||t.id==='f-tip'||t.id==='f-tipx'||(t.closest&&t.closest('#xspl')))setTimeout(zFee,15)},true);
+document.addEventListener('change',e=>{const t=e.target;if(!t||!F||F.type==='tr')return;
+  if(t.id==='f-tipc'){setTimeout(zFee,15);return}
+  if(t.id==='f-m'){const v=document.getElementById('f-v');if(!v)return;
+    const want=zIsCash(t.value)?'cash':(v.value==='cash'?'instapay':null);
+    if(want&&v.value!==want&&[...v.options].some(o=>o.value===want)){v.value=want;v.dispatchEvent(new Event('change',{bubbles:true}))}
+    return}
+  if(t.id==='f-v'){const m=document.getElementById('f-m');if(!m)return;
+    if(t.value==='cash'&&!zIsCash(m.value)){let ca='';try{ca=xCashAcct()}catch(x){}
+      if(ca&&[...m.options].some(o=>o.value===ca)){m.value=ca;m.dispatchEvent(new Event('change',{bubbles:true}))}}
+    else if(t.value!=='cash'&&zIsCash(m.value)){t.value='cash';toast('حساب الكاش طريقته كاش بس · اختار حساب بنك الأول')}}
+},true);
+try{const _tfZF=txForm;txForm=function(){const r=_tfZF.apply(this,arguments);setTimeout(zFee,20);return r}}catch(e){}
 
+/* الدفع من حسابين: الجزء اللي من بنك بيتسجل عليه مصاريفه */
+function zKidFee(t){try{if(!t||t.pend||isClosed(t.date))return false;const m=M(t.method);if(!m||m.type==='cash'||xIsCr(t.method))return false;
+  const a=r2(xFeeCalc(+t.amount||0));if(!(a>0))return false;t.via='instapay';
+  const f=S.txs.find(x=>x&&x.feeOf===t.id);if(f){if(Math.abs((+f.amount||0)-a)>.009){f.amount=a;return true}return false}
+  if(typeof xAddIpFee==='function'){delete t.nofee;xAddIpFee(t,a);t.nofee=1;return true}
+  const c=ensureCat('مصاريف إنستاباي','exp');c.active=true;
+  S.txs.push({id:uid(),type:'exp',amount:a,cat:c.id,method:t.method,via:'instapay',date:t.date,note:'💸 مصاريف إنستاباي',files:[],created:Date.now(),feeOf:t.id,nofee:1});return true}catch(e){return false}}
+try{const _stZ=saveTx;saveTx=async function(){const fid=F&&F.id,kind=F&&F.type,before=new Set(S.txs.map(t=>t&&t.id));
+  const r=await _stZ.apply(this,arguments);
+  try{if(!$('#sheet').classList.contains('open')){
+    const p=fid?S.txs.find(x=>x&&x.id===fid):S.txs.find(x=>x&&!before.has(x.id)&&x.type===kind&&!x.feeOf&&!x.tipOf&&!x.splOf&&!x.payFeeOf);
+    if(p&&kind==='exp'){let ch=false;S.txs.filter(x=>x&&x.splOf===p.id).forEach(k=>{if(zKidFee(k))ch=true});if(ch){save();render()}}}}catch(e){}
+  return r}}catch(e){}
+}catch(e){console.error('fix 2.21.275',e)}
+/* ===== آخر 2.21.275 ===== */
 
 /* نهاية fix.js */
 
