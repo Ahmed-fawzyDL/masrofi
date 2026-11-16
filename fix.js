@@ -16176,6 +16176,88 @@ function zpFix(){const z=document.getElementById('zpay'),sz=document.querySelect
 try{const _tfQ=txForm;txForm=function(){const r=_tfQ.apply(this,arguments);try{zpFix()}catch(e){}return r}}catch(e){}
 }catch(e){console.error('fix 2.21.277',e)}
 /* ===== آخر 2.21.277 ===== */
+/* ========== 2.21.278 · جزء الدفع بشكل أهدى ========== */
+try{
+XVER2='2.21.278';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zq-css'))return;const G='linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)';const s=document.createElement('style');s.id='zq-css';s.textContent=`
+#zpay.zq{border:1px solid rgba(94,234,212,.25);border-radius:18px;padding:12px;margin:6px 0 12px;background:var(--card)}
+.zq-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.zq-hd b{font-size:15px;font-weight:800}
+.zq-rd{border:1px solid rgba(148,163,184,.3);background:transparent;color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:11.5px;font-weight:700;cursor:pointer}
+.zq-l{background:rgba(148,163,184,.07);border-radius:14px;padding:8px;margin-bottom:8px}
+.zq-r{display:flex;gap:6px;align-items:center}
+.zq-acc{flex:1;min-width:0}
+.zq-acc .xsel{margin:0!important;min-height:42px!important}
+.zq-r input.zq-a{width:96px!important;flex:0 0 96px;margin:0!important;text-align:center;font-weight:800;padding:9px 6px!important}
+.zq-x{width:30px;height:30px;flex:0 0 30px;border-radius:50%;border:0;background:rgba(239,68,68,.15);color:#f87171;font-size:14px;cursor:pointer}
+.zq-m{display:flex;align-items:center;gap:6px;margin-top:6px}
+.zq-sg{display:flex;flex:1;background:rgba(0,0,0,.2);border-radius:10px;padding:2px}
+.zq-sg button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:11.5px;font-weight:700;padding:6px 2px;border-radius:8px;opacity:.7;cursor:pointer}
+.zq-sg button.on{background:${G};color:#fff;opacity:1}
+.zq-fee{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;white-space:nowrap}
+.zq-fee input{width:56px!important;margin:0!important;padding:5px 4px!important;font-size:12px!important;text-align:center;min-height:0!important}
+.zq-tag{font-size:11.5px;font-weight:700;opacity:.7;margin-top:5px;padding-inline-start:4px}
+.zq-add{display:block;width:100%;border:1px dashed rgba(94,234,212,.4);background:transparent;color:#2dd4bf;border-radius:12px;padding:8px;font:inherit;font-size:12.5px;font-weight:700;margin:2px 0 10px;cursor:pointer}
+.zq-tip{display:flex;align-items:center;gap:8px}
+.zq-tip>span:first-child{font-weight:700;font-size:13px;white-space:nowrap}
+.zq-tip input.zq-t{flex:1;min-width:0;margin:0!important;padding:9px!important;text-align:center}
+.zq-tc{display:flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;white-space:nowrap;padding:8px 10px;border-radius:10px;border:1px solid rgba(148,163,184,.3);cursor:pointer}
+.zq-tc.on{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.5);color:#4ade80}
+.zq-s{margin-top:10px;border-top:1px dashed rgba(148,163,184,.25);padding-top:8px}
+.zq-s .rw{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0}
+.zq-s .rw b{font-weight:800;direction:ltr}
+.zq-s .rw.t{font-size:14px;border-bottom:1px solid rgba(148,163,184,.15);margin-bottom:4px;padding-bottom:6px}
+.zq-s small{display:block;font-size:11px;opacity:.6;margin:-2px 0 4px}
+.zq-s .bad{color:#f87171;font-size:13px;font-weight:700}
+`;document.head.appendChild(s)})();
+
+function zqCr(id){try{return xIsCr(id)}catch(e){return false}}
+function zqVia(mid,pref){const m=M(mid);if(!m)return '';if(m.type==='cash')return 'cash';if(zqCr(mid))return 'card';if(m.type==='wallet')return 'wallet';
+  return ['instapay','transfer','card'].includes(pref)?pref:'instapay'}
+function zqBank(mid){const m=M(mid);return !!m&&m.type!=='cash'&&m.type!=='wallet'&&!zqCr(mid)}
+function zqTot(){return parseNum((document.getElementById('f-amt')||{}).value)||0}
+function zqCalc(z){const tot=zqTot(),exp=F.type==='exp';let o=0;z.lines.forEach((l,i)=>{if(i)o+=+l.a||0});z.lines[0].a=r2(tot-o);
+  const tip=exp?(+z.tip||0):0,t0=tip>0&&!(z.tipCash||z.lines[0].via==='cash');
+  z.lines.forEach((l,i)=>{if(!exp||l.via!=='instapay'||F.pend){l.fee=0;return}if(!l.feeMan)l.fee=r2(xFeeCalc(r2((+l.a||0)+(i===0&&t0?tip:0))))})}
+function zqHTML(z){const exp=F.type==='exp',acc=S.methods.filter(m=>m.active!==false||z.lines.some(l=>l.m===m.id));
+  const anyIp=exp&&!F.pend&&z.lines.some(l=>l.via==='instapay');
+  return `<div id="zpay" class="zq"><div class="zq-hd"><b>💳 ${exp?'الدفع':'الاستلام'}</b>${anyIp&&typeof xIpStep==='function'?`<button type="button" class="zq-rd" onclick="xIpStep()">🔢 تقريب ${num(+xFeeCfg().step||0.01)}</button>`:''}</div>
+  ${z.lines.map((l,i)=>`<div class="zq-l"><div class="zq-r"><div class="zq-acc"><select onchange="zqSet(${i},'m',this.value)">${opt(acc,l.m)}</select></div><input class="zq-a" inputmode="decimal" dir="ltr" placeholder="0" ${i?`oninput="zqSet(${i},'a',this.value)" value="${l.a?amtStr(l.a):''}"`:'data-zq0 readonly'}>${i?`<button type="button" class="zq-x" onclick="zqDel(${i})">✕</button>`:''}</div>
+    ${zqBank(l.m)?`<div class="zq-m"><div class="zq-sg">${[['instapay','⚡ إنستاباي'],['transfer','🏦 تحويل'],['card','💳 كارت']].map(([v,t])=>`<button type="button" class="${l.via===v?'on':''}" onclick="zqSet(${i},'via','${v}')">${t}</button>`).join('')}</div>${exp&&l.via==='instapay'&&!F.pend?`<span class="zq-fee">💸<input data-zqf="${i}" inputmode="decimal" dir="ltr" oninput="zqSet(${i},'fee',this.value)"></span>`:''}</div>`
+      :`<div class="zq-tag">${l.via==='cash'?'💵 كاش':l.via==='card'?'💳 كريديت':'📱 محفظة'}</div>`}</div>`).join('')}
+  <button type="button" class="zq-add" onclick="zqAdd()">➕ ${exp?'جزء من حساب تاني':'جزء في حساب تاني'}</button>
+  ${exp?`<div class="zq-tip"><span>🎁 إكرامية</span><input class="zq-t" inputmode="decimal" dir="ltr" placeholder="0" value="${z.tip?amtStr(z.tip):''}" oninput="zqSet(0,'tip',this.value)"><span class="zq-tc ${z.tipCash?'on':''}" onclick="zqSet(0,'tipCash',${!z.tipCash})">💵 كاش${z.tipCash?' ✓':''}</span></div>`:''}
+  <div class="zq-s" data-zqs></div></div>`}
+function zqUpd(){const z=F&&F.zp,b=document.querySelector('#zpay.zq');if(!z||!b)return;zqCalc(z);
+  const a0=b.querySelector('[data-zq0]');if(a0)a0.value=amtStr(z.lines[0].a);
+  z.lines.forEach((l,i)=>{const fi=b.querySelector(`[data-zqf="${i}"]`);if(fi&&document.activeElement!==fi)fi.value=amtStr(l.fee||0)});
+  const s=b.querySelector('[data-zqs]');if(!s)return;const tot=zqTot(),exp=F.type==='exp',tip=exp?(+z.tip||0):0;
+  if(tot>0&&!(z.lines[0].a>0)){s.innerHTML='<div class="bad">⚠️ مبلغ الحسابات التانية لازم يكون أقل من الإجمالي</div>';return}
+  if(!(tot>0)){s.innerHTML='';return}
+  const cashTip=tip>0&&(z.tipCash||z.lines[0].via==='cash');let ca='';if(cashTip){try{ca=xCashAcct()}catch(e){}}
+  const R=z.lines.map((l,i)=>{const t=i===0&&tip>0&&(!cashTip||ca===l.m)?tip:0,sum=r2((+l.a||0)+(l.fee||0)+t),m=M(l.m);
+    return{n:m?m.name:'—',sum,d:(l.fee||t)?[num(l.a),t?'إكرامية '+num(t):'',l.fee?'مصاريف '+num(l.fee):''].filter(Boolean).join(' + '):''}});
+  if(cashTip&&ca&&!z.lines.some(l=>l.m===ca))R.push({n:(M(ca)||{}).name||'كاش',sum:tip,d:'إكرامية'});
+  const all=r2(R.reduce((a,x)=>a+x.sum,0));
+  s.innerHTML=`<div class="rw t"><span>${exp?'هيتخصم':'هيدخل'} إجمالي</span><b>${num(all)}</b></div>`+R.map(x=>`<div class="rw"><span>${esc(x.n)}</span><b>${num(x.sum)}</b></div>${x.d?`<small>${x.d}</small>`:''}`).join('')}
+function zqDraw(){const b=document.getElementById('zpay');if(b&&F&&F.zp){b.outerHTML=zqHTML(F.zp);zqUpd()}}
+window.zqSet=function(i,k,v){const z=F&&F.zp;if(!z)return;const l=z.lines[i];
+  if(k==='m'){l.m=v;l.via=zqVia(v,l.via);l.feeMan=0;return zqDraw()}
+  if(k==='via'){l.via=v;l.feeMan=0;return zqDraw()}
+  if(k==='tipCash'){z.tipCash=!!v;return zqDraw()}
+  if(k==='a')l.a=parseNum(v)||0;
+  if(k==='fee'){l.fee=parseNum(v)||0;l.feeMan=1}
+  if(k==='tip')z.tip=parseNum(v)||0;
+  zqUpd()};
+window.zqAdd=function(){const z=F&&F.zp;if(!z)return;const used=new Set(z.lines.map(l=>l.m));let ca='';try{ca=xCashAcct()}catch(e){}
+  const m=(ca&&!used.has(ca)?ca:(S.methods.find(x=>x.active!==false&&!used.has(x.id))||{}).id)||'';
+  z.lines.push({m,via:zqVia(m,''),a:0,fee:0});zqDraw()};
+window.zqDel=function(i){const z=F&&F.zp;if(!z||!i)return;z.lines.splice(i,1);zqDraw()};
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='f-amt'&&document.querySelector('#zpay.zq'))setTimeout(zqUpd,0)},true);
+try{const _tfR=txForm;txForm=function(){const r=_tfR.apply(this,arguments);try{const z=document.getElementById('zpay');
+  if(z&&!z.classList.contains('zq')&&F&&F.zp){z.outerHTML=zqHTML(F.zp);zqUpd()}}catch(e){console.error('zq',e)}return r}}catch(e){}
+}catch(e){console.error('fix 2.21.278',e)}
+/* ===== آخر 2.21.278 ===== */
 
 /* نهاية fix.js */
 
