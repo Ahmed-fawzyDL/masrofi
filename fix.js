@@ -16277,6 +16277,41 @@ XVER2='2.21.279';XVBUILD2='16/11/2026';
 `;document.head.appendChild(s)})();
 }catch(e){console.error('fix 2.21.279',e)}
 /* ===== آخر 2.21.279 ===== */
+/* ========== 2.21.280 · التحصيلات والمصروفات والمزيد بالشكل الجديد ========== */
+try{
+XVER2='2.21.280';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zs-css'))return;const G='linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)';const s=document.createElement('style');s.id='zs-css';s.textContent=`
+html body #view .kpis{background:${G}!important;border-radius:20px!important;padding:10px!important;gap:6px!important;box-shadow:0 12px 28px rgba(13,148,136,.28)!important;margin:8px 0 10px!important}
+html body #view .kpis .kpi{background:rgba(0,0,0,.22)!important;border:0!important;border-top:0!important;box-shadow:none!important;color:#fff!important;border-radius:14px!important}
+html body #view .kpis .kpi::before{display:none!important}
+html body #view .kpis .kpi small{color:rgba(255,255,255,.82)!important;font-weight:700!important}
+html body #view .kpis .kpi b{color:#fff!important;font-size:16px!important;font-weight:800!important}
+html body #view .prog{height:6px!important;background:rgba(148,163,184,.15)!important;border-radius:99px!important;overflow:hidden;margin:4px 2px 10px!important}
+html body #view .prog i{background:linear-gradient(90deg,#14b8a6,#6366f1)!important;border-radius:99px!important}
+html body #view .tiles{gap:6px!important;margin-bottom:10px!important}
+html body #view .tiles .tile{min-height:0!important;padding:8px 4px!important}
+html body #view .tiles .tile span{font-size:18px!important}
+html body #view .tiles .tile b{font-size:12.5px!important}
+html body #view .mbar .lock.op{display:none!important}
+html body #view details.grp{padding:0!important;border-inline-start:1px solid rgba(148,163,184,.2)!important;border-inline-end:1px solid rgba(148,163,184,.2)!important}
+html body #view details.grp>summary{border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;outline:0!important}
+html body #view details.grp>summary::after{border:0!important}
+html body #view details.grp>summary .badge{background:rgba(94,234,212,.15)!important;color:#5eead4!important;border:0!important}
+html body #view .rgrid .rbtn span{width:46px!important;height:46px!important;border-radius:15px!important;display:grid!important;place-items:center!important;margin:0 auto 6px!important;font-size:22px!important;background:linear-gradient(135deg,rgba(13,148,136,.32),rgba(67,56,202,.24))!important;box-shadow:inset 0 0 0 1px rgba(94,234,212,.25)!important}
+html body #view .rgrid .rbtn{padding:12px 4px!important;font-weight:700!important}
+`;document.head.appendChild(s)})();
+
+/* 📅 ← 🗓️ و Today/Yesterday بالعربي */
+var ZTXR=[[/📅/g,'🗓️'],[/\bToday\b/g,'النهارده'],[/\bYesterday\b/g,'امبارح']];
+function zTxt(root){try{if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){const v=n.nodeValue;if(!v||!(v.indexOf('📅')>-1||v.indexOf('Today')>-1||v.indexOf('Yesterday')>-1))continue;
+    let x=v;ZTXR.forEach(([r,t])=>{x=x.replace(r,t)});if(x!==v)n.nodeValue=x}}catch(e){}}
+try{const _rnT=render;render=function(){const r=_rnT.apply(this,arguments);zTxt(document.getElementById('view'));return r}}catch(e){}
+try{const _shT=sheet;sheet=function(){const r=_shT.apply(this,arguments);setTimeout(()=>zTxt(document.getElementById('sheet')),0);return r}}catch(e){}
+document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('.xsel,.xpo,[data-d],[data-t]'))setTimeout(()=>{zTxt(document.getElementById('sheet'));document.querySelectorAll('.xpk').forEach(zTxt)},30)},true);
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.280',e)}
+/* ===== آخر 2.21.280 ===== */
 
 /* نهاية fix.js */
 
