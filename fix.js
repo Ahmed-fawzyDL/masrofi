@@ -16737,6 +16737,29 @@ try{const _rnQ=render;render=function(){const r=_rnQ.apply(this,arguments);if(vi
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.289',e)}
 /* ===== آخر 2.21.289 ===== */
+/* ========== 2.21.290 · سطر القسط: التاريخ واليوم والمبلغ على خط واحد ========== */
+try{
+XVER2='2.21.290';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zi2-css'))return;const s=document.createElement('style');s.id='zi2-css';s.textContent=`
+#view .xq2r{align-items:center!important}
+#view .xq2d{display:flex!important;align-items:center;min-width:0}
+#view .xq2d b.zdl{display:flex!important;align-items:baseline;gap:8px;flex-wrap:wrap;direction:rtl;text-align:right;font-size:14.5px!important}
+#view .xq2d .zwd{font-size:12.5px;font-weight:600;opacity:.6}
+#view .xq2d small.zhid{display:none!important}
+#view .xq2a{background:rgba(255,255,255,.05)!important;border:1px solid rgba(148,163,184,.25)!important;border-radius:12px!important;padding:6px 12px!important;font-size:15px!important;line-height:1.3;min-width:0!important;backdrop-filter:blur(6px)}
+#view .xq2r.ok .xq2a{border-color:rgba(52,211,153,.35)!important;background:rgba(52,211,153,.08)!important}
+#view .xq2r.late .xq2a{border-color:rgba(248,113,113,.35)!important}
+#view .xq2r.nx .xq2a{border-color:rgba(94,234,212,.5)!important;background:rgba(94,234,212,.08)!important}
+`;document.head.appendChild(s)})();
+window.zqLine=function(){try{const WD=/(السبت|الأحد|الاتنين|الإثنين|الاثنين|الثلاثاء|التلات|الأربعاء|الأربع|الخميس|الجمعة)/;
+  document.querySelectorAll('#view .xq2r:not([data-w])').forEach(r=>{r.dataset.w=1;const b=r.querySelector('.xq2d b'),sm=r.querySelector('.xq2d small');if(!b||!sm)return;
+    const P=sm.textContent.split(' · ').map(x=>x.trim()),i=P.findIndex(x=>WD.test(x)),wd=i>=0?P.slice(0,i+1).join(' · '):'';
+    b.innerHTML=`<span dir="ltr">${esc(b.textContent.trim())}</span>${wd?`<span class="zwd">${esc(wd)}</span>`:''}`;b.classList.add('zdl');
+    if(i>=0)sm.classList.add('zhid')})}catch(e){}};
+try{const _rnL2=render;render=function(){const r=_rnL2.apply(this,arguments);if(view==='plan')zqLine();return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.290',e)}
+/* ===== آخر 2.21.290 ===== */
 
 /* نهاية fix.js */
 
