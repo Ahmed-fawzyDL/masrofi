@@ -16826,6 +16826,22 @@ try{const _rnW=render;render=function(){const r=_rnW.apply(this,arguments);try{i
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.291',e)}
 /* ===== آخر 2.21.291 ===== */
+/* ========== 2.21.292 · الكارت فوق فيه السلف + الأرقام تحت بعض ========== */
+try{
+XVER2='2.21.292';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zw2-css'))return;const s=document.createElement('style');s.id='zw2-css';s.textContent=`
+#zx .zx-a{display:flex!important;align-items:center;justify-content:flex-end;min-width:118px;font-variant-numeric:tabular-nums}
+#zx .zdot{margin-left:8px!important;flex:0 0 7px}
+#zx .zx-sh b{font-variant-numeric:tabular-nums}
+`;document.head.appendChild(s)})();
+window.zwKpi=function(){try{if(view!=='col'||zwT(()=>XI.g,'all')!=='all')return;
+  const sum=r2(zwLoans(ym(cur.y,cur.m),()=>true).reduce((a,x)=>a+(+x.a||0),0));if(!(sum>0))return;
+  document.querySelectorAll('#view .kpis .kpi').forEach(k=>{if(k.dataset.zl)return;const lb=(k.querySelector('small')||{}).textContent||'',b=k.querySelector('b');if(!b)return;
+    if(/غير محصّل|المتوقع/.test(lb)){k.dataset.zl=1;const v=r2((parseNum(b.textContent)||0)+sum);b.textContent=fmt(v)}})}catch(e){}};
+try{const _rnK2=render;render=function(){const r=_rnK2.apply(this,arguments);zwKpi();return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.292',e)}
+/* ===== آخر 2.21.292 ===== */
 
 /* نهاية fix.js */
 
