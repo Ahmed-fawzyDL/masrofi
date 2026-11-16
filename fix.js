@@ -16354,6 +16354,24 @@ document.addEventListener('toggle',e=>{if(e.target&&e.target.closest&&e.target.c
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.282',e)}
 /* ===== آخر 2.21.282 ===== */
+/* ========== 2.21.283 · قوايم أهدى + الزراير فوق على اليمين ========== */
+try{
+XVER2='2.21.283';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zfl2-css'))return;const s=document.createElement('style');s.id='zfl2-css';s.textContent=`
+html body #view details.grp details,html body #view details.grp details>summary{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;backdrop-filter:none!important}
+html body #view details.grp>details,html body #view details.grp .list>details,html body #view details.grp details.xgr{border-bottom:1px solid rgba(148,163,184,.12)!important}
+html body #view details.grp details>summary{padding:10px 12px!important}
+html body.dark #view .zt{color:#d5dde8!important;font-weight:700!important;font-size:14px!important}
+html body.dark #view .zmeta{color:#8b9bb0!important;opacity:1!important}
+html body #view .zmeta{display:-webkit-box!important;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;font-size:11.5px!important}
+html body.dark #view details.grp :is(.amt,.xa){color:#d5dde8!important;font-weight:700!important}
+html body #view details.grp :is(.ic,.iav){background:rgba(148,163,184,.12)!important;box-shadow:none!important}
+header .appbox{margin-right:auto!important}
+#zhome{margin:0 6px!important}
+`;document.head.appendChild(s)})();
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.283',e)}
+/* ===== آخر 2.21.283 ===== */
 
 /* نهاية fix.js */
 
