@@ -16565,6 +16565,120 @@ try{const _goZX=go;go=function(v){if(v!==view){ZXE=''}return _goZX.apply(this,ar
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.286',e)}
 /* ===== آخر 2.21.286 ===== */
+/* ========== 2.21.287 · تصليح شكل القايمة الجديدة + من غير تكرار ========== */
+try{
+XVER2='2.21.287';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zxs-css'))return;const G='linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)';const s=document.createElement('style');s.id='zxs-css';s.textContent=`
+#zx{margin-top:6px}
+.zx-s{background:var(--card);border:1px solid rgba(148,163,184,.16);border-radius:18px;margin:0 0 10px;overflow:hidden}
+.zx-sh{display:flex;align-items:center;gap:8px;padding:13px 14px;cursor:pointer;font-weight:800;font-size:14.5px}
+.zx-sh>span:first-child{flex:1}
+.zx-c{font-size:11px;font-weight:800;background:rgba(94,234,212,.14);color:#2dd4bf;border-radius:999px;padding:1px 9px}
+.zx-sh b{direction:ltr;font-size:15px;font-weight:800}
+.zx-sh i{font-style:normal;opacity:.5;font-size:12px}
+.zx-s.on .zx-sh{background:linear-gradient(90deg,rgba(13,148,136,.18),rgba(67,56,202,.10));border-bottom:1px solid rgba(148,163,184,.12)}
+.zx-s.on .zx-sh i{transform:rotate(180deg)}
+.zx-l{padding:6px}
+.zx-i{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:14px;cursor:pointer}
+.zx-i:active,.zx-i.on{background:rgba(94,234,212,.07)}
+.zx-ic{width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(148,163,184,.10)}
+.zx-t{flex:1;min-width:0}
+.zx-t b{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zx-t small{display:block;font-size:11.5px;opacity:.6;margin-top:2px;font-weight:600}
+.zx-a{direction:ltr;font-weight:800;font-size:15px;white-space:nowrap}
+.zx-a.in{color:#4ade80}
+.st-wait .zx-t small{color:#f59e0b;opacity:1}
+.st-late .zx-t small{color:#f87171;opacity:1}
+.st-skip{opacity:.45}
+body.dark .zx-t b,body.dark .zx-a:not(.in){color:#d5dde8}
+.zx-d{position:relative;margin:2px 4px 10px;padding:14px 12px 12px;border-radius:16px;background:rgba(148,163,184,.07);border:1px solid rgba(94,234,212,.22)}
+.zx-x{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(148,163,184,.2);color:inherit;font-size:13px;cursor:pointer}
+.zx-dt{padding-right:38px;font-weight:800;font-size:15px;margin-bottom:6px;min-height:30px;display:flex;align-items:center}
+.zx-r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(148,163,184,.15);font-size:13px}
+.zx-r span{opacity:.65;white-space:nowrap}.zx-r b{font-weight:700;text-align:left}
+.zx-b{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.zx-b button{flex:1;min-width:30%;padding:10px 6px;border-radius:12px;border:1px solid rgba(94,234,212,.3);background:rgba(13,148,136,.1);color:inherit;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.zx-b button.p{background:${G};color:#fff;border:0}
+.zx-sub{display:flex;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px dashed rgba(148,163,184,.15);cursor:pointer;font-size:13px}
+.zx-sub>div{flex:1;min-width:0}.zx-sub small{display:block;opacity:.6;font-size:11px}
+.zx-sub>b{direction:ltr}
+.zx-add{display:block;width:calc(100% - 8px);margin:6px 4px 4px;padding:9px;border-radius:12px;border:1px dashed rgba(94,234,212,.4);background:transparent;color:#2dd4bf;font:inherit;font-weight:700;font-size:12.5px;cursor:pointer}
+`;document.head.appendChild(s)})();
+
+function zyT(f,d){try{const v=f();return v==null?d:v}catch(e){return d}}
+function zyNm(t){return zyT(()=>xTxNm(t),'')||(C(t.cat)||{}).name||'—'}
+function zyKid(t){return !!(t.splOf||t.feeOf||t.tipOf||t.ztipOf)}
+function zyTT(L){const P={};S.txs.forEach(t=>{if(t)P[t.id]=t});const TT={};
+  L.forEach(x=>{let r=x,g=0;while(g<5){const p=r.splOf||r.feeOf||r.tipOf||r.ztipOf;if(!p||!P[p])break;r=P[p];g++}TT[r.id]=r2((TT[r.id]||0)+(+x.amount||0))});return TT}
+function zyFilt(){const f=zyT(()=>XFLT[view],null),q=zyT(()=>(GQ&&GQ[view])||'','').trim(),nq=q?zyT(()=>xQParse(q),null):null,qq=q?zyT(()=>xqn(q),q):'';
+  return (d,n,a,ex)=>{if(f&&(f.f||f.t)){if(f.f&&d<f.f)return false;if(f.t&&d>f.t)return false}
+    if(!q)return true;if(nq&&zyT(()=>xQOk(+a||0,nq),false))return true;
+    return zyT(()=>xqn([n,num(a),a,dmy(d),ex||''].join(' ')),'').includes(qq)}}
+function zySort(a,desc){return zyT(()=>sortList(a,desc),null)||a.sort((x,y)=>String(y.d).localeCompare(String(x.d)))}
+function zyUniq(a){const s=new Set();return a.filter(x=>{const k=x.t?'t:'+x.t.id:x.fx?'f:'+x.fx.r.id+'|'+x.fx.k:x.ins?'i:'+x.ins.it.id:null;if(!k)return true;if(s.has(k))return false;s.add(k);return true})}
+function zyGroup(txs,TT,ic,ok){const M2=new Map();
+  txs.forEach(t=>{const a=TT[t.id]||+t.amount||0;if(!ok(t.date,zyNm(t),a,t.note))return;const c=zyT(()=>xTopC(t.cat),null)||C(t.cat),k=c?c.id:'_'+t.id;
+    if(!M2.has(k))M2.set(k,{c,L:[]});M2.get(k).L.push({t,a})});
+  return [...M2.values()].map(g=>g.L.length===1?{n:zyNm(g.L[0].t),ic,d:g.L[0].t.date,a:g.L[0].a,st:'paid',t:g.L[0].t}
+    :{n:g.c?g.c.name:'—',ic,d:g.L.reduce((m,x)=>x.t.date>m?x.t.date:m,''),a:r2(g.L.reduce((s,x)=>s+x.a,0)),st:'paid',g:g.L})}
+function zyBuild(){const k=ym(cur.y,cur.m),td=today(),ok=zyFilt(),inc=view==='col';
+  const L=keyTx(k).filter(t=>t&&t.type===(inc?'inc':'exp')),TT=zyTT(L);
+  const fx=(o,tag)=>{const done=o.s&&o.s.st==='done'&&o.s.t,sk=o.s&&(o.s.st==='skip'||o.s.st==='old');
+    return done?{n:o.r.name,ic:'📌',d:o.s.t.date,a:TT[o.s.t.id]||+o.s.t.amount||0,st:'paid',t:o.s.t,fx:o,tag}
+      :{n:o.r.name,ic:'📌',d:o.date,a:sk?0:+o.amt||0,st:sk?'skip':(o.date<td?'late':'wait'),fx:o,tag}};
+  const kep=x=>ok(x.d,x.n,x.a,x.t&&x.t.note);
+  if(!inc){const g=zyT(()=>XE.g,'all'),dl=zyT(()=>dueList(k,'','exp'),[]),linked=new Set(dl.filter(o=>o.s&&o.s.st==='done'&&o.s.t).map(o=>o.s.t.id));
+    const rest=L.filter(t=>!t.pend&&!zyKid(t)&&!linked.has(t.id)&&!(t.src&&t.src.k==='i')),isB=t=>t.bill||(C(t.cat)||{}).xbill;
+    const S5=[
+      {k:'fix',ic:'📌',t:'ثابت',items:zySort(zyUniq(dl.map(o=>fx(o))).filter(kep)),add:{l:'➕ مصروف ثابت',js:"catForm(null,'exp',{fixed:true})"}},
+      {k:'inst',ic:'🏦',t:'أقساط',items:zySort(zyUniq(zyT(()=>xInstDue(k),[]).map(x=>({n:x.p.name,ic:'🏦',d:x.it.due,a:+x.it.amount||0,st:x.it.due<td?'late':'wait',ins:x}))
+        .concat(L.filter(t=>!zyKid(t)&&t.src&&t.src.k==='i').map(t=>({n:(zyT(()=>plan(t.src.id),null)||{}).name||zyNm(t),ic:'🏦',d:t.date,a:TT[t.id]||+t.amount||0,st:'paid',t})))).filter(kep)),add:{l:'➕ أقساط جديدة',js:'planNew()'}},
+      {k:'pend',ic:'⏳',t:'غير مدفوع',items:zySort(zyT(()=>pendTx('exp',k),[]).filter(t=>!zyKid(t)).map(t=>({n:zyNm(t),ic:'⏳',d:t.date,a:+t.amount||0,st:t.date<td?'late':'wait',t})).filter(kep))},
+      {k:'bill',ic:'🧾',t:'فواتير',items:zySort(rest.filter(isB).map(t=>({n:zyNm(t),ic:'🧾',d:t.date,a:TT[t.id]||+t.amount||0,st:'paid',t})).filter(kep),true)},
+      {k:'var',ic:'🛒',t:'متغير',items:zySort(zyGroup(rest.filter(t=>!isB(t)),TT,'🛒',ok),true),add:{l:'➕ مصروف',js:"newTx('exp')"}}];
+    const W={all:null,fix:['fix'],inst:['inst'],var:['pend','var']}[g];const w=W===undefined?(/bil|fat|فوات/i.test(g)?['bill']:null):W;
+    return {all:g==='all',S:S5.filter(s=>!w||w.includes(s.k))}}
+  const g=zyT(()=>XI.g,'all'),dm=zyT(()=>dueList(k,'m','inc'),[]),da=zyT(()=>dueList(k,'a','inc'),[]);
+  const linked=new Set(dm.concat(da).filter(o=>o.s&&o.s.st==='done'&&o.s.t).map(o=>o.s.t.id));
+  const tg=t=>{const c=C(t.cat);return c&&c.fixed?(zyT(()=>isA(c),+c.every>=12)?'ann':'fix'):'var'};
+  const F=zyUniq(dm.map(o=>fx(o,'fix')).concat(da.map(o=>fx(o,'ann')))).filter(x=>(g==='all'||x.tag===g)&&kep(x));
+  const pend=zyT(()=>pendTx('inc',k),[]).filter(t=>!zyKid(t)&&(g==='all'||tg(t)===g)).map(t=>({n:zyNm(t),ic:'⏳',d:t.date,a:+t.amount||0,st:t.date<td?'late':'wait',t})).filter(kep);
+  const oth=L.filter(t=>!t.pend&&!zyKid(t)&&!linked.has(t.id)&&(g==='all'||tg(t)===g));
+  return {all:g==='all',S:[
+    {k:'wait',ic:'⏳',t:'غير محصّل',items:zySort(zyUniq(F.filter(x=>x.st==='wait'||x.st==='late').concat(pend))),add:{l:'➕ تحصيل ثابت',js:"catForm(null,'inc',{fixed:true})"}},
+    {k:'done',ic:'✅',t:'محصّل',items:zySort(zyUniq(F.filter(x=>x.st==='paid'||x.st==='skip')).concat(zyGroup(oth,TT,'💰',ok)),true),add:{l:'➕ تحصيل',js:"newTx('inc')"}}]}}
+function zyTxRows(t){const m=M(t.method),K=S.txs.filter(x=>x&&x.splOf===t.id),ids=new Set([t.id].concat(K.map(k=>k.id)));
+  const fe=r2(S.txs.filter(x=>x&&x.feeOf&&ids.has(x.feeOf)).reduce((a,x)=>a+(+x.amount||0),0)),tp=S.txs.find(x=>x&&(x.tipOf===t.id||x.ztipOf===t.id));
+  const R=[['📅 التاريخ',esc(zyT(()=>xDW(t.date),dmy(t.date)))],['🏦 الحساب',esc(m?m.name:'—')+(t.via?' · '+esc(zyT(()=>viaTxt(t.via),t.via)):'')]];
+  if(K.length){R.push(['💵 '+esc(m?m.name:''),num(t.amount)]);K.forEach(k=>R.push(['🔀 '+esc((M(k.method)||{}).name||''),num(k.amount)]))}
+  if(fe)R.push(['💸 مصاريف',num(fe)]);
+  if(tp)R.push(['🎁 إكرامية',num(tp.amount)+(tp.ztipOf||(M(tp.method)||{}).type==='cash'?' · كاش':'')]);
+  const n=(t.note||'').trim();if(n&&n!==zyNm(t))R.push(['📝 ملاحظة',esc(n)]);
+  if((t.files||[]).length)R.push(['📎 مرفقات',t.files.length]);
+  return R}
+function zyDet(x){const inc=view==='col',X='<button type="button" class="zx-x" onclick="event.stopPropagation();zxTap(\'\')">✕</button>';let R=[],B=[];
+  if(x.g)return `<div class="zx-d">${X}<div class="zx-dt">${esc(x.n)}</div>${x.g.slice().sort((a,b)=>b.t.date.localeCompare(a.t.date)).map(s=>`<div class="zx-sub" onclick="editTx('${s.t.id}')"><div><b>${esc(zyNm(s.t))}</b><small>${dmy(s.t.date)} · ${esc((M(s.t.method)||{}).name||'')}</small></div><b>${num(s.a)}</b><span>‹</span></div>`).join('')}</div>`;
+  if(x.t){R=zyTxRows(x.t);B.push(`<button type="button" class="p" onclick="editTx('${x.t.id}')">✏️ تعديل</button>`);
+    if(x.t.pend)B.push(`<button type="button" onclick="postpone('${x.t.id}')">⏭ أجّل للشهر الجاي</button>`)}
+  else if(x.fx){const r=x.fx.r,am=M(r.acct);R=[['📅 الميعاد',esc(zyT(()=>xDW(x.d),dmy(x.d)))],['💵 القيمة',num(x.fx.amt)]];if(am)R.push(['🏦 الحساب',esc(am.name)]);
+    if(x.st!=='skip')B.push(`<button type="button" class="p" onclick="occSheet('${r.id}',${x.fx.k})">✅ ${inc?'اتحصّل':'اتدفع'}</button>`)}
+  else if(x.ins){R=[['📅 الميعاد',esc(zyT(()=>xDW(x.d),dmy(x.d)))],['💵 القسط',num(x.a)]];
+    B.push(`<button type="button" class="p" onclick="payStart('${x.ins.p.id}','${x.ins.it.id}')">💵 ادفع القسط</button>`,`<button type="button" onclick="instPlan='${x.ins.p.id}';go('plan')">📄 الأقساط</button>`)}
+  if(x.fx)B.push(`<button type="button" onclick="catForm('${x.fx.r.id}')">⚙️ البند</button>`);
+  return `<div class="zx-d">${X}<div class="zx-dt">${esc(x.n)}</div>${R.map(([a,b])=>`<div class="zx-r"><span>${a}</span><b>${b}</b></div>`).join('')}${B.length?`<div class="zx-b">${B.join('')}</div>`:''}</div>`}
+function zyRow(x,id){const on=ZXE===id,inc=view==='col';
+  const dt=x.st==='wait'?'⏳ ميعاده '+dmy(x.d):x.st==='late'?'⚠️ متأخر · '+dmy(x.d):x.st==='skip'?'اتلغى الشهر ده':dmy(x.d)+(x.g?' · '+x.g.length+' عمليات':'');
+  return `<div class="zx-i st-${x.st} ${on?'on':''}" onclick="zxTap('${id}')"><span class="zx-ic">${x.ic}</span><div class="zx-t"><b>${esc(x.n)}</b><small>${dt}</small></div><div class="zx-a ${inc?'in':''}">${num(x.a)}</div></div>${on?zyDet(x):''}`}
+function zyDraw(){const box=document.getElementById('zx');if(!box)return;const B=zyBuild();
+  const vis=B.S.filter(s=>s.items.length||!B.all),one=vis.filter(s=>s.items.length).length===1||!B.all;
+  box.innerHTML=vis.map((s,si)=>{const key=view+':'+s.k,open=ZXO[key]!=null?ZXO[key]:one,sum=r2(s.items.reduce((a,x)=>a+(x.st==='skip'?0:+x.a||0),0));
+    return `<div class="zx-s ${open?'on':''}"><div class="zx-sh" onclick="zxSec('${key}',${open?0:1})"><span>${s.ic} ${s.t}</span><span class="zx-c">${s.items.length}</span><b>${num(sum)}</b><i>▾</i></div>${open?`<div class="zx-l">${s.items.map((x,i)=>zyRow(x,'z'+si+'_'+i)).join('')||'<p class="empty" style="margin:8px">مفيش</p>'}${s.add?`<button type="button" class="zx-add" onclick="${s.add.js}">${s.add.l}</button>`:''}</div>`:''}</div>`}).join('')||'<p class="empty">مفيش عمليات</p>'}
+window.zxTap=function(id){ZXE=ZXE===id?'':id;zyDraw();if(ZXE)setTimeout(()=>{const e=document.querySelector('#zx .zx-i.on');if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})},30)};
+window.zxSec=function(key,v){ZXO[key]=!!v;ZXE='';zyDraw()};
+try{const _rnZY=render;render=function(){const r=_rnZY.apply(this,arguments);try{if((view==='col'||view==='exps')&&document.getElementById('zx'))zyDraw()}catch(e){console.error('zyDraw',e)}return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.287',e)}
+/* ===== آخر 2.21.287 ===== */
 
 /* نهاية fix.js */
 
