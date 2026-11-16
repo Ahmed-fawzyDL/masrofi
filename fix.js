@@ -15293,4 +15293,87 @@ try{const _lbP=xLedBuild;xLedBuild=function(L,syn,f,t){try{if(rtab==='xled'&&RF.
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.259',e)}
 /* ===== آخر 2.21.259 ===== */
+/* ========== 2.21.260 · تصليح السلفة + إكرامية كاش + التقريب + البحث بالإجمالي ========== */
+try{
+XVER2='2.21.260';XVBUILD2='16/11/2026 - 11:00 ص';
+
+/* ---------- 🤝 السلفة: رجوع الدالتين لشغلهم الأصلي ---------- */
+xLnNext=function(l){return xLnAlloc(l).find(s=>s.rem>0.009)};
+function xLnNextD(l){const n=xLnNext(l),td=today();return n&&n.d>=td?n.d:addMonths(td,1)}
+function xLnReschTo(l,due,left){
+  const P=xLnPaid(l),N=[];let cum=0;
+  (l.sch||[]).slice().sort((a,b)=>String(a.d).localeCompare(String(b.d))).forEach(it=>{
+    if(cum>=P-.009)return;const take=Math.min(+it.a||0,r2(P-cum));
+    if(take>.009){N.push({...it,a:r2(take)});cum=r2(cum+take)}});
+  N.push({id:uid(),d:due,a:r2(left)});l.sch=N}
+xLnResch=function(a,b,c){
+  if(a&&typeof a==='object')return xLnReschTo(a,b,c);
+  const id=a,l=xLnL(id);if(!l)return;const rem=xLnRem(l);if(!(rem>.009))return toast('السلفة دي خلصت');
+  const U=xLnAlloc(l).filter(s=>s.rem>.009),R=U.length?U:[{d:addMonths(today(),1),rem}];
+  sheet(`<h2>🗓 إعادة جدولة · ${esc(l.who)}</h2>
+  <div class="kv"><span>الباقي</span><b class="neg">${fmt(rem)}</b></div>
+  <div class="two"><label>عدد الأقساط<input id="rs-c" inputmode="numeric" value="${R.length}" oninput="xLnRG('${id}')"></label><label>أول قسط<input id="rs-f" type="date" value="${R[0].d}" onchange="xLnRG('${id}')"></label></div>
+  <div id="rs-s">${R.map((s,i)=>`<div class="xlps"><label>قسط ${i+1}<input type="date" data-sd="${i}" value="${s.d}"></label><label>المبلغ<input data-sa="${i}" inputmode="decimal" dir="ltr" value="${amtStr(s.rem)}"></label></div>`).join('')}</div>
+  <button class="btn" onclick="xLnRSv('${id}')">✅ احفظ الجدول</button><button class="btn ghost" onclick="xLnOpen('${id}')">رجوع</button>`)};
+try{const _exF=xLnEx;xLnEx=function(id){const r=_exF.apply(this,arguments);try{
+  const l=xLnL(id),i=$('#lx-due');if(l&&i){i.value=xLnNextD(l);const b=i.nextElementSibling;if(b&&b.classList.contains('xsel'))b.innerHTML=xLbl(i)}
+}catch(e){}return r}}catch(e){}
+
+/* ---------- 💸 التقريب ---------- */
+try{const _fcR=xFeeCalc;xFeeCalc=function(a){const v=_fcR.apply(this,arguments),c=xFeeCfg(),s=+c.step||0;
+  if(!(v>0)||!(s>0.01))return v;return r2(Math.min(+c.max||1e9,Math.ceil(v/s-1e-9)*s))}}catch(e){}
+window.xIpStep=async function(){const c=Object.assign({},xFeeCfg());
+  const v=await askIn('🔢 تقريب البنك','البنك بيقرّب المصاريف لأقرب كام؟\n0.01 · 0.05 · 0.1 · 0.5 · 1',String(c.step||0.01),true,'حفظ');if(v==null)return;
+  const s=parseNum(v);if(!(s>0))return toast('اكتب رقم');c.step=s;S.settings.ipfee=c;save();
+  try{grab()}catch(e){}if(F){F.ipMan=0;F.ipOn=null}SHKEEP=1;txForm();toast('✅ اتحفظ')};
+
+/* ---------- 🎁 إكرامية كاش + المصاريف على المبلغ الصح ---------- */
+function xTipIn(){return $('#f-tip')||$('#f-tipx')}
+function xTipFee(){if(!F||F.ipMan)return;const i=$('#xip-a');if(!i)return;
+  const b=parseNum(($('#f-amt')||{}).value)||0,tp=parseNum((xTipIn()||{}).value)||0;
+  const v=amtStr(xFeeCalc(F.tipCash?b:r2(b+tp)));i.value=v;F.ipAmt=v}
+function xTipCash(){const tp=xTipIn(),ca=xCashAcct();if(!tp||!ca||$('#f-tipc'))return;
+  if(F.tipCash==null){const o=F.id&&S.txs.find(t=>t&&t.id===F.id);F.tipCash=!!(o&&o.tipCash)}
+  if(M(($('#f-m')||{}).value||F.method)&&(M(($('#f-m')||{}).value||F.method)||{}).type==='cash')return;
+  const l=tp.closest('label');if(!l)return;
+  l.insertAdjacentHTML('afterend',`<label class="chk" style="display:flex;align-items:center;gap:8px;margin:4px 0 8px"><input type="checkbox" id="f-tipc" ${F.tipCash?'checked':''} onchange="F.tipCash=this.checked;xTipFee()" style="width:20px;height:20px"> 💵 الإكرامية اتدفعت كاش (من ${esc(M(ca).name)})</label>`)}
+document.addEventListener('input',e=>{const i=e.target&&e.target.id;if(i==='f-tip'||i==='f-tipx'||i==='f-amt')setTimeout(xTipFee,0)},true);
+try{const _tfT=txForm;txForm=function(){const r=_tfT.apply(this,arguments);try{
+  xTipCash();xTipFee();
+  const c=$('#xipc');if(c&&!$('#xipstep'))c.insertAdjacentHTML('beforeend',`<button type="button" class="mini" id="xipstep" style="margin-top:6px" onclick="xIpStep()">🔢 التقريب: ${num(+xFeeCfg().step||0.01)}</button>`);
+}catch(e){}return r}}catch(e){}
+try{const _stT=saveTx;saveTx=async function(){
+  let tc=null,fid=null,kind=null;const before=new Set(S.txs.map(t=>t&&t.id));
+  try{grab();if(F&&xTipIn()){tc=!!F.tipCash;fid=F.id;kind=F.type;xTipFee()}}catch(e){}
+  const r=await _stT.apply(this,arguments);
+  try{if(tc!==null&&!$('#sheet').classList.contains('open')){
+    const t=fid?S.txs.find(x=>x&&x.id===fid):S.txs.find(x=>x&&!before.has(x.id)&&x.type===kind&&!x.feeOf&&!x.tipOf&&!x.splOf&&!x.payFeeOf);
+    if(t){if(tc)t.tipCash=1;else delete t.tipCash;save();render()}}}catch(e){}
+  return r}}catch(e){}
+
+/* ---------- 🧹 المصاريف والإكرامية مع العملية ---------- */
+xKidSync=function(){let ch=false;const P={};S.txs.forEach(t=>{if(t&&t.id)P[t.id]=t});const seen={},ca=xCashAcct();
+  S.txs=S.txs.filter(t=>{if(!t)return false;if(!t.feeOf||isClosed(t.date))return true;const p=P[t.feeOf];
+    if(p&&(p.tipOf||p.splOf)){ch=true;return false}
+    if(p&&p.type==='exp'&&(p.via!=='instapay'||(M(p.method)||{}).type==='cash')){ch=true;return false}
+    if(seen[t.feeOf]){ch=true;return false}seen[t.feeOf]=1;return true});
+  S.txs.forEach(t=>{const pid=t.feeOf||t.tipOf||t.payFeeOf||t.splOf;if(!pid)return;const p=P[pid];
+    if(!p||p.pend||isClosed(t.date)||isClosed(p.date))return;
+    if(t.date!==p.date){t.date=p.date;ch=true}
+    const wm=t.tipOf&&p.tipCash&&ca?ca:p.method;
+    if((t.feeOf||t.tipOf)&&t.method!==wm){t.method=wm;if(t.tipOf)t.via=wm===ca?'cash':(p.via||'');ch=true}
+    ['rdate','acm'].forEach(k=>{if((p[k]||'')!==(t[k]||'')){if(p[k])t[k]=p[k];else delete t[k];ch=true}})});
+  return ch};
+
+/* ---------- 🔎 البحث بالإجمالي ---------- */
+function xTxTot(t){let s=+t.amount||0;S.txs.forEach(x=>{if(x&&(x.tipOf===t.id||x.splOf===t.id))s+=+x.amount||0});return r2(s)}
+try{const _xaT=xAmts;xAmts=function(el){const a=_xaT.apply(this,arguments);try{
+  const root=el&&el.tagName==='SUMMARY'?el.parentElement:el,h=(root&&root.innerHTML)||'';
+  (h.match(/(?:editTx|xTxOpen|xTxPeek)\('([^']+)'\)/g)||[]).forEach(m=>{const t=S.txs.find(x=>x&&x.id===m.match(/'([^']+)'/)[1]);if(!t)return;
+    const tt=xTxTot(t);a.push(tt);const f=xFeeTx(t.id);if(f)a.push(r2(tt+f.amount))})}catch(e){}return a}}catch(e){}
+
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.260',e)}
+/* ===== آخر 2.21.260 ===== */
+
 /* نهاية fix.js */
