@@ -16679,6 +16679,33 @@ try{const _rnZY=render;render=function(){const r=_rnZY.apply(this,arguments);try
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.287',e)}
 /* ===== آخر 2.21.287 ===== */
+/* ========== 2.21.288 · القايمة: الأسامي يمين + أيقونة ملونة لكل اسم ========== */
+try{
+XVER2='2.21.288';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zz-css'))return;const s=document.createElement('style');s.id='zz-css';s.textContent=`
+#zx .zx-t{text-align:right!important;direction:rtl}
+#zx .zx-t b,#zx .zx-t small{text-align:right!important;unicode-bidi:plaintext}
+#zx .zx-l{padding:2px 6px}
+#zx .zx-i{padding:12px 6px;border-radius:0;border-bottom:1px solid rgba(148,163,184,.09)}
+#zx .zx-i.on{border-radius:14px;border-bottom-color:transparent}
+#zx .zx-ic{position:relative;width:42px;height:42px;flex:0 0 42px;border-radius:14px;color:#fff;font-weight:800;font-size:17px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+#zx .zx-bd{position:absolute;bottom:-4px;left:-4px;width:19px;height:19px;border-radius:50%;background:var(--card);font-style:normal;font-size:10.5px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--card)}
+#zx .zx-a{font-size:15.5px}
+#zx .zx-a.in{color:#34d399}
+#zx .zx-add{margin-top:8px}
+`;document.head.appendChild(s)})();
+window.zzPaint=function(){try{const P=[['#14b8a6','#0e7490'],['#6366f1','#4338ca'],['#f59e0b','#c2410c'],['#ec4899','#be185d'],['#22c55e','#15803d'],['#0ea5e9','#0369a1'],['#a855f7','#7e22ce'],['#ef4444','#b91c1c']];
+  document.querySelectorAll('#zx .zx-i:not([data-p])').forEach(r=>{r.dataset.p=1;const ic=r.querySelector('.zx-ic'),b=r.querySelector('.zx-t b');if(!ic||!b)return;
+    const nm=b.textContent.trim(),em=ic.textContent.trim(),ch=[...nm.replace(/[^\p{L}\p{N}]/gu,'')][0]||'•';
+    let h=0;for(const c of nm)h=(h*31+c.charCodeAt(0))>>>0;const c=P[h%P.length];
+    ic.style.background=`linear-gradient(140deg,${c[0]},${c[1]})`;
+    ic.innerHTML=esc(ch.toUpperCase())+(em&&!/🛒|💰/.test(em)?`<i class="zx-bd">${em}</i>`:'')})}catch(e){}};
+try{const _t=window.zxTap;window.zxTap=function(){const r=_t.apply(this,arguments);zzPaint();return r}}catch(e){}
+try{const _s=window.zxSec;window.zxSec=function(){const r=_s.apply(this,arguments);zzPaint();return r}}catch(e){}
+try{const _rnZZ=render;render=function(){const r=_rnZZ.apply(this,arguments);zzPaint();return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.288',e)}
+/* ===== آخر 2.21.288 ===== */
 
 /* نهاية fix.js */
 
