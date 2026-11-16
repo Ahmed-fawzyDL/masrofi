@@ -16329,6 +16329,31 @@ html body #view details.grp .xlnn{gap:4px!important}
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.281',e)}
 /* ===== آخر 2.21.281 ===== */
+/* ========== 2.21.282 · سطور العمليات بشكل واحد ========== */
+try{
+XVER2='2.21.282';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zfl-css'))return;const s=document.createElement('style');s.id='zfl-css';s.textContent=`
+html body #view .zt{color:inherit!important;font-size:14.5px!important;font-weight:800!important;display:block}
+html body #view .zmeta{display:block!important;font-size:11.5px!important;font-weight:600!important;opacity:.65;line-height:1.6;margin-top:2px;white-space:normal}
+html body #view details.grp :is(summary,.row,.xl3)[data-zf]{align-items:center!important}
+`;document.head.appendChild(s)})();
+function zChips(el){const own=[...el.childNodes].some(n=>n.nodeType===3&&n.nodeValue.trim()),kids=[...el.children].filter(k=>k.textContent.trim());
+  if(own||kids.length<=1)return [el];return kids.flatMap(zChips)}
+function zFlat(){try{if(view!=='col'&&view!=='exps')return;const v=document.getElementById('view');if(!v)return;
+  v.querySelectorAll('details.grp :is(summary,.row,.xl3)').forEach(row=>{
+    if(row.dataset.zf||row.matches('details.grp>summary'))return;
+    const b=[...row.querySelectorAll('b')].find(x=>!x.closest('.amt,.xa,.badge,.gs,button')&&x.textContent.trim());if(!b){row.dataset.zf=1;return}
+    const box=b.parentElement;if(!box)return;
+    const meta=[...box.children].filter(c=>c!==b&&!c.matches('button,input,a,select,.amt,.xa')&&!c.querySelector('button,input,a,select'));
+    const T=[];meta.forEach(m=>zChips(m).forEach(e=>{const t=(e.textContent||'').replace(/\s+/g,' ').trim();if(t&&T[T.length-1]!==t)T.push(t)}));
+    meta.forEach(m=>m.remove());
+    if(T.length){const s=document.createElement('small');s.className='zmeta';s.textContent=T.join(' · ');b.after(s)}
+    b.classList.add('zt');row.dataset.zf=1})}catch(e){console.error('zFlat',e)}}
+try{const _rnFl=render;render=function(){const r=_rnFl.apply(this,arguments);zFlat();return r}}catch(e){}
+document.addEventListener('toggle',e=>{if(e.target&&e.target.closest&&e.target.closest('#view'))zFlat()},true);
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.282',e)}
+/* ===== آخر 2.21.282 ===== */
 
 /* نهاية fix.js */
 
