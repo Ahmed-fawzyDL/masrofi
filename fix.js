@@ -15512,5 +15512,10 @@ window.zlDel=async function(id){const l=xLnL(id);if(!l)return;
 if(view==='xln'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.261',e)}
 /* ===== آخر 2.21.261 ===== */
+/* 2.21.262 · أي زرار للسلف يفتح الشاشة الجديدة */
+try{XVER2='2.21.262'}catch(e){}
+try{const _goZL=go;go=function(v){return _goZL.call(this,v==='loans'?'xln':v)}}catch(e){}
+try{if(view==='loans'){view='xln';render()}}catch(e){}
+
 
 /* نهاية fix.js */
