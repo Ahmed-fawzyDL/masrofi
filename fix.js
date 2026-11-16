@@ -16405,6 +16405,43 @@ try{const _rnX=render;render=function(){const r=_rnX.apply(this,arguments);zhPos
 zhPos();try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.284',e)}
 /* ===== آخر 2.21.284 ===== */
+/* ========== 2.21.285 · ترتيب فوق + زرار قفل للعملية المفتوحة ========== */
+try{
+XVER2='2.21.285';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zy-css'))return;const s=document.createElement('style');s.id='zy-css';s.textContent=`
+header{display:flex!important;flex-direction:row!important;direction:ltr!important;align-items:center}
+header .appbox{margin-right:0!important}
+#zhr{margin-left:auto!important;direction:rtl}
+.zclose{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 16px);margin:6px 8px 4px;padding:8px;border-radius:12px;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.08);color:#f87171;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+`;document.head.appendChild(s)})();
+
+/* Today / Yesterday زي ما كانوا */
+try{ZTXR=[[/📅/g,'🗓️']]}catch(e){}
+function zDayBack(){document.querySelectorAll('#view button').forEach(b=>{const t=b.textContent.trim();
+  if(!/^\S*\s*(اليوم|النهارده|أمس|امبارح)$/.test(t))return;
+  const w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){
+    n.nodeValue=n.nodeValue.replace(/اليوم|النهارده/,'Today').replace(/أمس|امبارح/,'Yesterday')}})}
+
+/* شيل كلمة رتّب حسب */
+function zSortLbl(){document.querySelectorAll('#view .zsb').forEach(sb=>{
+  const w=document.createTreeWalker(sb,NodeFilter.SHOW_TEXT);let n;const L=[];
+  while((n=w.nextNode()))if(/رتّب حسب/.test(n.nodeValue)&&!(n.parentElement&&n.parentElement.closest('button')))L.push(n);
+  L.forEach(n=>{const p=n.parentElement;n.nodeValue='';if(p&&p!==sb&&!p.textContent.trim())p.style.display='none'})})}
+
+/* زرار قفل فوق العملية المفتوحة */
+window.zCloseAll=function(btn){const top=btn.closest('#view details.grp');
+  document.querySelectorAll('#view details.grp details[open]').forEach(d=>{d.open=false});
+  if(top){top.open=false;setTimeout(()=>top.scrollIntoView({block:'center',behavior:'smooth'}),30)}};
+function zAddClose(d){if(!d||!d.open||!d.closest('#view details.grp')||d.matches('#view details.grp:not(details details)'))return;
+  if(d.querySelector(':scope>.zclose'))return;const s=d.querySelector(':scope>summary');if(!s)return;
+  s.insertAdjacentHTML('afterend','<button type="button" class="zclose" onclick="event.stopPropagation();zCloseAll(this)">✕ قفل</button>')}
+document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.tagName==='DETAILS'&&d.open)zAddClose(d)},true);
+
+try{const _rnY=render;render=function(){const r=_rnY.apply(this,arguments);zDayBack();zSortLbl();
+  document.querySelectorAll('#view details.grp details[open]').forEach(zAddClose);return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.285',e)}
+/* ===== آخر 2.21.285 ===== */
 
 /* نهاية fix.js */
 
