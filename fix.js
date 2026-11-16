@@ -15657,4 +15657,3 @@ if(view==='home'){try{render()}catch(e){}}
 /* نهاية fix.js */
 
 
-Add-Content "D:\Private\DE Tech Solutions\masrofi\fix.js" ("`r`n" + (Get-Clipboard -Raw)) -Encoding UTF8
