@@ -16258,6 +16258,25 @@ try{const _tfR=txForm;txForm=function(){const r=_tfR.apply(this,arguments);try{c
   if(z&&!z.classList.contains('zq')&&F&&F.zp){z.outerHTML=zqHTML(F.zp);zqUpd()}}catch(e){console.error('zq',e)}return r}}catch(e){}
 }catch(e){console.error('fix 2.21.278',e)}
 /* ===== آخر 2.21.278 ===== */
+/* ========== 2.21.279 · زرار ✕ فوق البند + شكل شاشة التسجيل ========== */
+try{
+XVER2='2.21.279';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zf-css'))return;const G='linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)';const s=document.createElement('style');s.id='zf-css';s.textContent=`
+.zq-l{position:relative}
+.zq-l:has(.zq-x){padding-top:36px}
+.zq-l:has(.zq-x)::before{content:'➕ جزء إضافي';position:absolute;top:10px;right:12px;font-size:12px;font-weight:700;opacity:.7}
+.zq-r .zq-x{position:absolute;top:6px;left:8px;width:26px!important;height:26px!important;flex:none!important;font-size:12px!important}
+#sheet .sz>h2{font-size:20px!important;font-weight:800!important;margin:2px 0 10px!important}
+#sheet .shbar button{border-radius:14px!important;border:1px solid rgba(94,234,212,.3)!important;background:rgba(13,148,136,.1)!important;font-weight:700!important}
+#sheet input#f-amt{font-size:28px!important;font-weight:800!important;text-align:center!important;min-height:60px!important;border:1.5px solid rgba(94,234,212,.5)!important;background:linear-gradient(160deg,rgba(13,148,136,.14),rgba(67,56,202,.10))!important;border-radius:18px!important;letter-spacing:.5px}
+#sheet input#f-amt:focus{box-shadow:0 0 0 4px rgba(20,184,166,.2)!important}
+#sheet .xoa2{border-radius:16px!important;border:1px solid rgba(148,163,184,.25)!important;background:var(--card)!important;box-shadow:none!important}
+#sheet .sz :is(input:not([type=checkbox]):not(#f-amt),.xsel,textarea){background:rgba(148,163,184,.07)!important;border:1px solid rgba(148,163,184,.25)!important}
+#sheet .sz>label,#sheet .sz>.two>label{font-weight:700!important}
+#sheet .fth,#sheet .fadd{border-radius:14px!important;border:1px dashed rgba(94,234,212,.35)!important;background:rgba(13,148,136,.06)!important}
+`;document.head.appendChild(s)})();
+}catch(e){console.error('fix 2.21.279',e)}
+/* ===== آخر 2.21.279 ===== */
 
 /* نهاية fix.js */
 
