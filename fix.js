@@ -16372,6 +16372,39 @@ header .appbox{margin-right:auto!important}
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.283',e)}
 /* ===== آخر 2.21.283 ===== */
+/* ========== 2.21.284 · الترتيب جنب الفلتر + العملية المفتوحة + الجرس جنب الرئيسية ========== */
+try{
+XVER2='2.21.284';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zx-css'))return;const s=document.createElement('style');s.id='zx-css';s.textContent=`
+#zhr{display:flex;gap:8px;align-items:center;margin-left:auto}
+#zhr #zhome{margin:0!important}
+html body #view .gsr.zsrt{display:flex!important;align-items:center;gap:8px}
+html body #view .gsr.zsrt>input{display:none!important}
+html body #view .gsr.zsrt>.zsb{flex:1;min-width:0;margin:0!important;overflow-x:auto;scrollbar-width:none}
+html body #view .gsr.zsrt>.zsb::-webkit-scrollbar{display:none}
+html body #view details.grp details[open]{border:0!important;outline:0!important;box-shadow:none!important;background:rgba(148,163,184,.05)!important}
+html body #view details.grp details[open]>:not(summary){background:rgba(148,163,184,.06)!important;border:1px solid rgba(148,163,184,.15)!important;border-radius:14px!important;box-shadow:none!important;margin:4px 8px 10px!important}
+html body #view details.grp details[open]>:not(summary) :is(div,span)[class]:not(.amt):not(.badge):not(.ic):not(.xic){background-color:rgba(148,163,184,.07)!important;border-color:rgba(148,163,184,.18)!important;box-shadow:none!important}
+`;document.head.appendChild(s)})();
+
+/* من غير اقتراحات الكيبورد */
+document.addEventListener('focusin',e=>{const i=e.target;if(i&&i.tagName==='INPUT'){i.setAttribute('autocomplete',i.type==='password'?'new-password':'off');i.setAttribute('autocorrect','off')}},true);
+
+/* الجرس جنب الرئيسية */
+function zhPos(){try{const hd=document.querySelector('header'),b=document.getElementById('bell'),h=document.getElementById('zhome');if(!hd||!b||!h)return;
+  let w=document.getElementById('zhr');if(!w){w=document.createElement('div');w.id='zhr';hd.appendChild(w)}
+  if(b.parentElement!==w)w.appendChild(b);if(h.parentElement!==w)w.appendChild(h)}catch(e){}}
+
+/* رتّب حسب جنب الفلتر */
+function zSortMove(){try{if(view!=='col'&&view!=='exps')return;const v=document.getElementById('view'),g=v&&v.querySelector('.gsr');if(!g||g.querySelector('.zsb'))return;
+  const c=[...v.querySelectorAll('div')].filter(d=>!d.closest('.gsr')&&!d.closest('details')&&/رتّب حسب/.test(d.textContent)&&d.textContent.length<120&&d.querySelector('button'));
+  if(!c.length)return;const sb=c.sort((a,b)=>a.textContent.length-b.textContent.length)[0];
+  sb.classList.add('zsb');g.classList.add('zsrt');g.appendChild(sb)}catch(e){}}
+
+try{const _rnX=render;render=function(){const r=_rnX.apply(this,arguments);zhPos();zSortMove();return r}}catch(e){}
+zhPos();try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.284',e)}
+/* ===== آخر 2.21.284 ===== */
 
 /* نهاية fix.js */
 
