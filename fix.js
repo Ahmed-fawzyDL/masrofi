@@ -16706,6 +16706,37 @@ try{const _rnZZ=render;render=function(){const r=_rnZZ.apply(this,arguments);zzP
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.288',e)}
 /* ===== آخر 2.21.288 ===== */
+/* ========== 2.21.289 · جدول الأقساط أنضف ========== */
+try{
+XVER2='2.21.289';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zi-css'))return;const s=document.createElement('style');s.id='zi-css';s.textContent=`
+#view .xq2r{grid-template-columns:30px minmax(0,1fr) auto!important;gap:10px!important;border:1px solid rgba(148,163,184,.14)!important;border-radius:16px!important;padding:11px 12px!important;background:var(--card)!important;cursor:pointer;box-shadow:none!important}
+#view .xq2r .xq2b{display:none!important}
+#view .xq2r.on .xq2b{display:flex!important;grid-column:1/-1;gap:6px;margin-top:4px}
+#view .xq2r.on .xq2b .mini{flex:1;width:auto!important;height:38px!important;font-size:12.5px!important;font-weight:700;gap:4px;display:flex!important;align-items:center;justify-content:center}
+#view .xq2r .xq2b .mini::after{content:attr(title)}
+#view .xq2n{width:30px!important;height:30px!important;font-size:12px!important;font-weight:800}
+#view .xq2r.ok .xq2n{background:#16a34a!important;color:#fff}
+#view .xq2r.pre .xq2n{background:#0ea5e9!important;color:#fff}
+#view .xq2r.late .xq2n{background:#dc2626!important;color:#fff}
+#view .xq2r.wait .xq2n{background:rgba(245,158,11,.14)!important;color:#f59e0b;box-shadow:inset 0 0 0 1.5px #f59e0b}
+#view .xq2r.ok:not(.on),#view .xq2r.pre:not(.on){opacity:.6}
+#view .xq2r.nx{border-color:rgba(94,234,212,.55)!important;background:linear-gradient(90deg,rgba(13,148,136,.16),rgba(67,56,202,.08))!important}
+#view .xq2r.on{border-color:rgba(94,234,212,.4)!important}
+#view .xq2d b{font-size:14.5px!important}
+#view .xq2d small{white-space:normal!important;overflow:visible!important;line-height:1.45}
+#view .xq2a{font-size:15.5px!important;font-weight:800!important}
+#view .xq2r.ok .xq2a{color:#34d399!important}
+#view .xq2y{padding:16px 6px 6px!important;font-size:12.5px!important;opacity:.7}
+`;document.head.appendChild(s)})();
+document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('#view .xq2r');if(!r||e.target.closest('button'))return;
+  const on=!r.classList.contains('on');document.querySelectorAll('#view .xq2r.on').forEach(x=>x.classList.remove('on'));if(on)r.classList.add('on')},true);
+window.zqNext=function(){try{document.querySelectorAll('#view .xq2r.nx').forEach(x=>x.classList.remove('nx'));
+  const r=document.querySelector('#view .xq2r.late,#view .xq2r.wait');if(r)r.classList.add('nx')}catch(e){}};
+try{const _rnQ=render;render=function(){const r=_rnQ.apply(this,arguments);if(view==='plan')zqNext();return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.289',e)}
+/* ===== آخر 2.21.289 ===== */
 
 /* نهاية fix.js */
 
