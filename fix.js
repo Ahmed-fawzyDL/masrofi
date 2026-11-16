@@ -16167,6 +16167,15 @@ try{const _stP=saveTx;saveTx=async function(){
   return r}}catch(e){}
 }catch(e){console.error('fix 2.21.276',e)}
 /* ===== آخر 2.21.276 ===== */
+/* ========== 2.21.277 · مكان جزء الدفع تحت المبلغ ========== */
+try{
+XVER2='2.21.277';XVBUILD2='16/11/2026';
+function zpFix(){const z=document.getElementById('zpay'),sz=document.querySelector('#sheet .sz'),a=document.getElementById('f-amt');
+  if(!z||!sz||!a||z.parentElement===sz)return;let at=a;while(at.parentElement&&at.parentElement!==sz)at=at.parentElement;
+  if(at.parentElement===sz)at.after(z)}
+try{const _tfQ=txForm;txForm=function(){const r=_tfQ.apply(this,arguments);try{zpFix()}catch(e){}return r}}catch(e){}
+}catch(e){console.error('fix 2.21.277',e)}
+/* ===== آخر 2.21.277 ===== */
 
 /* نهاية fix.js */
 
