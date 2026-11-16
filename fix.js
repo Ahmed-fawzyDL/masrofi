@@ -15541,6 +15541,22 @@ xLnEx=function(id){const l=xLnL(id);if(!l)return;const rem=r2(xLnRem(l));
   save();render();xLnOpen(id);toast('✋ اتعفى من '+num(rem))};
 }catch(e){console.error('fix 2.21.264',e)}
 /* ===== آخر 2.21.264 ===== */
+/* ========== 2.21.265 · البرنامج يظهر مرة واحدة بعد ما يجهز ========== */
+try{
+XVER2='2.21.265';XVBUILD2='16/11/2026';
+(function(){var done=false;
+  function show(){if(done)return;done=true;
+    try{const s=xSnapGet();if(s)xSnapApply(s)}catch(e){}
+    try{render()}catch(e){}
+    requestAnimationFrame(function(){
+      try{document.documentElement.classList.add('xok');document.body.classList.add('xready','xfont')}catch(e){}
+      var z=document.getElementById('zboot');if(z)z.remove();
+      var b=document.getElementById('xboot');if(b)b.remove()})}
+  var t=setTimeout(show,600);
+  try{document.fonts.ready.then(function(){clearTimeout(t);show()})}catch(e){clearTimeout(t);show()}
+})();
+}catch(e){console.error('fix 2.21.265',e);var z=document.getElementById('zboot');if(z)z.remove()}
+/* ===== آخر 2.21.265 ===== */
 
 
 /* نهاية fix.js */
