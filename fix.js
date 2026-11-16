@@ -16025,6 +16025,148 @@ try{const _stZ=saveTx;saveTx=async function(){const fid=F&&F.id,kind=F&&F.type,b
   return r}}catch(e){}
 }catch(e){console.error('fix 2.21.275',e)}
 /* ===== آخر 2.21.275 ===== */
+/* ========== 2.21.276 · جزء الدفع الجديد في تسجيل العملية ========== */
+try{
+XVER2='2.21.276';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zp-css'))return;const G='linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)';const s=document.createElement('style');s.id='zp-css';s.textContent=`
+#zpay{border:1px solid rgba(94,234,212,.3);border-radius:18px;padding:12px;margin:8px 0 12px;background:linear-gradient(160deg,rgba(13,148,136,.10),rgba(67,56,202,.06))}
+.zp-h{font-weight:800;font-size:15px;margin-bottom:8px}
+.zp-l{border-bottom:1px dashed rgba(148,163,184,.25);padding-bottom:10px;margin-bottom:10px}
+.zp-r{display:grid;grid-template-columns:1.3fr 1fr auto;gap:8px;align-items:end}
+.zp-r label{margin:0}
+.zp-v{display:flex;gap:6px;margin-top:8px}
+.zp-v button{flex:1;padding:8px 4px;border-radius:12px;border:1px solid rgba(148,163,184,.3);background:transparent;color:inherit;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.zp-v button.on{background:${G};color:#fff;border-color:transparent}
+.zp-v1{margin-top:6px;font-size:12.5px;font-weight:700;opacity:.85}
+.zp-f{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;font-weight:700;flex-wrap:wrap}
+.zp-f input{width:90px!important;flex:0 0 90px;margin:0!important;padding:8px!important}
+.zp-tip{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:10px}
+.zp-tip label{margin:0}
+.zp-ck{display:flex!important;align-items:center;gap:6px;font-weight:700;white-space:nowrap;padding-bottom:12px}
+.zp-ck input{width:20px;height:20px}
+.zp-s{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.18);font-size:13px;line-height:1.9}
+.zp-s.bad{background:rgba(239,68,68,.15);color:#f87171}
+.xpk .xpb{background:var(--card)!important;border:1px solid rgba(94,234,212,.25)!important;border-bottom:0!important;border-radius:24px 24px 0 0!important}
+.xpk .xpt b{font-weight:800}
+.xpk .xpo{border-radius:14px!important}
+.xpk .xpo.on{background:linear-gradient(90deg,rgba(13,148,136,.35),rgba(67,56,202,.22))!important;border-color:rgba(94,234,212,.55)!important}
+.xpk .xpq{border-radius:13px!important}
+.xpk :is(.xcg button.on,.xcm button.on,.xcb .pri){background:${G}!important;color:#fff!important;border-color:transparent!important}
+`;document.head.appendChild(s)})();
+
+function zpCr(id){try{return xIsCr(id)}catch(e){return false}}
+function zpVia(mid,pref){const m=M(mid);if(!m)return '';if(m.type==='cash')return 'cash';if(zpCr(mid))return 'card';if(m.type==='wallet')return 'wallet';
+  return ['instapay','transfer','card'].includes(pref)?pref:'instapay'}
+function zpBank(mid){const m=M(mid);return !!m&&m.type!=='cash'&&m.type!=='wallet'&&!zpCr(mid)}
+function zpTotal(){return parseNum((document.getElementById('f-amt')||{}).value)||0}
+function zpOk(){if(!F||(F.type!=='exp'&&F.type!=='inc'))return false;const o=F.id&&S.txs.find(t=>t&&t.id===F.id);
+  if(o&&(o.src||o.splOf||o.feeOf||o.tipOf||o.ztipOf||o.payFeeOf||o.loan||o.xlno||o.xlnp||isClosed(o.date)))return false;return true}
+function zpInit(){if(F.zp)return F.zp;const o=F.id&&S.txs.find(t=>t&&t.id===F.id);let z;
+  if(o){const K=S.txs.filter(x=>x&&x.splOf===o.id),fe=t=>{const f=S.txs.find(x=>x&&x.feeOf===t.id);return f?+f.amount||0:0};
+    const tp=(o.tipTx&&S.txs.find(x=>x&&x.id===o.tipTx))||S.txs.find(x=>x&&(x.ztipOf===o.id||x.tipOf===o.id));
+    z={lines:[o].concat(K).map(t=>({m:t.method,via:zpVia(t.method,t.via),a:+t.amount||0,fee:fe(t),feeMan:1})),
+       tip:tp?+tp.amount||0:0,tipCash:!!(tp&&(tp.ztipOf||(zIsCash(tp.method)&&!zIsCash(o.method))))}}
+  else{let m=F.method;if(!m||!M(m)){try{m=defMethod()}catch(e){}}
+    z={lines:[{m:m||'',via:zpVia(m,F.via),a:0,fee:0}],tip:parseNum(F.tip)||0,tipCash:false}}
+  return F.zp=z}
+function zpCalc(z){const tot=zpTotal(),exp=F.type==='exp';let o=0;z.lines.forEach((l,i)=>{if(i)o+=+l.a||0});z.lines[0].a=r2(tot-o);
+  const tip=exp?(+z.tip||0):0,L0=z.lines[0],t0=tip>0&&!(z.tipCash||L0.via==='cash');
+  z.lines.forEach((l,i)=>{if(!exp||l.via!=='instapay'||F.pend){l.fee=0;return}
+    if(!l.feeMan)l.fee=r2(xFeeCalc(r2((+l.a||0)+(i===0&&t0?tip:0))))})}
+function zpHTML(z){const exp=F.type==='exp',acc=S.methods.filter(m=>m.active!==false||z.lines.some(l=>l.m===m.id));
+  return `<div id="zpay"><div class="zp-h">💳 ${exp?'الدفع':'الاستلام'}</div>
+  ${z.lines.map((l,i)=>`<div class="zp-l"><div class="zp-r">
+    <label>${i?'حساب '+(i+1):'الحساب'}<select onchange="zpSet(${i},'m',this.value)">${opt(acc,l.m)}</select></label>
+    <label>المبلغ${i||z.lines.length===1?'':' (الباقي)'}<input inputmode="decimal" dir="ltr" placeholder="0" ${i?`oninput="zpSet(${i},'a',this.value)" value="${l.a?amtStr(l.a):''}"`:'id="zp-a0" readonly'}></label>
+    ${i?`<button type="button" class="mini danger" onclick="zpDel(${i})">✕</button>`:'<span></span>'}</div>
+    ${zpBank(l.m)?`<div class="zp-v">${[['instapay','⚡ إنستاباي'],['transfer','🏦 تحويل'],['card','💳 كارت']].map(([v,t])=>`<button type="button" class="${l.via===v?'on':''}" onclick="zpSet(${i},'via','${v}')">${t}</button>`).join('')}</div>`
+      :`<div class="zp-v1">${l.via==='cash'?'💵 كاش':l.via==='card'?'💳 كريديت':'📱 محفظة'}</div>`}
+    ${exp&&l.via==='instapay'&&!F.pend?`<div class="zp-f">💸 مصاريف إنستاباي <input data-zf="${i}" inputmode="decimal" dir="ltr" oninput="zpSet(${i},'fee',this.value)"><button type="button" class="mini" onclick="zpSet(${i},'feeAuto')">↺</button>${i===0&&typeof xIpStep==='function'?`<button type="button" class="mini" onclick="xIpStep()">🔢 التقريب ${num(+xFeeCfg().step||0.01)}</button>`:''}</div>`:''}
+  </div>`).join('')}
+  <button type="button" class="btn ghost" onclick="zpAdd()">➕ ${exp?'ادفع جزء من حساب تاني':'جزء دخل في حساب تاني'}</button>
+  ${exp?`<div class="zp-tip"><label>🎁 إكرامية<input inputmode="decimal" dir="ltr" placeholder="0" value="${z.tip?amtStr(z.tip):''}" oninput="zpSet(0,'tip',this.value)"></label><label class="zp-ck"><input type="checkbox" ${z.tipCash?'checked':''} onchange="zpSet(0,'tipCash',this.checked)"> 💵 اتدفعت كاش</label></div>`:''}
+  <div class="zp-s" id="zp-s"></div></div>`}
+function zpUpd(){const z=F&&F.zp;if(!z)return;zpCalc(z);const a0=document.getElementById('zp-a0');if(a0)a0.value=amtStr(z.lines[0].a);
+  z.lines.forEach((l,i)=>{const fi=document.querySelector(`#zpay [data-zf="${i}"]`);if(fi&&document.activeElement!==fi)fi.value=amtStr(l.fee||0)});
+  const s=document.getElementById('zp-s');if(!s)return;const tot=zpTotal(),exp=F.type==='exp',tip=exp?(+z.tip||0):0;
+  if(tot>0&&!(z.lines[0].a>0)){s.className='zp-s bad';s.innerHTML='⚠️ مبلغ الحسابات التانية لازم يكون أقل من الإجمالي';return}
+  const cashTip=tip>0&&(z.tipCash||z.lines[0].via==='cash');let ca='';if(cashTip){try{ca=xCashAcct()}catch(e){}}
+  const rows=z.lines.map((l,i)=>{const m=M(l.m),t=i===0&&tip>0&&!cashTip?tip:0,sum=r2((+l.a||0)+(l.fee||0)+t);
+    return `${esc(m?m.name:'—')}: <b>${num(sum)}</b>${l.fee||t?` <small>(${num(l.a)}${t?' + إكرامية '+num(t):''}${l.fee?' + مصاريف '+num(l.fee):''})</small>`:''}`});
+  if(cashTip&&ca!==z.lines[0].m)rows.push(`${esc((M(ca)||{}).name||'كاش')}: <b>${num(tip)}</b> <small>(إكرامية)</small>`);
+  else if(cashTip)rows[0]=rows[0];
+  s.className='zp-s';s.innerHTML=`${exp?'هيتخصم':'هيدخل'}:<br>${rows.join('<br>')}`}
+function zpDraw(){const b=document.getElementById('zpay');if(b&&F&&F.zp){b.outerHTML=zpHTML(F.zp);zpUpd()}}
+window.zpSet=function(i,k,v){const z=F&&F.zp;if(!z)return;const l=z.lines[i];
+  if(k==='m'){l.m=v;l.via=zpVia(v,l.via);l.feeMan=0;return zpDraw()}
+  if(k==='via'){l.via=v;l.feeMan=0;return zpDraw()}
+  if(k==='a')l.a=parseNum(v)||0;
+  if(k==='fee'){l.fee=parseNum(v)||0;l.feeMan=1}
+  if(k==='feeAuto')l.feeMan=0;
+  if(k==='tip')z.tip=parseNum(v)||0;
+  if(k==='tipCash')z.tipCash=!!v;
+  zpUpd()};
+window.zpAdd=function(){const z=F&&F.zp;if(!z)return;const used=new Set(z.lines.map(l=>l.m));let ca='';try{ca=xCashAcct()}catch(e){}
+  const m=(ca&&!used.has(ca)?ca:(S.methods.find(x=>x.active!==false&&!used.has(x.id))||{}).id)||'';
+  z.lines.push({m,via:zpVia(m,''),a:0,fee:0});zpDraw()};
+window.zpDel=function(i){const z=F&&F.zp;if(!z||!i)return;z.lines.splice(i,1);zpDraw()};
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='f-amt'&&document.getElementById('zpay'))zpUpd()},true);
+
+function zpMount(){if(!zpOk()||document.getElementById('zpay'))return;const sz=document.querySelector('#sheet .sz'),a=document.getElementById('f-amt');if(!sz||!a)return;
+  const z=zpInit();
+  sz.querySelectorAll('details').forEach(d=>{if(d.querySelector('#f-m'))d.style.display='none'});
+  const fm=document.getElementById('f-m');if(fm){const e=fm.closest('.two')||fm.closest('label');if(e&&!e.closest('details'))e.style.display='none'}
+  ['xspl','xipc','f-tipt','f-tipxt'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
+  ['f-tip','f-tipx','f-tipc'].forEach(id=>{const e=document.getElementById(id);if(e){const l=e.closest('label');(l||e).style.display='none'}});
+  sz.querySelectorAll('.xtipT').forEach(e=>e.style.display='none');
+  const al=a.closest('label')||a,at=al.parentElement&&al.parentElement.classList.contains('two')?al.parentElement:al;
+  at.insertAdjacentHTML('afterend',zpHTML(z));
+  if(F.id){const tot=r2(z.lines.reduce((s,l)=>s+(+l.a||0),0));if(tot>0){a.value=amtStr(tot);F.amount=a.value}}
+  zpUpd()}
+try{const _tfP=txForm;txForm=function(){const r=_tfP.apply(this,arguments);try{zpMount()}catch(e){console.error('zpMount',e)}return r}}catch(e){}
+
+function zpApply(p,z){if(isClosed(p.date))return;const L=z.lines,exp=p.type==='exp';
+  const kids=new Set();S.txs.forEach(x=>{if(x&&(x.splOf===p.id||x.feeOf===p.id||x.tipOf===p.id||x.ztipOf===p.id))kids.add(x.id)});
+  S.txs.forEach(x=>{if(x&&x.feeOf&&kids.has(x.feeOf))kids.add(x.id)});
+  S.txs=S.txs.filter(x=>!(x&&kids.has(x.id)&&!isClosed(x.date)));
+  delete p.tipTx;delete p.tipCash;delete p.tip;
+  p.amount=r2(L[0].a);p.method=L[0].m;p.via=L[0].via;
+  let now=Date.now();
+  const fee=(t,a)=>{a=r2(+a||0);if(!(exp&&!t.pend&&t.via==='instapay'&&a>0)){t.nofee=1;return}
+    if(typeof xAddIpFee==='function'){delete t.nofee;try{xAddIpFee(t,a)}catch(e){}t.nofee=1;if(S.txs.some(x=>x&&x.feeOf===t.id))return}
+    const c=ensureCat('مصاريف إنستاباي','exp');c.active=true;
+    S.txs.push({id:uid(),type:'exp',amount:a,cat:c.id,method:t.method,via:'instapay',date:t.date,note:'💸 مصاريف إنستاباي',files:[],created:now++,feeOf:t.id,nofee:1})};
+  fee(p,L[0].fee);
+  L.slice(1).forEach(l=>{const c={id:uid(),type:p.type,amount:r2(l.a),cat:p.cat,method:l.m,via:l.via,date:p.date,note:p.note||'',files:[],created:now++,splOf:p.id};
+    ['pend','pp','ppk','rdate','acm','cl','clk'].forEach(k=>{if(p[k]!=null&&p[k]!==''&&p[k]!==false)c[k]=p[k]});S.txs.push(c);fee(c,l.fee)});
+  if(exp&&+z.tip>0){const cash=z.tipCash||L[0].via==='cash';let ca=L[0].m;if(cash){try{ca=xCashAcct()||ca}catch(e){}}
+    let tc;try{tc=xTipCat()}catch(e){tc=ensureCat('إكرامية','exp')}tc.active=true;
+    const t={id:uid(),type:'exp',amount:r2(+z.tip),cat:tc.id,method:ca,via:cash?'cash':L[0].via,date:p.date,note:'🎁 إكرامية · '+((C(p.cat)||{}).name||''),files:[],created:now++,nofee:1};
+    if(p.pend)t.pend=true;
+    if(ca!==p.method){t.ztipOf=p.id;p.tipCash=1}else t.tipOf=p.id;
+    S.txs.push(t);p.tipTx=t.id}}
+
+try{const _stP=saveTx;saveTx=async function(){
+  if(!document.getElementById('zpay')||!F||!F.zp)return _stP.apply(this,arguments);
+  const z=F.zp;zpCalc(z);const L=z.lines,tot=zpTotal();
+  if(!(tot>0))return toast('اكتب المبلغ');
+  if(L.some(l=>!l.m||!M(l.m)))return toast('اختار الحساب');
+  if(L.slice(1).some(l=>!(l.a>0)))return toast('اكتب مبلغ كل حساب');
+  if(!(L[0].a>0))return toast('مبلغ الحسابات التانية لازم يكون أقل من الإجمالي');
+  if(new Set(L.map(l=>l.m)).size!==L.length)return toast('نفس الحساب متكرر');
+  const snap=JSON.parse(JSON.stringify(z)),set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v};
+  set('f-amt',amtStr(L[0].a));set('f-m',L[0].m);
+  const fv=document.getElementById('f-v');if(fv){if(![...fv.options].some(o=>o.value===L[0].via)){const o=document.createElement('option');o.value=L[0].via;o.textContent=L[0].via;fv.appendChild(o)}fv.value=L[0].via}
+  set('f-tip','');set('f-tipx','');const xo=document.getElementById('xip-on');if(xo)xo.checked=false;
+  Object.assign(F,{tip:'',tipCash:false,feeOn:false,ipOn:false,spl:[],amount:amtStr(L[0].a),method:L[0].m,via:L[0].via});
+  const fid=F.id,kind=F.type,before=new Set(S.txs.map(t=>t&&t.id));
+  const r=await _stP.apply(this,arguments);
+  if(document.getElementById('sheet').classList.contains('open')&&document.getElementById('f-amt')){set('f-amt',amtStr(tot));if(F){F.amount=amtStr(tot);F.zp=snap}return r}
+  const p=fid?S.txs.find(x=>x&&x.id===fid):S.txs.filter(x=>x&&!before.has(x.id)&&x.type===kind&&!x.feeOf&&!x.tipOf&&!x.ztipOf&&!x.splOf&&!x.payFeeOf).pop();
+  if(p){try{zpApply(p,snap)}catch(e){console.error('zpApply',e)}save();render()}
+  return r}}catch(e){}
+}catch(e){console.error('fix 2.21.276',e)}
+/* ===== آخر 2.21.276 ===== */
 
 /* نهاية fix.js */
 
