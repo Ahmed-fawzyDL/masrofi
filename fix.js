@@ -16842,6 +16842,22 @@ try{const _rnK2=render;render=function(){const r=_rnK2.apply(this,arguments);zwK
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.292',e)}
 /* ===== آخر 2.21.292 ===== */
+/* ========== 2.21.293 · الأرقام من الشمال تحت بعض + اسم البرنامج من غير لوجو ========== */
+try{
+XVER2='2.21.293';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zw3-css'))return;const s=document.createElement('style');s.id='zw3-css';s.textContent=`
+#zx .zx-a{justify-content:flex-start!important;min-width:118px}
+#zx .zdot{order:-1;margin:0 8px 0 0!important}
+header .appbox{background:linear-gradient(140deg,rgba(13,148,136,.32),rgba(67,56,202,.32))!important;border:1px solid rgba(94,234,212,.45)!important;border-radius:999px!important;padding:5px 18px!important;color:#fff!important;font-size:16px!important;font-weight:800!important;letter-spacing:1px;box-shadow:0 6px 18px rgba(13,148,136,.25)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+`;document.head.appendChild(s)})();
+window.zwLogo=function(){try{const a=document.querySelector('header .appbox');if(!a)return;const zr=document.getElementById('zhr');
+  let n=a;while(n&&n.parentElement&&n.parentElement.tagName!=='HEADER')n=n.parentElement;
+  [a.parentElement,n&&n.parentElement].forEach(p=>{if(!p)return;[...p.children].forEach(c=>{
+    if(c===a||c.contains(a)||c===zr||(zr&&c.contains(zr))||c.id==='bell'||c.id==='zhome')return;c.style.setProperty('display','none','important')})})}catch(e){}};
+try{const _rnLg=render;render=function(){const r=_rnLg.apply(this,arguments);zwLogo();return r}}catch(e){}
+zwLogo();try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.293',e)}
+/* ===== آخر 2.21.293 ===== */
 
 /* نهاية fix.js */
 
