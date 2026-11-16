@@ -15738,6 +15738,25 @@ window.zhAlerts=function(){if(!ZHAL)return toast('مفيش حاجة مستنيا
 if(view==='home'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.268',e)}
 /* ===== آخر 2.21.268 ===== */
+/* ========== 2.21.269 · الكارت الكبير أصغر ========== */
+try{
+XVER2='2.21.269';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zh4-css'))return;const s=document.createElement('style');s.id='zh4-css';s.textContent=`
+.zh-hero{display:grid!important;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;padding:10px 12px!important;border-radius:20px!important}
+.zh-top{grid-column:1/-1}
+.zh-chip{padding:3px 9px!important;font-size:12px!important}
+.zh-ring{grid-row:2;grid-column:1;width:118px!important;height:118px!important;margin:0!important}
+.zh-rc small{font-size:10.5px!important}
+.zh-rc b{font-size:18px!important}
+.zh-rc em{font-size:9.5px!important;max-width:84px!important;line-height:1.3}
+.zh-st{grid-row:2;grid-column:2;flex-direction:column;gap:6px!important}
+.zh-sb{padding:6px 9px!important;border-radius:13px!important}
+.zh-sb i{width:26px!important;height:26px!important;flex-basis:26px!important;font-size:14px!important;border-radius:8px!important}
+.zh-sb small{font-size:11px!important}.zh-sb b{font-size:15px!important}
+.zh-cr{grid-column:1/-1;margin-top:0!important;font-size:11.5px!important}
+`;document.head.appendChild(s)})();
+}catch(e){console.error('fix 2.21.269',e)}
+/* ===== آخر 2.21.269 ===== */
 /* ========== 2.21.270 · ترتيب الرئيسية + زرار ➕ جديد ========== */
 try{
 XVER2='2.21.270';XVBUILD2='16/11/2026';
@@ -15778,6 +15797,27 @@ try{const _hbZ=handleBack;handleBack=function(){if(document.getElementById('zfp'
 if(view==='home'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.270',e)}
 /* ===== آخر 2.21.270 ===== */
+/* ========== 2.21.271 · تنبيهات في الجرس بس + اللوجو + المربعات ========== */
+try{
+XVER2='2.21.271';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zh6-css'))return;const s=document.createElement('style');s.id='zh6-css';s.textContent=`
+.zh-t b{text-align:right!important;font-weight:800!important}
+.zh-t b>*{direction:ltr;unicode-bidi:isolate}
+.zh-t small{font-weight:700!important;opacity:.8!important}
+.zh-t em{font-weight:600!important;opacity:.7!important}
+.zh-rc em{max-width:100px!important}
+header .appbox{background:linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)!important;color:#fff!important;border:1px solid rgba(255,255,255,.25)!important;border-radius:14px!important;box-shadow:0 8px 20px rgba(13,148,136,.35)!important;font-weight:800!important;letter-spacing:.5px}
+header img{border-radius:12px!important;box-shadow:0 0 0 2px rgba(94,234,212,.55),0 6px 16px rgba(13,148,136,.4)!important}
+#bell{background:linear-gradient(140deg,rgba(13,148,136,.35),rgba(67,56,202,.35))!important;border:1px solid rgba(94,234,212,.35)!important}
+`;document.head.appendChild(s)})();
+try{const _vhC=vHome;vHome=function(){let h=_vhC.apply(this,arguments);
+  h=h.replace(/<button type="button" class="zh-chip al"[^>]*>[^<]*<\/button>/,'');
+  h=h.split('📅').join('🗓️');
+  h=h.replace(/صرفت (\d+)% من دخلك/,'المصروفات = $1% من التحصيلات').replace('صرفت أكتر من دخلك','المصروفات أكتر من التحصيلات');
+  return h}}catch(e){}
+if(view==='home'){try{render()}catch(e){}}
+}catch(e){console.error('fix 2.21.271',e)}
+/* ===== آخر 2.21.271 ===== */
 
 
 /* نهاية fix.js */
