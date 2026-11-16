@@ -33,7 +33,7 @@ async function tell(type){
 async function fresh(r,key){
   const nav=r.mode==='navigate';
   let res=null;
-  try{res=await tfetch(r.url,{cache:'no-store'},6000)}catch(e){}
+  const had=await caches.match(key);try{res=await tfetch(r.url,{cache:'no-cache'},had?3000:10000)}catch(e){}
   if(res){
     if(nav&&(res.status===401||res.status===403)){await caches.delete(CACHE);tell('locked');return clean(res)}
     if(res.ok&&res.type==='basic'){
