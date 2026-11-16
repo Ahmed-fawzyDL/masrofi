@@ -16878,6 +16878,26 @@ document.addEventListener('input',e=>{const i=e.target;if(!i||!i.closest||!i.clo
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.294',e)}
 /* ===== آخر 2.21.294 ===== */
+/* ========== 2.21.295 · من غير رسالة جوجل + Search + من غير اتقفل ========== */
+try{
+XVER2='2.21.295';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zw5-css'))return;const s=document.createElement('style');s.id='zw5-css';s.textContent=`
+.zpw{-webkit-text-security:disc!important;text-security:disc!important}
+html body #view .mbar .lock{display:none!important}
+`;document.head.appendChild(s)})();
+/* خانات الباسورد: نقط بس من غير ما جوجل يعتبرها باسورد */
+window.zNoPw=function(root){try{(root||document).querySelectorAll('input[type=password]').forEach(i=>{
+  i.type='text';i.classList.add('zpw');i.setAttribute('autocomplete','off');i.setAttribute('autocorrect','off');i.setAttribute('autocapitalize','off');i.setAttribute('spellcheck','false');
+  i.setAttribute('data-lpignore','true');i.setAttribute('data-form-type','other')})}catch(e){}};
+zNoPw();
+try{new MutationObserver(M=>{for(const m of M)for(const n of m.addedNodes){if(n.nodeType===1&&(n.matches('input[type=password]')||n.querySelector&&n.querySelector('input[type=password]'))){zNoPw(n.parentElement||n);return}}})
+  .observe(document.body,{childList:true,subtree:true})}catch(e){}
+document.addEventListener('focusin',e=>{const i=e.target;if(i&&i.tagName==='INPUT'&&i.type==='password')zNoPw(i.parentElement)},true);
+/* Search */
+const _ztE=window.zwTop;window.zwTop=function(){try{_ztE()}catch(e){}const i=document.querySelector('#view .zsearch input');if(i)i.placeholder='🔍 Search'};
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.295',e)}
+/* ===== آخر 2.21.295 ===== */
 
 /* نهاية fix.js */
 
