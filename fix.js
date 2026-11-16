@@ -15529,6 +15529,18 @@ try{const _rZL=render;render=function(){const r=_rZL.apply(this,arguments);zlTak
 zlTake();
 }catch(e){console.error('fix 2.21.263',e)}
 /* ===== آخر 2.21.263 ===== */
+/* ========== 2.21.264 · الإعفاء بضغطة واحدة ========== */
+try{
+XVER2='2.21.264';XVBUILD2='16/11/2026';
+xLnEx=function(id){const l=xLnL(id);if(!l)return;const rem=r2(xLnRem(l));
+  if(!(rem>.009))return toast('السلفة دي خلصت');
+  const d=today()<l.d?l.d:today(),pid=uid();
+  l.pays=l.pays||[];l.pays.push({id:pid,d,a:rem,m:l.m,wo:1,ex:1,note:'✋ إعفاء',c:Date.now()});
+  l.ex={d,a:rem,pay:pid,n:''};
+  try{xLnLog(l,'✋ اتعفى من الباقي '+num(rem)+' يوم '+dmy(d))}catch(e){}
+  save();render();xLnOpen(id);toast('✋ اتعفى من '+num(rem))};
+}catch(e){console.error('fix 2.21.264',e)}
+/* ===== آخر 2.21.264 ===== */
 
 
 /* نهاية fix.js */
