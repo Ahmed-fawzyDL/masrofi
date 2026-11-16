@@ -16760,6 +16760,72 @@ try{const _rnL2=render;render=function(){const r=_rnL2.apply(this,arguments);if(
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.290',e)}
 /* ===== آخر 2.21.290 ===== */
+/* ========== 2.21.291 · السلف في غير محصّل + نقط الحالة + الشريط فوق + اليوم والشهر في سطر ========== */
+try{
+XVER2='2.21.291';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zw-css'))return;const s=document.createElement('style');s.id='zw-css';s.textContent=`
+#zx .zdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:7px;vertical-align:middle}
+#zx .zdot.g{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+#zx .zdot.r{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.18)}
+#zx .st-wait .zx-a,#zx .st-late .zx-a{color:inherit!important}
+header img,header .logo,header .applogo{display:none!important}
+header .appbox{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.22)!important;box-shadow:none!important;border-radius:999px!important;padding:4px 16px!important;font-size:15px!important;margin-left:0!important}
+#zhr{direction:ltr!important}
+html body #view .phead .zplus{width:34px!important;height:34px!important;min-width:34px;padding:0!important;border-radius:50%!important;font-size:20px!important;display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 34px}
+html body #view .phead .zplus.cam{font-size:15px!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(148,163,184,.3)!important}
+html body #view .phead h3.zh3{flex:0 0 auto!important}
+html body #view .zdrow{display:flex!important;gap:6px;align-items:center;margin-bottom:10px}
+html body #view .zdrow>button{flex:0 0 auto;width:auto!important;height:38px!important;min-height:0!important;padding:0 10px!important;font-size:12px!important;border-radius:12px!important;margin:0!important}
+html body #view .zdrow .mbar{flex:1;min-width:0;margin:0!important;padding:3px!important;height:38px;display:flex!important;align-items:center;justify-content:space-between;border-radius:12px!important}
+html body #view .zdrow .mbar button{width:30px!important;height:30px!important;min-width:30px;padding:0!important;font-size:13px!important;border-radius:9px!important}
+html body #view .zdrow .mbar :is(b,span,h3,div){font-size:13px!important}
+`;document.head.appendChild(s)})();
+
+window.zwT=function(f,d){try{const v=f();return v==null?d:v}catch(e){return d}};
+window.zwLoans=function(k,ok){const td=today(),end=k+'-31';return zwT(()=>XLN(),[]).filter(l=>l&&!l.del).map(l=>{
+  const rem=r2(zwT(()=>xLnRem(l),0));if(!(rem>.009))return null;const nx=zwT(()=>(xLnAlloc(l)||[]).find(s=>s.rem>.009),null),d=nx?nx.d:(l.due||'');if(!d||d>end)return null;
+  const p=l.pp?zwT(()=>XPP().find(x=>x.id===l.pp),null):null,n=(p&&p.name)||l.who||'سلفة',a=nx?r2(nx.rem):rem;
+  return ok(d,n,a,'سلفة')?{n,ic:'🤝',d,a,st:d<td?'late':'wait',ln:l,rem}:null}).filter(Boolean)};
+window.zwBuild=function(){const B=zyBuild();if(view==='col'&&zwT(()=>XI.g,'all')==='all'){const w=B.S.find(s=>s.k==='wait');
+  if(w){const L=zwLoans(ym(cur.y,cur.m),zyFilt());if(L.length)w.items=w.items.concat(L).sort((a,b)=>String(a.d).localeCompare(String(b.d)))}}return B};
+window.zwDet=function(x){if(!x.ln)return zyDet(x);const l=x.ln;
+  return `<div class="zx-d"><button type="button" class="zx-x" onclick="event.stopPropagation();zxTap('')">✕</button><div class="zx-dt">🤝 ${esc(x.n)}</div>
+  <div class="zx-r"><span>💵 السلفة</span><b>${num(+l.amt||0)}</b></div><div class="zx-r"><span>⏳ الباقي</span><b>${num(x.rem)}</b></div>
+  <div class="zx-r"><span>📅 الميعاد</span><b>${esc(zwT(()=>xDW(x.d),dmy(x.d)))}</b></div><div class="zx-r"><span>💰 المطلوب دلوقتي</span><b>${num(x.a)}</b></div>
+  <div class="zx-b"><button type="button" class="p" onclick="xLnPay('${l.id}')">💵 سجّل دفعة</button><button type="button" onclick="xLnOpen('${l.id}')">🤝 السلفة</button></div></div>`};
+window.zwRow=function(x,id){const on=ZXE===id,inc=view==='col',paid=x.st==='paid';
+  const dt=x.st==='wait'?'⏳ ميعاده '+dmy(x.d):x.st==='late'?'⚠️ متأخر · '+dmy(x.d):x.st==='skip'?'اتلغى الشهر ده':dmy(x.d)+(x.g?' · '+x.g.length+' عمليات':'');
+  return `<div class="zx-i st-${x.st} ${on?'on':''}" onclick="zxTap('${id}')"><span class="zx-ic">${x.ic}</span><div class="zx-t"><b>${esc(x.n)}</b><small>${dt}</small></div><div class="zx-a ${inc&&paid?'in':''}">${num(x.a)}${x.st==='skip'?'':`<i class="zdot ${paid?'g':'r'}"></i>`}</div></div>${on?zwDet(x):''}`};
+window.zwDraw=function(){const box=document.getElementById('zx');if(!box)return;const B=zwBuild();
+  const vis=B.S.filter(s=>s.items.length||!B.all),one=vis.filter(s=>s.items.length).length===1||!B.all;
+  box.innerHTML=vis.map((s,si)=>{const key=view+':'+s.k,open=ZXO[key]!=null?ZXO[key]:one,sum=r2(s.items.reduce((a,x)=>a+(x.st==='skip'?0:+x.a||0),0));
+    return `<div class="zx-s ${open?'on':''}"><div class="zx-sh" onclick="zxSec('${key}',${open?0:1})"><span>${s.ic} ${s.t}</span><span class="zx-c">${s.items.length}</span><b>${num(sum)}</b><i>▾</i></div>${open?`<div class="zx-l">${s.items.map((x,i)=>zwRow(x,'z'+si+'_'+i)).join('')||'<p class="empty" style="margin:8px">مفيش</p>'}${s.add?`<button type="button" class="zx-add" onclick="${s.add.js}">${s.add.l}</button>`:''}</div>`:''}</div>`}).join('')||'<p class="empty">مفيش عمليات</p>';
+  try{zzPaint()}catch(e){}};
+window.zxTap=function(id){ZXE=ZXE===id?'':id;zwDraw();if(ZXE)setTimeout(()=>{const e=document.querySelector('#zx .zx-i.on');if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})},30)};
+window.zxSec=function(key,v){ZXO[key]=!!v;ZXE='';zwDraw()};
+
+/* الشريط فوق في شاشات التحصيلات والمصروفات */
+window.zwTop=function(){try{if(view!=='col'&&view!=='exps')return;const v=document.getElementById('view');if(!v)return;
+  const ph=v.querySelector(':scope>.phead'),h=ph&&ph.querySelector('h3');
+  if(ph&&h&&!ph.dataset.zw){ph.dataset.zw=1;h.classList.add('zh3');
+    [...ph.querySelectorAll('button')].forEach(b=>{const t=b.textContent;
+      if(/تحصيل جديد|مصروف/.test(t)&&/\+/.test(t)){b.textContent='+';b.classList.add('zplus');h.after(b)}
+      else if(/Receipt|📷/.test(t)){b.textContent='📷';b.classList.add('zplus','cam');(ph.querySelector('.zplus:not(.cam)')||h).after(b)}})}
+  const tb=[...v.querySelectorAll(':scope button')].find(b=>/Today|اليوم|النهارده/.test(b.textContent)&&b.textContent.length<20),row=tb&&tb.parentElement,mb=v.querySelector('.mbar');
+  if(row&&mb&&!row.classList.contains('zdrow')&&row!==v){row.classList.add('zdrow');row.appendChild(mb)}}catch(e){console.error('zwTop',e)}};
+
+/* الرئيسية: التحصيلات والمصروفات بالرقم السري */
+window.zAuthGo=async function(v){try{
+  if(typeof LK!=='undefined'&&LK.bio){try{await bioVerify()}catch(e){return toast('البصمة ما اتعرفتش')}}
+  else if(typeof LK!=='undefined'&&LK.pin){const x=await ask('الرقم السري','',{input:'',num:true,pw:true,icon:'🔒',ok:'فتح'});if(x==null)return;if(await hash(x)!==LK.pin)return toast('الرقم السري غلط')}
+}catch(e){}go(v)};
+try{const _vhAu=vHome;vHome=function(){let h=_vhAu.apply(this,arguments);
+  return h.replace(`onclick="go('col')"`,`onclick="zAuthGo('col')"`).replace(`onclick="go('exps')"`,`onclick="zAuthGo('exps')"`)}}catch(e){}
+
+try{const _rnW=render;render=function(){const r=_rnW.apply(this,arguments);try{if((view==='col'||view==='exps')&&document.getElementById('zx'))zwDraw();zwTop()}catch(e){console.error('zw',e)}return r}}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.291',e)}
+/* ===== آخر 2.21.291 ===== */
 
 /* نهاية fix.js */
 
