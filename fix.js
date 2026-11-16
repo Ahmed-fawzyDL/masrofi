@@ -15557,6 +15557,104 @@ XVER2='2.21.265';XVBUILD2='16/11/2026';
 })();
 }catch(e){console.error('fix 2.21.265',e);var z=document.getElementById('zboot');if(z)z.remove()}
 /* ===== آخر 2.21.265 ===== */
+/* ========== 2.21.266 · الرئيسية الجديدة ========== */
+try{
+XVER2='2.21.266';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zh-css'))return;const s=document.createElement('style');s.id='zh-css';s.textContent=`
+html body.xhome #view#view,html body #view#view.xfit{zoom:1!important}
+.zh-hero{background:linear-gradient(140deg,#0d9488 0%,#0e7490 45%,#4338ca 100%);border-radius:24px;padding:14px;color:#fff;margin:4px 0 14px;box-shadow:0 14px 34px rgba(13,148,136,.28)}
+.zh-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.zh-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.16);font:inherit;font-size:12.5px;font-weight:700;color:#fff;border:0;cursor:pointer}
+.zh-ring{position:relative;width:180px;height:180px;margin:12px auto 10px}
+.zh-ring svg{position:absolute;inset:0}
+.zh-rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.zh-rc small{font-size:12px;opacity:.85}.zh-rc b{font-size:28px;font-weight:800;direction:ltr;line-height:1.3}.zh-rc em{font-style:normal;font-size:11px;opacity:.85;max-width:120px}
+.zh-st{display:flex;gap:8px}
+.zh-sb{flex:1;background:rgba(0,0,0,.22);border-radius:16px;padding:9px 10px;display:flex;align-items:center;gap:8px;cursor:pointer;border:0;color:#fff;font:inherit;text-align:start}
+.zh-sb i{width:32px;height:32px;flex:0 0 32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px;font-weight:800}
+.zh-sb small{display:block;font-size:11.5px;opacity:.85}.zh-sb b{font-size:16px}
+.zh-cr{display:flex;justify-content:space-between;gap:6px;font-size:12px;margin-top:9px;opacity:.92}
+.zh-h{font-size:14px;font-weight:800;margin:14px 2px 8px}
+.zh-al{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}.zh-al::-webkit-scrollbar{display:none}
+.zh-a{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:9px 12px;border-radius:14px;font-size:12.5px;font-weight:700;border:1px solid;cursor:pointer;white-space:nowrap}
+.zh-a.r{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.4);color:#f87171}
+.zh-a.y{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:#f59e0b}
+.zh-a.b{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.4);color:#60a5fa}
+.zh-qa{display:flex;gap:6px;margin:14px 0 4px}
+.zh-q{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font:inherit;font-size:12px;font-weight:700;border:0;background:transparent;color:inherit;cursor:pointer;padding:0}
+.zh-q span{width:50px;height:50px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.zh-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.zh-t{background:var(--card);border:1px solid rgba(148,163,184,.2);border-radius:18px;padding:11px;cursor:pointer;position:relative;min-width:0}
+.zh-t .ic{width:32px;height:32px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+.zh-t small{display:block;font-size:12px;opacity:.7;margin-top:6px}
+.zh-t b{display:block;font-size:17px;margin:2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zh-t em{font-style:normal;font-size:11.5px;opacity:.6;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zh-t .bd{position:absolute;top:9px;left:9px;background:#ef4444;color:#fff;border-radius:9px;min-width:18px;height:18px;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.zh-t.hot{border-color:rgba(239,68,68,.45)}
+.zh-r{display:flex;align-items:center;gap:10px;padding:10px 2px;border-top:1px solid rgba(148,163,184,.14);cursor:pointer}
+.zh-r .ic{width:34px;height:34px;flex:0 0 34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.zh-r .g{flex:1;min-width:0}.zh-r .g b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.zh-r .g small{opacity:.6;font-size:11.5px}
+.zh-r .a{font-weight:800;direction:ltr;white-space:nowrap}
+.zh-in{color:#22c55e}.zh-ex{color:#ef4444}
+`;document.head.appendChild(s)})();
+
+function zhT(f){try{return f()}catch(e){return null}}
+function zhW(k,rel){try{return wOn(k,rel)}catch(e){return true}}
+
+vHome=function(){
+  const mn=MONTHS[NM-1],TL=keyTx(NKM),s=xSums(TL),hid=amtHidden(),A=v=>hid?xMk(num(v)):num(v);
+  let h='';
+  /* الكارت الكبير */
+  if(zhW('cur',true)){
+    const pct=s.inc>0?s.exp/s.inc:(s.exp>0?1.01:0),p=Math.min(pct,1),col=pct>1?'#f87171':pct>=.8?'#fbbf24':'#5eead4';
+    const CC=2*Math.PI*74,dash=(p*CC).toFixed(1);
+    const sub=s.inc>0?(pct>1?'صرفت أكتر من دخلك':'صرفت '+Math.round(pct*100)+'% من دخلك'):(s.exp>0?'مفيش تحصيل الشهر ده':'لسه مفيش عمليات');
+    h+=`<div class="zh-hero"><div class="zh-top"><span class="zh-chip">📅 ${mn} ${NY}</span><span style="display:flex;gap:6px">${S.settings.mask!==false?`<button type="button" class="zh-chip" onclick="${hid?'revealAmts()':'hideAmts()'}">${hid?'👁️':'🙈'}</button>`:''}<button type="button" class="zh-chip" onclick="go('months')">${S.closed[NKM]?'🔒 اتقفل':'🔓 مفتوح'}</button></span></div>
+    <div class="zh-ring"><svg viewBox="0 0 180 180" width="180" height="180"><circle cx="90" cy="90" r="74" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="14"/>${p>0?`<circle cx="90" cy="90" r="74" fill="none" stroke="${col}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${dash} ${CC.toFixed(1)}" transform="rotate(-90 90 90)"/>`:''}</svg>
+    <div class="zh-rc"><small>${esc(L('net'))}</small><b>${hid?xMk(num(s.net)):(s.net<0?'-':'')+num(Math.abs(s.net))}</b><em>${sub}</em></div></div>
+    <div class="zh-st"><button type="button" class="zh-sb" onclick="openFlow('inc')"><i style="background:#22c55e">↓</i><span><small>${esc(L('inc'))}</small><b>${A(s.inc)}</b></span></button><button type="button" class="zh-sb" onclick="openFlow('exp')"><i style="background:#ef4444">↑</i><span><small>${esc(L('exp'))}</small><b>${A(s.exp)}</b></span></button></div>
+    ${s.cr>0?`<div class="zh-cr"><span>💳 منها كريديت ${A(s.cr)}</span><span>💵 من فلوسك ${A(s.expNC)}</span></div>`:''}</div>`;
+  }
+  /* محتاج انتباهك */
+  const al=[],pk=prevKey(NKM);
+  zhT(()=>{if(!S.closed[pk]&&keyTx(pk).length)al.push(['y','🔒 '+mName(pk)+' لسه مفتوح',"go('months')"])});
+  const idue=zhT(()=>instDue())||[];
+  idue.filter(o=>o.left<0).slice(0,3).forEach(o=>al.push(['r','🏦 '+o.p.name+' · متأخر '+(-o.left)+' يوم','instSheet()']));
+  const isoon=idue.filter(o=>o.left>=0);if(isoon.length)al.push(['b','🏦 '+isoon.length+' قسط قريب','instSheet()']);
+  const pend=zhT(()=>pendAll())||[];if(pend.length)al.push(['y','⏳ '+pend.length+' غير محصّل','pendingSheet()']);
+  const ln=zhT(()=>XLN().filter(l=>l&&!l.del).map(zlInfo))||[],lnl=ln.filter(x=>x.late).length;
+  if(lnl)al.push(['r','🤝 '+lnl+' سلفة متأخرة',"go('xln')"]);
+  const ad=zhT(()=>annualDue())||[];if(ad.length)al.push([ad.some(o=>o.left<0)?'r':'b','📆 '+ad.length+' تحصيل سنوي قريب','annualSheet()']);
+  const rd=zhT(()=>renDue())||[];if(rd.length)al.push([rd.some(x=>x.left<0)?'r':'y','🪪 '+rd[0].r.name+(rd[0].left<0?' · منتهي':' · باقي '+rd[0].left+' يوم'),"wtab='ren';go('wallet')"]);
+  if(al.length)h+=`<div class="zh-h">محتاج انتباهك</div><div class="zh-al">${al.map(([c,t,g])=>`<div class="zh-a ${c}" onclick="${g}">${esc(t)}</div>`).join('')}</div>`;
+  /* أزرار سريعة */
+  h+=`<div class="zh-qa">${[["newTx('inc')",'💰','تحصيل','#22c55e,#15803d'],["newTx('exp')",'💸','مصروف','#ef4444,#b91c1c'],["scanReceipt()",'📷','ريسيت','#f43f5e,#be123c'],["xLnNew()",'🤝','سلفة','#06b6d4,#0e7490']]
+    .map(([g,i,t,c])=>`<button type="button" class="zh-q" onclick="${g}"><span style="background:linear-gradient(135deg,${c})">${i}</span>${t}</button>`).join('')}</div>`;
+  /* المربعات */
+  const T=[];
+  zhT(()=>(xCcList()||[]).forEach(x=>T.push({ic:'💳',c:'#7c3aed',l:'سداد الكريديت',v:A(x.due),s:esc(x.m.name),g:`xCcPay('${x.m.id}')`})));
+  const cl=zhT(()=>cashOf(NKM))||[];
+  if(cl.length&&zhW('cash',cl.length))T.push({ic:'🏧',c:'#eab308',l:'سحب كاش · '+mn,v:A(r2(cl.reduce((a,x)=>a+x.amount,0))),s:cl.length+' مرة',g:'cashSheet()'});
+  const ci=zhT(()=>catItems(TL,'exp'))||[];
+  if(ci.length&&zhW('topexp',ci.length))T.push({ic:'🔥',c:'#ea580c',l:'أكبر مصروف · '+mn,v:A(ci[0].value),s:esc(ci[0].label),g:'topSheet()'});
+  const op=ln.filter(x=>x.rem>.009);
+  if(op.length)T.push({ic:'🤝',c:'#0891b2',l:'ليك عند الناس',v:A(r2(op.reduce((a,x)=>a+x.rem,0))),s:op.length+' سلفة'+(lnl?' · '+lnl+' متأخرة':''),g:"go('xln')",hot:lnl>0});
+  zhT(()=>(S.settings.pins||[]).forEach(p=>{if(p.mode==='hide')return;const t=pinTile(p);
+    if(t&&(p.mode==='show'||t.rel))T.push({ic:t.ic,c:'#6366f1',l:t.label,v:hid&&/\d/.test(String(t.val))?xMk(t.val):t.val,s:t.sub||'',g:t.go,bd:t.badge})}));
+  if(T.length)h+=`<div class="zh-g">${T.map(t=>`<div class="zh-t ${t.hot?'hot':''}" onclick="${t.g}">${t.bd?`<span class="bd">${t.bd}</span>`:''}<span class="ic" style="background:${t.c}33">${t.ic}</span><small>${esc(t.l)}</small><b>${t.v}</b><em>${t.s}</em></div>`).join('')}</div>`;
+  /* آخر العمليات */
+  if(zhW('recent',true)){
+    const R=TL.filter(t=>t&&!t.feeOf&&!t.tipOf&&!t.splOf).slice().sort(byDesc).slice(0,5);
+    if(R.length)h+=`<div class="zh-h">آخر العمليات</div>`+R.map(t=>{const inc=t.type==='inc',tr=t.type==='tr',m=M(t.method),nm=zhT(()=>xTxNm(t))||((C(t.cat)||{}).name||'—');
+      return `<div class="zh-r" onclick="editTx('${t.id}')"><span class="ic" style="background:${tr?'rgba(59,130,246,.15)':inc?'rgba(34,197,94,.15)':'rgba(239,68,68,.15)'}">${tr?'🔁':inc?'💰':'💸'}</span><div class="g"><b>${esc(nm)}</b><small>${t.pend?'⏳ ':''}${dmy(t.date)}${m?' · '+esc(m.name):''}</small></div><span class="a ${tr?'':inc?'zh-in':'zh-ex'}">${hid?xMk(num(t.amount)):(tr?'':inc?'+':'-')+num(t.amount)}</span></div>`}).join('');
+  }
+  return h};
+if(view==='home'){try{render()}catch(e){}}
+}catch(e){console.error('fix 2.21.266',e)}
+/* ===== آخر 2.21.266 ===== */
 
 
 /* نهاية fix.js */
+
+
+Add-Content "D:\Private\DE Tech Solutions\masrofi\fix.js" ("`r`n" + (Get-Clipboard -Raw)) -Encoding UTF8
