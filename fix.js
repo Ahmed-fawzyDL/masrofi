@@ -15375,5 +15375,142 @@ try{const _xaT=xAmts;xAmts=function(el){const a=_xaT.apply(this,arguments);try{
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.260',e)}
 /* ===== آخر 2.21.260 ===== */
+/* ========== 2.21.261 · شاشة السلف الجديدة ========== */
+try{
+XVER2='2.21.261';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zl-css'))return;const s=document.createElement('style');s.id='zl-css';s.textContent=`
+.zl-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
+.zl-sum>div{background:var(--card);border:1px solid rgba(148,163,184,.25);border-radius:14px;padding:8px;text-align:center}
+.zl-sum small{display:block;font-size:11px;opacity:.7}.zl-sum b{font-size:16px}
+.zl-tabs{display:flex;gap:6px;margin:0 0 8px}
+.zl-tabs button{flex:1;padding:8px;border-radius:12px;border:1px solid rgba(148,163,184,.3);background:transparent;color:inherit;font:inherit;font-weight:700}
+.zl-tabs button.on{background:var(--p);color:#fff;border-color:var(--p)}
+.zl-q{width:100%;box-sizing:border-box;margin:0 0 10px}
+.zl-p{background:var(--card);border:1px solid rgba(148,163,184,.25);border-radius:16px;margin:0 0 10px;overflow:hidden}
+.zl-p>summary{display:flex;align-items:center;gap:10px;padding:12px;list-style:none;cursor:pointer}
+.zl-p>summary::-webkit-details-marker{display:none}
+.zl-av{width:36px;height:36px;flex:0 0 36px;border-radius:50%;background:color-mix(in srgb,var(--p) 18%,transparent);display:flex;align-items:center;justify-content:center;font-weight:800}
+.zl-nm{flex:1;min-width:0}.zl-nm b{display:block}.zl-nm small{opacity:.7;font-size:12px}
+.zl-r{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid rgba(148,163,184,.15);cursor:pointer}
+.zl-r .g{flex:1;min-width:0}.zl-r .g small{display:block;opacity:.7;font-size:12px}
+.zl-r .a{text-align:left;direction:ltr;font-weight:800}.zl-r .a small{display:block;font-weight:500;opacity:.7;font-size:11px}
+.zl-late{color:#dc2626!important;opacity:1!important}
+.zl-sec{font-weight:800;margin:16px 2px 6px}
+.zl-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:end;margin:0 0 6px}
+.zl-row label{margin:0}
+`;document.head.appendChild(s)})();
+
+function zlPer(l){const p=l.pp&&XPP().find(x=>x.id===l.pp);
+  return{k:p?'p:'+p.id:'w:'+normAr(l.who||''),n:(p&&p.name)||l.who||'—',pp:p?p.id:''}}
+function zlInfo(l){const paid=r2(xLnPaid(l)),rem=r2(xLnRem(l));let nx=null;
+  try{nx=(xLnAlloc(l)||[]).find(s=>s.rem>.009)||null}catch(e){}
+  const due=nx?nx.d:(rem>.009?(l.due||''):'');return{paid,rem,due,late:!!due&&due<today()&&rem>.009}}
+var ZLT='open',ZLO={};
+
+/* ---------- 📋 الشاشة: كارت لكل شخص وجواه سلفه ---------- */
+XVW.xln=function(){
+  const A=XLN().filter(l=>l&&!l.del).map(l=>Object.assign({l,p:zlPer(l)},zlInfo(l)));
+  const op=A.filter(x=>x.rem>.009),late=op.filter(x=>x.late);
+  const sel=ZLT==='open'?op:ZLT==='done'?A.filter(x=>x.rem<=.009):A;
+  const G=new Map();sel.forEach(x=>{if(!G.has(x.p.k))G.set(x.p.k,{p:x.p,L:[]});G.get(x.p.k).L.push(x)});
+  const groups=[...G.values()].map(g=>Object.assign(g,{rem:r2(g.L.reduce((s,x)=>s+x.rem,0)),late:g.L.some(x=>x.late)}))
+    .sort((a,b)=>(b.late-a.late)||(b.rem-a.rem)||a.p.n.localeCompare(b.p.n,'ar'));
+  const row=x=>{const m=M(x.l.m);
+    const st=x.rem<=.009?'✅ خلصت':x.due?(x.late?'⚠️ متأخرة من '+dmy(x.due):'⏭ الميعاد '+dmy(x.due)):'من غير ميعاد';
+    return `<div class="zl-r" onclick="xLnOpen('${x.l.id}')"><div class="g"><b>${dmy(x.l.d)}${m?' · '+esc(m.name):''}</b><small class="${x.late?'zl-late':''}">${st}${x.paid>0&&x.rem>.009?' · اتسدد '+num(x.paid):''}</small></div><div class="a">${num(x.rem>.009?x.rem:(+x.l.amt||0))}<small>${x.rem>.009?'من '+num(+x.l.amt||0):'المبلغ'}</small></div><span>‹</span></div>`};
+  const card=g=>`<details class="zl-p" data-k="${esc(g.p.k)}" data-q="${esc(normAr(g.p.n))}" ${ZLO[g.p.k]!==false?'open':''} ontoggle="ZLO[this.dataset.k]=this.open">
+    <summary><span class="zl-av">${esc((g.p.n||'?').trim().charAt(0))}</span><span class="zl-nm"><b>${esc(g.p.n)}</b><small>${g.L.length} سلفة${g.late?' · <span class="zl-late">فيه متأخر</span>':''}</small></span><b class="${g.rem>.009?'neg':'pos'}" dir="ltr">${num(g.rem)}</b></summary>
+    ${g.L.sort((a,b)=>String(b.l.d).localeCompare(String(a.l.d))).map(row).join('')}
+    ${g.p.pp&&typeof xPpLoan==='function'?`<div class="zl-r" onclick="xPpLoan('${g.p.pp}')"><div class="g"><b>➕ سلفة جديدة لـ ${esc(g.p.n)}</b></div></div>`:''}</details>`;
+  return `<div class="phead"><button class="mini" onclick="go('more')">→</button><h3>🤝 السلف</h3><button class="mini pri" onclick="xLnNew()">+ سلفة</button></div>
+  <div class="zl-sum"><div><small>ليك عند الناس</small><b class="neg">${num(r2(op.reduce((s,x)=>s+x.rem,0)))}</b></div><div><small>مفتوحة</small><b>${op.length}</b></div><div><small>متأخرة</small><b class="${late.length?'zl-late':''}">${late.length}</b></div></div>
+  <div class="zl-tabs">${[['open','⏳ مفتوحة'],['done','✅ خلصت'],['all','🗂 الكل']].map(([k,t])=>`<button class="${ZLT===k?'on':''}" onclick="ZLT='${k}';render()">${t}</button>`).join('')}</div>
+  <input class="zl-q" placeholder="🔍 دوّر بالاسم" oninput="zlFind(this.value)">
+  ${groups.length?groups.map(card).join(''):'<p class="empty">مفيش سلف هنا</p>'}`};
+window.zlFind=function(v){const q=normAr(v||'');document.querySelectorAll('#view .zl-p').forEach(d=>{d.style.display=!q||d.dataset.q.includes(q)?'':'none'})};
+
+/* ---------- ✏️ السلفة: كل حاجة فيها بتتعدل من مكان واحد ---------- */
+xLnOpen=function(id){const l=xLnL(id);if(!l)return toast('السلفة مش موجودة');
+  const i=zlInfo(l),p=zlPer(l),tx=l.tx&&S.txs.find(t=>t.id===l.tx),locked=!!(tx&&isClosed(tx.date));
+  const AC=cur=>S.methods.filter(m=>m.active!==false||m.id===cur);
+  const sch=(l.sch||[]).slice().sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+  let cum=0;const schH=sch.map((s,k)=>{cum=r2(cum+(+s.a||0));const cov=cum<=i.paid+.009;
+    return `<div class="zl-row"><label>قسط ${k+1}<input type="date" data-sd="${k}" value="${s.d||''}" ${cov?'disabled':''}></label><label>المبلغ<input data-sa="${k}" inputmode="decimal" dir="ltr" value="${amtStr(+s.a||0)}" ${cov?'disabled':''}></label><span>${cov?'✅':''}</span></div>`}).join('');
+  const pays=(l.pays||[]).slice().sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+  const payH=pays.map(q=>q.ex||q.wo?`<div class="kv"><span>✋ إعفاء ${dmy(q.d)}</span><b>${num(+q.a||0)}</b></div>`
+    :`<div class="zl-row" data-pid="${q.id}"><label>📅 التاريخ<input type="date" data-pd value="${q.d||''}"></label><label>💵 المبلغ<input data-pa inputmode="decimal" dir="ltr" value="${amtStr(+q.a||0)}"></label><button type="button" class="mini danger" onclick="zlPayDel('${id}','${q.id}')">🗑</button></div>
+    <label>🏦 استلمت في<select data-pm="${q.id}">${opt(AC(q.m),q.m)}</select></label>`).join('');
+  const exH=(l.ex?`<div class="xbwm">✋ اتعفى من ${num(+l.ex.a||0)} يوم ${dmy(l.ex.d)} <button type="button" class="mini" onclick="xLnUnEx('${id}')">↩️ إلغاء</button></div>`:'')
+    +(l.exP||[]).map(e=>`<div class="xbwm">✋ اتعفى ${num(+e.a||0)} يوم ${dmy(e.d)} <button type="button" class="mini" onclick="xLnUnExP('${id}','${e.pay}')">↩️ إلغاء</button></div>`).join('');
+  sheet(`<h2>🤝 ${esc(p.n)}</h2>
+  <div class="zl-sum"><div><small>المبلغ</small><b>${num(+l.amt||0)}</b></div><div><small>اتسدد</small><b class="pos">${num(i.paid)}</b></div><div><small>الباقي</small><b class="${i.rem>.009?'neg':'pos'}">${num(i.rem)}</b></div></div>
+  ${i.due?`<p class="${i.late?'warn':'muted'}">${i.late?'⚠️ متأخرة من ':'⏭ الميعاد الجاي '}${dmy(i.due)}</p>`:''}
+  ${locked?`<p class="warn">🔒 شهر ${mName(tx.date.slice(0,7))} مقفول، فالمبلغ والتاريخ والحساب مش هيتعدلوا</p>`:''}
+  <div class="zl-sec">✏️ بيانات السلفة</div>
+  ${p.pp?`<div class="kv"><span>👤 الشخص</span><b>${esc(p.n)}</b></div>`:`<label>👤 الاسم<input id="zl-who" value="${esc(l.who||'')}"></label>`}
+  <div class="two"><label>💵 المبلغ<input id="zl-a" inputmode="decimal" dir="ltr" value="${amtStr(+l.amt||0)}" ${locked?'disabled':''}></label><label>📅 اتصرفت يوم<input id="zl-d" type="date" value="${l.d||''}" ${locked?'disabled':''}></label></div>
+  <label>🏦 من حساب<select id="zl-m" ${locked?'disabled':''}>${opt(AC(l.m),l.m)}</select></label>
+  ${sch.length?'':`<label>⏭ ميعاد السداد<input id="zl-due" type="date" value="${l.due||''}"></label>`}
+  <label>📝 ملاحظة<input id="zl-n" value="${esc(l.note||'')}"></label>
+  ${sch.length?`<div class="zl-sec">🗓 مواعيد السداد</div>${schH}`:''}
+  <div class="zl-sec">💵 الدفعات (${pays.length})</div>${payH||'<p class="muted">لسه مفيش دفعات</p>'}${exH}
+  <button class="btn" onclick="zlSave('${id}')">💾 احفظ التعديلات</button>
+  ${i.rem>.009?`<div class="two"><button class="btn ghost" onclick="xLnPay('${id}')">💵 سجّل دفعة</button><button class="btn ghost" onclick="xLnResch('${id}')">🗓 إعادة جدولة</button></div><button class="btn ghost" onclick="xLnEx('${id}')">✋ إعفاء</button>`:''}
+  ${p.pp&&typeof xLedOpen==='function'?`<button class="btn ghost" onclick="xLedOpen('pp','${p.pp}')">📒 كشف حساب ${esc(p.n)}</button>`:''}
+  <button class="btn ghost danger" onclick="zlDel('${id}')">🗑 حذف السلفة</button>`)};
+
+window.zlSave=function(id){const l=xLnL(id);if(!l)return;
+  const tx=l.tx&&S.txs.find(t=>t.id===l.tx),locked=!!(tx&&isClosed(tx.date));
+  const a=r2(parseNum(($('#zl-a')||{}).value)||0),d=($('#zl-d')||{}).value,m=($('#zl-m')||{}).value;
+  if(!(a>0))return toast('اكتب المبلغ');if(!d)return toast('اختار التاريخ');
+  if(!locked&&tx&&d!==tx.date&&isClosed(d))return toast('شهر '+mName(d.slice(0,7))+' مقفول');
+  const P=[...document.querySelectorAll('#sheet .zl-row[data-pid]')].map(r=>{const pid=r.dataset.pid;
+    return{pid,pa:r2(parseNum(r.querySelector('[data-pa]').value)||0),pd:r.querySelector('[data-pd]').value,pm:(document.querySelector(`#sheet [data-pm="${pid}"]`)||{}).value}});
+  for(const x of P){if(!(x.pa>0))return toast('فيه دفعة من غير مبلغ');if(!x.pd)return toast('فيه دفعة من غير تاريخ');if(x.pd<d)return toast('فيه دفعة قبل يوم السلفة');
+    const q=(l.pays||[]).find(y=>y.id===x.pid),qt=q&&q.tx&&S.txs.find(t=>t.id===q.tx);
+    if(qt&&(Math.abs((+qt.amount||0)-x.pa)>.009||qt.date!==x.pd||qt.method!==x.pm)&&(isClosed(qt.date)||isClosed(x.pd)))return toast('فيه دفعة في شهر مقفول')}
+  const paid=r2((l.pays||[]).reduce((s,q)=>{const e=P.find(x=>x.pid===q.id);return s+(e?e.pa:(+q.a||0))},0));
+  if(paid>a+.009)return toast('اللي اتسدد ('+num(paid)+') أكتر من المبلغ '+num(a));
+  let sch=null;
+  if((l.sch||[]).length){const S2=l.sch.map(s=>Object.assign({},s)).sort((x,y)=>String(x.d).localeCompare(String(y.d))),o=JSON.stringify(S2.map(s=>[s.d,+s.a]));
+    S2.forEach((s,k)=>{const di=document.querySelector(`#sheet [data-sd="${k}"]`),ai=document.querySelector(`#sheet [data-sa="${k}"]`);
+      if(di&&!di.disabled&&di.value)s.d=di.value;if(ai&&!ai.disabled)s.a=r2(parseNum(ai.value)||0)});
+    const tot=r2(S2.reduce((s,x)=>s+(+x.a||0),0));
+    if(Math.abs(tot-a)>.009){if(JSON.stringify(S2.map(s=>[s.d,+s.a]))!==o)return toast('مجموع مواعيد السداد '+num(tot)+' لازم يساوي المبلغ '+num(a));
+      const L=S2[S2.length-1],na=r2((+L.a||0)+a-tot);if(na<=0)return toast('عدّل مواعيد السداد: مجموعها '+num(tot)+' والمبلغ '+num(a));L.a=na}
+    if(S2.some(s=>!s.d||!(+s.a>0)))return toast('فيه ميعاد سداد ناقص');sch=S2}
+  const ch=[];
+  if(!locked){if(Math.abs((+l.amt||0)-a)>.009)ch.push('المبلغ '+num(+l.amt||0)+' ← '+num(a));if(l.d!==d)ch.push('التاريخ '+dmy(l.d)+' ← '+dmy(d));if(m&&l.m!==m)ch.push('الحساب');
+    l.amt=a;l.d=d;if(m)l.m=m;if(tx){tx.amount=a;tx.date=d;if(m)tx.method=m}}
+  const w=$('#zl-who');if(w&&w.value.trim()&&w.value.trim()!==l.who){ch.push('الاسم');l.who=w.value.trim()}
+  const n=(($('#zl-n')||{}).value||'').trim();if(n!==(l.note||'')){if(n)l.note=n;else delete l.note}
+  const du=$('#zl-due');if(du&&du.value!==(l.due||'')){ch.push('ميعاد السداد');if(du.value)l.due=du.value;else delete l.due}
+  if(sch){l.sch=sch;if('due' in l)l.due=sch[sch.length-1].d}
+  P.forEach(x=>{const q=(l.pays||[]).find(y=>y.id===x.pid);if(!q)return;
+    if(Math.abs((+q.a||0)-x.pa)>.009||q.d!==x.pd||(x.pm&&q.m!==x.pm))ch.push('دفعة '+dmy(q.d));
+    q.a=x.pa;q.d=x.pd;if(x.pm)q.m=x.pm;const qt=q.tx&&S.txs.find(t=>t.id===q.tx);if(qt){qt.amount=x.pa;qt.date=x.pd;if(x.pm)qt.method=x.pm}});
+  try{if(ch.length)xLnLog(l,'✏️ اتعدّل: '+ch.join(' · '))}catch(e){}
+  save();render();xLnOpen(id);toast('✅ اتحفظ')};
+
+window.zlPayDel=async function(id,pid){const l=xLnL(id);if(!l)return;const q=(l.pays||[]).find(x=>x.id===pid);if(!q)return;
+  const qt=q.tx&&S.txs.find(t=>t.id===q.tx);if(qt&&isClosed(qt.date))return toast('الشهر ده مقفول');
+  if(!await ask('امسح الدفعة دي؟',fmt(+q.a||0)+' · '+dmy(q.d),{danger:true,icon:'🗑',ok:'امسح'}))return;
+  l.pays=l.pays.filter(x=>x!==q);
+  if(qt){const k=new Set([qt.id]);S.txs.forEach(t=>{if(t&&(t.feeOf===qt.id||t.tipOf===qt.id||t.splOf===qt.id))k.add(t.id)});S.txs=S.txs.filter(t=>!(t&&k.has(t.id)))}
+  try{xLnLog(l,'🗑 اتمسحت دفعة '+num(+q.a||0)+' يوم '+dmy(q.d))}catch(e){}
+  save();render();xLnOpen(id);toast('🗑 اتمسحت')};
+
+window.zlDel=async function(id){const l=xLnL(id);if(!l)return;
+  const ids=[l.tx].concat((l.pays||[]).map(q=>q.tx)).filter(Boolean);
+  if(S.txs.some(t=>t&&ids.includes(t.id)&&isClosed(t.date)))return toast('فيه عمليات للسلفة دي في شهر مقفول');
+  if(!await ask('حذف السلفة؟',zlPer(l).n+' · '+fmt(+l.amt||0)+'\nهتتمسح السلفة ومصروفها ودفعاتها.',{danger:true,icon:'🗑',ok:'احذف'}))return;
+  const k=new Set(ids);S.txs.forEach(t=>{if(t&&(k.has(t.feeOf)||k.has(t.tipOf)||k.has(t.splOf)))k.add(t.id)});
+  S.txs=S.txs.filter(t=>!(t&&k.has(t.id)));
+  const arr=Object.values(S).find(v=>Array.isArray(v)&&v.includes(l));if(arr)arr.splice(arr.indexOf(l),1);else l.del=1;
+  save();closeSheet();render();toast('🗑 اتحذفت')};
+
+if(view==='xln'){try{render()}catch(e){}}
+}catch(e){console.error('fix 2.21.261',e)}
+/* ===== آخر 2.21.261 ===== */
 
 /* نهاية fix.js */
