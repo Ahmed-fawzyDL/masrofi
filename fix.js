@@ -16312,6 +16312,23 @@ document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.cl
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.280',e)}
 /* ===== آخر 2.21.280 ===== */
+/* ========== 2.21.281 · قوايم العمليات أنضف ========== */
+try{
+XVER2='2.21.281';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zr-css'))return;const s=document.createElement('style');s.id='zr-css';s.textContent=`
+html body #view .prog{display:none!important}
+html body #view .kpis .kpi b{font-size:14.5px!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;letter-spacing:-.2px}
+html body #view .kpis .kpi{padding:9px 6px!important;min-width:0}
+html body #view details.grp :is(details.xgr,.xl3,.ckx,.row,.xr){background:transparent!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.12)!important;border-radius:0!important;box-shadow:none!important;margin:0!important;backdrop-filter:none!important}
+html body #view details.grp details.xgr>summary{background:transparent!important;border:0!important;box-shadow:none!important;padding:11px 14px!important}
+html body #view details.grp :is(.chip,.tag,.xchip,.xc){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 0 8px!important;font-size:11.5px!important;font-weight:600!important;opacity:.7;border-radius:0!important;color:inherit!important}
+html body #view details.grp :is(.ic,.iav){width:36px!important;height:36px!important;border-radius:12px!important;font-size:16px!important}
+html body #view details.grp :is(.amt,.xa){color:inherit!important;font-weight:800!important;font-size:15px!important}
+html body #view details.grp .xlnn{gap:4px!important}
+`;document.head.appendChild(s)})();
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.281',e)}
+/* ===== آخر 2.21.281 ===== */
 
 /* نهاية fix.js */
 
