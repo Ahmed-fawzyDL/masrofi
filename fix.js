@@ -15738,6 +15738,46 @@ window.zhAlerts=function(){if(!ZHAL)return toast('مفيش حاجة مستنيا
 if(view==='home'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.268',e)}
 /* ===== آخر 2.21.268 ===== */
+/* ========== 2.21.270 · ترتيب الرئيسية + زرار ➕ جديد ========== */
+try{
+XVER2='2.21.270';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zh5-css'))return;const s=document.createElement('style');s.id='zh5-css';s.textContent=`
+#xfw .xfm{background:linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)!important;border-radius:20px!important;border:1px solid rgba(255,255,255,.25)!important;box-shadow:0 12px 28px rgba(13,148,136,.45)!important;font-size:30px!important;transition:transform .25s!important}
+#xfw.zon .xfm{transform:rotate(45deg)!important}
+#xfw .xfi,#xfw .xfbg{display:none!important}
+#zfp{position:fixed;inset:0;z-index:59;background:rgba(2,6,16,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:0 12px calc(92px + env(safe-area-inset-bottom))}
+#zfp .p{width:min(100%,460px);background:linear-gradient(160deg,rgba(17,26,44,.97),rgba(11,18,32,.97));border:1px solid rgba(94,234,212,.22);border-radius:24px;padding:16px 10px 14px;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:zfpIn .18s ease-out}
+@keyframes zfpIn{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+#zfp .g{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px}
+#zfp button{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:transparent;color:#e8edf5;font:inherit;font-size:11.5px;font-weight:700;cursor:pointer;position:relative;padding:0}
+#zfp button span{width:52px;height:52px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 8px 18px rgba(0,0,0,.3)}
+#zfp button i{position:absolute;top:-5px;right:calc(50% - 32px);background:#ef4444;color:#fff;font-style:normal;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #0b1220}
+`;document.head.appendChild(s)})();
+
+/* الرئيسية */
+try{const _vhB=vHome;vHome=function(){let h=_vhB.apply(this,arguments);
+  h=h.replace(/<button type="button" class="zh-chip" onclick="go\('months'\)">[^<]*<\/button>/,'');
+  h=h.replace(`onclick="openFlow('inc')"`,`onclick="go('col')"`).replace(`onclick="openFlow('exp')"`,`onclick="go('exps')"`);
+  h=h.replace(/<div class="zh-nv">[\s\S]*?<\/div>/,'');
+  h=h.replace('سلفة</button>',`سلفة</button><button type="button" class="zh-q" onclick="rtab='';go('reports')"><span style="background:linear-gradient(135deg,#6366f1,#4338ca)">📊</span>التقارير</button>`);
+  return h}}catch(e){}
+
+/* زرار ➕ */
+xFab=function(v){const w=document.getElementById('xfw'),o=document.getElementById('zfp'),open=v==null?!o:!!v;
+  if(o)o.remove();if(w)w.classList.remove('on','zon');if(!open)return;
+  let ks=[];try{ks=xFabList().filter(k=>k!=='inc'&&k!=='exp'&&XFC[k])}catch(e){}
+  const it=[['☰','المزيد',"go('more')",'#64748b,#334155',0]].concat(ks.map(k=>{const c=XFC[k];let n=0;try{n=xFabRel(k)}catch(e){}return[c[0],c[1],c[2],c[3],n]}));
+  const d=document.createElement('div');d.id='zfp';
+  d.innerHTML=`<div class="p"><div class="g">${it.map((x,i)=>`<button type="button" data-i="${i}"><span style="background:linear-gradient(135deg,${x[3]})">${x[0]}</span>${esc(x[1])}${x[4]?`<i>${x[4]}</i>`:''}</button>`).join('')}</div></div>`;
+  d.onclick=e=>{const b=e.target.closest('button[data-i]');d.remove();if(w)w.classList.remove('zon');if(!b)return;
+    try{new Function(it[+b.dataset.i][2])()}catch(err){console.error(err)}};
+  document.body.appendChild(d);if(w)w.classList.add('zon')};
+window.xFab=xFab;
+try{const _hbZ=handleBack;handleBack=function(){if(document.getElementById('zfp')){xFab(0);return true}return _hbZ.apply(this,arguments)}}catch(e){}
+
+if(view==='home'){try{render()}catch(e){}}
+}catch(e){console.error('fix 2.21.270',e)}
+/* ===== آخر 2.21.270 ===== */
 
 
 /* نهاية fix.js */
