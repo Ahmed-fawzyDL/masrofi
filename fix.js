@@ -15825,6 +15825,43 @@ const z4=document.getElementById('zh4-css');if(z4)z4.remove();
 if(view==='home'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.272',e)}
 /* ===== آخر 2.21.272 ===== */
+/* ========== 2.21.273 · الشكل الجديد لكل الشاشات ========== */
+try{
+XVER2='2.21.273';XVBUILD2='16/11/2026';
+try{const _vhD=vHome;vHome=function(){let h=_vhD.apply(this,arguments);
+  return h.replace(/(سحب كاش|أكبر مصروف) · [^<]+<\/small>/g,'$1</small>')}}catch(e){}
+(()=>{if(document.getElementById('zth-css'))return;const G='linear-gradient(140deg,#0d9488,#0e7490 45%,#4338ca)',B='1px solid rgba(148,163,184,.2)';
+const s=document.createElement('style');s.id='zth-css';s.textContent=`
+html body #view .phead{display:flex;align-items:center;gap:8px;margin:2px 0 12px!important}
+html body #view .phead :is(h2,h3){font-size:19px!important;font-weight:800!important;flex:1}
+html body #view .phead .mini{border-radius:12px!important}
+html body :is(#view,#sheet) .mini.pri{background:${G}!important;color:#fff!important;border:0!important;box-shadow:0 6px 16px rgba(13,148,136,.3)!important}
+html body :is(#view,#sheet,.dbox) .btn:not(.ghost):not(.danger){background:${G}!important;color:#fff!important;border:0!important;border-radius:16px!important;box-shadow:0 10px 24px rgba(13,148,136,.3)!important;font-weight:800!important}
+html body :is(#view,#sheet,.dbox) .btn.ghost{border-radius:16px!important;border:1px solid rgba(94,234,212,.3)!important;background:rgba(13,148,136,.08)!important;box-shadow:none!important}
+html body #view .kpis{gap:8px!important}
+html body #view .kpi{background:var(--card)!important;border:${B}!important;border-radius:16px!important;box-shadow:none!important;backdrop-filter:none!important;padding:10px!important}
+html body #view .kpi b{font-weight:800!important}
+html body #view .tiles .tile{background:var(--card)!important;border:${B}!important;border-radius:16px!important;box-shadow:none!important;backdrop-filter:none!important}
+html body #view .tiles .tile.on{background:${G}!important;color:#fff!important;border-color:transparent!important}
+html body #view details.grp{background:var(--card)!important;border:${B}!important;border-radius:18px!important;overflow:hidden;box-shadow:none!important;backdrop-filter:none!important;margin-bottom:10px!important}
+html body #view details.grp>summary{padding:12px 14px!important;font-weight:800!important}
+html body #view details.grp[open]>summary{background:linear-gradient(90deg,rgba(13,148,136,.22),rgba(67,56,202,.12))!important;border-bottom:1px solid rgba(148,163,184,.15)!important}
+html body #view .list{background:var(--card)!important;border:${B}!important;border-radius:18px!important;box-shadow:none!important;backdrop-filter:none!important;overflow:hidden}
+html body #view details.grp .list{border:0!important;border-radius:0!important;background:transparent!important}
+html body #view .row{border-bottom:1px solid rgba(148,163,184,.12)!important;padding:11px 12px!important}
+html body #view .row .ic{border-radius:11px!important}
+html body #view .amt{font-weight:800!important}
+html body :is(#view,#sheet) :is(.seg,.tabs) button.on{background:${G}!important;color:#fff!important;border-color:transparent!important}
+html body #sheet .body{border-radius:24px 24px 0 0!important;border-top:2px solid rgba(94,234,212,.35)!important}
+html body #sheet h2{font-weight:800!important}
+html body :is(#view,#sheet) :is(input:not([type=checkbox]):not([type=radio]),select,textarea,.xsel){border-radius:13px!important}
+html body :is(#view,#sheet) :is(input,textarea,.xsel):focus{border-color:#14b8a6!important;box-shadow:0 0 0 3px rgba(20,184,166,.18)!important;outline:none}
+html body #view .rgrid .rbtn{background:var(--card)!important;border:${B}!important;border-radius:18px!important;box-shadow:none!important;backdrop-filter:none!important}
+html body #view .mbar{background:var(--card)!important;border:${B}!important;border-radius:16px!important;box-shadow:none!important}
+`;document.head.appendChild(s)})();
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.273',e)}
+/* ===== آخر 2.21.273 ===== */
 
 
 /* نهاية fix.js */
