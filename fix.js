@@ -16858,6 +16858,26 @@ try{const _rnLg=render;render=function(){const r=_rnLg.apply(this,arguments);zwL
 zwLogo();try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.293',e)}
 /* ===== آخر 2.21.293 ===== */
+/* ========== 2.21.294 · السيرش جنب العنوان ========== */
+try{
+XVER2='2.21.294';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zw4-css'))return;const s=document.createElement('style');s.id='zw4-css';s.textContent=`
+html body #view .phead .zsearch{flex:1;min-width:0;display:flex!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+html body #view .phead .zsearch input{display:block!important;width:100%!important;height:36px!important;min-height:0!important;margin:0!important;padding:0 14px!important;border-radius:999px!important;background:rgba(255,255,255,.04)!important;border:1px solid rgba(148,163,184,.3)!important;font-size:13px!important;box-shadow:none!important}
+html body #view .phead .zsearch input:focus{border-color:#14b8a6!important;box-shadow:0 0 0 3px rgba(20,184,166,.18)!important}
+`;document.head.appendChild(s)})();
+const _ztS=window.zwTop;window.zwTop=function(){try{_ztS()}catch(e){}try{if(view!=='col'&&view!=='exps')return;
+  const v=document.getElementById('view'),ph=v&&v.querySelector(':scope>.phead');if(!ph||ph.querySelector('.zsearch'))return;
+  const inp=v.querySelector('.gsr input');if(!inp)return;const w=document.createElement('div');w.className='gsr zsearch';
+  inp.placeholder='🔍 سيرش';inp.setAttribute('autocomplete','off');w.appendChild(inp);ph.appendChild(w)}catch(e){console.error('zsearch',e)}};
+let zsT=0;
+document.addEventListener('input',e=>{const i=e.target;if(!i||!i.closest||!i.closest('#view .zsearch'))return;clearTimeout(zsT);
+  zsT=setTimeout(()=>{try{GQ[view]=i.value}catch(x){}const on=!!i.value.trim();
+    ['col:wait','col:done','exps:fix','exps:inst','exps:pend','exps:bill','exps:var'].forEach(k=>{if(k.startsWith(view+':')){if(on)ZXO[k]=true;else delete ZXO[k]}});
+    try{ZXE='';zwDraw()}catch(x){}},150)},true);
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.294',e)}
+/* ===== آخر 2.21.294 ===== */
 
 /* نهاية fix.js */
 
