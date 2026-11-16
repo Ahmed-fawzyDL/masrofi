@@ -15700,6 +15700,25 @@ zhHomeBtn();
 if(view==='home'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.267',e)}
 /* ===== آخر 2.21.267 ===== */
+/* ========== 2.21.268 · التنبيهات في زرار لوحده ========== */
+try{
+XVER2='2.21.268';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zh3-css'))return;const s=document.createElement('style');s.id='zh3-css';s.textContent=`
+.zh-als .zh-a{display:flex!important;width:100%;box-sizing:border-box;margin:0 0 8px;white-space:normal!important;padding:12px!important;font-size:13.5px!important}
+.zh-chip.al{background:rgba(239,68,68,.9)!important}
+`;document.head.appendChild(s)})();
+var ZHAL='';
+try{const _vhA=vHome;vHome=function(){let h=_vhA.apply(this,arguments);
+  const m=h.match(/<div class="zh-h">محتاج انتباهك<\/div><div class="zh-al">([\s\S]*?)<\/div><\/div>/);
+  ZHAL=m?m[1]:'';
+  if(m){h=h.replace(m[0],'');const n=(ZHAL.match(/class="zh-a /g)||[]).length;
+    h=h.replace('<span style="display:flex;gap:6px">',`<span style="display:flex;gap:6px"><button type="button" class="zh-chip al" onclick="zhAlerts()">⚠️ ${n}</button>`)}
+  return h}}catch(e){}
+window.zhAlerts=function(){if(!ZHAL)return toast('مفيش حاجة مستنياك ✓');
+  sheet(`<h2>⚠️ محتاج انتباهك</h2><div class="zh-als">${ZHAL.replace(/onclick="/g,'onclick="closeSheet();')}</div>`)};
+if(view==='home'){try{render()}catch(e){}}
+}catch(e){console.error('fix 2.21.268',e)}
+/* ===== آخر 2.21.268 ===== */
 
 
 /* نهاية fix.js */
