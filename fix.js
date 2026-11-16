@@ -15818,6 +15818,13 @@ try{const _vhC=vHome;vHome=function(){let h=_vhC.apply(this,arguments);
 if(view==='home'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.271',e)}
 /* ===== آخر 2.21.271 ===== */
+/* ========== 2.21.272 · رجوع الكارت الكبير لشكله ========== */
+try{
+XVER2='2.21.272';XVBUILD2='16/11/2026';
+const z4=document.getElementById('zh4-css');if(z4)z4.remove();
+if(view==='home'){try{render()}catch(e){}}
+}catch(e){console.error('fix 2.21.272',e)}
+/* ===== آخر 2.21.272 ===== */
 
 
 /* نهاية fix.js */
