@@ -15516,6 +15516,19 @@ if(view==='xln'){try{render()}catch(e){}}
 try{XVER2='2.21.262'}catch(e){}
 try{const _goZL=go;go=function(v){return _goZL.call(this,v==='loans'?'xln':v)}}catch(e){}
 try{if(view==='loans'){view='xln';render()}}catch(e){}
+/* ========== 2.21.263 · شاشة السلف الجديدة تظهر مكان أي نسخة قديمة ========== */
+try{
+XVER2='2.21.263';XVBUILD2='16/11/2026';
+function zlTake(){try{
+  const v=document.getElementById('view');if(!v||v.querySelector('.zl-sum'))return;
+  const h=v.querySelector('.phead h2,.phead h3,h2,h3');if(!h)return;
+  const t=h.textContent.replace(/[^\u0600-\u06FF]/g,'').trim();if(t!=='السلف')return;
+  v.innerHTML=XVW.xln();
+}catch(e){console.error('zlTake',e)}}
+try{const _rZL=render;render=function(){const r=_rZL.apply(this,arguments);zlTake();return r}}catch(e){}
+zlTake();
+}catch(e){console.error('fix 2.21.263',e)}
+/* ===== آخر 2.21.263 ===== */
 
 
 /* نهاية fix.js */
