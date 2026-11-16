@@ -15652,6 +15652,54 @@ vHome=function(){
 if(view==='home'){try{render()}catch(e){}}
 }catch(e){console.error('fix 2.21.266',e)}
 /* ===== آخر 2.21.266 ===== */
+/* ========== 2.21.267 · من غير الشريط اللي تحت + زرار الرئيسية فوق + الشاشة على قد الموبايل ========== */
+try{
+XVER2='2.21.267';XVBUILD2='16/11/2026';
+(()=>{if(document.getElementById('zh2-css'))return;const s=document.createElement('style');s.id='zh2-css';s.textContent=`
+html,body{overflow-x:hidden!important;max-width:100%}
+#view{overflow-x:hidden!important}
+body>nav{display:none!important}
+#view{padding-bottom:96px!important}
+#xfw{bottom:calc(14px + env(safe-area-inset-bottom))!important}
+.zh-hero{padding:12px!important;margin:2px 0 10px!important}
+.zh-ring{width:150px!important;height:150px!important;margin:6px auto 8px!important}
+.zh-ring svg{width:100%;height:100%}
+.zh-rc b{font-size:24px!important}
+.zh-sb{padding:7px 9px!important}.zh-sb i{width:28px!important;height:28px!important;flex-basis:28px!important}
+.zh-h{margin:10px 2px 6px!important}
+.zh-al{flex-wrap:wrap!important;overflow:visible!important}
+.zh-a{white-space:normal!important;padding:7px 10px!important;font-size:12px!important}
+.zh-qa{margin:10px 0 2px!important}
+.zh-q span{width:46px!important;height:46px!important;font-size:20px!important}
+.zh-nv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0 0}
+.zh-nv button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:14px;border:1px solid rgba(148,163,184,.22);background:var(--card);color:inherit;font:inherit;font-size:11.5px;font-weight:700;cursor:pointer}
+.zh-nv button span{font-size:18px}
+.zh-g{grid-template-columns:repeat(3,1fr)!important;gap:6px!important;margin-top:10px!important}
+.zh-t{padding:9px!important;border-radius:16px!important}
+.zh-t .ic{width:28px!important;height:28px!important;font-size:14px!important;border-radius:9px!important}
+.zh-t small{font-size:11px!important;margin-top:5px!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zh-t b{font-size:14.5px!important}.zh-t em{font-size:10.5px!important}
+#zhome{width:38px;height:38px;border-radius:50%;border:1px solid rgba(148,163,184,.3);background:rgba(255,255,255,.06);color:inherit;font-size:18px;display:none;align-items:center;justify-content:center;cursor:pointer;padding:0;margin-inline-start:auto;margin-inline-end:8px}
+#zhome.on{display:flex}
+`;document.head.appendChild(s)})();
+
+/* صف الشاشات في الرئيسية */
+try{const _vhN=vHome;vHome=function(){let h=_vhN.apply(this,arguments);
+  const nv=`<div class="zh-nv">${[["go('col')",'💰','التحصيلات'],["go('exps')",'💸','المصروفات'],["rtab='';go('reports')",'📊','التقارير'],["go('more')",'☰','المزيد']]
+    .map(([g,i,t])=>`<button type="button" onclick="${g}"><span>${i}</span>${t}</button>`).join('')}</div>`;
+  return h.indexOf('<div class="zh-g">')>=0?h.replace('<div class="zh-g">',nv+'<div class="zh-g">'):h+nv}}catch(e){}
+
+/* زرار 🏠 فوق في كل الشاشات */
+function zhHomeBtn(){try{const hd=document.querySelector('header');if(!hd)return;let b=document.getElementById('zhome');
+  if(!b){b=document.createElement('button');b.id='zhome';b.type='button';b.textContent='🏠';b.setAttribute('aria-label','الرئيسية');
+    b.onclick=()=>{try{closeSheet()}catch(e){}go('home');scrollTo(0,0)};
+    const bell=document.getElementById('bell');if(bell&&bell.parentElement)bell.parentElement.insertBefore(b,bell);else hd.appendChild(b)}
+  b.classList.toggle('on',view!=='home')}catch(e){}}
+try{const _rnH=render;render=function(){const r=_rnH.apply(this,arguments);zhHomeBtn();return r}}catch(e){}
+zhHomeBtn();
+if(view==='home'){try{render()}catch(e){}}
+}catch(e){console.error('fix 2.21.267',e)}
+/* ===== آخر 2.21.267 ===== */
 
 
 /* نهاية fix.js */
