@@ -16927,6 +16927,81 @@ try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.297',e)}
 /* ===== آخر 2.21.297 ===== */
 
+/* ========== 2.21.298 · المبلغ من غير مصاريف إنستاباي + السيرش بالمبلغين ========== */
+try{
+XVER2='2.21.298';XVBUILD2='18/11/2026';
+/* TT: fee=0 من غير مصاريف إنستاباي · fee=1 بالمصاريف */
+window.zfTT=function(L,fee){const P={};S.txs.forEach(t=>{if(t)P[t.id]=t});const TT={};
+  L.forEach(x=>{if(!x||(!fee&&x.feeOf))return;let r=x,g=0;while(g<5){const p=r.splOf||r.feeOf||r.tipOf||r.ztipOf;if(!p||!P[p])break;r=P[p];g++}TT[r.id]=r2((TT[r.id]||0)+(+x.amount||0))});return TT};
+zyBuild=function(){const k=ym(cur.y,cur.m),td=today(),ok0=zyFilt(),inc=view==='col';
+  const L=keyTx(k).filter(t=>t&&t.type===(inc?'inc':'exp')),TT=zfTT(L,0),TF=zfTT(L,1);
+  const ta=t=>TT[t.id]||+t.amount||0,fa=t=>TF[t.id]||+t.amount||0;
+  /* السيرش: المبلغ من غير المصاريف أو بالمصاريف */
+  const ok=(d,n,a,ex,a2)=>ok0(d,n,a,ex)||(a2!=null&&a2!==a&&ok0(d,n,a2,ex));
+  const grp=(txs,ic)=>{const M2=new Map();
+    txs.forEach(t=>{const a=ta(t),af=fa(t);if(!ok(t.date,zyNm(t),a,t.note,af))return;const c=zyT(()=>xTopC(t.cat),null)||C(t.cat),kk=c?c.id:'_'+t.id;
+      if(!M2.has(kk))M2.set(kk,{c,L:[]});M2.get(kk).L.push({t,a,af})});
+    return [...M2.values()].map(g=>g.L.length===1?{n:zyNm(g.L[0].t),ic,d:g.L[0].t.date,a:g.L[0].a,af:g.L[0].af,st:'paid',t:g.L[0].t}
+      :{n:g.c?g.c.name:'—',ic,d:g.L.reduce((m,x)=>x.t.date>m?x.t.date:m,''),a:r2(g.L.reduce((s,x)=>s+x.a,0)),af:r2(g.L.reduce((s,x)=>s+x.af,0)),st:'paid',g:g.L})};
+  const fx=(o,tag)=>{const done=o.s&&o.s.st==='done'&&o.s.t,sk=o.s&&(o.s.st==='skip'||o.s.st==='old');
+    return done?{n:o.r.name,ic:'📌',d:o.s.t.date,a:ta(o.s.t),af:fa(o.s.t),st:'paid',t:o.s.t,fx:o,tag}
+      :{n:o.r.name,ic:'📌',d:o.date,a:sk?0:+o.amt||0,st:sk?'skip':(o.date<td?'late':'wait'),fx:o,tag}};
+  const kep=x=>ok(x.d,x.n,x.a,x.t&&x.t.note,x.af);
+  if(!inc){const g=zyT(()=>XE.g,'all'),dl=zyT(()=>dueList(k,'','exp'),[]),linked=new Set(dl.filter(o=>o.s&&o.s.st==='done'&&o.s.t).map(o=>o.s.t.id));
+    const rest=L.filter(t=>!t.pend&&!zyKid(t)&&!linked.has(t.id)&&!(t.src&&t.src.k==='i')),isB=t=>t.bill||(C(t.cat)||{}).xbill;
+    const S5=[
+      {k:'fix',ic:'📌',t:'ثابت',items:zySort(zyUniq(dl.map(o=>fx(o))).filter(kep)),add:{l:'➕ مصروف ثابت',js:"catForm(null,'exp',{fixed:true})"}},
+      {k:'inst',ic:'🏦',t:'أقساط',items:zySort(zyUniq(zyT(()=>xInstDue(k),[]).map(x=>({n:x.p.name,ic:'🏦',d:x.it.due,a:+x.it.amount||0,st:x.it.due<td?'late':'wait',ins:x}))
+        .concat(L.filter(t=>!zyKid(t)&&t.src&&t.src.k==='i').map(t=>({n:(zyT(()=>plan(t.src.id),null)||{}).name||zyNm(t),ic:'🏦',d:t.date,a:ta(t),af:fa(t),st:'paid',t})))).filter(kep)),add:{l:'➕ أقساط جديدة',js:'planNew()'}},
+      {k:'pend',ic:'⏳',t:'غير مدفوع',items:zySort(zyT(()=>pendTx('exp',k),[]).filter(t=>!zyKid(t)).map(t=>({n:zyNm(t),ic:'⏳',d:t.date,a:+t.amount||0,st:t.date<td?'late':'wait',t})).filter(kep))},
+      {k:'bill',ic:'🧾',t:'فواتير',items:zySort(rest.filter(isB).map(t=>({n:zyNm(t),ic:'🧾',d:t.date,a:ta(t),af:fa(t),st:'paid',t})).filter(kep),true)},
+      {k:'var',ic:'🛒',t:'متغير',items:zySort(grp(rest.filter(t=>!isB(t)),'🛒'),true),add:{l:'➕ مصروف',js:"newTx('exp')"}}];
+    const W={all:null,fix:['fix'],inst:['inst'],var:['pend','var']}[g];const w=W===undefined?(/bil|fat|فوات/i.test(g)?['bill']:null):W;
+    return {all:g==='all',S:S5.filter(s=>!w||w.includes(s.k))}}
+  const g=zyT(()=>XI.g,'all'),dm=zyT(()=>dueList(k,'m','inc'),[]),da=zyT(()=>dueList(k,'a','inc'),[]);
+  const linked=new Set(dm.concat(da).filter(o=>o.s&&o.s.st==='done'&&o.s.t).map(o=>o.s.t.id));
+  const tg=t=>{const c=C(t.cat);return c&&c.fixed?(zyT(()=>isA(c),+c.every>=12)?'ann':'fix'):'var'};
+  const F=zyUniq(dm.map(o=>fx(o,'fix')).concat(da.map(o=>fx(o,'ann')))).filter(x=>(g==='all'||x.tag===g)&&kep(x));
+  const pend=zyT(()=>pendTx('inc',k),[]).filter(t=>!zyKid(t)&&(g==='all'||tg(t)===g)).map(t=>({n:zyNm(t),ic:'⏳',d:t.date,a:+t.amount||0,st:t.date<td?'late':'wait',t})).filter(kep);
+  const oth=L.filter(t=>!t.pend&&!zyKid(t)&&!linked.has(t.id)&&(g==='all'||tg(t)===g));
+  return {all:g==='all',S:[
+    {k:'wait',ic:'⏳',t:'غير محصّل',items:zySort(zyUniq(F.filter(x=>x.st==='wait'||x.st==='late').concat(pend))),add:{l:'➕ تحصيل ثابت',js:"catForm(null,'inc',{fixed:true})"}},
+    {k:'done',ic:'✅',t:'محصّل',items:zySort(zyUniq(F.filter(x=>x.st==='paid'||x.st==='skip')).concat(grp(oth,'💰')),true),add:{l:'➕ تحصيل',js:"newTx('inc')"}}]}};
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.298',e)}
+/* ===== آخر 2.21.298 ===== */
+
+/* ========== 2.21.299 · أقساط من غير كريديت ========== */
+try{
+XVER2='2.21.299';XVBUILD2='18/11/2026';
+(()=>{if(document.getElementById('znc-css'))return;const s=document.createElement('style');s.id='znc-css';s.textContent=`
+#zx .zx-note{display:flex;flex-direction:column;gap:6px;margin:6px 4px 8px;padding:10px 12px;border-radius:14px;background:rgba(148,163,184,.07);border:1px dashed rgba(94,234,212,.3);font-size:13px}
+#zx .zx-note div{display:flex;justify-content:space-between;gap:8px}
+#zx .zx-note b{direction:ltr;font-variant-numeric:tabular-nums}
+`;document.head.appendChild(s)})();
+/* القسط ده كريديت كارد؟ */
+window.zIsCC=function(x){try{const p=x.ins?x.ins.p:(x.t&&x.t.src&&x.t.src.k==='i'?zyT(()=>plan(x.t.src.id),null):null);
+  const isCr=m=>{m=m&&M(m);return !!m&&/credit|cc/i.test(String(m.type||'')+' '+String(m.kind||''))};
+  if(x.t&&isCr(x.t.method))return true;if(!p)return false;
+  if(p.cc||p.credit)return true;
+  if(/^(cc|credit|card)$|credit|كريديت/i.test([p.kind,p.type,p.k,p.t,p.mode].filter(Boolean).join(' ')))return true;
+  return isCr(p.method)||isCr(p.acct)||isCr(p.card)}catch(e){return false}};
+const _zbNC=zyBuild;zyBuild=function(){const B=_zbNC.apply(this,arguments);try{if(view!=='exps')return B;
+  const i=B.S.findIndex(s=>s.k==='inst');if(i<0)return B;const ins=B.S[i],paid=x=>x.st==='paid'?+x.a||0:0;
+  const nc=ins.items.filter(x=>!zIsCC(x)),cc=ins.items.filter(x=>zIsCC(x));
+  const sNC=r2(nc.reduce((a,x)=>a+paid(x),0)),sCC=r2(cc.reduce((a,x)=>a+paid(x),0));
+  B.S.splice(i+1,0,{k:'instnc',ic:'🏦',t:'أقساط من غير كريديت',items:nc,
+    note:`<div class="zx-note"><div><span>💳 اتدفع مع الكريديت (${cc.filter(x=>x.st==='paid').length})</span><b>${num(sCC)}</b></div><div><span>🏦 من غير كريديت (${nc.filter(x=>x.st==='paid').length})</span><b>${num(sNC)}</b></div><div><span>📦 كل الأقساط المدفوعة</span><b>${num(r2(sCC+sNC))}</b></div></div>`})}catch(e){console.error('instnc',e)}return B};
+window.zwDraw=function(){const box=document.getElementById('zx');if(!box)return;const B=zwBuild();
+  const vis=B.S.filter(s=>s.items.length||!B.all||s.k==='instnc'),one=vis.filter(s=>s.items.length&&s.k!=='instnc').length===1||!B.all;
+  box.innerHTML=vis.map((s,si)=>{const key=view+':'+s.k,open=ZXO[key]!=null?ZXO[key]:(one&&s.k!=='instnc'),po=s.k==='inst'||s.k==='instnc',
+    sum=r2(s.items.reduce((a,x)=>a+((x.st==='skip'||(po&&x.st!=='paid'))?0:+x.a||0),0));
+    return `<div class="zx-s ${open?'on':''}"><div class="zx-sh" onclick="zxSec('${key}',${open?0:1})"><span>${s.ic} ${s.t}</span><span class="zx-c">${s.items.length}</span><b>${num(sum)}</b><i>▾</i></div>${open?`<div class="zx-l">${s.note||''}${s.items.map((x,i)=>zwRow(x,'z'+si+'_'+i)).join('')||'<p class="empty" style="margin:8px">مفيش</p>'}${s.add?`<button type="button" class="zx-add" onclick="${s.add.js}">${s.add.l}</button>`:''}</div>`:''}</div>`}).join('')||'<p class="empty">مفيش عمليات</p>';
+  try{zzPaint()}catch(e){}};
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.299',e)}
+/* ===== آخر 2.21.299 ===== */
+
 /* نهاية fix.js */
 
 
