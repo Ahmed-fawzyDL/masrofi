@@ -16898,110 +16898,34 @@ const _ztE=window.zwTop;window.zwTop=function(){try{_ztE()}catch(e){}const i=doc
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.295',e)}
 /* ===== آخر 2.21.295 ===== */
-/* ========== 2.21.296 · الأقساط المدفوعة بس + المبالغ من غير مصاريف إنستاباي + «إكرامية من مصروف» ========== */
-try{(function(){
-if(window.__x296)return;window.__x296=1;
-var ONLY_PAID=['أقساط'];/* الأقسام اللي إجماليها = المدفوع بس */
-var AR='٠١٢٣٤٥٦٧٨٩';
-function num(s){s=String(s||'').replace(/[٠-٩]/g,function(d){return AR.indexOf(d)}).replace(/[^\d.\-]/g,'');return parseFloat(s)||0}
-function fmt(n){n=Math.round(n*100)/100;return n%1?n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):n.toLocaleString('en-US')}
-var AMT=/^-?(\d{1,3}(,\d{3})+|\d+)(\.\d{1,2})?$/;
-function isAmt(el){return el.children.length===0&&AMT.test((el.textContent||'').trim())}
-function own(el){var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;return t.trim()}
-function norm(s){return String(s||'').replace(/[^\p{L}\p{N}\s]/gu,'').replace(/\s+/g,' ').trim()}
-function TX(){try{return (typeof S!=='undefined'&&S&&S.txs)||[]}catch(e){return []}}
-function amtOf(t){var v=t.amt!=null?t.amt:(t.a!=null?t.a:(t.amount!=null?t.amount:t.v));return +v||0}
-function strs(t){var a=[];for(var k in t)if(typeof t[k]==='string')a.push(t[k]);return a.join(' ')}
-function dateOf(t){var v=t.d||t.date||t.dt;if(typeof v==='string'&&/^\d{4}-\d{2}/.test(v))return v;for(var k in t){v=t[k];if(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}/.test(v))return v}return ''}
-function nameOf(t){if(!t)return '';var f=['nt','name','title','n','tn','lbl','desc'];for(var i=0;i<f.length;i++)if(typeof t[f[i]]==='string'&&t[f[i]].trim())return t[f[i]].trim();
- try{var c=(S.cats||[]).find(function(c){return c&&String(c.id)===String(t.cat!=null?t.cat:t.c)});if(c)return c.name||c.n||''}catch(e){}return ''}
-
-/* ---- فهرس العمليات ومصاريف إنستاباي ---- */
-var FEEF=['ipf','fee','ipFee','instaFee','xfee','xipf','ipfee','fees'];var IX;
-function build(){var byId={},fee={},isFee={},list=TX();
- list.forEach(function(t){if(t&&t.id!=null)byId[String(t.id)]=t});
- list.forEach(function(t){if(!t||t.id==null)return;var s=strs(t);
-  if(!(/مصاريف|رسوم|fee/i.test(s)&&/إنستاباي|انستاباي|instapay|insta/i.test(s)))return;
-  for(var k in t){if(k==='id')continue;var v=t[k];if(typeof v!=='string'&&typeof v!=='number')continue;v=String(v);
-   if(v!==String(t.id)&&byId[v]){fee[v]=(fee[v]||0)+amtOf(t);isFee[String(t.id)]=1;break}}});
- IX={byId:byId,fee:fee,isFee:isFee,list:list}}
-function feeOf(id){var t=IX.byId[id];if(!t||IX.isFee[id])return 0;if(IX.fee[id])return IX.fee[id];
- for(var i=0;i<FEEF.length;i++){var v=+t[FEEF[i]];if(v>0)return v}return 0}
-function idsIn(el){var out={},ns=[el].concat([].slice.call(el.querySelectorAll('*')));
- ns.forEach(function(n){var A=n.attributes;if(!A)return;for(var i=0;i<A.length;i++){var a=A[i];if(a.name==='class'||a.name==='style'||a.name==='src')continue;
-  var m=String(a.value).match(/[\w\-]{5,}/g);if(m)m.forEach(function(x){if(IX.byId[x])out[x]=1})}});return Object.keys(out)}
-function idsByName(row){var dm=(row.textContent||'').match(/(\d{2})\/(\d{2})\/(\d{4})/);if(!dm)return [];var ym=dm[3]+'-'+dm[2],title='';
- var es=row.querySelectorAll('*');for(var i=0;i<es.length;i++){var x=norm(own(es[i]));if(x.length>1&&!AMT.test(x)&&!/\d{2}\/\d{2}/.test(x)&&!/عمليات/.test(x)){title=x;break}}
- if(!title)return [];return IX.list.filter(function(t){if(!t||t.id==null||IX.isFee[String(t.id)]||dateOf(t).indexOf(ym)!==0)return false;
-  for(var k in t)if(typeof t[k]==='string'&&norm(t[k])===title)return true;return false}).map(function(t){return String(t.id)})}
-
-/* ---- النقطة 🟢/🔴 ---- */
-function col(s){var m=/rgba?\(([^)]+)\)/.exec(s||'');if(!m)return null;var p=m[1].split(',').map(parseFloat);if(p.length>3&&p[3]<.3)return null;return p}
-function dotType(el){if(el.children.length||(el.textContent||'').trim())return 0;var cs=getComputedStyle(el),w=parseFloat(cs.width),h=parseFloat(cs.height);
- if(!(w>=5&&w<=20&&Math.abs(w-h)<=3))return 0;if(cs.borderRadius.indexOf('%')<0&&parseFloat(cs.borderRadius)<w/2-1)return 0;
- var c=col(cs.backgroundColor)||(parseFloat(cs.borderTopWidth)>0?col(cs.borderTopColor):null);if(!c)return 0;
- if(c[1]>c[0]+40&&c[1]>=c[2])return 'g';if(c[0]>c[1]+40&&c[0]>=c[2])return 'r';return 0}
-function setTxt(el,txt){var cur=el.textContent.trim();if(el.dataset.x296v!==cur)el.dataset.x296o=cur;
- if(txt==null){if(el.dataset.x296v===cur&&el.dataset.x296o)el.textContent=el.dataset.x296o;delete el.dataset.x296v;return}
- if(cur!==txt)el.textContent=txt;el.dataset.x296v=txt}
-
-/* ---- السطور: المبلغ من غير مصاريف إنستاباي ---- */
-function getRows(){var dots=[],all=document.body.querySelectorAll('span,i,b,div,em');
- for(var i=0;i<all.length;i++){var d=dotType(all[i]);if(d)dots.push({el:all[i],t:d})}
- var rows=[];dots.forEach(function(D){var el=D.el;
-  while(el.parentElement&&el.parentElement!==document.body){var p=el.parentElement,n=0;for(var j=0;j<dots.length&&n<2;j++)if(p.contains(dots[j].el))n++;if(n>1)break;el=p}
-  var am=[].filter.call(el.querySelectorAll('*'),isAmt);if(!am.length||el===D.el)return;
-  rows.push({el:el,dot:D.t,amt:am[am.length-1]})});return rows}
-function fixRows(rows){rows.forEach(function(r){var ids=idsIn(r.el);if(!ids.length)ids=idsByName(r.el);
- var fee=0;ids.forEach(function(id){fee+=feeOf(id)});var a=r.amt,cur=a.textContent.trim();
- var orig=num(a.dataset.x296v===cur&&a.dataset.x296o?a.dataset.x296o:cur);
- if(fee>0&&fee<orig){setTxt(a,fmt(orig-fee));r.val=orig-fee;r.ch=1}else{setTxt(a,null);r.val=orig}})}
-
-/* ---- إجمالي الأقسام ---- */
-var NAMES=['ثابت','أقساط','غير مدفوع','فواتير','متغير','غير محصل','محصل'].map(norm);
-function fixSections(rows){var all=document.body.querySelectorAll('*'),titles=[];
- for(var i=0;i<all.length;i++){var e=all[i],tx=(e.textContent||'').trim();if(tx.length>25||NAMES.indexOf(norm(tx))<0)continue;
-  var deeper=[].some.call(e.children,function(c){return NAMES.indexOf(norm(c.textContent))>=0});if(!deeper)titles.push(e)}
- titles.forEach(function(t){var card=t.parentElement;
-  while(card&&card!==document.body&&!rows.some(function(r){return card.contains(r.el)}))card=card.parentElement;
-  if(!card||card===document.body)return;
-  if(titles.filter(function(x){return card.contains(x)}).length!==1)return;
-  var rs=rows.filter(function(r){return card.contains(r.el)}),inRow=function(l){return rs.some(function(r){return r.el.contains(l)})};
-  var h=t,tot=null;while(h&&!tot){var ls=[].filter.call(h.querySelectorAll('*'),function(l){return isAmt(l)&&!inRow(l)});
-   if(ls.length)tot=ls.reduce(function(a,b){return num(b.dataset.x296o||b.textContent)>num(a.dataset.x296o||a.textContent)?b:a});if(h===card)break;h=h.parentElement}
-  if(!tot)return;var nm=norm(t.textContent);
-  if(ONLY_PAID.map(norm).indexOf(nm)>=0)setTxt(tot,fmt(rs.filter(function(r){return r.dot==='g'}).reduce(function(s,r){return s+r.val},0)));
-  else if(rs.some(function(r){return r.ch}))setTxt(tot,fmt(rs.reduce(function(s,r){return s+r.val},0)));
-  else setTxt(tot,null)})}
-
-/* ---- «البرنامج سجلها لوحده» → «🎁 إكرامية من مصروف …» ---- */
-function parentOf(t){var id=String(t.id);
- for(var k in t){if(k==='id')continue;var v=t[k];if((typeof v==='string'||typeof v==='number')&&String(v)!==id&&IX.byId[String(v)]&&!IX.isFee[String(v)])return IX.byId[String(v)]}
- var a=amtOf(t),d=dateOf(t).slice(0,10);
- return IX.list.find(function(x){if(!x||x===t||dateOf(x).slice(0,10)!==d)return false;for(var k in x)if(/tip|ikr|ekr|grat/i.test(k)&&Math.abs((+x[k]||0)-a)<.01)return true;return false})||null}
-var RX=/البرنامج\s*سجّ?لها\s*لوحده/;
-function fixAuto(){var all=document.body.querySelectorAll('*');
- for(var i=0;i<all.length;i++){var e=all[i];if(e.dataset.x296a||!RX.test(own(e)))continue;
-  var box=e,ids=[];for(var k=0;k<4&&box&&!ids.length;k++){ids=idsIn(box);if(!ids.length)box=box.parentElement}
-  var t=ids.length&&IX.byId[ids[0]];if(!t)continue;
-  var lbl=/إكرامي/.test(strs(t))?'🎁 إكرامية من مصروف ':(IX.isFee[String(t.id)]?'💸 مصاريف إنستاباي على ':null);if(!lbl)continue;
-  var p=parentOf(t),nm=nameOf(p)||'…';
-  for(var c=e.firstChild;c;c=c.nextSibling)if(c.nodeType===3&&RX.test(c.nodeValue))c.nodeValue=c.nodeValue.replace(RX,lbl+nm);
-  e.dataset.x296a=1;
-  var go=(typeof xTxPeek==='function')?xTxPeek:(window.xTxPeek||null);
-  if(p&&go){var b=document.createElement('button');b.className='x296go';b.textContent='↗ افتح المصروف';
-   (function(pid){b.onclick=function(ev){ev.stopPropagation();ev.preventDefault();try{go(pid)}catch(er){}}})(p.id);e.appendChild(b)}}}
-
-var st=document.createElement('style');
-st.textContent='.x296go{margin-inline-start:6px;padding:2px 8px;border-radius:10px;border:1px solid rgba(94,234,212,.35);background:rgba(20,184,166,.12);color:inherit;font:inherit;font-size:.8em}';
-document.head.appendChild(st);
-
-var tm=0,mo;
-function run(){try{build();var rows=getRows();fixRows(rows);fixSections(rows);fixAuto()}catch(e){}if(mo)mo.takeRecords()}
-mo=new MutationObserver(function(){if(tm)return;tm=setTimeout(function(){tm=0;run()},80)});
-function start(){mo.observe(document.body,{childList:true,subtree:true,characterData:true});run()}
-if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
-})()}catch(e){}
+/* ========== 2.21.297 · الأقساط: المدفوع بس + المبالغ من غير مصاريف إنستاباي + إكرامية من مصروف ========== */
+try{
+XVER2='2.21.297';XVBUILD2='18/11/2026';
+/* المبلغ في القايمة من غير مصاريف إنستاباي، والمصاريف بتفضل جوه تفاصيل العملية */
+try{zyTT=function(L){const P={};S.txs.forEach(t=>{if(t)P[t.id]=t});const TT={};
+  L.forEach(x=>{if(!x||x.feeOf)return;let r=x,g=0;while(g<5){const p=r.splOf||r.tipOf||r.ztipOf;if(!p||!P[p])break;r=P[p];g++}TT[r.id]=r2((TT[r.id]||0)+(+x.amount||0))});return TT}}catch(e){console.error('zyTT 297',e)}
+/* إجمالي الأقساط = المدفوع بس */
+window.zwDraw=function(){const box=document.getElementById('zx');if(!box)return;const B=zwBuild();
+  const vis=B.S.filter(s=>s.items.length||!B.all),one=vis.filter(s=>s.items.length).length===1||!B.all;
+  box.innerHTML=vis.map((s,si)=>{const key=view+':'+s.k,open=ZXO[key]!=null?ZXO[key]:one,
+    sum=r2(s.items.reduce((a,x)=>a+((x.st==='skip'||(s.k==='inst'&&x.st!=='paid'))?0:+x.a||0),0));
+    return `<div class="zx-s ${open?'on':''}"><div class="zx-sh" onclick="zxSec('${key}',${open?0:1})"><span>${s.ic} ${s.t}</span><span class="zx-c">${s.items.length}</span><b>${num(sum)}</b><i>▾</i></div>${open?`<div class="zx-l">${s.items.map((x,i)=>zwRow(x,'z'+si+'_'+i)).join('')||'<p class="empty" style="margin:8px">مفيش</p>'}${s.add?`<button type="button" class="zx-add" onclick="${s.add.js}">${s.add.l}</button>`:''}</div>`:''}</div>`}).join('')||'<p class="empty">مفيش عمليات</p>';
+  try{zzPaint()}catch(e){}};
+/* «البرنامج سجلها لوحده» ← «🎁 إكرامية من مصروف [الاسم]» + زرار يفتح المصروف */
+(()=>{if(document.getElementById('ztl-css'))return;const s=document.createElement('style');s.id='ztl-css';s.textContent='.ztl{margin-inline-start:6px!important;width:auto!important;padding:2px 10px!important;font-size:11.5px!important}';document.head.appendChild(s)})();
+window.zTipLbl=function(){try{const RX=/البرنامج\s*سجّ?لها\s*لوحده/,W=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),N=[];let n;
+  while(n=W.nextNode())if(RX.test(n.nodeValue))N.push(n);if(!N.length)return;
+  const P={};S.txs.forEach(t=>{if(t)P[t.id]=t});
+  N.forEach(n=>{const e=n.parentElement;if(!e)return;let b=e,t=null;
+    for(let k=0;k<5&&b&&!t;k++){const h=b.outerHTML;if(h.length<6000)(h.match(/[\w-]{5,}/g)||[]).some(id=>{const x=P[id];if(x&&(x.tipOf||x.ztipOf||x.feeOf)){t=x;return true}return false});b=b.parentElement}
+    if(!t)return;const p=P[t.tipOf||t.ztipOf||t.feeOf];
+    n.nodeValue=n.nodeValue.replace(RX,(t.feeOf?'💸 مصاريف إنستاباي على ':'🎁 إكرامية من مصروف ')+(p?zyNm(p):'…'));
+    if(p&&!e.querySelector('.ztl')){const bt=document.createElement('button');bt.type='button';bt.className='mini ztl';bt.textContent='↗ افتح المصروف';
+      bt.onclick=ev=>{ev.stopPropagation();ev.preventDefault();try{if(typeof xTxPeek==='function')xTxPeek(p.id);else editTx(p.id)}catch(x){}};e.appendChild(bt)}})}catch(e){console.error('zTipLbl',e)}};
+let zTlT=0;try{new MutationObserver(()=>{clearTimeout(zTlT);zTlT=setTimeout(zTipLbl,200)}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+try{render()}catch(e){}
+}catch(e){console.error('fix 2.21.297',e)}
+/* ===== آخر 2.21.297 ===== */
 
 /* نهاية fix.js */
 
