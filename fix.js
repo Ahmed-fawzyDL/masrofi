@@ -17365,6 +17365,31 @@ try{const n=fixOld();if(n){save();render();
 try{const _sv=save;save=function(){try{fixOld()}catch(e){}return _sv.apply(this,arguments)}}catch(e){}
 })()}catch(e){console.error('fix 2.21.306',e)}
 
+/* ========== 2.21.307 · فحص سداد الكريديت (مؤقت) ========== */
+try{XVER2='2.21.307';XVBUILD2='22/11/2026 - 12:05 م'}catch(e){}
+try{(function(){
+window.xCcDiag=function(){const L=[];
+  const nm=id=>{try{return (M(id)||{}).name||String(id||'—')}catch(e){return String(id)}};
+  const cr=id=>{try{return xIsCr(id)?'كريديت':'عادي'}catch(e){return '؟'}};
+  L.push('الإصدار: '+(typeof XVER2!=='undefined'?XVER2:'؟'));
+  L.push('الشاشة: '+(typeof view!=='undefined'?view:'؟'));
+  let k='';try{k=ym(cur.y,cur.m)}catch(e){k='؟'}L.push('الشهر: '+k);
+  let g='؟';try{g=XE.g}catch(e){g='مش متاح'}L.push('التاب: '+g);
+  try{const B=zwBuild();L.push('الأقسام: '+B.S.map(s=>s.k).join(' · '))}catch(e){L.push('الأقسام: خطأ '+e.message)}
+  try{L.push('سداد الشهر: '+(window.xCcpSum?xCcpSum(k):'الدالة مش موجودة'))}catch(e){L.push('سداد الشهر: خطأ')}
+  L.push('');L.push('— عمليات قريبة من 19,271 —');
+  S.txs.filter(t=>t&&Math.abs((+t.amount||0)-19271.48)<1).forEach(t=>L.push([t.date,t.type,num(t.amount),'من: '+nm(t.method)+' ('+cr(t.method)+')','إلى: '+nm(t.to)+' ('+cr(t.to)+')','ccPay='+(t.ccPay||'—'),'ccbank='+(t.ccbank||'—'),'del='+(t.del?1:0),t.note||''].join(' | ')));
+  L.push('');L.push('— التحويلات في الشهر —');
+  S.txs.filter(t=>t&&t.type==='tr'&&(t.date||'').startsWith(k)).forEach(t=>L.push([t.date,num(t.amount),nm(t.method)+' → '+nm(t.to),'ccPay='+(t.ccPay||'—'),t.note||''].join(' | ')));
+  const msg=L.join('\n');
+  if(window.zDlg){const bg=zDlg({msg,btns:[{t:'تمام',cls:'z3ok'}]});
+    try{const bx=bg.querySelector('.z3bx'),tx=bg.querySelector('.z3tx');bx.style.maxHeight='85vh';bx.style.overflow='auto';tx.style.textAlign='right';tx.style.fontSize='12.5px'}catch(e){}}
+  else alert(msg)};
+var shown=false;
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);
+  try{if(!shown&&document.getElementById('zx')&&view!=='col'){shown=true;setTimeout(()=>{try{xCcDiag()}catch(e){alert('diag: '+e.message)}},700)}}catch(e){}return r}}catch(e){}
+})()}catch(e){console.error('fix 2.21.307',e)}
+
 /* نهاية fix.js */
 
 
