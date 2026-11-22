@@ -19197,10 +19197,10 @@ function fix(){let v='';try{v=view}catch(e){}if(v!=='exps'&&v!=='col')return;
   const h=document.querySelector('#view>.zxh3');if(!h)return;
   const on=[...h.querySelectorAll('.zxh-sg button.on')].some(b=>/الفعلي/.test(b.textContent||''));if(on)return;
   let s=null;try{s=xMS(keyTx(ym(cur.y,cur.m)))}catch(e){}if(!s)return;
-  const big=v==='exps'?s.exp:s.inc,n=$1('.zxh-n span',h);if(n){const t=num(r2(big));if(n.textContent!==t)n.textContent=t}
+  const big=v==='exps'?r2(s.exp-(window.zCovSum?zCovSum():0)):s.inc,n=$1('.zxh-n span',h);if(n){const t=num(r2(big));if(n.textContent!==t)n.textContent=t}
   if(v!=='exps')return;const g=$1('.zxh-g',h);if(!g)return;
   [...g.children].forEach(d=>{const l=($1('small',d)||{}).textContent||'',b=$1('b',d);if(!b)return;
-    const val=/كريديت/.test(l)?s.cr:/فلوسك/.test(l)?r2(s.exp-s.cr):null;if(val==null)return;const t=num(r2(val));if(b.textContent!==t)b.textContent=t})}
+    const val=/كريديت/.test(l)?r2(s.cr-(window.zCovSum?zCovSum():0)):/فلوسك/.test(l)?r2(s.exp-s.cr):null;if(val==null)return;const t=num(r2(val));if(b.textContent!==t)b.textContent=t})}
 (function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
   new MutationObserver(()=>{try{fix()}catch(e){}}).observe(vw,{childList:true,subtree:true,characterData:true});fix()})();
 })()}catch(e){console.error('fix 2.21.347',e)}
@@ -19209,6 +19209,77 @@ function fix(){let v='';try{v=view}catch(e){}if(v!=='exps'&&v!=='col')return;
 /* ========== 2.21.350 · رجوع للنسخة السليمة ========== */
 try{XVER2='2.21.350';XVBUILD2='22/11/2026 - 09:05 م'}catch(e){}
 /* ========== نهاية 2.21.350 ========== */
+
+/* ========== 2.21.351 · الكريديت: القسط بس جوه السداد + قسم مصروفات من الكريديت ========== */
+try{XVER2='2.21.351';XVBUILD2='22/11/2026 - 09:15 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+const N=v=>num(r2(v));
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+const isInst=t=>!!(t&&t.src&&t.src.k==='i');
+window.zCov=function(t){if(!t||t.type!=='exp'||!isInst(t)||!isCr(t.method)||!t.date)return false;const mk=t.date.slice(0,7);
+  return S.txs.some(p=>p&&!p.del&&!p.pend&&p.type==='tr'&&p.ccPay&&p.to===t.method&&(p.date||'').slice(0,7)===mk&&t.date<=p.date)};
+window.zCovSum=function(){try{return r2(keyTx(ym(cur.y,cur.m)).filter(t=>t&&!t.del&&!t.pend&&!t.xpre&&zCov(t)).reduce((a,t)=>a+(+t.amount||0),0))}catch(e){return 0}};
+
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  if(view!=='exps')return B;const k=ym(cur.y,cur.m);let g='all';try{g=XE.g||'all'}catch(e){}
+  const L=keyTx(k).filter(t=>t&&!t.del&&!t.pend&&!t.xpre&&t.type==='exp');
+  const cov=new Set(L.filter(t=>zCov(t)).map(t=>t.id));
+  const ccx=g==='all'?L.filter(t=>isCr(t.method)&&!cov.has(t.id)&&!t.ccPay):[];const ccxId=new Set(ccx.map(t=>t.id));
+  const taken={};
+  B.S.forEach(s=>{if(s.k==='ccpay'||s.k==='ccexp')return;
+    s.items=s.items.map(x=>{if(x.g){const keep=[];x.g.forEach(e=>{const id=e.t&&e.t.id;if(cov.has(id))return;if(ccxId.has(id)){taken[id]=1;return}keep.push(e)});
+        if(!keep.length)return null;if(keep.length===x.g.length)return x;return Object.assign({},x,{g:keep,a:r2(keep.reduce((q,e)=>q+(+e.a||0),0))})}
+      const id=x.t&&x.t.id;if(cov.has(id))return null;if(ccxId.has(id)){taken[id]=1;return null}return x}).filter(Boolean)});
+  const sec=B.S.find(s=>s.k==='ccpay');
+  if(sec&&!sec.items.some(x=>/^↳/.test(x.n||''))){const out=[];
+    sec.items.forEach(x=>{const p=x.ccp||x.t;if(!p||!p.to){out.push(x);return}
+      const I=L.filter(t=>cov.has(t.id)&&t.method===p.to).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+      if(!I.length){out.push(x);return}const sm=r2(I.reduce((a,t)=>a+(+t.amount||0),0));
+      out.push(Object.assign({},x,{a:r2((+x.a||0)-sm),n:(x.n||'سداد الكريديت')+' · باقي الكشف'}));
+      I.forEach(t=>out.push({n:'↳ '+nmOf(t),ic:'🏦',d:t.date,a:+t.amount||0,st:'paid',t}))});
+    sec.items=out}
+  const ci=ccx.filter(t=>taken[t.id]).sort((a,b)=>(+b.amount||0)-(+a.amount||0)).map(t=>({n:nmOf(t),ic:'💳',d:t.date,a:+t.amount||0,st:'paid',t}));
+  if(ci.length){const ns={k:'ccexp',ic:'💳',t:'مصروفات من الكريديت',items:ci};const at=B.S.findIndex(s=>s.k==='ccpay');if(at>=0)B.S.splice(at+1,0,ns);else B.S.push(ns)}
+  B.S=B.S.filter(s=>s.items&&s.items.length)}catch(e){console.error('351 zb',e)}return B}}catch(e){console.error('351 wrap',e)}
+
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+window.zActWhy=function(){try{
+  const k=ym(cur.y,cur.m),L=keyTx(k).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);let s={exp:0,cr:0};try{s=xMS(keyTx(k))}catch(e){}
+  const pays=S.txs.filter(x=>x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&(x.date||'').startsWith(k));
+  const AM=amap(),ln=[],sh=[],cv=[];let gen=0;
+  L.forEach(t=>{if(t.type==='exp'){if(t.xlno){const r=Math.min(+t.amount||0,repaid(t));if(r>.009)ln.push([nmOf(t),r])}
+      else if(t.shr){const r=Math.min(shOf(t),AM[t.id]||0);if(r>.009)sh.push([nmOf(t),r])}
+      if(zCov(t))cv.push([nmOf(t)+' · '+dmy(t.date),+t.amount||0])}
+    else if(t.type==='inc'&&t.rmb){const al=(t.rmb.L||[]).reduce((a,y)=>a+(+y.a||0),0);gen+=Math.max(0,(+t.amount||0)-al)}});
+  const sum=a=>r2(a.reduce((q,x)=>q+x[1],0)),sl=sum(ln),ss=sum(sh),sv=sum(cv);gen=r2(gen);
+  const all=r2(s.exp-sv),act=r2(all-sl-ss-gen),o=[];
+  o.push('الكل:  '+N(all));
+  o.push('   من فلوسك:  '+N(r2(s.exp-s.cr)));
+  pays.forEach(p=>o.push('     منها سداد '+((M(p.to)||{}).name||'الكريديت')+' يوم '+dmy(p.date)+':  '+N(p.amount)));
+  o.push('   مصروفات من الكريديت:  '+N(r2(s.cr-sv)));
+  if(sv){o.push('');o.push('قسط على الكارت جوه السداد، فمتحسبش مرتين:');cv.forEach(x=>o.push('     - '+x[0]+'  '+N(x[1])))}
+  if(sl||ss||gen){o.push('');o.push('الفعلي = الكل ناقص اللي رجعلك:')}
+  if(sl){o.push('• سلف رجعتلك:  '+N(sl));ln.forEach(x=>o.push('     - '+x[0]+'  '+N(x[1])))}
+  if(ss){o.push('• نصيب المشاركين اللي دفعوه:  '+N(ss));sh.forEach(x=>o.push('     - '+x[0]+'  '+N(x[1])))}
+  if(gen)o.push('• فلوس رجعتلك من غير ما تتربط بمصروف:  '+N(gen));
+  o.push('');o.push('= الفعلي:  '+N(act));
+  const msg=o.join('\n');
+  if(window.zDlg){const bg=zDlg({msg,btns:[{t:'تمام',cls:'z3ok'}]});
+    try{const bx=bg.querySelector('.z3bx'),tx=bg.querySelector('.z3tx');bx.style.maxHeight='85vh';bx.style.overflow='auto';tx.style.textAlign='right';tx.style.fontSize='13px';tx.style.whiteSpace='pre-wrap';tx.style.lineHeight='1.8'}catch(e){}}
+  else alert(msg)}catch(e){console.error('351 why',e)}};
+
+function tidy(){let v='';try{v=view}catch(e){}if(v!=='exps')return;const h=document.querySelector('#view>.zxh3');if(!h)return;
+  const g=$1('.zxh-g',h);if(g)[...g.children].forEach(d=>{const l=($1('small',d)||{}).textContent||'';if(/جوه سداد الكريديت|مشتريات الكارت/.test(l))d.remove()});
+  if(g&&!g.children.length)g.remove()}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{tidy()}catch(e){}}).observe(vw,{childList:true,subtree:true});tidy()})();
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.351',e)}
+/* ========== نهاية 2.21.351 ========== */
 
 /* نهاية fix.js */
 
