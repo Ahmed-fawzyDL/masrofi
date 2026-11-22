@@ -17218,7 +17218,7 @@ document.addEventListener('toggle',function(e){const d=e.target;if(!d||d.tagName
 try{const _rn=render;render=function(){
   try{if(xLrPend()&&XLRET.saved&&view!==XLRET.v){const R=XLRET;XLRET=null;xLrSet(R);view=R.v}}catch(e){}
   const r=_rn.apply(this,arguments);setTimeout(function(){try{xInstDom()}catch(e){}},0);return r}}catch(e){}
-try{render()}catch(e){}
+
 })()}catch(e){console.error('fix 2.21.301',e)}
 /* ========== 2.21.302 · سداد الكريديت في المصروفات ========== */
 try{XVER2='2.21.302';XVBUILD2='22/11/2026 - 11:45 ص'}catch(e){}
@@ -17259,7 +17259,7 @@ function xCcpTop(){if(view!=='exp')return;const V=document.getElementById('view'
     const vb=[...box.children].find(c=>c!==el&&/\d/.test(c.textContent));if(!vb)return;
     const v=parseFloat(vb.textContent.replace(/[^\d.]/g,''))||0;vb.textContent=fmt(r2(v+pay));box.dataset.zcc='1'})}
 try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(function(){try{xCcpTop()}catch(e){}},0);return r}}catch(e){}
-try{render()}catch(e){}
+
 })()}catch(e){console.error('fix 2.21.302',e)}
 /* ========== 2.21.303 · سداد الكريديت في الرئيسية والتقارير ========== */
 try{XVER2='2.21.303';XVBUILD2='22/11/2026 - 12:00 م'}catch(e){}
@@ -17287,7 +17287,7 @@ try{const _rn=render;render=function(){HIT=0;const r=_rn.apply(this,arguments);t
   if(view==='exp'&&HIT>0){const V=document.getElementById('view');
     if(V)[...V.querySelectorAll('*')].forEach(e=>{const t=ownT(e).trim();
       if(t==='اتصرف'||t.endsWith(' اتصرف')||t==='من فلوسك'||t.endsWith(' من فلوسك')){if(e.parentElement)e.parentElement.dataset.zcc='1'}})}}catch(e){}return r}}catch(e){}
-try{render()}catch(e){}
+
 })()}catch(e){console.error('fix 2.21.303',e)}
 /* ========== 2.21.304 · شكل التقارير زي البرامج المحاسبية ========== */
 try{XVER2='2.21.304';XVBUILD2='22/11/2026 - 12:15 م'}catch(e){}
@@ -17423,7 +17423,7 @@ function topFix(){if(!isEx())return;const V=document.getElementById('view');if(!
   A.vb.textContent=fmt(r2(A.v+pay));
   const N=cardBox(V,'من فلوسك');if(N&&!N.box.dataset.z308){N.box.dataset.z308='1';N.vb.textContent=fmt(r2(N.v+pay))}}
 try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(function(){try{topFix()}catch(e){}},0);return r}}catch(e){}
-try{render()}catch(e){}
+
 })()}catch(e){console.error('fix 2.21.308',e)}
 
 /* ========== 2.21.309 · سداد الكريديت في الرئيسية ========== */
@@ -17436,7 +17436,7 @@ try{const _vh=vHome;vHome=function(){
     if(s&&Array.isArray(L)){const a=r2(L.filter(isP).reduce((q,t)=>q+(+t.amount||0),0));
       if(a>0){s.exp=r2((+s.exp||0)+a);s.expNC=r2((+s.expNC||0)+a);s.net=r2((+s.inc||0)-s.exp)}}}catch(e){}return s};
   try{return _vh.apply(this,arguments)}finally{xSums=o}}}catch(e){console.error('309',e)}
-try{render()}catch(e){}
+
 })()}catch(e){console.error('fix 2.21.309',e)}
 
 /* ========== 2.21.310 · 👥 مشاركين في المبلغ + 💱 سداد مقابل مصروف + ✅ الفعلي ========== */
@@ -17586,7 +17586,7 @@ try{const _zr=window.zwRow;window.zwRow=function(x,id){let h=_zr.apply(this,argu
   if(tag)h=h.replace('</small>',tag+'</small>')}catch(e){}return h}}catch(e){}
 
 try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(function(){try{strip()}catch(e){}},0);return r}}catch(e){}
-try{render()}catch(e){}
+
 })()}catch(e){console.error('fix 2.21.310',e)}
 
 /* ========== 2.21.311 · الفعلي لحد ما يتسدد + شاشة التسجيل في كروت ========== */
@@ -17692,7 +17692,7 @@ document.addEventListener('change',e=>{try{if(!e.target||!e.target.closest)retur
   const bd=[];if(F.zsh&&F.zsh.on)bd.push('👥 مشاركين');if(F.zrm&&F.zrm.on)bd.push('💱 سداد');sp.innerHTML=bd.map(b=>`<span class="zbd">${b}</span>`).join(' ')}catch(x){}},true);
 
 try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(function(){try{strip2()}catch(e){}},0);return r}}catch(e){}
-try{render()}catch(e){}
+
 })()}catch(e){console.error('fix 2.21.311',e)}
 
 /* ========== 2.21.312 · شاشة التسجيل أصغر وأحدث ========== */
@@ -17804,6 +17804,28 @@ ${P} #zform details.zc-more{background:transparent!important;border:1px dashed r
 ${P} #zform details.zc-more>summary{justify-content:center!important;font-size:13px!important;color:#7ee0cf!important}
 `;document.head.appendChild(css);
 })()}catch(e){console.error('fix 2.21.314',e)}
+
+/* ========== 2.21.315 · رسم واحد عند الفتح + فحص تركيب الشاشة (مؤقت) ========== */
+try{XVER2='2.21.315';XVBUILD2='22/11/2026 - 01:55 م'}catch(e){}
+try{(function(){
+const P='html body #sheet#sheet .sz';
+const css=document.createElement('style');css.id='z315css';css.textContent=`
+${P} label.zrow:has(input:not([type=date]):not([type=hidden]):not([type=checkbox])){display:block!important;min-height:0!important}
+${P} label.zrow:has(input:not([type=date]):not([type=hidden]):not([type=checkbox]))>*{width:100%!important;flex:none!important;text-align:right!important;margin-top:6px!important}
+${P} #zdiag{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:9;border:1px dashed #f59e0b!important;background:rgba(245,158,11,.12)!important;color:#fbbf24!important;border-radius:999px!important;padding:3px 10px!important;font-size:11px!important;min-height:0!important;height:auto!important;width:auto!important}
+`;document.head.appendChild(css);
+function outline(root){const L=[];const walk=(el,d)=>{if(d>5||L.length>260)return;
+  const own=[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.nodeValue.trim()).join(' ').slice(0,28);
+  L.push('  '.repeat(d)+el.tagName.toLowerCase()+(el.id?'#'+el.id:'')+(el.className&&typeof el.className==='string'?'.'+el.className.trim().split(/\s+/).join('.'):'')+(el.type?'['+el.type+']':'')+(own?' «'+own+'»':''));
+  [...el.children].forEach(c=>walk(c,d+1))};walk(root,0);return L.join('\n')}
+window.zDiagCopy=async function(){const sz=document.querySelector('#sheet .sz');if(!sz)return;const txt='VIEW='+view+'\n'+outline(sz);
+  try{await navigator.clipboard.writeText(txt);toast('🧩 اتنسخ · الصقه في الشات')}catch(e){if(window.zDlg)zDlg({msg:txt.slice(0,3000),btns:[{t:'تمام',cls:'z3ok'}]})}};
+function addBtn(){const sh=document.getElementById('sheet');if(!sh||document.getElementById('zdiag'))return;
+  const b=document.createElement('button');b.type='button';b.id='zdiag';b.textContent='🧩 نسخ شكل الشاشة';b.onclick=zDiagCopy;
+  const sz=sh.querySelector('.sz');if(sz){sz.style.position=sz.style.position||'relative';sz.prepend(b)}}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);setTimeout(addBtn,120);return r}}catch(e){}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.315',e)}
 
 /* نهاية fix.js */
 
