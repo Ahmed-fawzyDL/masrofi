@@ -19189,6 +19189,23 @@ html body.zvx main#view .zxh3 .zwhy{display:block;margin:10px auto 0;background:
 })()}catch(e){console.error('fix 2.21.346',e)}
 /* ========== نهاية 2.21.346 ========== */
 
+/* ========== 2.21.347 · الكل والفعلي من نفس الأساس ========== */
+try{XVER2='2.21.347';XVBUILD2='22/11/2026 - 08:15 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+function fix(){let v='';try{v=view}catch(e){}if(v!=='exps'&&v!=='col')return;
+  const h=document.querySelector('#view>.zxh3');if(!h)return;
+  const on=[...h.querySelectorAll('.zxh-sg button.on')].some(b=>/الفعلي/.test(b.textContent||''));if(on)return;
+  let s=null;try{s=xMS(keyTx(ym(cur.y,cur.m)))}catch(e){}if(!s)return;
+  const big=v==='exps'?s.exp:s.inc,n=$1('.zxh-n span',h);if(n){const t=num(r2(big));if(n.textContent!==t)n.textContent=t}
+  if(v!=='exps')return;const g=$1('.zxh-g',h);if(!g)return;
+  [...g.children].forEach(d=>{const l=($1('small',d)||{}).textContent||'',b=$1('b',d);if(!b)return;
+    const val=/كريديت/.test(l)?s.cr:/فلوسك/.test(l)?r2(s.exp-s.cr):null;if(val==null)return;const t=num(r2(val));if(b.textContent!==t)b.textContent=t})}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{fix()}catch(e){}}).observe(vw,{childList:true,subtree:true,characterData:true});fix()})();
+})()}catch(e){console.error('fix 2.21.347',e)}
+/* ========== نهاية 2.21.347 ========== */
+
 /* نهاية fix.js */
 
 
