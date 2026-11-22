@@ -18155,6 +18155,62 @@ watch();
 })()}catch(e){console.error('fix 2.21.325',e)}
 /* ========== نهاية 2.21.325 ========== */
 
+/* ========== 2.21.326 · زرار 🧩 لنسخ تركيب أي شاشة (مؤقت) ========== */
+try{XVER2='2.21.326';XVBUILD2='22/11/2026 - 03:25 م'}catch(e){}
+try{(function(){
+function outline(root,max){const L=[];const walk=(el,d)=>{if(d>(max||6)||L.length>320)return;
+  if(el.id==='zdg2')return;const cs=getComputedStyle(el);if(cs.display==='none')return;
+  const own=[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.nodeValue.trim()).join(' ').slice(0,28);
+  L.push('  '.repeat(d)+el.tagName.toLowerCase()+(el.id?'#'+el.id:'')+(el.className&&typeof el.className==='string'&&el.className.trim()?'.'+el.className.trim().split(/\s+/).slice(0,4).join('.'):'')+(el.type?'['+el.type+']':'')+(own?' «'+own+'»':''));
+  [...el.children].forEach(c=>{if(!/^(SCRIPT|STYLE|SVG|PATH|svg|path)$/.test(c.tagName))walk(c,d+1)})};walk(root,0);return L.join('\n')}
+async function copy(){
+  const sh=document.getElementById('sheet'),open=sh&&sh.classList.contains('open')&&sh.querySelector('.sz');
+  let v='';try{v=view}catch(e){}
+  let root=open?sh.querySelector('.sz'):(document.querySelector('main')||document.getElementById('app')||document.body);
+  const txt='VIEW='+v+(open?' · SHEET':'')+'\n'+outline(root,open?6:7);
+  try{await navigator.clipboard.writeText(txt);try{toast('🧩 اتنسخ · الصقه في الشات')}catch(e){}}
+  catch(e){if(window.zDlg)zDlg({msg:txt.slice(0,3000),btns:[{t:'تمام',cls:'z3ok'}]})}}
+function add(){if(document.getElementById('zdg2'))return;const b=document.createElement('button');b.id='zdg2';b.type='button';b.textContent='🧩';
+  b.style.cssText='position:fixed;left:10px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:100000;width:38px;height:38px;border-radius:50%;border:1px dashed #f59e0b;background:rgba(245,158,11,.15);color:#fbbf24;font-size:17px;padding:0;cursor:pointer';
+  b.onclick=copy;document.body.appendChild(b)}
+if(document.body)add();else document.addEventListener('DOMContentLoaded',add);
+})()}catch(e){console.error('fix 2.21.326',e)}
+/* ========== نهاية 2.21.326 ========== */
+
+/* ========== 2.21.327 · زرار 🧩 بيشوف التقرير وفوق أي شاشة (مؤقت) ========== */
+try{XVER2='2.21.327';XVBUILD2='22/11/2026 - 03:35 م'}catch(e){}
+try{(function(){
+const vis=el=>{if(!el)return false;const r=el.getBoundingClientRect();return r.width>0&&r.height>0&&getComputedStyle(el).visibility!=='hidden'};
+function outline(root,max){const L=[];const walk=(el,d)=>{if(d>max||L.length>340)return;
+  if(el.id==='zdg2'||el.id==='zdg2box')return;if(getComputedStyle(el).display==='none')return;
+  const own=[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.nodeValue.trim()).join(' ').slice(0,28);
+  L.push('  '.repeat(d)+el.tagName.toLowerCase()+(el.id?'#'+el.id:'')+(el.className&&typeof el.className==='string'&&el.className.trim()?'.'+el.className.trim().split(/\s+/).slice(0,4).join('.'):'')+(el.type?'['+el.type+']':'')+(own?' «'+own+'»':''));
+  [...el.children].forEach(c=>{if(!/^(script|style|svg|path|canvas)$/i.test(c.tagName))walk(c,d+1)})};walk(root,0);return L.join('\n')}
+function box(txt){let d=document.getElementById('zdg2box');if(d)d.remove();d=document.createElement('div');d.id='zdg2box';
+  d.style.cssText='position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px';
+  d.innerHTML='<div style="background:#151e31;border-radius:16px;padding:12px;width:100%;max-width:480px;direction:rtl"><div style="color:#e6ebf5;font:600 14px system-ui;margin-bottom:8px">علّم على الكلام وانسخه</div><textarea readonly style="width:100%;height:50vh;direction:ltr;font:11px monospace;background:#0b111e;color:#cbd5e1;border:0;border-radius:10px;padding:8px"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button type="button" data-a="c" style="flex:1;padding:10px;border:0;border-radius:10px;background:#0d9488;color:#fff;font:600 14px system-ui">نسخ</button><button type="button" data-a="x" style="flex:1;padding:10px;border:0;border-radius:10px;background:#334155;color:#fff;font:600 14px system-ui">قفل</button></div></div>';
+  const ta=d.querySelector('textarea');ta.value=txt;
+  d.querySelector('[data-a=c]').onclick=()=>{ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}try{navigator.clipboard.writeText(txt)}catch(e){}d.querySelector('[data-a=c]').textContent='✓ اتنسخ'};
+  d.querySelector('[data-a=x]').onclick=()=>d.remove();document.body.appendChild(d)}
+async function copy(){
+  let v='';try{v=view}catch(e){}
+  const sh=document.getElementById('sheet'),sz=sh&&sh.classList.contains('open')&&sh.querySelector('.sz');
+  const rv=document.getElementById('rvdoc');
+  let root,tag;
+  if(sz&&vis(sz)){root=sz;tag='SHEET'}
+  else if(rv&&vis(rv)){root=rv;let p=rv;while(p.parentElement&&p.parentElement!==document.body)p=p.parentElement;if(p!==rv&&vis(p))root=p;tag='REPORT'}
+  else{root=document.querySelector('main')||document.getElementById('app')||document.body;tag='MAIN'}
+  const txt='VIEW='+v+' · '+tag+'\n'+outline(root,tag==='REPORT'?8:7);
+  let ok=false;try{await navigator.clipboard.writeText(txt);ok=true}catch(e){}
+  if(ok){try{toast('🧩 اتنسخ · الصقه في الشات')}catch(e){}}else box(txt)}
+function add(){const old=document.getElementById('zdg2');if(old)old.remove();const b=document.createElement('button');b.id='zdg2';b.type='button';b.textContent='🧩';
+  b.style.cssText='position:fixed;left:10px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:2147483646;width:40px;height:40px;border-radius:50%;border:1px dashed #f59e0b;background:#2a2112;color:#fbbf24;font-size:18px;padding:0;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)';
+  b.onclick=copy;document.body.appendChild(b)}
+if(document.body)add();else document.addEventListener('DOMContentLoaded',add);
+setInterval(()=>{const b=document.getElementById('zdg2');if(!b||b.parentElement!==document.body||document.body.lastElementChild!==b&&!document.getElementById('zdg2box'))document.body.appendChild(b||document.createElement('i'))},1500);
+})()}catch(e){console.error('fix 2.21.327',e)}
+/* ========== نهاية 2.21.327 ========== */
+
 /* نهاية fix.js */
 
 
