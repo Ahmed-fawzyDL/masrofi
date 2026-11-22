@@ -18018,6 +18018,82 @@ watch();
 try{XVER2='2.21.323';XVBUILD2='22/11/2026 - 02:50 م'}catch(e){}
 /* ========== نهاية 2.21.323 ========== */
 
+/* ========== 2.21.324 · الشكل الجديد: كارت المبلغ الملوّن + عناوين الأقسام + عمق ========== */
+try{XVER2='2.21.324';XVBUILD2='22/11/2026 - 03:00 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const P='html body #sheet#sheet .sz';
+const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng)`;
+const css=document.createElement('style');css.id='z324css';css.textContent=`
+html body #sheet#sheet .zpan{background:radial-gradient(420px 240px at 50% -40px,rgba(20,184,166,.16),transparent 70%),#0b111e!important}
+${P}{background:transparent!important}
+${P}.zn>h2{font-size:16px!important;margin:0 0 10px!important}
+${CARD}{background:#151e31!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:18px!important;padding:0 12px!important;margin:0 0 12px!important;box-shadow:0 6px 18px rgba(0,0,0,.25)!important}
+${P} #zform>.zsh{padding:10px 12px!important}
+${P} #zform details.zc-more>:not(summary){background:#151e31!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:18px!important}
+${P} .zsec{font-size:11.5px!important;font-weight:600!important;color:#64748b!important;margin:0 8px 6px!important;padding:0!important}
+${P} .znr{min-height:46px!important;padding:4px 0!important;font-size:14.5px!important;border-bottom-color:rgba(255,255,255,.05)!important}
+${P} .zic{width:30px!important;height:30px!important;flex:0 0 30px!important;border-radius:10px!important}
+${P} .znr .xsel,${P} #xoa .xoa2v:not(.e){color:#e6ebf5!important}
+${P} .znr .xsel.zemp,${P} #xoa .xoa2v.e{color:#64748b!important}
+${P} .znr input:not([type=checkbox]){color:#e6ebf5!important}
+${P} .znr input::placeholder{color:#475569!important}
+${P} .znr .xsel small,${P} .znr .xsel.xsel.xsel>*:not(:first-child){margin-inline-start:6px!important}
+${P} .znr .xsel small{color:#64748b!important}
+${P} #zform .zhero{position:relative!important;border-radius:22px!important;padding:12px 14px!important;margin:0 0 14px!important;background:linear-gradient(135deg,#0f766e,#3730a3)!important;box-shadow:0 12px 30px rgba(55,48,163,.28)!important}
+${P} .zhtop{display:flex!important;justify-content:space-between!important;align-items:center!important;font-size:12px!important;color:rgba(255,255,255,.78)!important}
+${P} .zhero #xtyp{margin:0!important;background:rgba(0,0,0,.22)!important;padding:3px 10px!important;font-size:12px!important;border-radius:999px!important}
+${P} .zhero #xtyp>span{display:none!important}
+${P} .zhero #xtyp>b{color:#fff!important;font-weight:600!important}
+${P} .zhero #xtyp::after{color:#fff!important;opacity:.7!important}
+${P} .zhero .xamt>span:not(.zcur){display:none!important}
+${P} .zhero .zc-amt{margin:2px 0 0!important}
+${P} .zhero .xamt input#f-amt.amt-in{color:#fff!important;font-size:40px!important;height:58px!important;min-height:58px!important}
+${P} .zhero input#f-amt::placeholder{color:rgba(255,255,255,.55)!important}
+${P} .zhero .zcur{color:rgba(255,255,255,.72)!important}
+${P} .zhero #zchips{margin:4px 0 0!important}
+${P} .zhero .zchip{background:rgba(255,255,255,.14)!important;border:0!important;color:#fff!important}
+${P} .zhero .zchip.on{background:#fff!important;color:#0f766e!important}
+${P} #zform details.zc-more{margin:0 0 10px!important}
+${P} .zsave{background:linear-gradient(135deg,#14b8a6,#4f46e5)!important;box-shadow:0 10px 26px rgba(79,70,229,.35)!important;border-radius:16px!important;min-height:50px!important}
+${P} .xtype>button{background:#151e31!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:18px!important;box-shadow:0 6px 18px rgba(0,0,0,.25)!important}
+${P} .xtype>button:active{transform:scale(.97)}
+${P} .xtype>button small{color:#64748b!important}
+`;document.head.appendChild(css);
+
+const FF=()=>{try{return F}catch(e){return null}};
+function setTxt(el,want){if(!el)return;const tn=[...el.childNodes].find(n=>n.nodeType===3&&n.nodeValue.trim());if(tn&&tn.nodeValue.trim()!==want)tn.nodeValue=want}
+function sec(card,txt){if(!card)return;const p=card.previousElementSibling;
+  if(p&&p.classList.contains('zsec')){if(p.textContent!==txt)p.textContent=txt;return}
+  const s=document.createElement('div');s.className='zsec';s.textContent=txt;card.before(s)}
+function go(sz){
+  const pan=sz.parentElement;if(pan&&pan.id!=='sheet'&&!pan.classList.contains('zpan'))pan.classList.add('zpan');
+  $$('.znr .xsel',sz).forEach(x=>{const t=(x.textContent||'').trim();x.classList.toggle('zemp',t==='اختر'||/^—/.test(t))});
+  const zf=$1('#zform',sz);if(!zf)return;
+  const f=FF(),isI=!!(f&&f.type==='inc');
+  const amtC=$1('.zc-amt',zf);
+  if(amtC){let h=$1('.zhero',zf);
+    if(!h){h=document.createElement('div');h.className='zhero';amtC.before(h);const top=document.createElement('div');top.className='zhtop';
+      const l=document.createElement('span');l.textContent='المبلغ';top.appendChild(l);h.append(top,amtC)}
+    const ch=$1('#zchips',sz);if(ch&&ch.parentElement!==h)h.appendChild(ch);
+    const xt=$1('#xtyp',sz),top=$1('.zhtop',h);if(xt&&top&&xt.parentElement!==top)top.appendChild(xt)}
+  setTxt($1('#zpay .zq-hd b',zf),isI?'استلمت في':'اتدفع من');
+  const am=$1('#xacm',zf);if(am)setTxt(am.closest('label'),'يتحسب على شهر');
+  const acc=$1('.zc-acc',zf),pay=$1('.zc-pay',zf),when=$1('.zc-when',zf);
+  sec(acc,'التفاصيل');sec(pay,isI?'الاستلام':'الدفع');sec(when,'الوقت والمرفقات');
+  $$(':scope>.zng',zf).forEach(g=>sec(g,/يتكرر|تكرار/.test(g.textContent||'')?'التكرار':'إعدادات'));
+  $$('.zsec',zf).forEach(s=>{const n=s.nextElementSibling;if(!n||n.classList.contains('zsec')||n.matches('details,.zhero,.zsh'))s.remove()});
+}
+let busy=false;
+function run4(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;try{go(sz)}catch(e){console.error('324',e)}setTimeout(()=>{busy=false},0)}
+let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
+  ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run4,70)});ob.observe(sh,{childList:true,subtree:true})}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();setTimeout(run4,30);setTimeout(run4,220);return r}}catch(e){console.error('324 sheet',e)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(run4,220);return r}}catch(e){}
+watch();
+})()}catch(e){console.error('fix 2.21.324',e)}
+/* ========== نهاية 2.21.324 ========== */
+
 /* نهاية fix.js */
 
 
