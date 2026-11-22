@@ -17289,6 +17289,68 @@ try{const _rn=render;render=function(){HIT=0;const r=_rn.apply(this,arguments);t
       if(t==='اتصرف'||t.endsWith(' اتصرف')||t==='من فلوسك'||t.endsWith(' من فلوسك')){if(e.parentElement)e.parentElement.dataset.zcc='1'}})}}catch(e){}return r}}catch(e){}
 try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.303',e)}
+/* ========== 2.21.304 · شكل التقارير زي البرامج المحاسبية ========== */
+try{XVER2='2.21.304';XVBUILD2='22/11/2026 - 12:15 م'}catch(e){}
+try{(function(){
+const R=':is(#view,#sheet):has(.rs)';
+const s=document.createElement('style');s.id='z304css';s.textContent=`
+.rk{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin:10px 0 14px}
+.rk>div{background:rgba(30,44,68,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(94,234,212,.14);border-top:3px solid var(--kc,#14b8a6);border-radius:14px;padding:10px 12px;text-align:right}
+.rk>div span{display:block;font-size:12px;opacity:.75;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk>div b{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.rs{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:18px 0 6px;padding:9px 12px;border-radius:10px;background:linear-gradient(90deg,rgba(20,184,166,.18),rgba(79,70,229,.10));border-right:3px solid #14b8a6;font-weight:800;font-size:14px}
+.rs em{font-style:normal;font-weight:800;font-variant-numeric:tabular-nums}
+.xri .rs{border-right-color:#22c55e;background:linear-gradient(90deg,rgba(34,197,94,.16),rgba(34,197,94,.04))}
+.xre .rs{border-right-color:#f97316;background:linear-gradient(90deg,rgba(249,115,22,.16),rgba(249,115,22,.04))}
+.xri,.xre{background:none!important}
+${R} table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;background:rgba(15,23,42,.45);border:1px solid rgba(148,163,184,.16);border-radius:12px;overflow:hidden;margin:0 0 6px}
+${R} th{background:rgba(30,41,59,.92);color:#94a3b8;font-weight:700;font-size:11.5px;padding:8px;text-align:right;border-bottom:1px solid rgba(148,163,184,.22);white-space:nowrap}
+${R} td{padding:9px 8px;border-bottom:1px solid rgba(148,163,184,.08);vertical-align:middle;font-variant-numeric:tabular-nums}
+${R} tbody tr:nth-child(even) td{background:rgba(255,255,255,.025)}
+${R} tr.clk{cursor:pointer}${R} tr.clk:active td{background:rgba(20,184,166,.14)}
+${R} td small{display:block;font-size:11px;opacity:.55;margin-top:2px}
+${R} tfoot td,${R} tr.ft td{font-weight:800;background:rgba(20,184,166,.10)!important;border-top:2px solid rgba(20,184,166,.5);border-bottom:0}
+${R} tr.xgh td{background:rgba(79,70,229,.12)!important;font-weight:800;font-size:12px}
+.rb{display:inline-block;border-radius:999px;padding:2px 10px;font-size:11.5px;font-weight:700;background:rgba(148,163,184,.15)}
+.rb.ok{background:rgba(34,197,94,.16);color:#4ade80}.rb.late{background:rgba(239,68,68,.16);color:#f87171}.rb.wait{background:rgba(245,158,11,.16);color:#fbbf24}
+`;document.head.appendChild(s);
+})()}catch(e){console.error('fix 2.21.304',e)}
+/* ========== 2.21.305 · التقارير بشكل البرامج المحاسبية (الثيم الداكن) ========== */
+try{XVER2='2.21.305';XVBUILD2='22/11/2026 - 12:30 م'}catch(e){}
+try{(function(){
+const D='html:root body.dark #rvdoc';
+const s=document.createElement('style');s.id='z305css';s.textContent=`
+${D} .paper{background:linear-gradient(180deg,#131c2e,#0f1726)!important;color:#e2e8f0!important;border:1px solid rgba(94,234,212,.14)!important;border-radius:18px!important;box-shadow:none!important;padding:16px 12px!important}
+${D} .paper :is(h1,h2,h3){color:#f1f5f9!important}
+${D} .pnote,${D} .paper small{color:#94a3b8!important}
+${D} .rk{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(105px,1fr))!important;gap:8px!important;margin:6px 0 14px!important}
+${D} .rk>div{background:rgba(30,44,68,.7)!important;border:1px solid rgba(148,163,184,.14)!important;border-top:3px solid var(--kc)!important;border-radius:12px!important;padding:10px!important;box-shadow:none!important}
+${D} .rk>div span{color:#94a3b8!important;font-size:11.5px!important}
+${D} .rk>div b{color:#f8fafc!important;font-size:16px!important;font-weight:800!important}
+${D} .rk .cu{font-style:normal!important;font-size:11px!important;opacity:.6}
+${D} .rs{display:flex!important;justify-content:space-between!important;align-items:center;background:transparent!important;border:0!important;border-bottom:1px solid rgba(94,234,212,.35)!important;border-radius:0!important;color:#f1f5f9!important;padding:6px 2px!important;margin:18px 0 8px!important;font-size:14px!important;font-weight:800!important}
+${D} .rs em{color:#5eead4!important;font-style:normal!important}
+${D} .xri .rs{border-bottom-color:rgba(34,197,94,.55)!important}${D} .xri .rs em{color:#4ade80!important}
+${D} .xre .rs{border-bottom-color:rgba(249,115,22,.55)!important}${D} .xre .rs em{color:#fb923c!important}
+${D} :is(.xri,.xre){background:none!important;border:0!important;padding:0!important}
+${D} .rtb{background:rgba(15,23,42,.55)!important;border:1px solid rgba(148,163,184,.18)!important;border-radius:12px!important;overflow:hidden!important}
+${D} .rtb th{background:rgba(30,41,59,.95)!important;color:#94a3b8!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.25)!important;font-size:11px!important;font-weight:700!important;padding:8px 6px!important}
+${D} .rtb td{background:transparent!important;color:#e2e8f0!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.08)!important;padding:9px 6px!important}
+${D} .rtb tbody tr:nth-child(even):not(.xgh) td{background:rgba(255,255,255,.03)!important}
+${D} .rtb tbody tr:is(.xti,.xte) td{background:transparent!important}
+${D} .rtb td.n{color:#f8fafc!important}
+${D} .rtb :is(b.inc,.pos){color:#4ade80!important}${D} .rtb :is(b.exp,.neg){color:#f87171!important}
+${D} .rtb td small{color:#94a3b8!important;font-size:11px!important}
+${D} .rtb tr.xgh td{background:rgba(20,184,166,.10)!important;color:#5eead4!important;border-top:0!important;font-size:12px!important;font-weight:800!important}
+${D} .rtb tr.xgh td em{float:left;font-style:normal;color:#e2e8f0!important}
+${D} .rtb tfoot td{background:rgba(20,184,166,.14)!important;color:#f8fafc!important;font-weight:800!important;border-top:2px solid rgba(20,184,166,.6)!important;border-bottom:0!important}
+${D} .rtb tr.clk{cursor:pointer}${D} .rtb tr.clk:active td{background:rgba(20,184,166,.18)!important}
+${D} .xlhd{background:rgba(30,44,68,.5)!important;border-color:rgba(148,163,184,.25)!important;color:#e2e8f0!important}
+${D} .xlhd *{border-color:rgba(148,163,184,.18)!important}
+${D} .rfl .rft{background:rgba(30,44,68,.7)!important;border:1px solid rgba(94,234,212,.2)!important;color:#e2e8f0!important;border-radius:12px!important}
+html:root body #rvdoc .rc{display:none!important}
+`;document.head.appendChild(s);
+})()}catch(e){console.error('fix 2.21.305',e)}
 /* نهاية fix.js */
 
 
