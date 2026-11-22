@@ -17779,6 +17779,32 @@ try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);all();set
 try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(all,90);return r}}catch(e){}
 })()}catch(e){console.error('fix 2.21.313',e)}
 
+/* ========== 2.21.314 · الشكل الجديد ياخد الأولوية ========== */
+try{XVER2='2.21.314';XVBUILD2='22/11/2026 - 01:45 م'}catch(e){}
+try{(function(){
+const P='html body #sheet#sheet .sz';
+const css=document.createElement('style');css.id='z314css';css.textContent=`
+${P} #zform .zc-amt input#f-amt{font-size:30px!important;min-height:46px!important;height:46px!important;background:transparent!important;border:0!important;border-bottom:2px solid rgba(94,234,212,.45)!important;border-radius:0!important;box-shadow:none!important}
+${P} :is(#zform .zc,.zg){background:#1a2438!important;border:1px solid rgba(148,163,184,.12)!important;border-radius:16px!important;padding:2px 12px!important;margin:0 0 10px!important;box-shadow:none!important}
+${P} #zform .zc-amt{background:none!important;border:0!important;padding:0 0 4px!important}
+${P} #zform .zc-pay{padding:10px 12px!important}
+${P} :is(.zg,#zform .zc)>label.zrow{display:flex!important;flex-direction:row!important;align-items:center!important;gap:10px!important;min-height:48px!important;margin:0!important;padding:6px 0!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.10)!important;border-radius:0!important;background:transparent!important;font-size:14px!important;font-weight:600!important}
+${P} :is(.zg,#zform .zc)>label.zrow:last-child{border-bottom:0!important}
+${P} label.zrow>:is(input,select,.inl,.xsel),${P} label.zrow>.inl>:is(input,select){flex:0 1 58%!important;width:auto!important;margin:0!important;margin-inline-start:auto!important;background:transparent!important;border:0!important;box-shadow:none!important;text-align:left!important;text-align-last:left!important;min-height:36px!important;padding:4px 0!important;color:#aab4c6!important;font-weight:600!important}
+${P} :is(#zform .zc,.zg) :is(input:not([type=checkbox]):not(#f-amt),select,textarea,.xsel){border-color:rgba(148,163,184,.18)!important;background:rgba(148,163,184,.06)!important;border-radius:12px!important;min-height:42px!important;font-size:14.5px!important}
+${P} label.zrow>:is(input,select,.xsel){border:0!important;background:transparent!important}
+${P} .zg>.kv{min-height:44px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.10)!important;margin:0!important;padding:6px 0!important;background:transparent!important}
+${P} .zg>.kv:last-child{border-bottom:0!important}
+${P} .zg>.two{padding:8px 0!important;border-bottom:1px solid rgba(148,163,184,.10)!important;margin:0!important}
+${P} .zg>.two:last-child{border-bottom:0!important}
+${P} #zchips{display:flex!important;gap:6px!important;justify-content:center!important;flex-wrap:wrap!important;margin:0 0 12px!important}
+${P} .zchip{border:1px solid rgba(148,163,184,.3)!important;background:transparent!important;color:inherit!important;border-radius:999px!important;padding:5px 12px!important;font-size:12.5px!important;min-height:0!important;height:auto!important;width:auto!important;font-weight:700!important;margin:0!important;box-shadow:none!important}
+${P} .zchip.on{background:rgba(13,148,136,.25)!important;border-color:#14b8a6!important;color:#7ee0cf!important}
+${P} #zform details.zc-more{background:transparent!important;border:1px dashed rgba(94,234,212,.3)!important;padding:8px 12px!important}
+${P} #zform details.zc-more>summary{justify-content:center!important;font-size:13px!important;color:#7ee0cf!important}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.314',e)}
+
 /* نهاية fix.js */
 
 
