@@ -17756,7 +17756,7 @@ try{XVER2='2.21.321';XVBUILD2='22/11/2026 - 02:20 م'}catch(e){}
 try{(function(){
 const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 ['z312css','z313css','z314css','z315css','z318css','z319css','z320css'].forEach(id=>{const s=document.getElementById(id);if(s)s.remove()});
-const P='html body #sheet#sheet .sz';
+const P='html body #sheet#sheet:not(.zoff) .sz';
 const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng)`;
 const CHEV=`content:'‹'!important;position:static!important;transform:none!important;border:0!important;background:none!important;width:auto!important;height:auto!important;font-size:18px!important;line-height:1!important;opacity:.45;margin:0!important`;
 const css=document.createElement('style');css.id='z321css';css.textContent=`
@@ -17905,7 +17905,7 @@ function generic(sz){if($1('#zform',sz)||$1('.xtype',sz))return;sz.classList.add
   $$('.zng',sz).forEach(rowLabels);
   if(!$1('.zsave',sz)){const sv=[...sz.children].reverse().find(b=>b.tagName==='BUTTON'&&!/danger|ghost/.test(b.className)&&b.id!=='zdiag');if(sv)sv.classList.add('zsave')}}
 let busy=false;
-function run2(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;
+function run2(){const sz=$1('#sheet:not(.zoff) .sz');if(!sz||busy)return;busy=true;
   try{form(sz)}catch(e){console.error('321 form',e)}
   
   try{generic(sz)}catch(e){console.error('321 generic',e)}
@@ -17922,7 +17922,7 @@ watch();
 try{XVER2='2.21.322';XVBUILD2='22/11/2026 - 02:45 م'}catch(e){}
 try{(function(){
 const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
-const P='html body #sheet#sheet .sz';
+const P='html body #sheet#sheet:not(.zoff) .sz';
 const I={
 tag:'<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
 book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
@@ -18005,7 +18005,7 @@ function icons(sz){
     sp.innerHTML=svg(k,19);sp.dataset.zs=k});
 }
 let busy=false;
-function run3(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;try{icons(sz)}catch(e){console.error('322',e)}setTimeout(()=>{busy=false},0)}
+function run3(){const sz=$1('#sheet:not(.zoff) .sz');if(!sz||busy)return;busy=true;try{icons(sz)}catch(e){console.error('322',e)}setTimeout(()=>{busy=false},0)}
 let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
   ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run3,60)});ob.observe(sh,{childList:true,subtree:true})}
 try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();setTimeout(run3,20);setTimeout(run3,200);return r}}catch(e){console.error('322 sheet',e)}
@@ -18022,7 +18022,7 @@ try{XVER2='2.21.323';XVBUILD2='22/11/2026 - 02:50 م'}catch(e){}
 try{XVER2='2.21.324';XVBUILD2='22/11/2026 - 03:00 م'}catch(e){}
 try{(function(){
 const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
-const P='html body #sheet#sheet .sz';
+const P='html body #sheet#sheet:not(.zoff) .sz';
 const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng)`;
 const css=document.createElement('style');css.id='z324css';css.textContent=`
 html body #sheet#sheet .zpan{background:radial-gradient(420px 240px at 50% -40px,rgba(20,184,166,.16),transparent 70%),#0b111e!important}
@@ -18085,7 +18085,7 @@ function go(sz){
   $$('.zsec',zf).forEach(s=>{const n=s.nextElementSibling;if(!n||n.classList.contains('zsec')||n.matches('details,.zhero,.zsh'))s.remove()});
 }
 let busy=false;
-function run4(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;try{go(sz)}catch(e){console.error('324',e)}setTimeout(()=>{busy=false},0)}
+function run4(){const sz=$1('#sheet:not(.zoff) .sz');if(!sz||busy)return;busy=true;try{go(sz)}catch(e){console.error('324',e)}setTimeout(()=>{busy=false},0)}
 let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
   ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run4,70)});ob.observe(sh,{childList:true,subtree:true})}
 try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();setTimeout(run4,30);setTimeout(run4,220);return r}}catch(e){console.error('324 sheet',e)}
@@ -18098,7 +18098,7 @@ watch();
 try{XVER2='2.21.325';XVBUILD2='22/11/2026 - 03:15 م'}catch(e){}
 try{(function(){
 const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
-const P='html body #sheet#sheet .sz';
+const P='html body #sheet#sheet:not(.zoff) .sz';
 const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng)`;
 const EMG=new RegExp('(?:\\p{Extended_Pictographic}|\\u200d|\\ufe0f)+','gu');
 const W='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16" cy="14" r="1.3"/></svg>';
@@ -18146,7 +18146,7 @@ function go(sz){const zf=$1('#zform',sz);if(!zf)return;
   const fn=$1('#f-n',zf);if(fn&&isI&&/عشا/.test(fn.placeholder||''))fn.placeholder='مثلاً: مرتب نوفمبر';
 }
 let busy=false;
-function run5(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;try{go(sz)}catch(e){console.error('325',e)}setTimeout(()=>{busy=false},0)}
+function run5(){const sz=$1('#sheet:not(.zoff) .sz');if(!sz||busy)return;busy=true;try{go(sz)}catch(e){console.error('325',e)}setTimeout(()=>{busy=false},0)}
 let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
   ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run5,80)});ob.observe(sh,{childList:true,subtree:true})}
 try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();setTimeout(run5,40);setTimeout(run5,240);return r}}catch(e){console.error('325 sheet',e)}
@@ -18456,6 +18456,93 @@ ${Q} .zccp .rs em{color:var(--t)!important}
 `;document.head.appendChild(css);
 })()}catch(e){console.error('fix 2.21.331',e)}
 /* ========== نهاية 2.21.331 ========== */
+
+/* ========== 2.21.332 · التقرير: سداد الكريديت في المصروفات + من غير نسب + خطوط وألوان ========== */
+try{XVER2='2.21.332';XVBUILD2='22/11/2026 - 04:45 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const pn=s=>parseFloat(String(s||'').replace(/[^\d.\-−]/g,'').replace('−','-'))||0;
+const setN=(el,v)=>{if(!el)return;const t=$1('.nm',el)||el;t.textContent=num(r2(v))};
+function period(){let f,t;try{const k=rtab;if(k==='month'||k==='cols'){const r=mRange(RF.month||NKM);f=r[0];t=r[1]}
+  else if(k==='year'){const y=+RF.year||NY;f=y+'-01-01';t=y+'-12-31'}else{f=RF.from;t=RF.to}}catch(e){}return f&&t?[f,t]:null}
+function ccPays(f,t){return S.txs.filter(x=>x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&x.date>=f&&x.date<=t)}
+
+function go(){const rp=$1('#rvdoc .rp');if(!rp||rp.dataset.z332)return;rp.dataset.z332='1';
+  /* شيل قسم الكريديت اللي تحت + مربعه الصغير */
+  $$('.zccp',rp).forEach(e=>e.remove());
+  $$('.zrk2 span',rp).forEach(s=>{if(/سداد الكريديت/.test(s.textContent))s.remove()});
+  const z2=$1(':scope>.zrk2',rp);if(z2&&!z2.children.length)z2.remove();
+  /* شيل عمود النسبة */
+  $$('.zflat table',rp).forEach(tb=>{
+    const hr=tb.querySelector('thead tr');if(hr&&hr.cells.length>=3&&/%|نسبة/.test(hr.cells[hr.cells.length-1].textContent))hr.cells[hr.cells.length-1].remove();else return;
+    tb.querySelectorAll('tbody tr').forEach(r=>{if(r.cells.length>=3)r.cells[r.cells.length-1].remove()});
+    tb.querySelectorAll('tfoot tr').forEach(r=>{if(r.cells.length>=3)r.cells[r.cells.length-1].remove()})});
+  /* سداد الكريديت سطر في المصروفات */
+  const P=period();if(!P)return;const L=ccPays(P[0],P[1]);if(!L.length)return;
+  const ct=r2(L.reduce((a,x)=>a+(+x.amount||0),0));
+  const box=$1('.xre',rp);const tb=box&&$1('.zflat table',box);if(!tb)return;
+  const body=tb.querySelector('tbody');
+  const js=L.length===1?`editTx('${L[0].id}')`:`xRgList('${L.map(x=>x.id).join(',')}')`;
+  const tr=document.createElement('tr');tr.className='clk zccr';tr.setAttribute('onclick',js);
+  const nmz=[...new Set(L.map(x=>(M(x.to)||{}).name).filter(Boolean))].join('، ');
+  tr.innerHTML=`<td class="t"><b>سداد الكريديت</b>${nmz?`<small>${esc(nmz)}</small>`:''}</td><td class="n">${num(ct)}</td>`;
+  const rows=[...body.querySelectorAll('tr')],at=rows.find(r=>pn(r.cells[1]&&r.cells[1].textContent)<ct);
+  if(at)at.before(tr);else body.appendChild(tr);
+  const fr=tb.querySelector('tfoot tr');if(fr&&fr.cells[1])setN(fr.cells[1],pn(fr.cells[1].textContent)+ct);
+  const em=$1('.rs em',box);if(em)setN(em,pn(em.textContent)+ct);
+  const rk=$1(':scope>.rk',rp);if(rk){const k=rk.children,eb=k[1]&&$1('b',k[1]),nb=k[2]&&$1('b',k[2]);
+    if(eb)setN(eb,pn(($1('.nm',eb)||eb).textContent)+ct);
+    if(nb){const v=pn(($1('.nm',nb)||nb).textContent)-ct;setN(nb,v);k[2].classList.toggle('zneg',v<0)}}}
+(function watch(){const d=document.getElementById('rvdoc');if(!d)return setTimeout(watch,500);
+  let tm=0;new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{go()}catch(e){console.error('332',e)}},160)}).observe(d,{childList:true});
+  setTimeout(()=>{try{go()}catch(e){}},160)})();
+
+const Q=':is(html body .paper,html body #rv #rvdoc) .rp';
+const css=document.createElement('style');css.id='z332css';css.textContent=`
+html body #rv #rvbody{background:#0d1424!important}
+${Q}{--c:#f8fafc;--l:#e5e7eb;--t:#0f172a;--m:#64748b;--g:#047857;--r:#b91c1c;font-size:13.5px!important;line-height:1.5!important}
+html body #rv #rvdoc.paper .rp{--c:#172033;--l:rgba(255,255,255,.07);--t:#e8edf5;--m:#8b98ad;--g:#34d399;--r:#f87171}
+${Q} .rh .ap{font-size:11px!important;font-weight:600!important;letter-spacing:.3px}
+${Q} .rh .tt{font-size:18px!important;font-weight:800!important;letter-spacing:-.2px}
+${Q} .rh .st{font-size:12.5px!important}
+${Q} .rk{background:var(--c)!important;border:1px solid var(--l)!important;border-radius:16px!important;padding:14px 4px!important}
+${Q} .rk>div>span{font-size:11.5px!important;font-weight:600!important;color:var(--m)!important}
+${Q} .rk>div>b{font-size:18px!important;font-weight:800!important;font-feature-settings:"tnum";letter-spacing:-.2px}
+${Q} .rk>div:nth-child(1)>b{color:var(--g)!important}
+${Q} .rk>div:nth-child(2)>b{color:var(--r)!important}
+${Q} .rk>div:nth-child(3)>b{color:var(--t)!important}
+${Q} .rk>div:nth-child(3).zneg>b{color:var(--r)!important}
+${Q} .zrk2 span{border:1px solid var(--l)}
+${Q} .rs{background:var(--c)!important;border:1px solid var(--l)!important;border-bottom:0!important;font-size:15px!important;font-weight:800!important;padding:13px 14px 10px!important}
+${Q} .rs em{font-size:15px!important;font-weight:800!important;font-feature-settings:"tnum"}
+${Q} .xri .rs em{color:var(--g)!important}
+${Q} .xre .rs em{color:var(--r)!important}
+${Q} .rtb{background:var(--c)!important;border:1px solid var(--l)!important}
+${Q} .rs+.rtb{border-top:1px solid var(--l)!important}
+${Q} .rtb th{font-size:11px!important;font-weight:600!important;letter-spacing:.2px;padding:8px 14px!important}
+${Q} .rtb td{padding:11px 14px!important;font-size:13.5px!important}
+${Q} .rtb td.t b{font-weight:600!important;font-size:13.5px!important}
+${Q} .rtb td.t small{font-size:11px!important;margin-top:1px}
+${Q} .rtb td.n{font-weight:700!important;font-feature-settings:"tnum";letter-spacing:-.1px}
+${Q} .zflat tbody td.n{color:var(--t)!important}
+${Q} .zflat tbody td.n:last-child{font-size:13.5px!important;font-weight:700!important;width:auto!important;color:var(--t)!important}
+${Q} .zflat tfoot td{font-size:14px!important}
+${Q} .xri .zflat tfoot td.n{color:var(--g)!important}
+${Q} .xre .zflat tfoot td.n{color:var(--r)!important}
+${Q} tr.zccr td.t b::before{content:'💳 ';font-size:12px}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.332',e)}
+/* ========== نهاية 2.21.332 ========== */
+
+/* ========== 2.21.333 · الشكل الجديد على مصروف/تحصيل جديد بس ========== */
+try{XVER2='2.21.333';XVBUILD2='22/11/2026 - 05:00 م'}catch(e){}
+try{(function(){
+try{const _sh=sheet;sheet=function(h){try{const sh=document.getElementById('sheet');let on=false;
+  try{on=typeof h==='string'&&/f-amt/.test(h)&&!!F&&!F.id&&(F.type==='exp'||F.type==='inc')}catch(e){}
+  if(sh)sh.classList.toggle('zoff',!on)}catch(e){}
+  return _sh.apply(this,arguments)}}catch(e){console.error('333',e)}
+})()}catch(e){console.error('fix 2.21.333',e)}
+/* ========== نهاية 2.21.333 ========== */
 
 /* نهاية fix.js */
 
