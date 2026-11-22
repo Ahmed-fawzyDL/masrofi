@@ -18544,6 +18544,71 @@ try{const _sh=sheet;sheet=function(h){try{const sh=document.getElementById('shee
 })()}catch(e){console.error('fix 2.21.333',e)}
 /* ========== نهاية 2.21.333 ========== */
 
+/* ========== 2.21.334 · شكل البرنامج كله من الأساس + فتح أسرع ========== */
+try{XVER2='2.21.334';XVBUILD2='22/11/2026 - 05:15 م'}catch(e){}
+try{(function(){
+/* ---------- فتح أسرع: شيل شاشة البداية أول ما البرنامج يجهز ---------- */
+function ready(){try{
+  let locked=false;try{locked=!!(LK&&LK.pin)&&!document.getElementById('lock').classList.contains('on')}catch(e){}
+  if(locked)return;
+  document.documentElement.classList.add('xok');
+  const b=document.getElementById('xboot');if(b)b.remove();
+  if(!document.getElementById('z334v')){const s=document.createElement('style');s.id='z334v';s.textContent='body>header,body>main,body>nav{visibility:visible!important}';document.head.appendChild(s)}
+}catch(e){}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(ready));else requestAnimationFrame(ready);
+
+/* ---------- الشكل ---------- */
+const css=document.createElement('style');css.id='z334css';css.textContent=`
+html body.dark{--bg:#0b111e;--card:#151e31;--soft:#1d2840;--soft2:#18223a;--tx:#e8edf5;--mu:#8b98ad;--bd:#24304a;--inc:#34d399;--exp:#f87171;--tr:#60a5fa}
+html body.dark{background:radial-gradient(640px 320px at 50% -80px,color-mix(in srgb,var(--p) 20%,transparent),transparent 70%) no-repeat,var(--bg)}
+html body.dark header{background:rgba(11,17,30,.78)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.05)!important}
+html body nav{background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--bd);padding-top:6px}
+html body nav button.on span{background:color-mix(in srgb,var(--p) 18%,transparent);border-radius:12px;padding:1px 14px}
+html body nav .fab{background:linear-gradient(135deg,var(--p),#4f46e5);box-shadow:0 8px 20px -6px color-mix(in srgb,var(--p) 80%,transparent)}
+html body :is(.list,.box,.pcard,.tbl,.mbar,.tile,details.grp,.ic2,.ncard){border-radius:16px}
+html body :is(.list,.box,.pcard,.tbl,.mbar){border:1px solid var(--bd)}
+html body .row{padding:12px 14px;border-bottom-color:var(--bd)}
+html body .ckx,html body .xr{border-bottom-color:var(--bd)}
+html body .xr summary{padding:12px 14px}
+html body .ic{border-radius:11px}
+html body .nic,html body .iav{border-radius:12px}
+html body h3{font-size:15px;font-weight:800;margin:16px 6px 8px}
+html body .hero{background:linear-gradient(135deg,var(--p),#3730a3)!important;border-radius:20px;padding:14px;box-shadow:0 14px 30px -16px color-mix(in srgb,var(--p) 80%,transparent)}
+html body .hbtns button{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);border-radius:14px}
+html body .hnet{background:rgba(0,0,0,.18);border-radius:12px}
+html body .tabs button{border-radius:12px;border-color:var(--bd)}
+html body :is(.seg,.sseg){border-radius:12px;padding:3px}
+html body :is(.seg,.sseg) button{border-radius:9px}
+html body.dark :is(.seg,.sseg) button.on{background:var(--card);box-shadow:0 4px 10px rgba(0,0,0,.25)}
+html body .btn{border-radius:14px;padding:13px;font-size:15px}
+html body .btn:not(.ghost):not(.dz){box-shadow:0 8px 20px -10px color-mix(in srgb,var(--p) 80%,transparent)}
+html body .mini{border-radius:10px}
+html body :is(input:not([type=checkbox]):not([type=range]):not([type=radio]),select){border-radius:12px;padding:10px 12px}
+html body.dark :is(input:not([type=checkbox]):not([type=range]):not([type=radio]),select){background:var(--soft2);border-color:var(--bd)}
+html body :is(input,select,textarea):focus{outline:0;border-color:var(--p);box-shadow:0 0 0 3px color-mix(in srgb,var(--p) 25%,transparent)}
+html body.dark .kpi{background:var(--soft2);border-top-width:3px}
+html body.dark .kpi small{color:var(--mu)}html body.dark .kpi b{color:var(--tx)}
+html body.dark .kpi.inc b{color:var(--inc)}html body.dark .kpi.exp b{color:var(--exp)}html body.dark .kpi.net b{color:#93c5fd}html body.dark .kpi.warn b{color:#fbbf24}
+html body.dark .rg{background:var(--soft2);border-color:var(--bd)}html body.dark .rg b{color:var(--tx)}html body.dark .rg small{color:var(--mu)}
+html body.dark :is(.badge.done,.tag.inc,.tag.ok,.lock.op){background:rgba(52,211,153,.14);color:#6ee7b7!important}
+html body.dark :is(.badge.late,.tag.exp,.tag.late){background:rgba(248,113,113,.14);color:#fca5a5!important}
+html body.dark :is(.badge.wait,.tag.wait,.lock,.chip.pd){background:rgba(251,191,36,.14);color:#fcd34d!important}
+html body.dark :is(.badge.soon,.tag.ctr,.tag.tr,.chip.fx){background:rgba(96,165,250,.14);color:#93c5fd!important}
+html body.dark :is(.badge.rej,.tag.rej){background:rgba(148,163,184,.14);color:#cbd5e1!important}
+html body.dark .warn{background:rgba(251,191,36,.12);color:#fcd34d}
+html body.dark .demo{background:rgba(251,191,36,.12);color:#fcd34d;border-color:rgba(251,191,36,.3)}
+html body.dark .hneg{background:rgba(248,113,113,.18);color:#fecaca}
+html body.dark th{background:var(--soft2)}
+html body #sheet .body{border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+html body.dark #sheet .body,html body.dark .shbar{background:var(--bg)}
+html body.dark #sheet .body :is(.list,.box){background:var(--card)}
+html body .dbox{border-radius:22px}
+html body #toast{border-radius:14px}
+html body .ncard{border-right-width:3px}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.334',e)}
+/* ========== نهاية 2.21.334 ========== */
+
 /* نهاية fix.js */
 
 
