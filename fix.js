@@ -18837,6 +18837,20 @@ ${R} .rtb td{padding:12px 14px!important}
 })()}catch(e){console.error('fix 2.21.337',e)}
 /* ========== نهاية 2.21.337 ========== */
 
+/* ========== 2.21.338 · التفاصيل بتفتح السلفة حتى لو خلصت ========== */
+try{XVER2='2.21.338';XVBUILD2='22/11/2026 - 06:15 م'}catch(e){}
+try{(function(){
+try{const _o=xLnOpen;xLnOpen=function(id){const r=_o.apply(this,arguments);
+  let n=0,clicked=false;
+  const find=()=>{const e=document.querySelector(`#view [data-lid="${id}"]`);
+    if(e){e.scrollIntoView({block:'center',behavior:'smooth'});return}
+    if(!clicked){const b=[...document.querySelectorAll('#view button')].find(x=>/^\s*\S*\s*الكل/.test((x.textContent||'').trim())||/الكل$/.test((x.textContent||'').trim()));
+      if(b){clicked=true;try{ZLX=id}catch(x){}b.click()}}
+    if(++n<8)setTimeout(find,150)};
+  setTimeout(find,220);return r}}catch(e){console.error('338',e)}
+})()}catch(e){console.error('fix 2.21.338',e)}
+/* ========== نهاية 2.21.338 ========== */
+
 /* نهاية fix.js */
 
 
