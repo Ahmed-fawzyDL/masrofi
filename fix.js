@@ -17695,6 +17695,42 @@ try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTime
 try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.311',e)}
 
+/* ========== 2.21.312 · شاشة التسجيل أصغر وأحدث ========== */
+try{XVER2='2.21.312';XVBUILD2='22/11/2026 - 01:20 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+function ownT(el){let s='';for(let c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)s+=c.nodeValue;return s.trim()}
+const css=document.createElement('style');css.id='z312css';css.textContent=`
+#sheet .sz:has(#zform)>h2{font-size:18px!important;margin:0 0 4px!important}
+#sheet .sz .znt{display:inline-flex!important;align-items:center;gap:6px;width:auto!important;padding:4px 12px!important;margin:0 0 8px!important;border:1px solid rgba(94,234,212,.25)!important;border-radius:999px!important;background:rgba(13,148,136,.10)!important;font-size:12px!important;border-bottom:0!important}
+#sheet .sz .zrs{min-height:40px!important;height:40px!important;padding:0 14px!important;font-size:13.5px!important;margin:0 0 6px!important;border-radius:14px!important}
+#zform .zch{display:none!important}
+#zform .zc{padding:10px 12px!important;margin:0 0 10px!important;border-radius:16px!important;background:rgba(30,44,68,.5)!important}
+#zform .zc-amt{background:none!important;border:0!important;padding:2px 0 6px!important;margin-bottom:6px!important}
+#zform .zc-amt *{display:block!important;width:100%!important;text-align:center!important}
+#zform .zc-amt label,#zform .zc-amt span,#zform .zc-amt b{font-size:12px!important;opacity:.6;margin:0 0 2px!important;font-weight:700!important}
+#zform .zc-amt input#f-amt{font-size:40px!important;font-weight:800!important;min-height:58px!important;height:58px!important;padding:0!important;border:0!important;border-bottom:2px solid rgba(94,234,212,.45)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:1}
+#zform .zc label{margin:0 0 8px!important;font-size:12.5px!important}
+#zform .zc :is(input:not([type=checkbox]):not(#f-amt),select,textarea,.xsel){min-height:42px!important;padding:8px 12px!important;font-size:14.5px!important;border-radius:12px!important}
+#zform .zc>*{margin-bottom:8px!important}#zform .zc>*:last-child{margin-bottom:0!important}
+#zform .zc :is(.fl,.xfl){font-size:12px!important;opacity:.7;margin:0 0 4px!important}
+#zform #zpay .zq-hd{margin-bottom:6px!important}
+#zform #zpay .zq-l{padding:6px!important;margin-bottom:6px!important}
+#zform #zpay :is(.zq-add,.zsh-add){padding:6px!important;font-size:12.5px!important}
+#zform .zsh-ck{font-size:13.5px!important}
+#sheet .sz .zsave{position:sticky!important;bottom:10px;z-index:6;box-shadow:0 10px 28px rgba(0,0,0,.45)!important;margin-top:6px!important}
+#sheet .sz:has(#zform)>button:is(.danger,.ghost.danger){min-height:40px!important;font-size:13px!important;margin-top:4px!important}
+`;document.head.appendChild(css);
+
+function tidy(){const sz=$1('#sheet .sz');if(!sz||!$1('#zform',sz))return;
+  [...sz.querySelectorAll('*')].forEach(e=>{if(e.closest('#zform'))return;const t=ownT(e);
+    if(/^نوع العملية/.test(t)){const p=e.parentElement&&e.parentElement!==sz?e.parentElement:e;p.classList.add('znt')}});
+  [...sz.querySelectorAll('button')].forEach(b=>{const t=(b.textContent||'').trim();
+    if(/Receipt Scan/i.test(t))b.classList.add('zrs');
+    if(/^(✅\s*)?(سج\u0651?ل|حفظ|تم التحصيل|تم الدفع|✓ تم التحصيل)/.test(t)&&!b.closest('#zform'))b.classList.add('zsave')})}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{tidy()}catch(e){}setTimeout(()=>{try{tidy()}catch(e){}},80);return r}}catch(e){}
+})()}catch(e){console.error('fix 2.21.312',e)}
+
 /* نهاية fix.js */
 
 
