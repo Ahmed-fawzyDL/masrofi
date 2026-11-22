@@ -18094,6 +18094,67 @@ watch();
 })()}catch(e){console.error('fix 2.21.324',e)}
 /* ========== نهاية 2.21.324 ========== */
 
+/* ========== 2.21.325 · تشطيب: ألوان الأزرار + العنوان جوه الكارت + من غير سكرول ========== */
+try{XVER2='2.21.325';XVBUILD2='22/11/2026 - 03:15 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const P='html body #sheet#sheet .sz';
+const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng)`;
+const EMG=new RegExp('(?:\\p{Extended_Pictographic}|\\u200d|\\ufe0f)+','gu');
+const W='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16" cy="14" r="1.3"/></svg>';
+const css=document.createElement('style');css.id='z325css';css.textContent=`
+${P}.zn:has(.zhero)>h2{display:none!important}
+${P} #zform .zhero{padding:10px 12px 12px!important;margin:2px 0 10px!important;box-shadow:0 10px 22px -12px rgba(55,48,163,.6)!important}
+${P} #zform .zhtop>span:first-child{font-size:14.5px!important;font-weight:700!important;color:#fff!important}
+${P} #zform .zhero .xamt>span:not(.zcur){display:none!important}
+${P} #zform .zhero .zc-amt{margin:0!important}
+${P} #zform .zhero .xamt input#f-amt.amt-in{height:50px!important;min-height:50px!important;font-size:38px!important}
+${P} #zform .zhero #zchips{margin:2px 0 0!important;gap:6px!important}
+${P} #zform .zhero .zchip{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.24)!important;color:#fff!important;padding:5px 12px!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+${P} #zform .zhero .zchip.on{background:#fff!important;border-color:#fff!important;color:#0f766e!important}
+${P} #zform .zhero .zchip:active{transform:scale(.96)}
+${P} #zform .zsec{margin:0 8px 5px!important;font-size:11px!important}
+${CARD}{margin:0 0 10px!important}
+${P} .znr{min-height:44px!important;padding:3px 0!important}
+${P} :is(.znr,#zpay .zq-r) .xsel::after,${P} #xoa::after{border-left-color:#64748b!important;border-bottom-color:#64748b!important;opacity:1!important}
+${P} #zpay .zq-r .xsel.xsel{color:#e6ebf5!important;gap:8px!important}
+${P} #zpay .zq-r .xsel img{width:20px!important;height:20px!important;border-radius:50%!important;object-fit:cover}
+${P} #zpay>.zq-hd{min-height:44px!important}
+${P} #zpay .zq-add{min-height:42px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;font-size:12.5px!important}
+${P} #zpay .zq-add .zplus{width:20px;height:20px;border-radius:50%;background:rgba(20,184,166,.18);color:#5eead4;display:inline-flex;align-items:center;justify-content:center;font-size:15px;line-height:1;font-weight:700}
+${P} #zform details.zc-more{margin:0 0 10px!important}
+${P} #zform details.zc-more>summary{display:flex!important;width:fit-content!important;margin:0 auto!important;padding:6px 14px!important;border-radius:999px!important;background:rgba(255,255,255,.04)!important;border:1px solid rgba(255,255,255,.08)!important;font-size:12.5px!important;color:#5eead4!important;gap:4px!important}
+${P} #zform details.zc-more>summary::after{margin:0!important;margin-inline-start:2px!important;opacity:.8!important}
+${P} #zform details.zc-more[open]>summary{margin:0 auto 8px!important}
+${P} .zsave{min-height:48px!important;box-shadow:0 12px 24px -10px rgba(79,70,229,.6),inset 0 1px 0 rgba(255,255,255,.2)!important;letter-spacing:.2px}
+${P} .zsave:active{transform:scale(.98)}
+`;document.head.appendChild(css);
+
+const FF=()=>{try{return F}catch(e){return null}};
+function go(sz){const zf=$1('#zform',sz);if(!zf)return;
+  const f=FF(),isI=!!(f&&f.type==='inc');
+  const h2=$1(':scope>h2',sz),lab=$1('.zhtop>span:first-child',zf);
+  if(h2&&lab){const t=(h2.textContent||'').replace(EMG,'').trim();if(t&&lab.textContent!==t)lab.textContent=t}
+  const hb=$1('#zpay .zq-hd b',zf);
+  if(hb){const want=isI?'استلمت في':'تم الدفع من';const tn=[...hb.childNodes].find(n=>n.nodeType===3&&n.nodeValue.trim());
+    if(tn){const v=tn.nodeValue.replace(EMG,'').trim();if(v!==want||tn.nodeValue!==want)tn.nodeValue=want}
+    if(!hb.querySelector(':scope>.zic')){const s=document.createElement('span');s.className='zic zc3';s.dataset.zs='wallet';s.innerHTML=W;hb.prepend(s)}}
+  $$('#zpay .zq-add',zf).forEach(b=>{if(b.querySelector('.zplus'))return;const t=(b.textContent||'').replace(EMG,'').replace(/^\s*\+\s*/,'').trim();
+    b.innerHTML='<span class="zplus">+</span><span>'+t+'</span>'});
+  const sm=$1('details.zc-more>summary',zf);if(sm){const tn=[...sm.childNodes].find(n=>n.nodeType===3&&n.nodeValue.trim());
+    if(tn&&EMG.test(tn.nodeValue)){EMG.lastIndex=0;tn.nodeValue=tn.nodeValue.replace(EMG,'').trim()}EMG.lastIndex=0}
+  const fn=$1('#f-n',zf);if(fn&&isI&&/عشا/.test(fn.placeholder||''))fn.placeholder='مثلاً: مرتب نوفمبر';
+}
+let busy=false;
+function run5(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;try{go(sz)}catch(e){console.error('325',e)}setTimeout(()=>{busy=false},0)}
+let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
+  ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run5,80)});ob.observe(sh,{childList:true,subtree:true})}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();setTimeout(run5,40);setTimeout(run5,240);return r}}catch(e){console.error('325 sheet',e)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(run5,240);return r}}catch(e){}
+watch();
+})()}catch(e){console.error('fix 2.21.325',e)}
+/* ========== نهاية 2.21.325 ========== */
+
 /* نهاية fix.js */
 
 
