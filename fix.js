@@ -18755,6 +18755,88 @@ ${Q} .zglk.zgd{color:#f87171!important}
 })()}catch(e){console.error('fix 2.21.336',e)}
 /* ========== نهاية 2.21.336 ========== */
 
+/* ========== 2.21.337 · تشطيب الشاشات + التقرير بنفس الشكل ========== */
+try{XVER2='2.21.337';XVBUILD2='22/11/2026 - 06:05 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const EMG=new RegExp('(?:\\p{Extended_Pictographic}|\\u200d|\\ufe0f)+','gu');
+const ownT=r=>[...r.childNodes].map(n=>n.nodeType===3?n.nodeValue:(n.nodeType===1&&n.matches('span:not(.zgi),.xoa2l')?n.textContent:'')).join(' ').replace(EMG,'').trim();
+const norm=s=>s.replace(/[%:\s—\-]/g,'');
+
+/* ---------- الشاشات ---------- */
+const RARE=/رقم الميعاد|السابق|القديم|نسبة الزيادة|قيمة الزيادة|تاريخ انتهاء|تاريخ الانتهاء|بيتسجل لوحده/;
+function sheetFix(){const sh=document.getElementById('sheet');if(!sh||!sh.classList.contains('zoff'))return;const sz=$1('.sz.zg2',sh);if(!sz)return;
+  const rows=$$('.zr2',sz).filter(r=>getComputedStyle(r).display!=='none'),seen={};
+  rows.forEach(r=>{const k=norm(ownT(r));if(!k)return;const has=!!r.querySelector('input:not([type=hidden]),select,.xsel');
+    const p=seen[k];if(!p){seen[k]={el:r,has};return}
+    if(!has)r.style.display='none';else if(!p.has){p.el.style.display='none';seen[k]={el:r,has}}});
+  if($1('#zform',sz)||$1(':scope>details.zgx',sz))return;
+  const mv=rows.filter(r=>r.style.display!=='none'&&RARE.test(ownT(r)));if(!mv.length)return;
+  const d=document.createElement('details');d.className='zgx';d.innerHTML='<summary>خيارات إضافية</summary>';
+  const box=document.createElement('div');box.className='zgc';d.appendChild(box);mv.forEach(r=>box.appendChild(r));
+  const f=$1(':scope>.zgf',sz);if(f)f.before(d);else sz.appendChild(d);
+  $$(':scope>.zgc',sz).forEach(c=>{if(![...c.children].some(x=>getComputedStyle(x).display!=='none'))c.style.display='none'})}
+let sb=false;function sRun(){if(sb)return;sb=true;try{sheetFix()}catch(e){console.error('337 sheet',e)}setTimeout(()=>{sb=false},0)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,500);
+  new MutationObserver(()=>{if(sb)return;clearTimeout(w.t);w.t=setTimeout(sRun,120)}).observe(sh,{childList:true,subtree:true})})();
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);setTimeout(sRun,340);return r}}catch(e){}
+
+/* ---------- التقرير ---------- */
+const I={cash:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
+wallet:'<path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16" cy="14" r="1.3"/>',
+trend:'<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>',cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',bank:'<path d="M3 10h18M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18M12 3l9 5H3z"/>',
+card:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>',sum:'<path d="M18 4H6l6 8-6 8h12"/>'};
+const svg=k=>'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[k]||I.sum)+'</svg>';
+function secIc(t){if(/مقارنة/.test(t))return['trend',3];if(/التحصيل|اتحصّل/.test(t))return['cash',1];if(/المصروف/.test(t))return['wallet',2];
+  if(/الناتج/.test(t))return['sum',3];if(/أسبوع|شهر بشهر|متوسط/.test(t))return['cal',4];if(/لسه/.test(t))return['clock',4];if(/البنوك|الكاش/.test(t))return['bank',3];if(/الكريديت/.test(t))return['card',2];return['sum',3]}
+function rep(){const rp=$1('#rvdoc .rp');if(!rp||rp.dataset.z337)return;rp.dataset.z337='1';
+  $$('.rs',rp).forEach(s=>{if(!/العملاء/.test(s.textContent||''))return;let n=s.nextElementSibling;
+    while(n&&!n.classList.contains('rs')&&!n.classList.contains('rf')&&!n.matches('.xri,.xre,.xrn,.zccp')){const x=n;n=n.nextElementSibling;x.remove()}s.remove()});
+  const rh=$1(':scope>.rh',rp),rk=$1(':scope>.rk',rp);if(rh&&rk)rh.appendChild(rk);
+  $$('.rs',rp).forEach(s=>{if($1('.zri',s))return;const [k,c]=secIc(s.textContent||'');const i=document.createElement('span');i.className='zri zq'+c;i.innerHTML=svg(k);s.prepend(i)})}
+(function w(){const d=document.getElementById('rvdoc');if(!d)return setTimeout(w,500);
+  let tm=0;new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{rep()}catch(e){console.error('337 rep',e)}},300)}).observe(d,{childList:true});
+  setTimeout(()=>{try{rep()}catch(e){}},300)})();
+
+const S2='html body #sheet#sheet.zoff .sz.zg2';
+const R=':is(html body .paper,html body #rv #rvdoc) .rp';
+const css=document.createElement('style');css.id='z337css';css.textContent=`
+${S2} .zsw input[type=checkbox]{order:9!important}
+${S2} .zr2{white-space:nowrap}
+${S2} .zr2>input.zv2{flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0!important}
+${S2} .zr2 .xsel{color:#cbd5e1!important}
+${S2} .zr2 .xsel .xl{display:inline-flex!important;align-items:baseline!important;gap:6px!important;white-space:nowrap}
+${S2} .zr2 .xsel .xl small{display:inline!important;margin:0!important}
+${S2} details.zgx{margin:0 0 6px}
+${S2} details.zgx>summary{display:flex;width:fit-content;margin:0 auto 12px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:12.5px;color:#5eead4;list-style:none;cursor:pointer;gap:4px}
+${S2} details.zgx>summary::-webkit-details-marker{display:none}
+${S2} details.zgx>summary::after{content:'▾';opacity:.8}
+${S2} details.zgx[open]>summary::after{content:'▴'}
+${R} .rh{flex-wrap:wrap!important;border-radius:20px!important;padding:16px!important;background:linear-gradient(135deg,#0f766e,#3730a3)!important;border:0!important;margin:0 0 12px!important;box-shadow:0 14px 28px -16px rgba(55,48,163,.7)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+${R} .rh *{color:#fff!important}
+${R} .rh :is(.ap,.st,.dt){color:rgba(255,255,255,.78)!important}
+${R} .rh .dt b{color:#fff!important}
+${R} .rh .zact-t{color:#a7f3d0!important}
+${R} .rh>.rk{flex:0 0 100%!important;background:rgba(0,0,0,.2)!important;border:0!important;margin:14px 0 0!important;border-radius:14px!important;padding:12px 4px!important}
+${R} .rh>.rk>div+div{border-inline-start:1px solid rgba(255,255,255,.14)!important}
+${R} .rh>.rk>div>span{color:rgba(255,255,255,.72)!important}
+${R} .rh>.rk>div:nth-child(1)>b{color:#a7f3d0!important}
+${R} .rh>.rk>div:nth-child(2)>b{color:#fecaca!important}
+${R} .rh>.rk>div:nth-child(3)>b{color:#fff!important}
+${R} .rh>.rk>div:nth-child(3).zneg>b{color:#fecaca!important}
+${R} .zrk2{margin:0 0 4px!important}
+${R} .rs{gap:10px!important;justify-content:flex-start!important}
+${R} .rs>em{margin-inline-start:auto!important}
+${R} .zri{width:28px;height:28px;flex:0 0 28px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+${R} .zri svg{display:block}
+${R} .zq1{background:rgba(52,211,153,.16);color:#10b981!important}${R} .zq2{background:rgba(248,113,113,.16);color:#ef4444!important}
+${R} .zq3{background:rgba(96,165,250,.16);color:#3b82f6!important}${R} .zq4{background:rgba(251,191,36,.16);color:#f59e0b!important}
+${R} .rtb td{padding:12px 14px!important}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.337',e)}
+/* ========== نهاية 2.21.337 ========== */
+
 /* نهاية fix.js */
 
 
