@@ -17351,6 +17351,20 @@ ${D} .rfl .rft{background:rgba(30,44,68,.7)!important;border:1px solid rgba(94,2
 html:root body #rvdoc .rc{display:none!important}
 `;document.head.appendChild(s);
 })()}catch(e){console.error('fix 2.21.305',e)}
+/* ========== 2.21.306 · سداد الكريديت القديم يظهر في المصروفات ========== */
+try{XVER2='2.21.306';XVBUILD2='22/11/2026 - 11:55 ص'}catch(e){}
+try{(function(){
+function isCr(id){try{return !!id&&xIsCr(id)}catch(e){return false}}
+function fixOld(){let n=0;
+  S.txs.forEach(t=>{if(!t||t.del||t.type!=='tr'||t.ccPay||!t.date)return;
+    if(isCr(t.method))return;
+    if(isCr(t.to)||t.ccbank||/سداد الكريديت/.test(t.note||'')){t.ccPay=t.date.slice(0,7);n++}});
+  return n}
+try{const n=fixOld();if(n){save();render();
+  setTimeout(()=>{try{toast('💳 '+n+' سداد كريديت قديم بقى يظهر في المصروفات')}catch(e){}},800)}}catch(e){console.error('306 fix',e)}
+try{const _sv=save;save=function(){try{fixOld()}catch(e){}return _sv.apply(this,arguments)}}catch(e){}
+})()}catch(e){console.error('fix 2.21.306',e)}
+
 /* نهاية fix.js */
 
 
