@@ -18383,6 +18383,80 @@ ${Q} .zflat tbody td.n:nth-last-child(2){color:var(--t)!important;font-weight:70
 })()}catch(e){console.error('fix 2.21.330',e)}
 /* ========== نهاية 2.21.330 ========== */
 
+/* ========== 2.21.331 · التقرير: الترتيب + سداد الكريديت + من غير أكبر 10 + كروت للأقسام ========== */
+try{XVER2='2.21.331';XVBUILD2='22/11/2026 - 04:30 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+function period(){let f,t;try{const k=rtab;if(k==='month'||k==='cols'){const r=mRange(RF.month||NKM);f=r[0];t=r[1]}
+  else if(k==='year'){const y=+RF.year||NY;f=y+'-01-01';t=y+'-12-31'}else{f=RF.from;t=RF.to}}catch(e){}return f&&t?[f,t]:null}
+function ccPays(f,t){return S.txs.filter(x=>x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&x.date>=f&&x.date<=t).sort((a,b)=>a.date.localeCompare(b.date))}
+function frag(h){const w=document.createElement('div');w.innerHTML=h;return w}
+function split(box){const out=[];let cur=null;[...box.children].forEach(el=>{if(el.matches('.rs')){cur={els:[el]};out.push(cur)}else if(cur)cur.els.push(el);else out.push({els:[el]})});return out}
+
+function go(){const rp=$1('#rvdoc .rp');if(!rp||rp.dataset.z331)return;rp.dataset.z331='1';
+  /* الزرار: نسخة واحدة ومظبوطة */
+  const zs=$$(':scope>.zact2',rp);zs.slice(1).forEach(z=>z.remove());
+  const on=!!$1('.rh .zact-t',rp);if(zs[0]){const b=zs[0].querySelectorAll('button');if(b[0])b[0].classList.toggle('on',!on);if(b[1])b[1].classList.toggle('on',on)}
+  $$(':scope>.zrk2',rp).slice(1).forEach(z=>z.remove());
+  /* سداد الكريديت */
+  const P=period(),L=P?ccPays(P[0],P[1]):[],ct=r2(L.reduce((a,x)=>a+(+x.amount||0),0));
+  let ccb=null;
+  if(L.length){try{ccb=frag(rsec('سداد الكريديت',num(ct))+rtbl(['التاريخ|c','الكارت','المبلغ|n'],
+    L.map(x=>`<tr class="clk" onclick="editTx('${x.id}')">${cD(x.date)}${cT(esc((M(x.to)||{}).name||'الكريديت'),esc((M(x.method)||{}).name||''))}${cN(num(x.amount))}</tr>`),
+    L.length>1?ft('الإجمالي',2,fN(num(ct))):''));ccb.className='zccp'}catch(e){console.error('331 cc',e)}}
+  /* السطر الصغير تحت الأرقام */
+  const rk=$1(':scope>.rk',rp);let z2=$1(':scope>.zrk2',rp);
+  if(rk){const it=[...rk.children].slice(3).map(d=>{const s=$1('span',d),b=$1('b .nm',d)||$1('b',d);return [((s&&s.textContent)||'').trim(),((b&&b.textContent)||'').trim()]});
+    if(ct)it.push(['سداد الكريديت',num(ct)]);
+    if(it.length){if(!z2){z2=document.createElement('div');z2.className='zrk2';rk.after(z2)}
+      z2.innerHTML=it.map(([l,v])=>`<span>${esc(l)} <b>${esc(v)}</b></span>`).join('')}}
+  /* الترتيب */
+  const TOP=[],G=[],FOOT=[];let cur=null;
+  [...rp.children].forEach(el=>{
+    if(el.matches('.rh,.rfl,.zact2,.rk,.zrk2')){TOP.push(el);cur=null;return}
+    if(el.matches('.rf')){FOOT.push(el);cur=null;return}
+    if(el.matches('.xri,.xre,.xrn')){cur=null;G.push({els:[el],box:el});return}
+    if(el.matches('.rs')){cur={els:[el]};G.push(cur);return}
+    if(cur)cur.els.push(el);else G.push({els:[el]})});
+  const tt=g=>{const r=g.box?$1('.rs',g.box):g.els[0];return r&&r.classList&&r.classList.contains('rs')?r.textContent||'':''};
+  let inc=null,exp=null,net=null;const rest=[];
+  G.forEach(g=>{const t=tt(g);
+    if(!inc&&/التحصيلات|اتحصّل/.test(t)&&!/العملاء|لسه|مقارنة/.test(t))inc=g;
+    else if(!exp&&/المصروفات/.test(t)&&!/أكبر|مقارنة/.test(t))exp=g;
+    else if(!net&&/الناتج/.test(t))net=g;
+    else rest.push(g)});
+  const extra=[];
+  [inc,exp].forEach(g=>{if(!g||!g.box)return;const parts=split(g.box);parts.slice(1).forEach(p=>{
+    const t=(p.els[0].textContent||'');if(/أكبر 10/.test(t))p.els.forEach(e=>e.remove());else extra.push({els:p.els})})});
+  rest.forEach(g=>{if(/أكبر 10/.test(tt(g))){g.els.forEach(e=>e.remove());g.dead=1}});
+  const order=[...TOP];
+  [inc,exp,net].forEach(g=>{if(g)order.push(...g.els)});
+  if(ccb)order.push(ccb);
+  extra.forEach(g=>order.push(...g.els));
+  rest.filter(g=>!g.dead).forEach(g=>order.push(...g.els));
+  order.push(...FOOT);
+  order.forEach(el=>rp.appendChild(el))}
+(function watch(){const d=document.getElementById('rvdoc');if(!d)return setTimeout(watch,500);
+  let tm=0;new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{go()}catch(e){console.error('331',e)}},70)}).observe(d,{childList:true});
+  setTimeout(()=>{try{go()}catch(e){}},70)})();
+
+const Q=':is(html body .paper,html body #rv #rvdoc) .rp';
+const css=document.createElement('style');css.id='z331css';css.textContent=`
+${Q} .rk{padding:12px 4px!important;margin:0 0 8px!important}
+${Q} .rk>div+div{border-inline-start:1px solid var(--l)!important}
+${Q} .rk>div>b{font-size:17px!important}
+${Q} .zrk2{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:6px!important;margin:0 0 6px!important;text-align:center}
+${Q} .zrk2 span{background:var(--c);border-radius:999px;padding:4px 11px;font-size:11.5px;color:var(--m)}
+${Q} .zrk2 b{color:var(--t);font-weight:700;direction:ltr;unicode-bidi:isolate;margin-inline-start:3px}
+${Q} .rs{background:var(--c)!important;border-radius:14px 14px 0 0!important;padding:12px 12px 10px!important;margin:14px 0 0!important}
+${Q} .rs+.rtb{border-radius:0 0 14px 14px!important;margin-top:0!important;border-top:1px solid var(--l)!important}
+${Q} .rs:not(:has(+ .rtb)){border-radius:14px!important}
+${Q} .rtb th{padding:8px 12px!important}
+${Q} .zccp .rs em{color:var(--t)!important}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.331',e)}
+/* ========== نهاية 2.21.331 ========== */
+
 /* نهاية fix.js */
 
 
