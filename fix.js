@@ -17757,7 +17757,7 @@ try{(function(){
 const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 ['z312css','z313css','z314css','z315css','z318css','z319css','z320css'].forEach(id=>{const s=document.getElementById(id);if(s)s.remove()});
 const P='html body #sheet#sheet .sz';
-const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng,.xtype)`;
+const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng)`;
 const CHEV=`content:'‹'!important;position:static!important;transform:none!important;border:0!important;background:none!important;width:auto!important;height:auto!important;font-size:18px!important;line-height:1!important;opacity:.45;margin:0!important`;
 const css=document.createElement('style');css.id='z321css';css.textContent=`
 ${P}.zn>h2{font-size:17px!important;text-align:center!important;margin:4px 0 8px!important}
@@ -17907,7 +17907,7 @@ function generic(sz){if($1('#zform',sz)||$1('.xtype',sz))return;sz.classList.add
 let busy=false;
 function run2(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;
   try{form(sz)}catch(e){console.error('321 form',e)}
-  try{picker(sz)}catch(e){console.error('321 picker',e)}
+  
   try{generic(sz)}catch(e){console.error('321 generic',e)}
   setTimeout(()=>{busy=false},0)}
 let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
@@ -17917,6 +17917,106 @@ try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTime
 watch();
 })()}catch(e){console.error('fix 2.21.321',e)}
 /* ========== نهاية 2.21.321 ========== */
+
+/* ========== 2.21.322 · أيقونات خطوط + تشطيب الشكل الجديد ========== */
+try{XVER2='2.21.322';XVBUILD2='22/11/2026 - 02:45 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const P='html body #sheet#sheet .sz';
+const I={
+tag:'<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+wallet:'<path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16" cy="14" r="1.3"/>',
+cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+clip:'<path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/>',
+repeat:'<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/>',
+gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v9H5v-9"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+camera:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+trend:'<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+cash:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+pin:'<path d="M12 17v5"/><path d="M9 3h6l-1 7 4 3v2H6v-2l4-3z"/>',
+receipt:'<path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 1 1V2l-1 1-3-2-3 2-3-2-3 2z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+cart:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>',
+swap:'<path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/>',
+card:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>',
+list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>'};
+const svg=(k,s)=>'<svg viewBox="0 0 24 24" width="'+(s||17)+'" height="'+(s||17)+'" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[k]||I.sliders)+'</svg>';
+const KW=[[/البند/,'tag','zc1'],[/اسم العملية/,'pen','zc2'],[/المرفقات/,'clip','zc5'],[/شهر/,'cal','zc4'],[/التاريخ/,'cal','zc4'],[/الدفع|الاستلام|اتدفع|طريقة/,'wallet','zc3'],[/الحساب/,'book','zc3'],[/إكرامية/,'gift','zc6'],[/يتكرر|تكرار|متكرر/,'repeat','zc2'],[/نسبة|زيادة|القديم/,'trend','zc6'],[/موعد|يوم|كل/,'clock','zc4'],[/مبلغ|قسط/,'cash','zc2'],[/شخص|مين|العميل/,'users','zc1'],[/ملاحظ|وصف/,'list','zc3']];
+const pick=t=>{for(const k of KW)if(k[0].test(t))return k;return [null,'sliders','zc3']};
+const EP='(?:\\p{Extended_Pictographic}|\\u200d|\\ufe0f)+',EMG=new RegExp(EP,'gu'),EMO=new RegExp('^\\s*'+EP+'\\s*','u');
+const CH=`content:''!important;display:inline-block!important;width:7px!important;height:7px!important;border:0!important;border-left:2px solid currentColor!important;border-bottom:2px solid currentColor!important;transform:rotate(45deg)!important;opacity:.4!important;margin:0 3px 0 4px!important;flex:0 0 auto!important;position:static!important;background:none!important;font-size:0!important;line-height:0!important`;
+
+const css=document.createElement('style');css.id='z322css';css.textContent=`
+${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng){border:1px solid rgba(255,255,255,.045)!important}
+${P} .zic{color:#cbd5e1!important;font-size:0!important}
+${P} .zic svg{display:block}
+${P} .zc1{color:#a78bfa!important}${P} .zc2{color:#5eead4!important}${P} .zc3{color:#93c5fd!important}
+${P} .zc4{color:#fdba74!important}${P} .zc5{color:#f9a8d4!important}${P} .zc6{color:#fcd34d!important}
+${P} .znr{font-size:15px!important}
+${P} :is(.znr,#zpay .zq-r) .xsel::after,${P} #xoa::after,${P} .xtype>button.znx::after{${CH}}
+${P} #xtyp::after{${CH};transform:rotate(-45deg)!important;margin-top:-3px!important;color:#5eead4}
+${P} .znr .xsel.xsel>*+*{margin-inline-start:6px!important}
+${P} .znr .xsel small{color:#64748b!important;font-size:12.5px!important}
+${P} #zpay .zq-r:has(.xsel) select{display:none!important}
+${P} #zform:not(.zn-tipon) #zpay .zq-tip{display:none!important}
+${P} #zpay .zq-tip .zq-tc{font-size:12.5px!important;color:#9fb0c8!important;background:transparent!important;border:0!important}
+${P} #zform .xamt{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:baseline!important;gap:6px!important;direction:ltr!important}
+${P} #zform .xamt>span:not(.zcur){flex:0 0 100%!important;direction:rtl!important}
+${P} #zform .xamt input#f-amt.amt-in{display:inline-block!important;flex:0 0 auto!important;min-width:1.2em!important;max-width:80%!important}
+${P} #zform .xamt .zcur{font-size:16px!important;font-weight:700!important;color:#64748b!important}
+${P} .zchip svg{width:15px;height:15px}
+${P} .xatt .files :is(button,label){color:#9fb0c8!important}
+${P} .xatt .files :is(button,label):active{background:rgba(148,163,184,.12)!important}
+${P} .xtype .zic{color:inherit}
+`;document.head.appendChild(css);
+
+function labOf(r){return [...r.childNodes].filter(n=>!(n.nodeType===1&&(n.classList.contains('znv')||n.classList.contains('zic')||n.matches('input,select,.xsel,.files'))))
+  .map(n=>n.textContent).join(' ').replace(EMG,'').trim()}
+function setIc(sp,k,c){if(sp.dataset.zs===k)return;sp.dataset.zs=k;sp.innerHTML=svg(k);sp.className='zic '+c}
+function icons(sz){
+  $$('.znr',sz).forEach(r=>{if(r.classList.contains('znx'))return;
+    const host=r.id==='xoa'?$1('.xoa2l',r):r.classList.contains('xatt')?$1(':scope>small',r):r;if(!host)return;
+    const t=labOf(host);const [,k,c]=pick(t);let sp=$1(':scope>.zic',host);
+    if(!sp){sp=document.createElement('span');const tn=[...host.childNodes].find(n=>n.nodeType===3&&n.nodeValue.trim());if(tn){tn.nodeValue=tn.nodeValue.replace(EMO,'');tn.before(sp)}else host.prepend(sp)}
+    setIc(sp,k,c)});
+  const hb=$1('#zpay .zq-hd b',sz);if(hb){const sp=$1(':scope>.zic',hb);if(sp)setIc(sp,'wallet','zc3')}
+  $$('.xatt .files :is(button,label)',sz).forEach(b=>{if(b.dataset.zs)return;const t=(b.title||b.textContent||'');
+    const k=/كاميرا/.test(t)?'camera':/صور/.test(t)?'image':'file';
+    const w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT),L=[];while(w.nextNode())L.push(w.currentNode);
+    let done=false;L.forEach(n=>{if(n.parentElement&&n.parentElement.classList.contains('znh'))return;if(EMG.test(n.nodeValue)){EMG.lastIndex=0;
+      if(!done){const s=document.createElement('span');s.innerHTML=svg(k,20);n.before(s);done=true}n.nodeValue=n.nodeValue.replace(EMG,'')}EMG.lastIndex=0});
+    if(!done){const s=document.createElement('span');s.innerHTML=svg(k,20);b.prepend(s)}b.dataset.zs='1'});
+  const ch=$1('#zchips',sz);if(ch)$$('.zchip',ch).forEach(b=>{if(b.dataset.zs)return;const t=(b.textContent||'').replace(EMG,'').trim();
+    const k=/ريسيت/.test(t)?'camera':/مشاركين/.test(t)?'users':/إكرامية/.test(t)?'gift':/سداد/.test(t)?'swap':null;if(!k)return;
+    b.innerHTML=svg(k,15)+'<span>'+t+'</span>';b.dataset.zs='1'});
+  const xb=$1('#xtyp>b',sz);if(xb&&!xb.dataset.zs){xb.dataset.zs='1';xb.textContent=xb.textContent.replace(EMG,'').trim()}
+  const a=$1('#zform #f-amt',sz);if(a&&!$1('.zcur',a.parentElement)){const c=document.createElement('span');c.className='zcur';c.textContent='ج.م';a.after(c);
+    const fit=()=>{const n=Math.max(1,String(a.value||a.placeholder||'0').length);a.style.setProperty('width',(n*0.6+0.3)+'em','important')};
+    a.addEventListener('input',fit);fit();setTimeout(fit,200)}
+  const isI=(()=>{try{return F&&F.type==='inc'}catch(e){return false}})();
+  $$('.xtype>button.znx',sz).forEach(b=>{const sp=$1('.zic',b);if(!sp||sp.dataset.zs)return;const t=($1('.znt2 b',b)||{}).textContent||'';
+    const k=/ثابت/.test(t)?'pin':/فاتورة/.test(t)?'receipt':/سلفة/.test(t)?'swap':/إكرامية/.test(t)?'gift':/عميل/.test(t)?'users':/كريديت/.test(t)?'card':/أخرى/.test(t)?(isI?'cash':'cart'):'sliders';
+    sp.innerHTML=svg(k,19);sp.dataset.zs=k});
+}
+let busy=false;
+function run3(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;try{icons(sz)}catch(e){console.error('322',e)}setTimeout(()=>{busy=false},0)}
+let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
+  ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run3,60)});ob.observe(sh,{childList:true,subtree:true})}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();setTimeout(run3,20);setTimeout(run3,200);return r}}catch(e){console.error('322 sheet',e)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(run3,200);return r}}catch(e){}
+watch();
+})()}catch(e){console.error('fix 2.21.322',e)}
+/* ========== نهاية 2.21.322 ========== */
+
+/* ========== 2.21.323 · رجوع مربعات اختيار النوع ========== */
+try{XVER2='2.21.323';XVBUILD2='22/11/2026 - 02:50 م'}catch(e){}
+/* ========== نهاية 2.21.323 ========== */
 
 /* نهاية fix.js */
 
