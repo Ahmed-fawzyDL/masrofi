@@ -18318,6 +18318,71 @@ ${Q} .rf *{color:var(--m)!important}
 })()}catch(e){console.error('fix 2.21.329',e)}
 /* ========== نهاية 2.21.329 ========== */
 
+/* ========== 2.21.330 · التقرير البسيط: تصليح الألوان + زرار الفعلي يظهر ========== */
+try{XVER2='2.21.330';XVBUILD2='22/11/2026 - 04:15 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const EMG=new RegExp('(?:\\p{Extended_Pictographic}|\\u200d|\\ufe0f)+','gu');
+var ZRACT=false,ZRB=false;
+window.zRAct=function(v){ZRACT=!!v;try{refreshRV()}catch(e){try{openRV(true)}catch(x){}}};
+
+/* ---------- ✅ الفعلي: بيشتغل وقت بناء أي تقرير ---------- */
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+function adj(L){if(!(ZRB&&ZRACT)||!Array.isArray(L))return L;const m=amap();
+  return L.map(t=>{if(!t||t._za)return t;
+    if(t.type==='inc'&&(t.rmb||t.xlnp))return null;
+    if(t.type==='exp'){const c=t.xlno?Math.min(+t.amount||0,repaid(t)):t.shr?Math.min(shOf(t),m[t.id]||0):0;
+      if(c>.009){const a=r2((+t.amount||0)-c);if(a<=.009)return null;return Object.assign({},t,{amount:a,_za:1})}}
+    return t}).filter(Boolean)}
+try{const o=xMS;xMS=function(L){return o.call(this,adj(L))}}catch(e){}
+try{const o=xRL;xRL=function(){return adj(o.apply(this,arguments))}}catch(e){}
+try{const o=xMList;xMList=function(){return adj(o.apply(this,arguments))}}catch(e){}
+function wrapReps(){try{Object.keys(REPS).forEach(k=>{const R=REPS[k];if(!R||typeof R.b!=='function'||R.b._z)return;
+  const o=R.b,w=function(){ZRB=true;try{return o.apply(this,arguments)}finally{ZRB=false}};w._z=1;R.b=w})}catch(e){}}
+wrapReps();setInterval(wrapReps,1000);
+try{const o=xR;xR=function(){const r=o.apply(this,arguments);wrapReps();return r}}catch(e){}
+
+/* ---------- بعد ما التقرير يظهر ---------- */
+function noEmo(el){if(!el)return;[...el.childNodes].forEach(n=>{if(n.nodeType===3){const v=n.nodeValue.replace(EMG,'');if(v!==n.nodeValue)n.nodeValue=v.replace(/^\s+/,'')}})}
+function post(){const rp=$1('#rvdoc .rp');if(!rp||rp.dataset.z330)return;rp.dataset.z330='1';
+  const rk=$1(':scope>.rk',rp);
+  if(rk){$$(':scope>div>span',rk).forEach(noEmo);
+    const ks=[...rk.children];
+    const nb=ks[2]&&($1('b .nm',ks[2])||$1('b',ks[2]));if(nb&&/-|−/.test(nb.textContent))ks[2].classList.add('zneg');
+    if(ks.length>3&&!$1(':scope>.zrk2',rp)){const z=document.createElement('div');z.className='zrk2';
+      z.textContent=ks.slice(3).map(d=>{const s=$1('span',d),b=$1('b .nm',d)||$1('b',d);return ((s&&s.textContent)||'').trim()+' '+((b&&b.textContent)||'').trim()}).join('   ·   ');rk.after(z)}
+    if(!$1('.zact2',rp)){const a=document.createElement('div');a.className='zact2 noprint';
+      a.innerHTML='<button type="button" class="'+(ZRACT?'':'on')+'" onclick="zRAct(0)">الكل</button><button type="button" class="'+(ZRACT?'on':'')+'" onclick="zRAct(1)">✅ الفعلي</button>';
+      const at=$1(':scope>.rfl',rp)||$1(':scope>.rh',rp);if(at)at.after(a);else rp.prepend(a)}
+    const st=$1('.rh .st',rp);if(st&&ZRACT&&!$1('.zact-t',st)){const s=document.createElement('span');s.className='zact-t';s.textContent=' · ✅ الفعلي';st.appendChild(s)}}
+  $$('.rs>span',rp).forEach(noEmo);
+  $$('.rtb tr.xgh td,.rtb td.t,.rtb td.t b',rp).forEach(noEmo)}
+(function watch(){const d=document.getElementById('rvdoc');if(!d)return setTimeout(watch,500);
+  let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;try{post()}catch(e){console.error('330 post',e)}})}).observe(d,{childList:true});
+  try{post()}catch(e){}})();
+
+/* ---------- الألوان ---------- */
+const Q=':is(html body .paper,html body #rv #rvdoc) .rp';
+const css=document.createElement('style');css.id='z330css';css.textContent=`
+${Q} .rs::before,${Q} .rs::after{display:none!important;content:none!important}
+${Q} .rs{border:0!important;padding:0 4px!important}
+${Q} .rk b *{color:inherit!important}
+${Q} .rk>div.zneg>b{color:var(--r)!important}
+${Q} .rk>div:nth-child(3):not(.zneg)>b{color:var(--g)!important}
+${Q} .rtb td *{color:inherit!important}
+${Q} .rtb td.t,${Q} .rtb td.t b{color:var(--t)!important;font-weight:600!important;opacity:1!important}
+${Q} .rtb td small{color:var(--m)!important;font-weight:500!important;opacity:1!important}
+${Q} .rtb td{padding:9px 12px!important}
+${Q} .rtb td.t{white-space:normal!important;overflow:visible!important}
+${Q} .rtb td.t>*{white-space:normal!important}
+${Q} .zflat td.n *{color:inherit!important}
+${Q} .zflat tbody td.n:nth-last-child(2){color:var(--t)!important;font-weight:700!important}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.330',e)}
+/* ========== نهاية 2.21.330 ========== */
+
 /* نهاية fix.js */
 
 
