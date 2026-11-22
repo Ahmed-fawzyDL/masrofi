@@ -18902,6 +18902,36 @@ const css=document.createElement('style');css.id='z339css';css.textContent=`
 })()}catch(e){console.error('fix 2.21.339',e)}
 /* ========== نهاية 2.21.339 ========== */
 
+/* ========== 2.21.340 · أرقام الفعلي تظهر في المصروفات والتحصيلات ========== */
+try{XVER2='2.21.340';XVBUILD2='22/11/2026 - 06:40 م'}catch(e){}
+try{(function(){
+try{const o=amtHidden;amtHidden=function(){try{if(view==='exps'||view==='col')return false}catch(e){}return o.apply(this,arguments)}}catch(e){console.error('340',e)}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.340',e)}
+/* ========== نهاية 2.21.340 ========== */
+
+/* ========== 2.21.341 · سداد الكريديت: الأقساط اللي جواه تحته ========== */
+try{XVER2='2.21.341';XVBUILD2='22/11/2026 - 06:50 م'}catch(e){}
+try{(function(){
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+var ZB={};
+try{const o=window.zActT;window.zActT=function(v){try{ZB[view]=!!v}catch(e){}return o.apply(this,arguments)}}catch(e){}
+const nm=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'قسط'}};
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  if(view!=='exps'||!ZB.exps)return B;const k=ym(cur.y,cur.m);
+  const sec=B.S.find(s=>s.k==='ccpay');if(!sec)return B;
+  const out=[];
+  sec.items.forEach(x=>{const p=x.ccp||x.t;if(!p||!p.to){out.push(x);return}
+    const L=S.txs.filter(t=>t&&!t.del&&!t.pend&&t.type==='exp'&&(t.date||'').startsWith(k)&&t.method===p.to&&isCr(t.method)&&t.src&&t.src.k==='i')
+      .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    if(!L.length){out.push(x);return}
+    const s=r2(L.reduce((a,t)=>a+(+t.amount||0),0));
+    out.push(Object.assign({},x,{a:r2((+x.a||0)-s),n:(x.n||'سداد الكريديت')+' · مشتريات الكارت'}));
+    L.forEach(t=>out.push({n:'↳ '+nm(t),ic:'🏦',d:t.date,a:+t.amount||0,st:'paid',t}))});
+  sec.items=out}catch(e){console.error('341',e)}return B}}catch(e){console.error('341 wrap',e)}
+})()}catch(e){console.error('fix 2.21.341',e)}
+/* ========== نهاية 2.21.341 ========== */
+
 /* نهاية fix.js */
 
 
