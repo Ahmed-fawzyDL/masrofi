@@ -18993,7 +18993,7 @@ function run(){const vw=document.getElementById('view');const on=(()=>{try{retur
   document.body.classList.toggle('zvx',on);if(!on||!vw||busy)return;busy=true;
   try{hero(vw)}catch(e){console.error('342 hero',e)}try{tidy(vw)}catch(e){console.error('342 tidy',e)}setTimeout(()=>{busy=false},0)}
 (function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
-  new MutationObserver(()=>{if(busy)return;clearTimeout(w.t);w.t=setTimeout(run,50)}).observe(vw,{childList:true,subtree:true});run()})();
+  new MutationObserver(()=>{if(busy)return;clearTimeout(w.t);run()}).observe(vw,{childList:true,subtree:true});run()})();
 try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(run,80);return r}}catch(e){}
 
 const V='html body.zvx main#view';
@@ -19109,7 +19109,7 @@ function hero(){const vw=document.getElementById('view'),old=vw&&$1(':scope>.zxh
 let busy=false;
 function run(){let ok=false;try{ok=view==='exps'||view==='col'}catch(e){}if(!ok||busy)return;busy=true;try{hero()}catch(e){console.error('344 hero',e)}setTimeout(()=>{busy=false},0)}
 (function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
-  new MutationObserver(()=>{if(busy)return;clearTimeout(w.t);w.t=setTimeout(run,70)}).observe(vw,{childList:true,subtree:true});run()})();
+  new MutationObserver(()=>{if(busy)return;clearTimeout(w.t);run()}).observe(vw,{childList:true,subtree:true});run()})();
 try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(run,110);return r}}catch(e){}
 
 function rep(){const rp=$1('#rvdoc .rp');if(!rp||rp.dataset.z344)return;const row=$1('tr.zccr',rp);if(!row)return;rp.dataset.z344='1';if(!incl())return;
@@ -19132,6 +19132,10 @@ ${V} .zxh3 .zxh-g b{font-size:14px;font-weight:700;color:#fff;white-space:nowrap
 `;document.head.appendChild(css);
 })()}catch(e){console.error('fix 2.21.344',e)}
 /* ========== نهاية 2.21.344 ========== */
+
+/* ========== 2.21.345 · من غير رعشة وقت الفتح ========== */
+try{XVER2='2.21.345';XVBUILD2='22/11/2026 - 07:45 م'}catch(e){}
+/* ========== نهاية 2.21.345 ========== */
 
 /* نهاية fix.js */
 
