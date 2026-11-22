@@ -19065,6 +19065,77 @@ ${V} #zx .zx-add{display:block!important;width:100%!important;min-height:44px!im
 })()}catch(e){console.error('fix 2.21.342',e)}
 /* ========== نهاية 2.21.342 ========== */
 
+/* ========== 2.21.343 · تصليح الفعلي (من غير تكرار سداد الكريديت) + شكل الأرقام الصغيرة ========== */
+try{XVER2='2.21.343';XVBUILD2='22/11/2026 - 07:20 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const pn=s=>parseFloat(String(s||'').replace(/[^\d.\-−]/g,'').replace('−','-'))||0;
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+const inR=(d,f,t)=>d&&d>=f&&d<=t;
+function ccpR(f,t){return r2(S.txs.filter(x=>x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&inR(x.date,f,t)).reduce((a,x)=>a+(+x.amount||0),0))}
+/* هل "اتصرف" داخل فيه سداد الكريديت؟ */
+var ZINC=null;
+function incl(){if(ZINC!==null)return ZINC;ZINC=true;try{
+  const ks=[...new Set(S.txs.filter(x=>x&&x.type==='tr'&&x.ccPay&&!x.del&&!x.pend).map(x=>(x.date||'').slice(0,7)))].sort().reverse();
+  for(const k of ks){const f=k+'-01',t=k+'-31',c=ccpR(f,t);if(!c)continue;const s=xMS(keyTx(k));
+    const L=keyTx(k).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);
+    const base=r2(L.filter(x=>x.type==='exp').reduce((a,x)=>a+(+x.amount||0),0)-L.filter(x=>x.type==='inc'&&x.rf).reduce((a,x)=>a+(+x.amount||0),0));
+    ZINC=Math.abs(s.exp-base-c)<Math.abs(s.exp-base);break}}catch(e){}return ZINC}
+
+/* ---------- الكارت الملوّن في المصروفات والتحصيلات ---------- */
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+function calc(){const k=ym(cur.y,cur.m),f=k+'-01',t=k+'-31',L=keyTx(k).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);let s={inc:0,exp:0,cr:0,expNC:0};try{s=xMS(keyTx(k))}catch(e){}
+  const AM=amap();let de=0,gen=0,di=0;
+  L.forEach(x=>{if(x.type==='exp')de+=x.xlno?Math.min(+x.amount||0,repaid(x)):x.shr?Math.min(shOf(x),AM[x.id]||0):0;
+    else if(x.type==='inc'&&(x.rmb||x.xlnp)){di+=+x.amount||0;if(x.rmb){const al=(x.rmb.L||[]).reduce((a,y)=>a+(+y.a||0),0);gen+=Math.max(0,(+x.amount||0)-al)}}});
+  const pays=S.txs.filter(x=>x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&inR(x.date,f,t)),pc=new Set(pays.map(x=>x.to).filter(Boolean)),ccp=ccpR(f,t);
+  const crP=r2(L.filter(x=>x.type==='exp'&&isCr(x.method)&&pc.has(x.method)).reduce((a,x)=>a+(+x.amount||0),0));
+  let ow=0;try{XLN().forEach(l=>{if(l&&!l.del)ow+=Math.max(0,xLnRem(l))})}catch(e){}
+  S.txs.forEach(x=>{if(x&&!x.del&&!x.pend&&x.type==='exp'&&x.shr)ow+=Math.max(0,shOf(x)-(AM[x.id]||0))});
+  de=r2(de+gen);const add=incl()?0:ccp;
+  return{s,de,di:r2(di),crP,ccp,add,ow:r2(ow),eAct:r2(s.exp-de-crP+add),iAct:r2(s.inc-di)}}
+var ZD={};
+try{const o=window.zActT;window.zActT=function(v){try{ZD[view]=!!v}catch(e){}const r=o.apply(this,arguments);setTimeout(run,90);return r}}catch(e){}
+function hero(){const vw=document.getElementById('view'),old=vw&&$1(':scope>.zxh',vw);if(!old)return;
+  const isE=view==='exps',on=!!ZD[view];let big,lab,it=[];
+  if(!on){const kp=$1('.kpis',vw),ks=kp?[...kp.querySelectorAll('.kpi')].map(k=>[(($1('small',k)||{}).textContent||'').replace(/[^\u0600-\u06FF\s]/g,'').trim(),pn(($1('b',k)||{}).textContent)]):[];
+    lab=isE?'اتصرف':'اتحصّل';big=ks[0]?ks[0][1]:0;it=ks.slice(1).map(([l,v])=>[l,num(v)])}
+  else{const c=calc();lab=isE?'صرفت فعلاً':'دخلك الفعلي';
+    if(isE){big=c.eAct;if(c.de)it.push(['سلف ومشاركين رجعوا','−'+num(c.de)]);if(c.crP)it.push(['مشتريات الكارت المتسدد','−'+num(c.crP)]);if(c.add)it.push(['سداد الكريديت','+'+num(c.add)]);if(c.ow)it.push(['ليك عند الناس',num(c.ow)])}
+    else{big=c.iAct;if(c.di)it.push(['سداد سلف ومصروفات','−'+num(c.di)])}}
+  const html=`<div class="zxh-t"><span class="zxh-l">${lab}</span><div class="zxh-sg"><button type="button" class="${on?'':'on'}" onclick="zxhT(0)">الكل</button><button type="button" class="${on?'on':''}" onclick="zxhT(1)">الفعلي</button></div></div>
+    <div class="zxh-n"><span dir="ltr">${num(r2(big))}</span> <small>ج.م</small></div>${it.length?`<div class="zxh-g">${it.map(([l,v])=>`<div><small>${esc(l)}</small><b dir="ltr">${esc(v)}</b></div>`).join('')}</div>`:''}`;
+  let h=$1(':scope>.zxh2',vw);if(!h){h=document.createElement('div');h.className='zxh zxh2';old.before(h)}
+  if(h.dataset.sig!==html){h.dataset.sig=html;h.innerHTML=html}}
+let busy=false;
+function run(){let ok=false;try{ok=view==='exps'||view==='col'}catch(e){}if(!ok||busy)return;busy=true;try{hero()}catch(e){console.error('343 hero',e)}setTimeout(()=>{busy=false},0)}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{if(busy)return;clearTimeout(w.t);w.t=setTimeout(run,70)}).observe(vw,{childList:true,subtree:true});run()})();
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(run,110);return r}}catch(e){}
+
+/* ---------- التقرير: سداد الكريديت ما يتحسبش مرتين ---------- */
+function rep(){const rp=$1('#rvdoc .rp');if(!rp||rp.dataset.z343)return;const row=$1('tr.zccr',rp);if(!row){return}rp.dataset.z343='1';if(!incl())return;
+  const ct=pn((row.cells[1]||{}).textContent);if(!ct)return;const set=(el,v)=>{if(!el)return;const t=$1('.nm',el)||el;t.textContent=num(r2(v))};
+  const box=row.closest('.xre'),em=box&&$1('.rs em',box);if(em)set(em,pn(em.textContent)-ct);
+  const rk=$1('.rk',rp);if(rk){const k=rk.children,eb=k[1]&&$1('b',k[1]),nb=k[2]&&$1('b',k[2]);
+    if(eb)set(eb,pn(($1('.nm',eb)||eb).textContent)-ct);if(nb){const v=pn(($1('.nm',nb)||nb).textContent)+ct;set(nb,v);k[2].classList.toggle('zneg',v<0)}}}
+(function w(){const d=document.getElementById('rvdoc');if(!d)return setTimeout(w,500);
+  let tm=0;new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{rep()}catch(e){console.error('343 rep',e)}},320)}).observe(d,{childList:true})})();
+
+const V='html body.zvx main#view';
+const css=document.createElement('style');css.id='z343css';css.textContent=`
+${V}>.zxh:not(.zxh2){display:none!important}
+${V} .zxh-g{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:rgba(0,0,0,.2);border-radius:14px;padding:9px 0;margin-top:2px}
+${V} .zxh-g>div{display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 6px;text-align:center;min-width:0}
+${V} .zxh-g>div+div{border-inline-start:1px solid rgba(255,255,255,.14)}
+${V} .zxh-g small{font-size:10.5px;color:rgba(255,255,255,.72);line-height:1.3}
+${V} .zxh-g b{font-size:14px;font-weight:700;color:#fff;white-space:nowrap}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.343',e)}
+/* ========== نهاية 2.21.343 ========== */
+
 /* نهاية fix.js */
 
 
