@@ -17439,6 +17439,156 @@ try{const _vh=vHome;vHome=function(){
 try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.309',e)}
 
+/* ========== 2.21.310 · 👥 مشاركين في المبلغ + 💱 سداد مقابل مصروف + ✅ الفعلي ========== */
+try{XVER2='2.21.310';XVBUILD2='22/11/2026 - 12:45 م'}catch(e){}
+try{(function(){
+const $1=s=>document.querySelector(s);
+const PP=()=>{try{return XPP()}catch(e){return []}};
+const ppN=id=>{const p=PP().find(x=>x.id===id);return p?p.name:'—'};
+const shOf=(t,p)=>(t.shr||[]).filter(x=>!p||x.p===p).reduce((a,x)=>a+(+x.a||0),0);
+const isKid=t=>!!(t&&(t.splOf||t.feeOf||t.tipOf||t.ztipOf||t.payFeeOf));
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+const A=v=>{try{return amtHidden()?xMk(num(v)):num(v)}catch(e){return num(v)}};
+
+const st=document.createElement('style');st.id='z310css';st.textContent=`
+.zsh{border:1px solid rgba(94,234,212,.25);border-radius:16px;padding:10px 12px;margin:6px 0 12px;background:rgba(148,163,184,.06)}
+.zsh-ck{display:flex!important;align-items:center;gap:10px;font-weight:800;margin:0!important;cursor:pointer}
+.zsh-ck input{width:20px;height:20px;flex:0 0 20px}
+.zsh-r{display:flex;gap:6px;align-items:center;margin-top:8px}
+.zsh-r select{flex:1;min-width:0;margin:0!important}
+.zsh-r input{width:100px!important;flex:0 0 100px;margin:0!important;text-align:center;font-weight:800}
+.zsh-x{width:30px;height:30px;flex:0 0 30px;border-radius:50%;border:0;background:rgba(239,68,68,.15);color:#f87171;cursor:pointer}
+.zsh-add{display:block;width:100%;margin-top:8px;border:1px dashed rgba(94,234,212,.4);background:transparent;color:inherit;border-radius:12px;padding:8px;font:inherit;font-weight:700;cursor:pointer}
+.zsh-s{margin-top:8px;font-size:12.5px;font-weight:700;opacity:.85}
+.zrm-i{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid rgba(148,163,184,.12)}
+.zrm-i input[type=checkbox]{width:20px;height:20px;flex:0 0 20px}
+.zrm-i span{flex:1;min-width:0}.zrm-i span b{display:block;font-size:13.5px}.zrm-i span small{opacity:.65;font-size:11.5px}
+.zrm-i input.zrm-a{width:90px!important;flex:0 0 90px;margin:0!important;text-align:center;font-weight:800}
+#zact{margin:4px 0 10px;border:1px solid rgba(94,234,212,.2);border-radius:16px;padding:10px 12px;background:rgba(30,44,68,.55)}
+#zact .zt{display:flex;background:rgba(0,0,0,.2);border-radius:12px;padding:3px;margin-bottom:8px}
+#zact .zt button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-weight:800;padding:7px;border-radius:10px;opacity:.7;cursor:pointer}
+#zact .zt button.on{background:linear-gradient(140deg,#0d9488,#4338ca);color:#fff;opacity:1}
+#zact .zr{display:flex;justify-content:space-between;font-size:13px;padding:3px 2px}
+#zact .zr b{font-variant-numeric:tabular-nums}
+#zact .zr.f{font-size:15px;font-weight:800;border-top:1px solid rgba(148,163,184,.2);margin-top:4px;padding-top:7px}
+`;document.head.appendChild(st);
+
+/* ---------- شخص جديد ---------- */
+function newPerson(){return new Promise(res=>{
+  if(window.zDlg)zDlg({msg:'👤 اسم الشخص',input:true,def:'',btns:[{t:'✓ ضيف',cls:'z3ok',f:v=>res(v)},{t:'إلغاء',f:()=>res(null)}]});else res(null)})
+  .then(n=>{n=(n||'').trim();if(!n)return '';const ex=PP().find(p=>normAr(p.name)===normAr(n));if(ex)return ex.id;
+    const p={id:uid(),name:n};PP().push(p);save();toast('👤 اتضاف '+n);return p.id})}
+const pOpts=(v,ph)=>`<option value="">${ph}</option>`+PP().map(p=>`<option value="${p.id}" ${p.id===v?'selected':''}>${esc(p.name)}</option>`).join('')+'<option value="__new">➕ شخص جديد</option>';
+
+/* ---------- 👥 مشاركين في المبلغ (المصروف) ---------- */
+function shHTML(){const z=F.zsh;
+  let h=`<label class="zsh-ck"><input type="checkbox" ${z.on?'checked':''} onchange="zShTog(this.checked)"> 👥 مشاركين في المبلغ</label>`;
+  if(z.on)h+=z.L.map((x,i)=>`<div class="zsh-r"><select onchange="zShP(${i},this.value)">${pOpts(x.p,'👤 اختار الشخص')}</select><input inputmode="decimal" dir="ltr" placeholder="0" value="${esc(x.a||'')}" oninput="zShA(${i},this.value)">${z.L.length>1?`<button type="button" class="zsh-x" onclick="zShDel(${i})">✕</button>`:''}</div>`).join('')
+    +`<button type="button" class="zsh-add" onclick="zShAdd()">➕ شخص تاني</button><div class="zsh-s" id="zsh-s"></div>`;
+  return h}
+function shSum(){const el=$1('#zsh-s');if(!el||!F||!F.zsh)return;const tot=parseNum(($1('#f-amt')||{}).value)||0,s=r2(F.zsh.L.reduce((a,x)=>a+(parseNum(x.a)||0),0));
+  el.innerHTML=s>tot+.009?'⚠️ المشاركين ('+num(s)+') أكتر من المبلغ':'عليهم '+num(s)+' · <b>عليك انت '+num(r2(tot-s))+'</b>'}
+function shDraw(){const b=$1('#zsh');if(b){b.innerHTML=shHTML();shSum()}}
+window.zShTog=function(v){F.zsh.on=v;if(v&&!F.zsh.L.length)F.zsh.L=[{p:'',a:($1('#f-amt')||{}).value||''}];shDraw()};
+window.zShA=function(i,v){F.zsh.L[i].a=v;shSum()};
+window.zShAdd=function(){F.zsh.L.push({p:'',a:''});shDraw()};
+window.zShDel=function(i){F.zsh.L.splice(i,1);shDraw()};
+window.zShP=function(i,v){if(v==='__new'){newPerson().then(id=>{F.zsh.L[i].p=id||'';shDraw()});return}F.zsh.L[i].p=v};
+
+/* ---------- 💱 سداد مقابل مصروف (التحصيل) ---------- */
+function openFor(p,ex){const paid={};
+  S.txs.forEach(t=>{if(!t||t.del||t.type!=='inc'||!t.rmb||t.id===ex||t.rmb.p!==p)return;(t.rmb.L||[]).forEach(x=>{paid[x.t]=(paid[x.t]||0)+(+x.a||0)})});
+  const out=[];S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='exp'||!t.shr)return;const s=r2(shOf(t,p));if(!(s>0))return;
+    const rem=r2(s-(paid[t.id]||0));if(rem>.009)out.push({t,s,rem})});
+  return out.sort((a,b)=>(a.t.date||'').localeCompare(b.t.date||''))}
+function rmHTML(){const z=F.zrm;
+  let h=`<label class="zsh-ck"><input type="checkbox" ${z.on?'checked':''} onchange="zRmTog(this.checked)"> 💱 ده سداد مقابل مصروف</label>`;
+  if(!z.on)return h;
+  h+=`<div class="zsh-r"><select onchange="zRmP(this.value)">${pOpts(z.p,'👤 مين اللي رجّع الفلوس؟')}</select></div>`;
+  if(z.p){const O=openFor(z.p,F.id);
+    h+=O.length?O.map(o=>{const on=z.L[o.t.id]!=null;
+      return `<div class="zrm-i"><input type="checkbox" ${on?'checked':''} onchange="zRmCk('${o.t.id}',this.checked)"><span><b>${esc(nmOf(o.t))}</b><small>${dmy(o.t.date)} · عليه ${num(o.s)} · فاضل ${num(o.rem)}</small></span><input class="zrm-a" inputmode="decimal" dir="ltr" value="${on?esc(z.L[o.t.id]):''}" ${on?'':'disabled'} oninput="zRmA('${o.t.id}',this.value)"></div>`}).join('')
+      :'<div class="zsh-s">مفيش مبالغ مفتوحة على الشخص ده. التحصيل هيتسجل سداد من غير ما يتربط بمصروف معين.</div>';
+    h+='<div class="zsh-s" id="zrm-s"></div>'}
+  return h}
+function rmSum(){const el=$1('#zrm-s');if(!el||!F||!F.zrm)return;const tot=parseNum(($1('#f-amt')||{}).value)||0,s=r2(Object.values(F.zrm.L).reduce((a,v)=>a+(parseNum(v)||0),0));
+  el.innerHTML=s>tot+.009?'⚠️ التوزيع ('+num(s)+') أكتر من المبلغ':'اتوزع '+num(s)+' من '+num(tot)+(tot-s>.009?' · الباقي '+num(r2(tot-s))+' سداد عام':'')}
+function rmFill(){const z=F.zrm;z.L={};if(!z.p)return;let left=parseNum(($1('#f-amt')||{}).value)||0;
+  openFor(z.p,F.id).forEach(o=>{if(left<=.009)return;const a=r2(Math.min(o.rem,left));z.L[o.t.id]=amtStr(a);left=r2(left-a)})}
+function rmDraw(){const b=$1('#zrm');if(b){b.innerHTML=rmHTML();rmSum()}}
+window.zRmTog=function(v){F.zrm.on=v;if(v&&F.zrm.p)rmFill();rmDraw()};
+window.zRmP=function(v){if(v==='__new'){newPerson().then(id=>{F.zrm.p=id||'';rmFill();rmDraw()});return}F.zrm.p=v;rmFill();rmDraw()};
+window.zRmCk=function(id,on){if(on){const o=openFor(F.zrm.p,F.id).find(x=>x.t.id===id);F.zrm.L[id]=amtStr(o?o.rem:0)}else delete F.zrm.L[id];rmDraw()};
+window.zRmA=function(id,v){F.zrm.L[id]=v;rmSum()};
+
+/* ---------- مكانهم في شاشة التسجيل ---------- */
+function place(id,html){const sz=$1('#sheet .sz'),a=$1('#f-amt');if(!sz||!a)return;
+  let b=document.getElementById(id);if(!b){b=document.createElement('div');b.id=id;b.className='zsh'}b.innerHTML=html;
+  let at=$1('#zpay')||a;while(at.parentElement&&at.parentElement!==sz)at=at.parentElement;
+  if(at.parentElement===sz)at.after(b);else sz.appendChild(b)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{
+  if(!F||(F.type!=='exp'&&F.type!=='inc')||F.isLoan||F.xtype==='tip')return r;
+  const o=F.id&&S.txs.find(t=>t&&t.id===F.id);if(o&&(isKid(o)||o.xlno||o.xlnp))return r;
+  if(F.type==='exp'){
+    if(!F.zsh)F.zsh=o&&o.shr&&o.shr.length?{on:true,L:o.shr.map(x=>({p:x.p,a:amtStr(x.a)}))}:{on:false,L:[]};
+    const z=$1('#zrm');if(z)z.remove();place('zsh',shHTML());shSum()}
+  else{
+    if(!F.zrm)F.zrm=o&&o.rmb?{on:true,p:o.rmb.p||'',L:Object.fromEntries((o.rmb.L||[]).map(x=>[x.t,amtStr(x.a)]))}:{on:false,p:'',L:{}};
+    const z=$1('#zsh');if(z)z.remove();place('zrm',rmHTML());rmSum()}
+}catch(e){console.error('310 form',e)}return r}}catch(e){}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='f-amt')setTimeout(()=>{try{shSum();rmSum()}catch(x){}},0)},true);
+
+/* ---------- الحفظ ---------- */
+try{const _st=saveTx;saveTx=async function(){
+  const kind=F&&F.type,sh=F&&F.zsh,rm=F&&F.zrm,fid=F&&F.id,tot=parseNum(($1('#f-amt')||{}).value||(F&&F.amount))||0;
+  let shr=null,rmb=null;
+  if(kind==='exp'&&sh&&sh.on&&$1('#zsh')){shr=sh.L.map(x=>({p:x.p,a:r2(parseNum(x.a)||0)})).filter(x=>x.p&&x.a>0);
+    if(!shr.length)return toast('👥 اختار الشخص واكتب المبلغ اللي عليه');
+    if(shr.reduce((a,x)=>a+x.a,0)>tot+.009)return toast('👥 المشاركين أكتر من المبلغ')}
+  if(kind==='inc'&&rm&&rm.on&&$1('#zrm')){if(!rm.p)return toast('💱 اختار الشخص اللي رجّع الفلوس');
+    const L=Object.entries(rm.L||{}).map(([t,a])=>({t,a:r2(parseNum(a)||0)})).filter(x=>x.a>0);
+    if(L.reduce((a,x)=>a+x.a,0)>tot+.009)return toast('💱 التوزيع أكتر من المبلغ');rmb={p:rm.p,L}}
+  const touch=(kind==='exp'&&sh)||(kind==='inc'&&rm),before=new Set(S.txs.map(t=>t&&t.id));
+  const r=await _st.apply(this,arguments);
+  try{if(touch){const sht=$1('#sheet');if(sht&&sht.classList.contains('open')&&$1('#f-amt'))return r;
+    const p=fid?S.txs.find(x=>x&&x.id===fid):S.txs.filter(x=>x&&!before.has(x.id)&&x.type===kind&&!isKid(x)).pop();
+    if(p){if(kind==='exp'){if(shr)p.shr=shr;else delete p.shr}else{if(rmb)p.rmb=rmb;else delete p.rmb}save();render()}}}catch(e){console.error('310 save',e)}
+  return r}}catch(e){}
+
+/* ---------- ✅ الفعلي ---------- */
+var XACT={};
+function ded(k){let de=0,di=0;keyTx(k).forEach(t=>{if(!t||t.del||t.pend||t.xpre)return;
+  if(t.type==='exp'){if(t.xlno)de+=+t.amount||0;else if(t.shr)de+=shOf(t)}
+  else if(t.type==='inc'){if(t.rmb||t.xlnp)di+=+t.amount||0}});return{de:r2(de),di:r2(di)}}
+function strip(){const isE=view==='exps',isC=view==='col';if(!isE&&!isC)return;const zx=document.getElementById('zx');if(!zx)return;
+  const k=ym(cur.y,cur.m);let s={inc:0,exp:0};try{s=xMS(keyTx(k))}catch(e){}const d=ded(k),on=!!XACT[view];
+  const tot=isE?s.exp:s.inc,dd=isE?d.de:d.di;
+  const h=`<div class="zt"><button type="button" class="${on?'':'on'}" onclick="zActT(0)">📋 الكل</button><button type="button" class="${on?'on':''}" onclick="zActT(1)">✅ الفعلي</button></div>
+    <div class="zr"><span>${isE?'💸 اتصرف':'💰 اتحصّل'} (الكل)</span><b>${A(tot)}</b></div>
+    <div class="zr"><span>${isE?'👥 على حساب حد + سلف':'💱 سداد مقابل مصروف + سلف'}</span><b>${dd?'− '+A(dd):'0'}</b></div>
+    <div class="zr f"><span>✅ ${isE?'صرفت فعلًا':'دخلك الفعلي'}</span><b>${A(r2(tot-dd))}</b></div>`;
+  let b=document.getElementById('zact');if(!b){b=document.createElement('div');b.id='zact';zx.before(b)}b.innerHTML=h}
+window.zActT=function(v){XACT[view]=!!v;try{window.zwDraw()}catch(e){try{render()}catch(x){}}strip()};
+const adjA=(t,a)=>{if(!t)return a;if(t.type==='inc'&&(t.rmb||t.xlnp))return 0;
+  if(t.type==='exp'){if(t.xlno)return 0;if(t.shr)return r2(Math.max(0,a-shOf(t)))}return a};
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  if(!XACT[view]||(view!=='exps'&&view!=='col'))return B;
+  B.S.forEach(s=>{s.items=s.items.map(x=>{if(x.ln)return null;
+    if(x.g){const g=x.g.map(e=>({t:e.t,a:adjA(e.t,+e.a||0)})).filter(e=>e.a>.009);if(!g.length)return null;return Object.assign({},x,{g,a:r2(g.reduce((q,e)=>q+e.a,0))})}
+    if(x.t&&x.st==='paid'){const a=adjA(x.t,+x.a||0);if(a<=.009)return null;return a===x.a?x:Object.assign({},x,{a})}
+    return x}).filter(Boolean)});
+}catch(e){console.error('310 act',e)}return B}}catch(e){}
+
+/* علامة على العملية في القايمة */
+try{const _zr=window.zwRow;window.zwRow=function(x,id){let h=_zr.apply(this,arguments);try{const t=x&&x.t;let tag='';
+  if(t&&t.shr&&t.shr.length)tag=' · 👥 '+t.shr.map(s=>esc(ppN(s.p))+' '+num(s.a)).join('، ');
+  else if(t&&t.rmb)tag=' · 💱 سداد من '+esc(ppN(t.rmb.p));
+  if(tag)h=h.replace('</small>',tag+'</small>')}catch(e){}return h}}catch(e){}
+
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(function(){try{strip()}catch(e){}},0);return r}}catch(e){}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.310',e)}
+
 /* نهاية fix.js */
 
 
