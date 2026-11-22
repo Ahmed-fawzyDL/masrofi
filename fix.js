@@ -17827,6 +17827,42 @@ try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);setTimeou
 try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.315',e)}
 
+/* ========== 2.21.316 · كشف سبب الشاشة السودا ========== */
+(function(){
+  try{ XVER2='2.21.316'; XVBUILD2='316'; }catch(e){}
+  var LOG=[];
+  function lg(m){ LOG.push(Math.round(performance.now())+'ms · '+m); try{localStorage.setItem('zBootLog',LOG.join('\n'))}catch(e){} }
+  function show(msg){
+    var d=document.getElementById('zErrBox');
+    if(!d){ d=document.createElement('div'); d.id='zErrBox';
+      d.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#3a1220;color:#fff;border:1px solid #ff6b81;border-radius:12px;padding:10px;font:13px/1.6 system-ui;direction:rtl;max-height:45vh;overflow:auto;white-space:pre-wrap';
+      d.onclick=function(){ try{navigator.clipboard.writeText(d.textContent)}catch(e){} d.remove(); };
+      (document.body||document.documentElement).appendChild(d);
+    }
+    d.textContent+=msg+'\n';
+  }
+  lg('fix.js وصل لآخره');
+  lg('عامل الخدمة: '+(navigator.serviceWorker&&navigator.serviceWorker.controller?'شغال':'مش شغال'));
+  window.addEventListener('error',function(e){
+    var f=(e.filename||'').split('/').pop();
+    lg('غلطة: '+e.message+' @'+f+':'+e.lineno);
+    show('⚠️ '+e.message+'\n'+f+' سطر '+e.lineno+'\n(دوس هنا تنسخ وتقفل)');
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    var m=(e.reason&&(e.reason.message||e.reason))+'';
+    lg('وعد فشل: '+m); show('⚠️ '+m);
+  });
+  document.addEventListener('DOMContentLoaded',function(){ lg('الصفحة اتحملت'); });
+  window.addEventListener('load',function(){ lg('كل الملفات اتحملت'); });
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ lg('أول رسم على الشاشة'); }); });
+  setTimeout(function(){
+    var n=document.body?(document.body.innerText||'').trim().length:0;
+    lg('بعد 4 ثواني: النص الظاهر '+n+' حرف');
+    if(n<5) show('الشاشة لسه فاضية بعد 4 ثواني:\n'+LOG.join('\n')+'\n(دوس هنا تنسخ وتقفل)');
+  },4000);
+})();
+/* ========== نهاية 2.21.316 ========== */
+
 /* نهاية fix.js */
 
 
