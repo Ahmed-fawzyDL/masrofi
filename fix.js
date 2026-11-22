@@ -17426,6 +17426,19 @@ try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTime
 try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.308',e)}
 
+/* ========== 2.21.309 · سداد الكريديت في الرئيسية ========== */
+try{XVER2='2.21.309';XVBUILD2='22/11/2026 - 12:15 م'}catch(e){}
+try{(function(){
+const isP=t=>t&&!t.del&&t.type==='tr'&&t.ccPay;
+try{const _vh=vHome;vHome=function(){
+  const o=xSums;
+  xSums=function(L){const s=o.apply(this,arguments);try{
+    if(s&&Array.isArray(L)){const a=r2(L.filter(isP).reduce((q,t)=>q+(+t.amount||0),0));
+      if(a>0){s.exp=r2((+s.exp||0)+a);s.expNC=r2((+s.expNC||0)+a);s.net=r2((+s.inc||0)-s.exp)}}}catch(e){}return s};
+  try{return _vh.apply(this,arguments)}finally{xSums=o}}}catch(e){console.error('309',e)}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.309',e)}
+
 /* نهاية fix.js */
 
 
