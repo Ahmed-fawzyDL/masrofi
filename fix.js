@@ -17731,6 +17731,54 @@ function tidy(){const sz=$1('#sheet .sz');if(!sz||!$1('#zform',sz))return;
 try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{tidy()}catch(e){}setTimeout(()=>{try{tidy()}catch(e){}},80);return r}}catch(e){}
 })()}catch(e){console.error('fix 2.21.312',e)}
 
+/* ========== 2.21.313 · الشكل الجديد: صفوف زي إعدادات الموبايل في كل الشاشات ========== */
+try{XVER2='2.21.313';XVBUILD2='22/11/2026 - 01:35 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const css=document.createElement('style');css.id='z313css';css.textContent=`
+#zform .zc-amt input#f-amt{font-size:30px!important;min-height:46px!important;height:46px!important}
+#zform .zc,#sheet .sz .zg{background:#1a2438!important;border:1px solid rgba(148,163,184,.12)!important;border-radius:16px!important;padding:2px 12px!important;margin:0 0 10px!important}
+#zform .zc-amt{background:none!important;border:0!important;padding:0 0 4px!important}
+#zform .zc-pay{padding:10px 12px!important}
+#sheet .sz :is(.zg,#zform .zc)>label.zrow{display:flex!important;align-items:center;gap:10px;min-height:48px;margin:0!important;padding:6px 0!important;border-bottom:1px solid rgba(148,163,184,.10);font-size:14px!important;font-weight:600!important}
+#sheet .sz :is(.zg,#zform .zc)>label.zrow:last-child{border-bottom:0}
+#sheet .sz label.zrow>:is(input,select,.inl,.xsel){flex:0 1 58%;margin:0!important;margin-inline-start:auto!important;background:transparent!important;border:0!important;box-shadow:none!important;text-align:left!important;text-align-last:left;min-height:36px!important;padding:4px 0!important;color:#aab4c6!important;font-weight:600}
+#sheet .sz label.zrow input::placeholder{color:#5b6780}
+#sheet .sz .zg>.kv{min-height:44px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(148,163,184,.10);margin:0!important;padding:6px 0!important}
+#sheet .sz .zg>.kv:last-child{border-bottom:0}
+#sheet .sz .zg>.two{padding:8px 0!important;border-bottom:1px solid rgba(148,163,184,.10);margin:0!important}
+#sheet .sz .zg>.two:last-child{border-bottom:0}
+#sheet .sz #zchips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0 0 12px}
+#sheet .sz .zchip{border:1px solid rgba(148,163,184,.3)!important;background:transparent!important;color:inherit!important;border-radius:999px!important;padding:5px 12px!important;font-size:12.5px!important;min-height:0!important;height:auto!important;width:auto!important;font-weight:700!important;margin:0!important;box-shadow:none!important}
+#sheet .sz .zchip.on{background:rgba(13,148,136,.25)!important;border-color:#14b8a6!important;color:#7ee0cf!important}
+#zform details.zc-more{background:transparent!important;border:1px dashed rgba(94,234,212,.3)!important;padding:8px 12px!important}
+#zform details.zc-more>summary{justify-content:center;font-size:13px!important;color:#7ee0cf}
+#zform details.zc-more>summary::after{margin-inline-start:6px!important}
+`;document.head.appendChild(css);
+
+const field=el=>el.matches('label,.two,.kv')&&!el.classList.contains('chk')&&!el.classList.contains('fxbox');
+function markRows(sz){sz.querySelectorAll('label').forEach(l=>{if(l.classList.contains('zrow'))return;const p=l.parentElement;
+  if(!p||!(p.classList.contains('zg')||p.classList.contains('zc')))return;
+  if(l.querySelector('input[type=checkbox],input[type=radio],input[type=file],textarea,label'))return;
+  if(l.querySelectorAll('input,select,.xsel').length!==1)return;l.classList.add('zrow')})}
+function zRows(){const sz=$1('#sheet .sz');if(!sz)return;
+  if(!$1('#f-amt',sz)){let run=[];const flush=()=>{if(run.length){const g=document.createElement('div');g.className='zg';run[0].before(g);run.forEach(e=>g.appendChild(e))}run=[]};
+    [...sz.children].forEach(el=>{if(field(el))run.push(el);else flush()});flush()}
+  markRows(sz)}
+function chips(){const sz=$1('#sheet .sz'),zf=sz&&$1('#zform',sz);if(!zf||$1('#zchips',sz))return;const amt=$1('.zc-amt',zf);if(!amt)return;
+  const row=document.createElement('div');row.id='zchips';
+  const rs=[...sz.querySelectorAll('button')].find(b=>/Receipt Scan/i.test(b.textContent||''));
+  if(rs){rs.classList.remove('zrs');rs.classList.add('zchip');rs.textContent='📷 ريسيت';row.appendChild(rs)}
+  if(F&&(F.type==='exp'||F.type==='inc')){const isE=F.type==='exp',z=isE?F.zsh:F.zrm;
+    if(z&&$1(isE?'#zsh':'#zrm',sz)){const b=document.createElement('button');b.type='button';b.className='zchip'+(z.on?' on':'');b.textContent=isE?'👥 مشاركين':'💱 سداد مقابل مصروف';
+      b.onclick=()=>{const cb=$1((isE?'#zsh':'#zrm')+' input[type=checkbox]');if(cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change',{bubbles:true}))}
+        const m=$1('#zform .zc-more');if(m)m.open=true;b.classList.toggle('on')};row.appendChild(b)}}
+  if(row.children.length)amt.after(row)}
+function all(){try{zRows()}catch(e){}try{chips()}catch(e){}}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);all();setTimeout(all,100);return r}}catch(e){console.error('313 sheet',e)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(all,90);return r}}catch(e){}
+})()}catch(e){console.error('fix 2.21.313',e)}
+
 /* نهاية fix.js */
 
 
