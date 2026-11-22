@@ -17001,7 +17001,154 @@ window.zwDraw=function(){const box=document.getElementById('zx');if(!box)return;
 try{render()}catch(e){}
 }catch(e){console.error('fix 2.21.299',e)}
 /* ===== آخر 2.21.299 ===== */
+/* ========== 2.21.300 · رسايل جوه البرنامج + سداد السلفة + الأقساط الفاضلة ========== */
+try{XVER2='2.21.300'}catch(e){}
+try{XVBUILD2='22/11/2026'}catch(e){}
+try{(function(){
+var D=document,W=window;
+var st=D.createElement('style');st.id='z300css';
+st.textContent=[
+'.z3bg{position:fixed;inset:0;z-index:2147483600;background:rgba(5,10,20,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:22px;direction:rtl;animation:z3f .15s ease}',
+'.z3bx{width:100%;max-width:380px;box-sizing:border-box;background:linear-gradient(160deg,rgba(30,44,68,.97),rgba(15,23,40,.98));border:1px solid rgba(94,234,212,.2);border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.5);padding:22px 18px 16px;color:#e8eef7;font-family:inherit}',
+'.z3tx{font-size:15.5px;line-height:1.8;text-align:center;white-space:pre-line;word-break:break-word;margin-bottom:18px}',
+'.z3in{width:100%;box-sizing:border-box;margin:-6px 0 14px;padding:12px 14px;border-radius:14px;border:1px solid rgba(148,163,184,.25);background:rgba(15,23,42,.7);color:#e8eef7;font:inherit;font-size:16px;direction:rtl;unicode-bidi:plaintext;text-align:right;outline:none}',
+'.z3bt{display:flex;gap:10px}.z3bt.z3col{flex-direction:column}',
+'.z3bt button{flex:1;padding:13px 10px;border-radius:15px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;border:1px solid rgba(94,234,212,.22);background:rgba(15,23,42,.55);color:#e8eef7}',
+'.z3bt .z3ok{border:0;background:linear-gradient(90deg,#0d9488,#4f46e5);color:#fff}',
+'.z3bt .z3dg{border:0;background:linear-gradient(90deg,#dc2626,#9f1239);color:#fff}',
+'@keyframes z3f{from{opacity:0}to{opacity:1}}',
+'.z3ts{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:2147483601;background:rgba(17,26,43,.96);border:1px solid rgba(94,234,212,.25);color:#e8eef7;padding:11px 18px;border-radius:14px;font-size:14px;direction:rtl;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:88vw;text-align:center;pointer-events:none}',
+'input[type=search],input[placeholder*="Search"],input[placeholder*="search"],input[placeholder*="بحث"],input[placeholder*="اسم القسط"],textarea{direction:rtl!important;unicode-bidi:plaintext;text-align:right!important}'
+].join('');
+(D.head||D.documentElement).appendChild(st);
 
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function zDlg(o){
+  var bg=D.createElement('div');bg.className='z3bg';bg.setAttribute('data-z3','1');
+  var bs=o.btns||[];
+  var h='<div class="z3bx"><div class="z3tx">'+esc(o.msg)+'</div>';
+  if(o.input)h+='<input class="z3in" value="'+esc(o.def)+'">';
+  h+='<div class="z3bt'+(bs.length>2?' z3col':'')+'">';
+  bs.forEach(function(b,i){h+='<button type="button" data-i="'+i+'" class="'+(b.cls||'')+'">'+esc(b.t)+'</button>'});
+  bg.innerHTML=h+'</div></div>';
+  bg.addEventListener('click',function(e){
+    e.stopPropagation();
+    var bt=e.target.closest&&e.target.closest('button[data-i]');if(!bt)return;
+    var b=bs[+bt.getAttribute('data-i')];var inp=bg.querySelector('.z3in');var v=inp?inp.value:undefined;
+    if(bg.parentNode)bg.parentNode.removeChild(bg);
+    if(b&&b.f)b.f(v);
+  });
+  D.body.appendChild(bg);
+  var inp=bg.querySelector('.z3in');
+  if(inp){setTimeout(function(){try{inp.focus();inp.select()}catch(e){}},60);
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter'){var k=bg.querySelector('.z3ok');if(k)k.click()}})}
+  return bg;
+}
+W.zDlg=zDlg;
+var tsT=0;
+function toast(m){try{var o=D.querySelector('.z3ts');if(o)o.remove();var t=D.createElement('div');t.className='z3ts';t.setAttribute('data-z3','1');t.textContent=m;D.body.appendChild(t);clearTimeout(tsT);tsT=setTimeout(function(){t.remove()},2600)}catch(e){}}
+
+/* ---------- رسايل alert / confirm / prompt جوه البرنامج ---------- */
+var last=null,pass=[],used=[];
+W.addEventListener('click',function(e){
+  var t=e.target;if(!e.isTrusted||!t||!t.closest||t.closest('[data-z3]'))return;
+  var oe=t.closest('[onclick]');
+  last={el:t,oc:oe?oe.getAttribute('onclick'):null,tx:(t.textContent||'').trim().slice(0,60),tag:t.tagName,ts:Date.now()};
+},true);
+function recent(){return last&&Date.now()-last.ts<1500?last:null}
+function takePass(m){var n=Date.now();pass=pass.filter(function(p){return n-p.ts<4000});
+  for(var i=0;i<pass.length;i++)if(pass[i].m===m){var p=pass.splice(i,1)[0];p.ts=n;used.push(p);return p}return null}
+function recentUsed(){var n=Date.now();var r=used.filter(function(p){return n-p.ts<4000});used=[];return r}
+function findEl(L){
+  if(L.el&&D.contains(L.el))return L.el;
+  var i,a;
+  if(L.oc){a=D.querySelectorAll('[onclick]');for(i=0;i<a.length;i++)if(a[i].getAttribute('onclick')===L.oc)return a[i]}
+  if(L.tx){a=D.querySelectorAll(L.tag);for(i=0;i<a.length;i++)if((a[i].textContent||'').trim().slice(0,60)===L.tx)return a[i]}
+  return null;
+}
+function replay(L,ps){
+  var el=findEl(L);if(!el){toast('الزرار اتغير، دوس عليه تاني');return}
+  var n=Date.now();pass=pass.concat(ps.map(function(p){return {m:p.m,v:p.v,ts:n}}));
+  L.ts=n;last=L;try{el.click()}catch(e){}last=null;
+}
+function isDanger(m){return /حذف|امسح|مسح|هتتمسح|delete/i.test(m)}
+var oA=W.alert,oC=W.confirm,oP=W.prompt;
+W.alert=function(m){if(!D.body)return oA.call(W,m);zDlg({msg:String(m==null?'':m),btns:[{t:'تمام',cls:'z3ok'}]})};
+W.confirm=function(m){
+  m=String(m==null?'':m);
+  if(takePass('c|'+m))return true;
+  var L=recent();if(!L||!D.body)return oC.call(W,m);
+  var keep=recentUsed();last=null;var dg=isDanger(m);
+  zDlg({msg:(dg?'🗑️\n':'')+m,btns:[{t:'أيوه',cls:dg?'z3dg':'z3ok',f:function(){replay(L,keep.concat([{m:'c|'+m}]))}},{t:'لأ'}]});
+  return false;
+};
+W.prompt=function(m,def){
+  m=String(m==null?'':m);
+  var p=takePass('p|'+m);if(p)return p.v;
+  var L=recent();if(!L||!D.body)return oP.call(W,m,def);
+  var keep=recentUsed();last=null;
+  zDlg({msg:m,input:true,def:def==null?'':def,btns:[{t:'✓ تمام',cls:'z3ok',f:function(v){replay(L,keep.concat([{m:'p|'+m,v:v}]))}},{t:'إلغاء'}]});
+  return null;
+};
+
+/* ---------- الدوسة برا الشاشة مابقتش تقفل شاشة فيها خانات ---------- */
+function isFull(el){try{if(!el||el.nodeType!==1||el===D.body||el===D.documentElement)return false;if(getComputedStyle(el).position!=='fixed')return false;var r=el.getBoundingClientRect();return r.width>=W.innerWidth*.95&&r.height>=W.innerHeight*.85}catch(e){return false}}
+function isForm(el){return !!el&&el.nodeType===1&&el.querySelectorAll('input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]),textarea,select').length>=2}
+function guarded(t){if(!t||!t.closest||t.closest('[data-z3]')||!isFull(t))return false;return isForm(t)||isForm(t.nextElementSibling)||isForm(t.previousElementSibling)}
+var gLast=0;
+['pointerdown','mousedown','touchstart','pointerup','mouseup','touchend','click'].forEach(function(ev){
+  W.addEventListener(ev,function(e){
+    if(!e.isTrusted||!guarded(e.target))return;
+    e.stopImmediatePropagation();
+    if(ev==='click'){e.preventDefault();var n=Date.now();if(n-gLast>1500){gLast=n;toast('عشان ماتضيعش اللي كتبته، اقفل من ✕ أو رجوع')}}
+  },{capture:true,passive:ev.indexOf('touch')===0});
+});
+
+/* ---------- سداد السلفة: سداد كامل / سداد دفعة ---------- */
+function ownText(el){var s='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)s+=c.nodeValue;return s}
+function findByText(s){var a=D.querySelectorAll('label,div,span,p,b,strong,small,td');for(var i=a.length-1;i>=0;i--){if(ownText(a[i]).indexOf(s)>=0&&a[i].getBoundingClientRect().height>0)return a[i]}return null}
+function amtInput(){var l=findByText('المبلغ اللي استلمته');if(!l)return null;var s=l;
+  for(var i=0;i<3;i++){s=s.nextElementSibling;if(!s)break;if(s.matches('input'))return s;var q=s.querySelector('input');if(q)return q}
+  return l.parentElement?l.parentElement.querySelector('input'):null}
+function remaining(){var l=findByText('الباقي كله');if(!l)return null;var tx=((l.parentElement||l).textContent||'').replace('الباقي كله','').replace(/[٬,]/g,'');var m=tx.match(/\d+(\.\d+)?/);return m?m[0]:null}
+function setVal(inp,v){try{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(inp,v)}catch(e){inp.value=v}
+  inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}))}
+function payGo(b,part){
+  try{b.click()}catch(e){}
+  var k=0;setTimeout(function f(){var inp=amtInput();if(!inp){if(++k<20)setTimeout(f,100);return}
+    if(part){setVal(inp,'');setTimeout(function(){try{inp.focus()}catch(e){}},50)}
+    else{var r=remaining();if(r)setVal(inp,r)}},150);
+}
+W.addEventListener('click',function(e){
+  if(!e.isTrusted)return;var b=e.target&&e.target.closest&&e.target.closest('[data-zpay]');if(!b)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  zDlg({msg:'💵 سداد السلفة\nعايز تسدد إيه؟',btns:[{t:'✅ سداد كامل',cls:'z3ok',f:function(){payGo(b,0)}},{t:'💵 سداد دفعة',f:function(){payGo(b,1)}},{t:'إلغاء'}]});
+},true);
+
+/* ---------- تعديلات الكلام على الشاشة ---------- */
+var RX=/متبقي\s*([\d٬,\.]+)\s*·\s*(\d+)\s*\/\s*(\d+)\s*قسط/;
+var PRX=/سداد دفعة|سج\u0651?ل دفعة/;
+function ctxHas(el,s,n){var a=el;for(var i=0;i<n&&a;i++){if(a.textContent&&a.textContent.indexOf(s)>=0)return a;a=a.parentElement}return null}
+function scan(){
+  if(!D.body)return;
+  try{var w=D.createTreeWalker(D.body,NodeFilter.SHOW_TEXT,null),n,list=[];
+    while((n=w.nextNode())){var v=n.nodeValue;if(v&&v.length<160&&v.indexOf('قسط')>=0&&RX.test(v))list.push(n)}
+    list.forEach(function(n){var m=n.nodeValue.match(RX);if(!m)return;var tot=+m[3],pd=+m[2];if(tot<pd)return;
+      n.nodeValue=n.nodeValue.replace(RX,'متبقي '+m[1]+' · فاضل '+(tot-pd)+' من '+tot+' قسط')});
+  }catch(e){}
+  try{var bs=D.querySelectorAll('button:not([data-zpay]),[onclick]:not([data-zpay])');
+    for(var i=0;i<bs.length;i++){var b=bs[i],tx=b.textContent||'';if(tx.length>40||!PRX.test(tx))continue;
+      var box=(tx.indexOf('سداد')>=0&&ctxHas(b,'رجع منها',5))||ctxHas(b,'مواعيد السداد',6);
+      if(!box||box.textContent.indexOf('سداد كامل')>=0)continue;
+      b.setAttribute('data-zpay','1');
+      var tw=D.createTreeWalker(b,NodeFilter.SHOW_TEXT,null),t;while((t=tw.nextNode()))if(PRX.test(t.nodeValue))t.nodeValue=t.nodeValue.replace(PRX,'سداد');
+    }
+  }catch(e){}
+}
+var sT=0;function sched(){clearTimeout(sT);sT=setTimeout(scan,120)}
+try{new MutationObserver(sched).observe(D.body||D.documentElement,{childList:true,subtree:true,characterData:true})}catch(e){}
+sched();
+})()}catch(e){}
 /* نهاية fix.js */
 
 
