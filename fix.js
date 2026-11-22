@@ -17149,6 +17149,146 @@ var sT=0;function sched(){clearTimeout(sT);sT=setTimeout(scan,120)}
 try{new MutationObserver(sched).observe(D.body||D.documentElement,{childList:true,subtree:true,characterData:true})}catch(e){}
 sched();
 })()}catch(e){}
+/* ========== 2.21.301 · السداد يرجعك مكانك + مرفقات وشير السلفة + الأقساط ========== */
+try{XVER2='2.21.301';XVBUILD2='22/11/2026 - 11:30 ص'}catch(e){}
+try{(function(){
+const $q=(s,r)=>(r||document).querySelector(s),$a=(s,r)=>[...(r||document).querySelectorAll(s)];
+const LNS=()=>{try{return S.settings.xln||[]}catch(e){return []}};
+function ownT(el){let s='';for(let c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)s+=c.nodeValue;return s}
+
+/* ---------- 🤝 سداد السلفة: يفتكر انت كنت فين + المرفقات ---------- */
+var XLRET=null,XLPF=[],XLPPRE=null,XLPSNAP=null;
+function xLrPend(){if(!XLRET)return false;const n=Date.now();
+  if(n-XLRET.t>600000||(XLRET.cl&&n-XLRET.cl>1500)){XLRET=null;return false}return true}
+function xLrSet(R){try{if(R.pp!=null)XPPID=R.pp}catch(e){}try{if(R.tb)XPPTB=R.tb}catch(e){}}
+try{const _lp=xLnPay;xLnPay=function(id){
+  try{XLRET={v:view,pp:typeof XPPID!=='undefined'?XPPID:null,tb:typeof XPPTB!=='undefined'?XPPTB:null,t:Date.now(),cl:0,saved:false}}catch(e){XLRET=null}
+  XLPF=XLPPRE||[];XLPPRE=null;XLPSNAP=new Set(S.txs.map(t=>t&&t.id));
+  const r=_lp.apply(this,arguments);setTimeout(xLpfInj,0);setTimeout(xLpfInj,250);return r}}catch(e){}
+function xLpfInj(){const sz=$q('#sheet .sz');if(!sz||$q('#xlpf',sz)||!/سداد سلفة/.test(sz.textContent))return;
+  const bt=$a('button',sz).find(b=>/سج\u0651?ل/.test(b.textContent)&&/✅/.test(b.textContent));
+  const h='<div id="xlpf"><div class="fl">📎 المرفقات</div><div id="xlpf-l" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px"></div></div>';
+  if(bt)bt.insertAdjacentHTML('beforebegin',h);else sz.insertAdjacentHTML('beforeend',h);xLpfDraw()}
+function xLpfDraw(){const el=$q('#xlpf-l');if(!el)return;
+  el.innerHTML=XLPF.map(id=>{try{return fileThumb(id,'view')}catch(e){return ''}}).join('')
+  +'<label class="mini" style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 12px;cursor:pointer">📎 إرفاق<input type="file" accept="image/*,application/pdf" multiple style="display:none" onchange="xLpfAdd(this)"></label>'}
+window.xLpfAdd=async function(inp){const fs=[...(inp.files||[])];if(!fs.length)return;
+  try{const ids=await addFiles(fs);XLPF=XLPF.concat(ids);xLpfDraw();toast('📎 اترفق')}catch(e){toast('مقدرتش أرفق الملف')}};
+try{const _sv=save;save=function(){try{if(XLPSNAP){const nw=S.txs.filter(t=>t&&!XLPSNAP.has(t.id));
+  const t=nw.find(x=>x.xlnp)||nw.find(x=>x.type==='inc');
+  if(t){if(XLRET)XLRET.saved=true;if(XLPF.length){t.files=(t.files||[]).concat(XLPF);XLPF=[]}XLPSNAP=null}}}catch(e){}
+  return _sv.apply(this,arguments)}}catch(e){}
+try{const _cs=closeSheet;closeSheet=function(){const r=_cs.apply(this,arguments);if(XLRET&&!XLRET.cl)XLRET.cl=Date.now();return r}}catch(e){}
+try{const _go=go;go=function(v){if(xLrPend()&&XLRET.saved&&v!==XLRET.v){const R=XLRET;XLRET=null;xLrSet(R);return _go.call(this,R.v)}
+  return _go.apply(this,arguments)}}catch(e){}
+
+/* ---------- 📤 الشير: تحصيل سلفة ---------- */
+try{const _sa=xShareAsk;xShareAsk=async function(ids){const r=await _sa.apply(this,arguments);try{
+  const sz=$q('#sheet .sz');if(!sz||$q('#xshl',sz))return r;
+  const L=LNS().filter(l=>l&&!l.del&&xLnRem(l)>0.009).sort((a,b)=>(a.d||'').localeCompare(b.d||''));if(!L.length)return r;
+  const h=`<div class="fl" id="xshl">🤝 تحصيل سلفة</div><div class="list">${L.map(l=>{let nx=null;try{nx=xLnNext(l)}catch(e){}
+    return `<div class="row" onclick="xShLn('${l.id}')"><div class="grow"><b>${esc(l.who||'—')}</b><small>سلفة يوم ${dmy(l.d)} · ${num(+l.amt||0)}${nx?' · ميعادها '+dmy(nx.d):''}</small></div><div class="amt inc">${num(xLnRem(l))}</div></div>`}).join('')}</div>`;
+  const a=$q('#xsho',sz),h3=$a('h3',sz).find(x=>/أرفقه/.test(x.textContent));
+  if(a)a.insertAdjacentHTML('beforebegin',h);else if(h3)h3.insertAdjacentHTML('beforebegin',h);else sz.insertAdjacentHTML('beforeend',h)}catch(e){}return r}}catch(e){}
+window.xShLn=function(id){try{XLPPRE=(typeof XSHIDS!=='undefined'&&XSHIDS||[]).slice()}catch(e){XLPPRE=[]}closeSheet();xLnPay(id)};
+
+/* ---------- 🏦 الأقساط: المتأخر + المدفوع والفاضل في الشهر ---------- */
+window.xLateShow=function(){const td=today(),R=[];
+  S.plans.forEach(p=>(p.items||[]).forEach(it=>{if(it.k==='mnt'||!it.due||it.due>=td||it.due<'2026-10-01'||it.xpre||it.pre||it.skip||itTx(it))return;R.push({p,it})}));
+  R.sort((a,b)=>a.it.due.localeCompare(b.it.due));
+  sheet(`<div class="phead"><h2>⚠️ الأقساط المتأخرة</h2><span class="badge late">${R.length}</span></div>`+(R.length
+    ?`<div class="list">${R.map(x=>`<div class="row" onclick="closeSheet();payStart('${x.p.id}','${x.it.id}')"><div class="grow"><b>${esc(x.p.name)}</b><small>${xDW(x.it.due)} · متأخر ${daysBetween(x.it.due,td)} يوم</small></div><div class="amt exp">${num(+x.it.amount||0)}</div></div>`).join('')}</div>`
+    :'<div class="nempty"><div>✅</div><b>مفيش أقساط متأخرة</b></div>'))};
+function xInstDom(){const V=document.getElementById('view');if(!V)return;
+  if(view==='plan')$a('.xdn',V).forEach(n=>{if(/هي(قل|زيد)\s*0\.\d+/.test(n.textContent))n.style.display='none'});
+  if(!/المتبقي عليك/.test(V.textContent)||$q('#xikm',V))return;
+  const lab=$a('*',V).find(e=>/هذا الشهر/.test(ownT(e)));if(!lab)return;
+  let box=lab;while(box.parentElement&&box.parentElement!==V&&!/المتبقي عليك/.test(box.textContent))box=box.parentElement;
+  let mt=0,mp=0;S.plans.forEach(p=>(p.items||[]).forEach(it=>{if(it.due&&it.due.startsWith(NKM)&&it.k!=='mnt'){const a=+it.amount||0;mt+=a;if(itTx(it))mp+=a}}));
+  for(let c=lab.firstChild;c;c=c.nextSibling)if(c.nodeType===3&&/هذا الشهر/.test(c.nodeValue))c.nodeValue=c.nodeValue.replace('هذا الشهر','فاضل الشهر ده');
+  box.insertAdjacentHTML('afterend','<div id="xikm">'+kpis([['📅 أقساط الشهر ده',fmt(r2(mt)),'net'],['✅ اتدفع منها',fmt(r2(mp)),'inc']])+'</div>');
+  const lt=$a('*',box).find(e=>/متأخر/.test(ownT(e)));
+  if(lt){const b=lt.parentElement&&lt.parentElement!==box?lt.parentElement:lt;b.style.cursor='pointer';b.onclick=xLateShow}}
+
+/* ---------- 📋 المعاملات: واحدة مفتوحة بس ---------- */
+document.addEventListener('toggle',function(e){const d=e.target;if(!d||d.tagName!=='DETAILS'||!d.open||view!=='plan')return;
+  const V=document.getElementById('view');if(!V||!V.contains(d))return;const cls=d.classList[0];if(!cls)return;
+  $a('details.'+cls+'[open]',V).forEach(o=>{if(o!==d&&!o.contains(d)&&!d.contains(o))o.open=false})},true);
+
+try{const _rn=render;render=function(){
+  try{if(xLrPend()&&XLRET.saved&&view!==XLRET.v){const R=XLRET;XLRET=null;xLrSet(R);view=R.v}}catch(e){}
+  const r=_rn.apply(this,arguments);setTimeout(function(){try{xInstDom()}catch(e){}},0);return r}}catch(e){}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.301',e)}
+/* ========== 2.21.302 · سداد الكريديت في المصروفات ========== */
+try{XVER2='2.21.302';XVBUILD2='22/11/2026 - 11:45 ص'}catch(e){}
+try{(function(){
+function ownT(el){let s='';for(let c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)s+=c.nodeValue;return s}
+function xCcpL(k){return S.txs.filter(t=>t&&!t.del&&t.type==='tr'&&t.ccPay&&(t.date||'').startsWith(k))}
+function xCcpSum(k){return r2(xCcpL(k).reduce((a,t)=>a+(+t.amount||0),0))}
+window.xCcpSum=xCcpSum;
+
+/* ---------- القسم في القايمة ---------- */
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  if(view!=='exp')return B;let g='all';try{g=XE.g||'all'}catch(e){}if(g!=='all')return B;
+  const k=ym(cur.y,cur.m),ok=zyFilt();
+  const items=xCcpL(k).map(p=>{const n='💳 سداد '+((M(p.to)||{}).name||'الكريديت');
+    return {n,ic:'💳',d:p.date,a:+p.amount||0,st:'paid',t:p,ccp:p}}).filter(x=>ok(x.d,x.n,x.a,x.t.note))
+    .sort((a,b)=>String(b.d).localeCompare(String(a.d)));
+  if(!items.length)return B;
+  const sec={k:'ccpay',ic:'💳',t:'سداد الكريديت',items};
+  let at=B.S.findIndex(s=>s.k==='instnc');if(at<0)at=B.S.findIndex(s=>s.k==='inst');
+  if(at<0)B.S.push(sec);else B.S.splice(at+1,0,sec);
+}catch(e){console.error('ccpay',e)}return B}}catch(e){}
+
+/* ---------- تفاصيل السداد لما تدوس عليه ---------- */
+try{const _zd=window.zwDet;window.zwDet=function(x){if(!x||!x.ccp)return _zd.apply(this,arguments);
+  const p=x.ccp,Fe=S.txs.filter(t=>t&&!t.del&&t.ccfee===p.id),Lp=S.txs.filter(t=>t&&!t.del&&t.ccpd===p.id&&!t.ccfee);
+  const sL=r2(Lp.reduce((a,t)=>a+(+t.amount||0),0)),sF=r2(Fe.reduce((a,t)=>a+(+t.amount||0),0));
+  const R=[['📅 التاريخ',xDW(p.date)],['🏦 اتخصم من',esc((M(p.method)||{}).name||'—')],['💳 الكارت',esc((M(p.to)||{}).name||'—')],['💵 المبلغ',num(+p.amount||0)]];
+  if(Lp.length)R.push(['✅ مشتريات اتسددت ('+Lp.length+')',num(sL)]);
+  if(Fe.length){R.push(['🧾 مصاريف الكريديت ('+Fe.length+')',num(sF)]);Fe.forEach(f=>R.push(['  · '+esc(f.note||'مصاريف'),num(+f.amount||0)]))}
+  return `<div class="zx-d"><button type="button" class="zx-x" onclick="event.stopPropagation();zxTap('')">✕</button><div class="zx-dt">${esc(x.n)}</div>${R.map(([a,b])=>`<div class="zx-r"><span>${a}</span><b>${b}</b></div>`).join('')}</div>`}}catch(e){}
+
+/* ---------- الكروت اللي فوق: اتصرف + من فلوسك ---------- */
+function xCcpTop(){if(view!=='exp')return;const V=document.getElementById('view');if(!V)return;
+  const pay=xCcpSum(ym(cur.y,cur.m));if(!(pay>0))return;
+  ['اتصرف','من فلوسك'].forEach(lb=>{
+    const el=[...V.querySelectorAll('*')].find(e=>{const t=ownT(e).trim();return t===lb||t.endsWith(' '+lb)});if(!el)return;
+    const box=el.parentElement;if(!box||box.dataset.zcc)return;
+    const vb=[...box.children].find(c=>c!==el&&/\d/.test(c.textContent));if(!vb)return;
+    const v=parseFloat(vb.textContent.replace(/[^\d.]/g,''))||0;vb.textContent=fmt(r2(v+pay));box.dataset.zcc='1'})}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(function(){try{xCcpTop()}catch(e){}},0);return r}}catch(e){}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.302',e)}
+/* ========== 2.21.303 · سداد الكريديت في الرئيسية والتقارير ========== */
+try{XVER2='2.21.303';XVBUILD2='22/11/2026 - 12:00 م'}catch(e){}
+try{(function(){
+function ownT(el){let s='';for(let c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)s+=c.nodeValue;return s}
+const isP=t=>t&&!t.del&&t.type==='tr'&&t.ccPay;
+let HIT=0,CID=null;
+function ccCat(){try{const c=CID&&C(CID);if(c)return c.id}catch(e){}
+  try{const c=ensureCat('💳 سداد الكريديت','exp');CID=c.id;return c.id}catch(e){return ''}}
+function pseudo(p){return {id:p.id,type:'exp',amount:+p.amount||0,cat:ccCat(),method:p.method,via:'',date:p.date,note:'💳 سداد الكريديت',files:p.files||[],created:p.created||0,xccp:1,nofee:1}}
+
+/* التقرير الشهري: السداد بيدخل كمصروف في الشهر اللي اتدفع فيه */
+try{const _ml=xMList;xMList=function(k){let L=_ml.apply(this,arguments);try{
+  if(typeof k==='string'&&/^\d{4}-\d{2}$/.test(k)&&Array.isArray(L)){
+    L=L.filter(t=>!isP(t));const P=S.txs.filter(t=>isP(t)&&(t.date||'').startsWith(k));
+    if(P.length){HIT++;L=L.concat(P.map(pseudo))}}}catch(e){}return L}}catch(e){}
+
+/* الأرقام: المصروفات + من فلوسك + الناتج (الرئيسية والسنوي والمقارنة) */
+try{const _ms=xMS;xMS=function(L){const s=_ms.apply(this,arguments);try{
+  if(s&&Array.isArray(L)){const a=r2(L.filter(isP).reduce((q,t)=>q+(+t.amount||0),0));
+    if(a>0){HIT++;s.exp=r2((+s.exp||0)+a);s.expNC=r2((+s.expNC||0)+a);if('net' in s)s.net=r2((+s.inc||0)-s.exp)}}}catch(e){}return s}}catch(e){}
+
+/* شاشة المصروفات: لو الكارت اتحسب بالسداد خلاص، باتش 302 مايزودوش تاني */
+try{const _rn=render;render=function(){HIT=0;const r=_rn.apply(this,arguments);try{
+  if(view==='exp'&&HIT>0){const V=document.getElementById('view');
+    if(V)[...V.querySelectorAll('*')].forEach(e=>{const t=ownT(e).trim();
+      if(t==='اتصرف'||t.endsWith(' اتصرف')||t==='من فلوسك'||t.endsWith(' من فلوسك')){if(e.parentElement)e.parentElement.dataset.zcc='1'}})}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.303',e)}
 /* نهاية fix.js */
 
 
