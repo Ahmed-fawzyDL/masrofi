@@ -17751,14 +17751,15 @@ try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTime
 })();
 /* ========== نهاية 2.21.317 ========== */
 
-/* ========== 2.21.320 · الشكل الجديد زي إعدادات الموبايل لكل الشاشات اللي بتطلع من تحت ========== */
-try{XVER2='2.21.320';XVBUILD2='22/11/2026 - 02:10 م'}catch(e){}
+/* ========== 2.21.321 · الشكل الجديد زي إعدادات الموبايل (نسخة مصلّحة من 320) ========== */
+try{XVER2='2.21.321';XVBUILD2='22/11/2026 - 02:20 م'}catch(e){}
 try{(function(){
 const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
-['z312css','z313css','z314css','z315css','z318css','z319css'].forEach(id=>{const s=document.getElementById(id);if(s)s.remove()});
+['z312css','z313css','z314css','z315css','z318css','z319css','z320css'].forEach(id=>{const s=document.getElementById(id);if(s)s.remove()});
 const P='html body #sheet#sheet .sz';
 const CARD=`${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),#zform>.zsh,.zng,.xtype)`;
-const css=document.createElement('style');css.id='z320css';css.textContent=`
+const CHEV=`content:'‹'!important;position:static!important;transform:none!important;border:0!important;background:none!important;width:auto!important;height:auto!important;font-size:18px!important;line-height:1!important;opacity:.45;margin:0!important`;
+const css=document.createElement('style');css.id='z321css';css.textContent=`
 ${P}.zn>h2{font-size:17px!important;text-align:center!important;margin:4px 0 8px!important}
 ${P}.zn>p.muted{text-align:center!important;margin:0 0 12px!important;font-size:13px!important}
 ${P} #xtyp{display:flex!important;width:fit-content!important;margin:0 auto 14px!important;gap:6px!important;align-items:center!important;padding:5px 14px!important;border:0!important;border-radius:999px!important;background:#1a2438!important;font-size:12.5px!important;cursor:pointer;min-height:0!important}
@@ -17777,13 +17778,14 @@ ${P} #zform>.zsh{padding:10px 14px!important}
 ${P} .znr{display:flex!important;flex-direction:row!important;align-items:center!important;gap:10px!important;min-height:52px!important;height:auto!important;margin:0 0 -1px!important;padding:6px 0!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.1)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;font-size:14.5px!important;font-weight:600!important;color:#e6ebf5!important;width:100%!important;max-width:none!important;text-align:right!important}
 ${P} .znb{display:block!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important}
 ${P} .znb>*{width:100%!important;max-width:none!important}
-${P} .znr>.znv{margin-inline-start:auto!important;flex:0 1 auto!important;min-width:0!important;max-width:62%!important}
 ${P} .znr :is(input:not([type=checkbox]),.xsel,select){background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;color:#9fb0c8!important;font-size:14.5px!important;font-weight:600!important;text-align:left!important;text-align-last:left!important;padding:4px 0!important;margin:0!important;min-height:36px!important;height:auto!important;border-radius:0!important}
-${P} .znr>input.znv{width:62%!important}
+${P} .znr>input.znv{width:58%!important}
+${P} .znr>.znv.znv.znv{margin:0!important;margin-inline-start:auto!important;flex:0 1 auto!important;min-width:0!important;max-width:62%!important}
 ${P} .znr input::placeholder{color:#5b6780!important}
-${P} .znr .xsel{display:inline-flex!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important;width:auto!important}
+${P} .znr .xsel{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-end!important;gap:5px!important;width:auto!important;white-space:nowrap!important}
+${P} .znr .xsel>*{display:inline!important;margin:0!important;font-size:inherit!important;color:inherit!important;opacity:1!important}
 ${P} .znr .xsel .xic0{display:none!important}
-${P} .znr .xsel::after{content:'‹'!important;position:static!important;transform:none!important;border:0!important;background:none!important;width:auto!important;height:auto!important;font-size:18px!important;opacity:.45;margin:0!important}
+${P} :is(.znr,#zpay .zq-r) .xsel::after{${CHEV}}
 ${P} #xoa .xoa2c{display:none!important}
 ${P} #xoa .xoa2v{color:#9fb0c8!important;font-weight:600!important}
 ${P} #xoa::after{content:'‹';font-size:18px;opacity:.45}
@@ -17791,8 +17793,9 @@ ${P} :is(#xoa .xoa2l,#zpay .zq-hd b,.xatt>small){display:inline-flex!important;a
 ${P} .zic{flex:0 0 28px!important;width:28px!important;height:28px!important;border-radius:8px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;font-size:15px!important;line-height:1!important;margin:0!important;padding:0!important}
 ${P} .zc1{background:rgba(124,58,237,.22)!important}${P} .zc2{background:rgba(13,148,136,.22)!important}${P} .zc3{background:rgba(37,99,235,.22)!important}
 ${P} .zc4{background:rgba(217,119,6,.22)!important}${P} .zc5{background:rgba(219,39,119,.22)!important}${P} .zc6{background:rgba(245,158,11,.22)!important}
-${P} .xatt .files{display:flex!important;gap:6px!important;margin:0!important;margin-inline-start:auto!important;flex-wrap:nowrap!important;width:auto!important}
-${P} .xatt .files :is(button,label){width:44px!important;min-width:44px!important;height:40px!important;min-height:40px!important;padding:0!important;border-radius:10px!important;background:rgba(148,163,184,.08)!important;border:0!important;font-size:10px!important;line-height:1.15!important;margin:0!important;box-shadow:none!important}
+${P} .xatt .files{display:flex!important;gap:2px!important;margin:0!important;margin-inline-start:auto!important;flex-wrap:nowrap!important;width:auto!important}
+${P} .xatt .files :is(button,label){width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;border-radius:10px!important;background:transparent!important;border:0!important;font-size:19px!important;line-height:1!important;margin:0!important;box-shadow:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+${P} .xatt .files .znh{display:none!important}
 ${P} #zform:not(.zn-tipon) .zn-tip,${P} #zform:not(.zn-tipon) #f-tipt{display:none!important}
 ${P} .xhint{display:block!important;font-size:11.5px!important;color:#64748b!important;padding:0 0 8px!important;margin:0!important}
 ${P} .xhint:empty{display:none!important}
@@ -17802,8 +17805,10 @@ ${P} #zpay>.zq-hd{grid-column:1!important;margin:0!important;min-height:52px!imp
 ${P} #zpay>.zq-hd+.zq-l{grid-column:2!important}
 ${P} #zpay .zq-l{background:transparent!important;border:0!important;padding:4px 0!important;margin:0!important;box-shadow:none!important}
 ${P} #zpay .zq-r{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important}
-${P} #zpay .zq-r :is(.xsel,select){background:transparent!important;border:0!important;box-shadow:none!important;color:#9fb0c8!important;min-height:36px!important;padding:4px 0!important;margin:0!important;width:auto!important}
+${P} #zpay .zq-r :is(.xsel,select){background:transparent!important;border:0!important;box-shadow:none!important;color:#9fb0c8!important;min-height:36px!important;padding:4px 0!important;margin:0!important;width:auto!important;display:inline-flex!important;align-items:center!important;gap:6px!important}
+${P} #zpay .zq-r .xsel img{width:20px!important;height:20px!important;border-radius:5px!important}
 ${P} #zpay .zq-r input{width:80px!important;flex:0 0 80px!important;background:rgba(148,163,184,.08)!important;border:0!important;border-radius:10px!important;text-align:center!important;padding:4px 6px!important;min-height:34px!important;margin:0!important;color:#e6ebf5!important}
+${P} #zpay:not(:has(.zq-l ~ .zq-l)) .zq-r input{display:none!important}
 ${P} #zpay .zq-tag{display:none!important}
 ${P} #zpay .zq-add{border:0!important;border-top:1px solid rgba(148,163,184,.1)!important;border-radius:0!important;background:transparent!important;color:#5eead4!important;font-size:13px!important;font-weight:700!important;min-height:46px!important;margin:0!important;padding:0!important;width:100%!important;box-shadow:none!important}
 ${P} #zpay .zq-tip{gap:8px;border-top:1px solid rgba(148,163,184,.1);min-height:46px;font-size:13.5px;align-items:center}
@@ -17827,48 +17832,68 @@ ${P} .xtype .zic{width:36px!important;height:36px!important;flex-basis:36px!impo
 ${P} .zng>.kv>:last-child{margin-inline-start:auto!important}
 `;document.head.appendChild(css);
 
-const EMO=/^\s*((?:\p{Extended_Pictographic}|\u200d|\ufe0f)+)\s*/u;
+const EP='(?:\\p{Extended_Pictographic}|\\u200d|\\ufe0f)+';
+const EMO=new RegExp('^\\s*('+EP+')\\s*','u'),EMG=new RegExp(EP,'gu'),EM1=new RegExp(EP,'u');
 function txt1(el){for(const n of el.childNodes)if(n.nodeType===3&&n.nodeValue.trim())return n;return null}
 function ico(el,c,def,name){if(!el||el.querySelector(':scope>.zic'))return;const tn=txt1(el);let e=def||'';
   if(tn){const m=tn.nodeValue.match(EMO);if(m){e=m[1];tn.nodeValue=tn.nodeValue.slice(m[0].length)}if(name)tn.nodeValue=name}
   if(!e)return;const s=document.createElement('span');s.className='zic '+c;s.textContent=e;if(tn)tn.before(s);else el.prepend(s)}
+function noEmo(el){if(!el||el.dataset.zne)return;el.dataset.zne='1';const tn=txt1(el);if(tn)tn.nodeValue=tn.nodeValue.replace(EMO,'')}
 function row(el,val){if(!el)return;el.classList.add('znr');if(val)val.classList.add('znv')}
+function iconOnly(b){if(b.dataset.zno)return;b.dataset.zno='1';
+  const w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT),L=[];while(w.nextNode())L.push(w.currentNode);
+  L.forEach(n=>{const v=n.nodeValue,rest=v.replace(EMG,'').trim();if(!rest)return;const m=v.match(EM1);
+    const s=document.createElement('span');s.className='znh';s.textContent=rest;n.nodeValue=m?m[0]:'';n.after(s);if(!b.title)b.title=rest})}
+function rowLabels(root){$$('label',root).forEach(l=>{if(l.classList.contains('znr')||l.closest('#zpay,.zsh,details.zc-more'))return;
+  if(l.querySelector('input[type=checkbox],input[type=radio],input[type=file],textarea,label'))return;
+  const cs=[...l.querySelectorAll('input:not([type=hidden]),select,.xsel')].filter(c=>(c.matches('.xsel')||!c.closest('.xsel'))&&getComputedStyle(c).display!=='none');
+  if(cs.length!==1)return;let w=cs[0];while(w.parentElement&&w.parentElement!==l)w=w.parentElement;row(l,w)});
+  $$('.kv',root).forEach(k=>{if(k.id!=='xtyp')k.classList.add('znr')});
+  $$('.two',root).forEach(t=>t.classList.add('znb'))}
 const FF=()=>{try{return F}catch(e){return null}};
 
 function form(sz){const zf=$1('#zform',sz);if(!zf)return;sz.classList.add('zn');
   const f=FF(),isE=!!(f&&f.type==='exp'),isI=!!(f&&f.type==='inc');
   const acc=$1('.zc-acc',zf),pay=$1('.zc-pay',zf),more=$1('.zc-more',zf),amtC=$1('.zc-amt',zf);
+  noEmo($1(':scope>h2',sz));noEmo($1('.xamt>span',zf));
   const bnd=[...sz.children].find(e=>e.tagName==='LABEL'&&e.querySelector(':scope>.xsel')&&/البند/.test(e.textContent||''));
   if(bnd&&acc)acc.prepend(bnd);
   if(acc&&pay&&(pay.compareDocumentPosition(acc)&4))pay.before(acc);
   const b2=acc&&[...acc.children].find(e=>e.tagName==='LABEL'&&/البند/.test(e.textContent||''));
-  if(b2){row(b2,$1(':scope>.xsel',b2));ico(b2,'zc1','🏷️')}
-  const xoa=$1('#xoa',zf);if(xoa){row(xoa,$1('.xoa2v',xoa));ico($1('.xoa2l',xoa),'zc3')}
+  if(b2){row(b2,$1(':scope>.xsel',b2));ico(b2,'zc1','🏷️');const xl=$1('.xsel .xl',b2);if(xl&&/^—.*—$/.test(xl.textContent.trim()))xl.textContent='اختر'}
+  const xoa=$1('#xoa',zf);if(xoa){const v=$1('.xoa2v',xoa);row(xoa,v);ico($1('.xoa2l',xoa),'zc3');if(v&&/▸/.test(v.textContent))v.textContent=v.textContent.replace(/\s*▸\s*/g,'').trim()}
   const fn=$1('#f-n',zf);if(fn){const l=fn.closest('label');row(l,fn);ico(l,'zc2');if(!fn.placeholder)fn.placeholder='مثلاً: عشا مع الصحاب'}
   const ft=$1('#f-tip',zf);if(ft){const l=ft.closest('label');row(l,ft);ico(l,'zc6','','إكرامية');if(l)l.classList.add('zn-tip')}
   const fd=$1('#f-d',zf);if(fd){const l=fd.closest('label');if(l){row(l,$1(':scope>.xsel',l)||fd);ico(l,'zc4','📅')}}
-  const xat=$1('.xatt',zf);if(xat){row(xat,$1('.files',xat));ico($1(':scope>small',xat),'zc5')}
+  const xat=$1('.xatt',zf);if(xat){row(xat,$1('.files',xat));ico($1(':scope>small',xat),'zc5');$$('.files :is(button,label)',xat).forEach(iconOnly)}
   const am=$1('#xacm',zf);if(am){const l=am.closest('label');if(l){row(l,$1(':scope>.xsel',l)||am);ico(l,'zc4')}}
   $$('.two',zf).forEach(t=>t.classList.add('znb'));
   const zp=$1('#zpay',zf);if(zp)ico($1('.zq-hd b',zp),'zc3');
   const sp=$1('#xspl',zf);if(sp&&more&&sp.parentElement!==more)more.appendChild(sp);
+  /* خانات زيادة برا الكروت (زي بيتكرر في الثابت) */
+  let run=[];const fl=()=>{if(run.length){const g=document.createElement('div');g.className='zng';if(more)more.before(g);else zf.appendChild(g);run.forEach(e=>g.appendChild(e))}run=[]};
+  [...sz.children].forEach(el=>{if(el.matches('label,.kv,.two')&&!el.matches('#xtyp,.chk,.fxbox'))run.push(el);else fl()});fl();
+  $$('.zng',zf).forEach(rowLabels);
   let ch=$1('#zchips',sz);if(!ch&&amtC){ch=document.createElement('div');ch.id='zchips';amtC.after(ch)}
   if(ch){
     const rs=[...sz.querySelectorAll('button')].find(b=>!b.closest('#zchips')&&/Receipt Scan|ريسيت/i.test(b.textContent||''));
     if(rs){rs.classList.add('zchip');rs.textContent='📷 ريسيت';ch.prepend(rs)}
-    if(isE||isI){const id=isE?'#zsh':'#zrm',z=isE?f.zsh:f.zrm,box=$1(id,sz);
-      if(box&&!$1('.zch-sh',ch)){const b=document.createElement('button');b.type='button';b.className='zchip zch-sh';b.textContent=isE?'👥 مشاركين':'💱 سداد مقابل مصروف';
-        b.onclick=()=>{const cb=$1(id+' input[type=checkbox]');if(cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change',{bubbles:true}))}setTimeout(run,0)};ch.appendChild(b)}
+    $$('.zchip',ch).forEach(b=>{if(!b.classList.contains('zch-sh')&&!b.classList.contains('zch-tip')&&b!==rs&&/سداد مقابل/.test(b.textContent||''))b.remove()});
+    if(isE){const box=$1('#zsh',sz),z=f.zsh;
+      if(box&&!$1('.zch-sh',ch)){const b=document.createElement('button');b.type='button';b.className='zchip zch-sh';b.textContent='👥 مشاركين';
+        b.onclick=()=>{const cb=$1('#zsh input[type=checkbox]');if(cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change',{bubbles:true}))}setTimeout(run2,0)};ch.appendChild(b)}
       const sb=$1('.zch-sh',ch);if(sb)sb.classList.toggle('on',!!(z&&z.on));
       if(box&&more&&pay){const on=!!(z&&z.on);if(on&&box.parentElement===more)pay.after(box);else if(!on&&box.parentElement!==more)more.appendChild(box)}}
     if(isE&&ft&&!$1('.zch-tip',ch)){const b=document.createElement('button');b.type='button';b.className='zchip zch-tip';b.textContent='🎁 إكرامية';
       b.onclick=()=>{const on=zf.classList.toggle('zn-tipon');b.classList.toggle('on',on);if(on)setTimeout(()=>ft.focus(),50)};ch.appendChild(b)}
     if(ft&&(ft.value||'').trim()&&parseFloat(String(ft.value).replace(/[^\d.]/g,''))){zf.classList.add('zn-tipon');const b=$1('.zch-tip',ch);if(b)b.classList.add('on')}
+    if(!ch.children.length)ch.style.display='none';else ch.style.display='';
   }
+  if(isI){const box=$1('#zrm',sz);if(box&&more&&box.parentElement!==more)more.appendChild(box)}
   const sv=[...sz.children].reverse().find(b=>b.tagName==='BUTTON'&&!/danger/.test(b.className)&&b.id!=='zdiag');
   if(sv){sv.classList.add('zsave');const t=(sv.textContent||'').trim();if(t==='سجّل'||t==='سجل')sv.textContent=isE?'سجّل المصروف':isI?'سجّل التحصيل':t}
 }
-function picker(sz){const x=$1('.xtype',sz);if(!x)return;sz.classList.add('zn');
+function picker(sz){const x=$1('.xtype',sz);if(!x)return;sz.classList.add('zn');noEmo($1(':scope>h2',sz));
   [...x.children].forEach((b,i)=>{if(b.tagName!=='BUTTON'||b.dataset.zn)return;b.dataset.zn='1';
     const em=$1(':scope>span',b),sm=$1(':scope>small',b),tn=txt1(b);
     const ic=document.createElement('span');ic.className='zic '+['zc1','zc3','zc2','zc4','zc6','zc5'][i%6];ic.textContent=em?em.textContent:'';
@@ -17877,25 +17902,21 @@ function picker(sz){const x=$1('.xtype',sz);if(!x)return;sz.classList.add('zn');
 function generic(sz){if($1('#zform',sz)||$1('.xtype',sz))return;sz.classList.add('zn');
   let run=[];const fl=()=>{if(run.length){const g=document.createElement('div');g.className='zng';run[0].before(g);run.forEach(e=>g.appendChild(e))}run=[]};
   [...sz.children].forEach(el=>{if(el.matches('label,.kv,.two')&&!el.matches('.chk,.fxbox'))run.push(el);else fl()});fl();
-  $$('.zng label',sz).forEach(l=>{if(l.classList.contains('znr'))return;if(l.querySelector('input[type=checkbox],input[type=radio],input[type=file],textarea,label'))return;
-    const cs=[...l.querySelectorAll('input:not([type=hidden]),select,.xsel')].filter(c=>(c.matches('.xsel')||!c.closest('.xsel'))&&getComputedStyle(c).display!=='none');
-    if(cs.length!==1)return;let w=cs[0];while(w.parentElement&&w.parentElement!==l)w=w.parentElement;row(l,w)});
-  $$('.zng>.kv',sz).forEach(k=>k.classList.add('znr'));
-  $$('.zng .two',sz).forEach(t=>t.classList.add('znb'));
+  $$('.zng',sz).forEach(rowLabels);
   if(!$1('.zsave',sz)){const sv=[...sz.children].reverse().find(b=>b.tagName==='BUTTON'&&!/danger|ghost/.test(b.className)&&b.id!=='zdiag');if(sv)sv.classList.add('zsave')}}
 let busy=false;
-function run(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;
-  try{form(sz)}catch(e){console.error('320 form',e)}
-  try{picker(sz)}catch(e){console.error('320 picker',e)}
-  try{generic(sz)}catch(e){console.error('320 generic',e)}
+function run2(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;
+  try{form(sz)}catch(e){console.error('321 form',e)}
+  try{picker(sz)}catch(e){console.error('321 picker',e)}
+  try{generic(sz)}catch(e){console.error('321 generic',e)}
   setTimeout(()=>{busy=false},0)}
 let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
-  ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run,30)});ob.observe(sh,{childList:true,subtree:true})}
-try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();run();setTimeout(run,120);return r}}catch(e){console.error('320 sheet',e)}
-try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(run,120);return r}}catch(e){}
+  ob=new MutationObserver(()=>{if(busy)return;clearTimeout(watch.t);watch.t=setTimeout(run2,30)});ob.observe(sh,{childList:true,subtree:true})}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();run2();setTimeout(run2,120);return r}}catch(e){console.error('321 sheet',e)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(run2,120);return r}}catch(e){}
 watch();
-})()}catch(e){console.error('fix 2.21.320',e)}
-/* ========== نهاية 2.21.320 ========== */
+})()}catch(e){console.error('fix 2.21.321',e)}
+/* ========== نهاية 2.21.321 ========== */
 
 /* نهاية fix.js */
 
