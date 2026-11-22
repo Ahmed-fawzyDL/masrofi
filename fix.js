@@ -18478,7 +18478,7 @@ function go(){const rp=$1('#rvdoc .rp');if(!rp||rp.dataset.z332)return;rp.datase
     tb.querySelectorAll('tbody tr').forEach(r=>{if(r.cells.length>=3)r.cells[r.cells.length-1].remove()});
     tb.querySelectorAll('tfoot tr').forEach(r=>{if(r.cells.length>=3)r.cells[r.cells.length-1].remove()})});
   /* سداد الكريديت سطر في المصروفات */
-  const P=period();if(!P)return;const L=ccPays(P[0],P[1]);if(!L.length)return;
+  if(!document.querySelector('#rvdoc .rh .zact-t'))return;const P=period();if(!P)return;const L=ccPays(P[0],P[1]);if(!L.length)return;
   const ct=r2(L.reduce((a,x)=>a+(+x.amount||0),0));
   const box=$1('.xre',rp);const tb=box&&$1('.zflat table',box);if(!tb)return;
   const body=tb.querySelector('tbody');
@@ -18850,6 +18850,57 @@ try{const _o=xLnOpen;xLnOpen=function(id){const r=_o.apply(this,arguments);
   setTimeout(find,220);return r}}catch(e){console.error('338',e)}
 })()}catch(e){console.error('fix 2.21.338',e)}
 /* ========== نهاية 2.21.338 ========== */
+
+/* ========== 2.21.339 · الفعلي: سداد الكريديت بدل مشتريات الكارت (من غير تكرار) ========== */
+try{XVER2='2.21.339';XVBUILD2='22/11/2026 - 06:30 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+function paidCards(f,t){const s=new Set();S.txs.forEach(x=>{if(x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&x.to&&x.date>=f&&x.date<=t)s.add(x.to)});return s}
+function ccSum(f,t){return r2(S.txs.filter(x=>x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&x.date>=f&&x.date<=t).reduce((a,x)=>a+(+x.amount||0),0))}
+
+/* ---------- التقرير ---------- */
+var RA=false,RB=false;
+try{const o=window.zRAct;window.zRAct=function(v){RA=!!v;return o.apply(this,arguments)}}catch(e){}
+function period(){let f,t;try{const k=rtab;if(k==='month'||k==='cols'){const r=mRange(RF.month||NKM);f=r[0];t=r[1]}
+  else if(k==='year'){const y=+RF.year||NY;f=y+'-01-01';t=y+'-12-31'}else{f=RF.from;t=RF.to}}catch(e){}return f&&t?[f,t]:null}
+function adj(L){if(!(RB&&RA)||!Array.isArray(L))return L;const P=period();if(!P)return L;const pc=paidCards(P[0],P[1]);if(!pc.size)return L;
+  return L.filter(t=>!(t&&t.type==='exp'&&isCr(t.method)&&pc.has(t.method)))}
+try{const o=xMS;xMS=function(L){return o.call(this,adj(L))}}catch(e){}
+try{const o=xRL;xRL=function(){return adj(o.apply(this,arguments))}}catch(e){}
+try{const o=xMList;xMList=function(){return adj(o.apply(this,arguments))}}catch(e){}
+function wrapReps(){try{Object.keys(REPS).forEach(k=>{const R=REPS[k];if(!R||typeof R.b!=='function'||R.b._z2)return;
+  const o=R.b,w=function(){RB=true;try{return o.apply(this,arguments)}finally{RB=false}};w._z2=1;w._z=1;R.b=w})}catch(e){}}
+wrapReps();setInterval(wrapReps,1000);
+
+/* ---------- شاشة المصروفات: تاب الفعلي ---------- */
+var ZA={};
+try{const o=window.zActT;window.zActT=function(v){try{ZA[view]=!!v}catch(e){}const r=o.apply(this,arguments);setTimeout(fixStrip,40);return r}}catch(e){}
+function mk(){try{return ym(cur.y,cur.m)}catch(e){return ''}}
+function mPaid(){const k=mk();if(!k)return null;const f=k+'-01',t=k+'-31';return{k,f,t,pc:paidCards(f,t),cc:ccSum(f,t)}}
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  if(view!=='exps'||!ZA.exps)return B;const m=mPaid();if(!m||!m.pc.size)return B;
+  const drop=t=>t&&t.type==='exp'&&isCr(t.method)&&m.pc.has(t.method);
+  B.S.forEach(s=>{s.items=s.items.map(x=>{if(x.g){const g=x.g.filter(e=>!drop(e.t));if(!g.length)return null;if(g.length===x.g.length)return x;
+      return Object.assign({},x,{g,a:r2(g.reduce((q,e)=>q+(+e.a||0),0))})}
+    return drop(x.t)?null:x}).filter(Boolean)});
+  B.S=B.S.filter(s=>s.items.length)}catch(e){console.error('339 zb',e)}return B}}catch(e){}
+const pn=s=>parseFloat(String(s||'').replace(/[^\d.\-−]/g,'').replace('−','-'))||0;
+function fixStrip(){try{if(view!=='exps'||!ZA.exps)return;const z=document.getElementById('zact');if(!z)return;
+  const f=z.querySelector('.zr.f b');if(!f||f.dataset.z339||/[•*]/.test(f.textContent))return;
+  const m=mPaid();if(!m||!m.pc.size)return;
+  const cr=r2(S.txs.filter(t=>t&&!t.del&&!t.pend&&t.type==='exp'&&(t.date||'').startsWith(m.k)&&isCr(t.method)&&m.pc.has(t.method)).reduce((a,t)=>a+(+t.amount||0),0));
+  f.dataset.z339='1';f.textContent=num(r2(pn(f.textContent)-cr+m.cc));
+  const i=document.createElement('div');i.className='zr zcci';i.innerHTML=`<span>💳 سداد الكريديت <b>+${num(m.cc)}</b> · مشتريات الكارت <b>−${num(cr)}</b></span>`;
+  f.closest('.zr').after(i)}catch(e){console.error('339 strip',e)}}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(fixStrip,40);return r}}catch(e){}
+
+const css=document.createElement('style');css.id='z339css';css.textContent=`
+#zact .zcci{font-size:11.5px!important;opacity:.8;justify-content:center!important;padding-top:4px!important}
+#zact .zcci b{font-variant-numeric:tabular-nums}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.339',e)}
+/* ========== نهاية 2.21.339 ========== */
 
 /* نهاية fix.js */
 
