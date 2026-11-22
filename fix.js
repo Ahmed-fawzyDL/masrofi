@@ -19091,7 +19091,7 @@ function calc(){const k=ym(cur.y,cur.m),f=k+'-01',t=k+'-31',L=keyTx(k).filter(x=
   const crP=r2(L.filter(x=>x.type==='exp'&&isCr(x.method)&&pc.has(x.method)).reduce((a,x)=>a+(+x.amount||0),0));
   let ow=0;try{XLN().forEach(l=>{if(l&&!l.del)ow+=Math.max(0,xLnRem(l))})}catch(e){}
   S.txs.forEach(x=>{if(x&&!x.del&&!x.pend&&x.type==='exp'&&x.shr)ow+=Math.max(0,shOf(x)-(AM[x.id]||0))});
-  de=r2(de+gen);const add=incl()?0:ccp;
+  de=r2(de+gen);const add=(window.zIncl?zIncl(k,s.exp,ccp):incl())?0:ccp;
   return{de,di:r2(di),crP,add,ow:r2(ow),eAct:r2(s.exp-de-crP+add),iAct:r2(s.inc-di)}}
 var ZD={};
 try{const o=window.zActT;window.zActT=function(v){try{ZD[view]=!!v}catch(e){}const r=o.apply(this,arguments);setTimeout(run,90);return r}}catch(e){}
@@ -19136,6 +19136,58 @@ ${V} .zxh3 .zxh-g b{font-size:14px;font-weight:700;color:#fff;white-space:nowrap
 /* ========== 2.21.345 · من غير رعشة وقت الفتح ========== */
 try{XVER2='2.21.345';XVBUILD2='22/11/2026 - 07:45 م'}catch(e){}
 /* ========== نهاية 2.21.345 ========== */
+
+/* ========== 2.21.346 · الفعلي: حسبة الشهر نفسه + زرار "إزاي اتحسب؟" ========== */
+try{XVER2='2.21.346';XVBUILD2='22/11/2026 - 08:00 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+const N=v=>num(r2(v));
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+function base(k){const L=keyTx(k).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);
+  return r2(L.filter(x=>x.type==='exp').reduce((a,x)=>a+(+x.amount||0),0)-L.filter(x=>x.type==='inc'&&x.rf).reduce((a,x)=>a+(+x.amount||0),0))}
+window.zIncl=function(k,sexp,ccp){if(!ccp)return true;const b=base(k);return Math.abs(sexp-b-ccp)<Math.abs(sexp-b)};
+
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+window.zActWhy=function(){try{
+  const k=ym(cur.y,cur.m),L=keyTx(k).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);let s={exp:0};try{s=xMS(keyTx(k))}catch(e){}
+  const pays=S.txs.filter(x=>x&&!x.del&&!x.pend&&x.type==='tr'&&x.ccPay&&(x.date||'').startsWith(k)),ccp=r2(pays.reduce((a,x)=>a+(+x.amount||0),0)),pc=new Set(pays.map(x=>x.to).filter(Boolean));
+  const inc=zIncl(k,s.exp,ccp),AM=amap();
+  const ln=[],sh=[],cr=[];let gen=0;
+  L.forEach(t=>{if(t.type==='exp'){if(t.xlno){const r=Math.min(+t.amount||0,repaid(t));if(r>.009)ln.push([nmOf(t),r])}
+      else if(t.shr){const r=Math.min(shOf(t),AM[t.id]||0);if(r>.009)sh.push([nmOf(t),r])}
+      if(isCr(t.method)&&pc.has(t.method))cr.push([nmOf(t)+' · '+dmy(t.date),+t.amount||0])}
+    else if(t.type==='inc'&&t.rmb){const al=(t.rmb.L||[]).reduce((a,y)=>a+(+y.a||0),0);gen+=Math.max(0,(+t.amount||0)-al)}});
+  const sum=a=>r2(a.reduce((q,x)=>q+x[1],0)),sl=sum(ln),ss=sum(sh),sc=sum(cr);gen=r2(gen);
+  const out=[];
+  out.push('اتصرف المسجّل:  '+N(s.exp));
+  if(ccp)out.push(inc?'   منهم سداد الكريديت:  '+N(ccp):'   سداد الكريديت مش جواه، هيتضاف:  +'+N(ccp));
+  pays.forEach(p=>out.push('     • '+((M(p.to)||{}).name||'الكريديت')+' · '+dmy(p.date)+'  '+N(p.amount)));
+  if(sl){out.push('');out.push('− سلف رجعت:  '+N(sl));ln.forEach(x=>out.push('     • '+x[0]+'  '+N(x[1])))}
+  if(ss){out.push('');out.push('− مشاركين دفعوا نصيبهم:  '+N(ss));sh.forEach(x=>out.push('     • '+x[0]+'  '+N(x[1])))}
+  if(gen){out.push('');out.push('− فلوس رجعت من الناس من غير ما تتربط بمصروف:  '+N(gen))}
+  if(sc){out.push('');out.push('− مشتريات على الكارت اللي اتسدد:  '+N(sc));cr.forEach(x=>out.push('     • '+x[0]+'  '+N(x[1])))}
+  const act=r2(s.exp-sl-ss-gen-sc+(inc?0:ccp));
+  out.push('');out.push('= الفعلي:  '+N(act));
+  const msg=out.join('\n');
+  if(window.zDlg){const bg=zDlg({msg,btns:[{t:'تمام',cls:'z3ok'}]});
+    try{const bx=bg.querySelector('.z3bx'),tx=bg.querySelector('.z3tx');bx.style.maxHeight='85vh';bx.style.overflow='auto';tx.style.textAlign='right';tx.style.fontSize='13px';tx.style.whiteSpace='pre-wrap';tx.style.lineHeight='1.8'}catch(e){}}
+  else alert(msg)}catch(e){console.error('346 why',e)}};
+
+function link(){let ok=false;try{ok=view==='exps'}catch(e){}if(!ok)return;const h=document.querySelector('#view>.zxh3');if(!h)return;
+  const on=[...h.querySelectorAll('.zxh-sg button.on')].some(b=>/الفعلي/.test(b.textContent||''));
+  let a=$1('.zwhy',h);if(!on){if(a)a.remove();return}
+  if(!a){a=document.createElement('button');a.type='button';a.className='zwhy';a.textContent='إزاي اتحسب؟';a.onclick=zActWhy;h.appendChild(a)}}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{link()}catch(e){}}).observe(vw,{childList:true,subtree:true});link()})();
+
+const css=document.createElement('style');css.id='z346css';css.textContent=`
+html body.zvx main#view .zxh3 .zwhy{display:block;margin:10px auto 0;background:none;border:0;color:rgba(255,255,255,.85);font:inherit;font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.346',e)}
+/* ========== نهاية 2.21.346 ========== */
 
 /* نهاية fix.js */
 
