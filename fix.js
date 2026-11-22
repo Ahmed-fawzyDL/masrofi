@@ -17390,6 +17390,42 @@ try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);
   try{if(!shown&&document.getElementById('zx')&&view!=='col'){shown=true;setTimeout(()=>{try{xCcDiag()}catch(e){alert('diag: '+e.message)}},700)}}catch(e){}return r}}catch(e){}
 })()}catch(e){console.error('fix 2.21.307',e)}
 
+/* ========== 2.21.308 · سداد الكريديت في شاشة المصروفات (تصليح) ========== */
+try{XVER2='2.21.308';XVBUILD2='22/11/2026 - 12:10 م'}catch(e){}
+try{(function(){
+window.xCcDiag=function(){};
+const isEx=()=>{try{return view==='exps'||view==='exp'}catch(e){return false}};
+function ownT(el){let s='';for(let c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)s+=c.nodeValue;return s}
+function payL(k){return S.txs.filter(t=>t&&!t.del&&t.type==='tr'&&t.ccPay&&(t.date||'').startsWith(k))}
+
+/* القسم في القايمة */
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  if(!isEx()||B.S.some(s=>s.k==='ccpay'))return B;
+  let g='all';try{g=XE.g||'all'}catch(e){}if(g!=='all')return B;
+  const k=ym(cur.y,cur.m);let ok=()=>true;try{ok=zyFilt()}catch(e){}
+  const items=payL(k).map(p=>({n:'💳 سداد '+((M(p.to)||{}).name||'الكريديت'),ic:'💳',d:p.date,a:+p.amount||0,st:'paid',t:p,ccp:p}))
+    .filter(x=>{try{return ok(x.d,x.n,x.a,x.t.note)}catch(e){return true}});
+  if(!items.length)return B;
+  const sec={k:'ccpay',ic:'💳',t:'سداد الكريديت',items};
+  let at=B.S.findIndex(s=>s.k==='instnc');if(at<0)at=B.S.findIndex(s=>s.k==='inst');
+  if(at<0)B.S.push(sec);else B.S.splice(at+1,0,sec);
+}catch(e){console.error('308 sec',e)}return B}}catch(e){}
+
+/* الكروت اللي فوق: اتصرف + من فلوسك */
+function cardBox(V,lb){const el=[...V.querySelectorAll('*')].find(e=>{const t=ownT(e).trim();return t===lb||t.endsWith(' '+lb)});if(!el)return null;
+  const box=el.parentElement;if(!box)return null;const vb=[...box.children].find(c=>c!==el&&/\d/.test(c.textContent));
+  return vb?{box,vb,v:parseFloat(vb.textContent.replace(/[^\d.]/g,''))||0}:null}
+function topFix(){if(!isEx())return;const V=document.getElementById('view');if(!V)return;
+  const k=ym(cur.y,cur.m),pay=r2(payL(k).reduce((a,t)=>a+(+t.amount||0),0));if(!(pay>0))return;
+  const A=cardBox(V,'اتصرف');if(!A||A.box.dataset.z308)return;A.box.dataset.z308='1';
+  let base=null;try{base=xMS(keyTx(k).filter(t=>t&&t.type!=='tr')).exp}catch(e){}
+  if(base!=null&&Math.abs(A.v-(base+pay))<1)return;
+  A.vb.textContent=fmt(r2(A.v+pay));
+  const N=cardBox(V,'من فلوسك');if(N&&!N.box.dataset.z308){N.box.dataset.z308='1';N.vb.textContent=fmt(r2(N.v+pay))}}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);setTimeout(function(){try{topFix()}catch(e){}},0);return r}}catch(e){}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.308',e)}
+
 /* نهاية fix.js */
 
 
