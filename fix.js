@@ -17863,6 +17863,137 @@ try{render()}catch(e){}
 })();
 /* ========== نهاية 2.21.316 ========== */
 
+/* ========== 2.21.317 · فتح سريع + شريط فيه تحديث ========== */
+(function(){
+  try{ XVER2='2.21.317'; XVBUILD2='317'; }catch(e){}
+  if(!('serviceWorker' in navigator))return;
+  var shown=false;
+  function bar(){
+    if(shown)return; shown=true;
+    var d=document.createElement('div');
+    d.id='zUpd';
+    d.textContent='🔄 فيه نسخة جديدة · دوس للتحديث';
+    d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));z-index:99998;background:#2b6cff;color:#fff;padding:9px 16px;border-radius:999px;font:600 13px system-ui;direction:rtl;box-shadow:0 6px 20px rgba(0,0,0,.4);cursor:pointer;white-space:nowrap';
+    d.onclick=function(){ location.reload(); };
+    (document.body||document.documentElement).appendChild(d);
+  }
+  navigator.serviceWorker.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='upd') setTimeout(bar,600);
+  });
+})();
+/* ========== نهاية 2.21.317 ========== */
+
+/* ========== 2.21.318 · الشكل الجديد لكل الشاشات اللي بتطلع من تحت (بدل 312-315) ========== */
+try{XVER2='2.21.318';XVBUILD2='22/11/2026 - 01:40 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+['z312css','z313css','z314css','z315css'].forEach(id=>{const s=document.getElementById(id);if(s)s.remove()});
+const P='html body #sheet#sheet .sz';
+const css=document.createElement('style');css.id='z318css';css.textContent=`
+${P}>h2{font-size:18px!important;margin:0 0 6px!important}
+${P} .znt{display:inline-flex!important;align-items:center;gap:6px;width:auto!important;padding:4px 12px!important;margin:0 0 8px!important;border:1px solid rgba(94,234,212,.25)!important;border-radius:999px!important;background:rgba(13,148,136,.10)!important;font-size:12px!important}
+${P} #zform .zch{display:none!important}
+
+/* المبلغ في النص */
+${P} #zform .zc-amt{background:none!important;border:0!important;padding:4px 0 2px!important;margin:0 0 8px!important;box-shadow:none!important}
+${P} #zform .zc-amt,${P} #zform .zc-amt *:not(input){text-align:center!important}
+${P} #zform .zc-amt :is(label,.fl,.xfl,span,b){font-size:12px!important;font-weight:700!important;opacity:.6;margin:0 0 2px!important}
+${P} #zform .zc-amt input#f-amt,${P} .z8big :is(input,.z8v){display:block!important;width:min(240px,80%)!important;margin:2px auto 0!important;font-size:32px!important;font-weight:800!important;height:52px!important;min-height:52px!important;padding:0!important;text-align:center!important;background:transparent!important;border:0!important;border-bottom:2px solid rgba(94,234,212,.45)!important;border-radius:0!important;box-shadow:none!important;color:#fff!important}
+${P} .z8bw{text-align:center!important;margin:0 0 12px!important}
+${P} .z8big{display:block!important;text-align:center!important;font-size:12px!important;font-weight:700!important;color:#94a3b8!important;margin:0!important;padding:0!important;border:0!important;background:none!important}
+
+/* الأزرار الصغيرة تحت المبلغ */
+${P} #zchips{display:flex!important;gap:6px!important;justify-content:center!important;flex-wrap:wrap!important;margin:0 0 12px!important}
+${P} .zchip{border:1px solid rgba(148,163,184,.3)!important;background:transparent!important;color:inherit!important;border-radius:999px!important;padding:5px 12px!important;font-size:12.5px!important;min-height:0!important;height:auto!important;width:auto!important;font-weight:700!important;margin:0!important;box-shadow:none!important}
+${P} .zchip.on{background:rgba(13,148,136,.25)!important;border-color:#14b8a6!important;color:#7ee0cf!important}
+
+/* الكروت */
+${P} :is(#zform .zc:not(.zc-amt):not(.zc-more),.zg,#zform .zc-more>.z8g,#zform .zc-more>:is(#zsh,#zrm)){background:#1a2438!important;border:1px solid rgba(148,163,184,.12)!important;border-radius:16px!important;padding:2px 14px!important;margin:0 0 10px!important;box-shadow:none!important}
+${P} #zform .zc-pay{padding:10px 14px!important}
+${P} #zform .zc-more>:is(#zsh,#zrm){padding:10px 14px!important}
+
+/* كل خانة سطر: الاسم يمين والاختيار شمال */
+${P} .z8r{display:flex!important;flex-direction:row!important;align-items:center!important;gap:12px!important;min-height:50px!important;margin:0!important;padding:6px 0!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.10)!important;border-radius:0!important;background:transparent!important;font-size:14.5px!important;font-weight:600!important;color:#e6ebf5!important;box-shadow:none!important}
+${P} .z8r:last-child,${P} .z8r:has(+ :is(script,style)){border-bottom:0!important}
+${P} .z8r :is(.fl,.xfl){margin:0!important;font-size:14.5px!important;opacity:1!important;font-weight:600!important}
+${P} .z8r>.z8v{flex:0 1 60%!important;min-width:0!important;width:auto!important;margin:0!important;margin-inline-start:auto!important}
+${P} .z8r :is(input,select,.xsel){width:100%!important;max-width:100%!important;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;min-height:38px!important;height:auto!important;padding:4px 0!important;margin:0!important;border-radius:0!important;text-align:left!important;text-align-last:left!important;color:#9fb0c8!important;font-size:14.5px!important;font-weight:600!important}
+${P} .z8r input::placeholder{color:#5b6780!important}
+${P} .z8r input[type=date]{direction:ltr!important}
+${P} .z8r select{-webkit-appearance:none!important;appearance:none!important;background-image:none!important}
+${P} .z8r.z8s::after{content:'‹';flex:0 0 auto;opacity:.45;font-size:18px;line-height:1;margin-inline-start:-6px}
+${P} .z8r:focus-within{color:#5eead4!important}
+${P} .z8r:focus-within :is(input,select){color:#fff!important}
+${P} .z8w{padding:10px 0!important;margin:0!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.10)!important;background:transparent!important}
+${P} .z8w:last-child{border-bottom:0!important}
+${P} :is(.z8w,.zc,.zg) textarea{width:100%!important;background:rgba(148,163,184,.06)!important;border:1px solid rgba(148,163,184,.15)!important;border-radius:12px!important;padding:8px 12px!important;margin:6px 0 0!important;font-size:14px!important}
+${P} .zg>.kv{min-height:46px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.10)!important;margin:0!important;padding:6px 0!important;background:transparent!important}
+${P} .zg>.two{padding:8px 0!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.10)!important;margin:0!important}
+${P} .zg>:is(.kv,.two):last-child{border-bottom:0!important}
+
+/* خيارات إضافية: لينك صغير */
+${P} #zform details.zc-more{background:transparent!important;border:0!important;padding:0!important;margin:0 0 8px!important;box-shadow:none!important}
+${P} #zform details.zc-more>summary{justify-content:center!important;font-size:13px!important;font-weight:700!important;color:#5eead4!important;padding:6px 0!important;margin:0!important}
+${P} #zform details.zc-more>summary::after{margin-inline-start:4px!important}
+${P} #zform details.zc-more[open]>summary{margin-bottom:8px!important}
+
+/* زرار سجّل ثابت تحت */
+${P} .zsave{position:sticky!important;bottom:calc(10px + env(safe-area-inset-bottom))!important;z-index:6!important;width:100%!important;min-height:50px!important;border-radius:16px!important;font-size:16px!important;font-weight:800!important;box-shadow:0 10px 28px rgba(0,0,0,.5)!important;margin-top:8px!important}
+${P} button:is(.danger,.ghost.danger){min-height:40px!important;font-size:13px!important;margin-top:6px!important}
+${P} #zdiag{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:9;border:1px dashed #f59e0b!important;background:rgba(245,158,11,.12)!important;color:#fbbf24!important;border-radius:999px!important;padding:3px 10px!important;font-size:11px!important;min-height:0!important;height:auto!important;width:auto!important}
+`;document.head.appendChild(css);
+
+const CTRL='input:not([type=hidden]),select,textarea,.xsel';
+const SKIP='summary,button,script,style,h2,h3,.zsh,#zsh,#zrm,#zpay,#zchips,.kv,.two,.chk,.fxbox,.z8r,.z8w,.z8g,.z8bw,.z8big';
+const ctls=el=>[...el.querySelectorAll(CTRL)].filter(c=>c.matches('.xsel')||!c.closest('.xsel'));
+const isCtl=el=>el.matches(CTRL);
+const odd=c=>c.matches('[type=checkbox],[type=radio],[type=file]');
+function mark(row,c){row.classList.add('z8r');let w=c;while(w.parentElement&&w.parentElement!==row)w=w.parentElement;w.classList.add('z8v');
+  if(c.matches('select,.xsel'))row.classList.add('z8s')}
+function rowify(box){
+  [...box.children].forEach(el=>{
+    if(el.matches(SKIP))return;
+    if(isCtl(el)){
+      if(odd(el)||el.matches('textarea'))return;
+      const p=el.previousElementSibling;
+      if(p&&!p.matches(SKIP)&&!isCtl(p)&&!ctls(p).length&&!p.querySelector('button')){const t=(p.textContent||'').trim();
+        if(t&&t.length<40){const r=document.createElement('div');p.before(r);const l=document.createElement('span');l.className='z8l';l.textContent=t;
+          r.append(l,el,p);p.style.display='none';mark(r,el)}}
+      return}
+    const cs=ctls(el);if(cs.length!==1)return;const c=cs[0];if(odd(c))return;
+    if([...el.querySelectorAll('button')].some(b=>b!==c&&!c.contains(b)))return;
+    if(c.matches('textarea')){el.classList.add('z8w');return}
+    const t=[...el.childNodes].filter(n=>!(n.nodeType===1&&n.contains(c))).map(n=>n.textContent).join(' ').trim();
+    if(t.length>45)return;
+    mark(el,c)})}
+function group(box){let run=[];const flush=()=>{if(run.length){const g=document.createElement('div');g.className='z8g';run[0].before(g);run.forEach(e=>g.appendChild(e))}run=[]};
+  [...box.children].forEach(el=>{if(el.matches('summary,.zsh,#zsh,#zrm,.z8g'))flush();else run.push(el)});flush()}
+const labOf=r=>[...r.childNodes].filter(n=>!(n.nodeType===1&&n.classList.contains('z8v'))).map(n=>n.textContent).join(' ').trim();
+function bigAmt(sz){if($1('#zform',sz)||$1('.z8big',sz))return;
+  const r=[...sz.querySelectorAll('.zg .z8r')].find(x=>!x.classList.contains('z8s')&&/^(ال)?مبلغ/.test(labOf(x)));if(!r)return;
+  const g=r.closest('.zg'),w=document.createElement('div');w.className='z8bw';g.before(w);
+  r.classList.remove('z8r');r.classList.add('z8big');w.appendChild(r);if(!g.children.length)g.remove()}
+function tip(sz){const zf=$1('#zform',sz);if(!zf)return;
+  const b=[...sz.querySelectorAll('button')].find(x=>!x.closest('#zchips')&&/إكرامية|بقشيش/.test(x.textContent||'')&&(x.textContent||'').trim().length<30);if(!b)return;
+  let row=$1('#zchips',sz);if(!row){const amt=$1('.zc-amt',zf);if(!amt)return;row=document.createElement('div');row.id='zchips';amt.after(row)}
+  b.classList.add('zchip');row.appendChild(b)}
+function saveBtn(sz){if($1('.zsave',sz))return;
+  const b=[...sz.querySelectorAll('button')].filter(x=>x.id!=='zdiag'&&!/danger/.test(x.className)&&!x.closest('#zform,#zchips,.zg,.zsh,#zpay'))
+    .find(x=>/^(✅\s*)?(سج|حفظ|تم\s|✓|سدّ?د|تأكيد|ضيف|حوّ?ل)/.test((x.textContent||'').trim()));if(b)b.classList.add('zsave')}
+let busy=false;
+function run(){const sz=$1('#sheet .sz');if(!sz||busy)return;busy=true;try{
+  sz.querySelectorAll('#zform .zc:not(.zc-amt):not(.zc-pay):not(.zc-more),.zg').forEach(rowify);
+  sz.querySelectorAll('#zform details.zc-more').forEach(d=>{group(d);d.querySelectorAll(':scope>.z8g').forEach(rowify)});
+  tip(sz);bigAmt(sz);saveBtn(sz);
+}catch(e){console.error('318',e)}finally{setTimeout(()=>{busy=false},0)}}
+let ob=null;function watch(){const sh=document.getElementById('sheet');if(!sh||ob)return;
+  ob=new MutationObserver(()=>{if(busy)return;cancelAnimationFrame(watch.f);watch.f=requestAnimationFrame(run)});ob.observe(sh,{childList:true,subtree:true})}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);watch();run();setTimeout(run,150);return r}}catch(e){console.error('318 sheet',e)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);setTimeout(run,150);return r}}catch(e){}
+watch();
+})()}catch(e){console.error('fix 2.21.318',e)}
+/* ========== نهاية 2.21.318 ========== */
+
 /* نهاية fix.js */
 
 

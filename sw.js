@@ -1,4 +1,4 @@
-const CACHE='centric-v46',SHARE='centric-share';
+const CACHE='centric-v49',SHARE='centric-share';
 const ASSETS=['./','app.js','more.js','fix.js','manifest.json','icon-192.png','icon-512.png','icon-maskable-512.png','wa.png'];
 const TXT=/\.(js|html|json|css)$|\/$/;
 const ROOT=new URL('./',self.registration.scope).href;
@@ -28,24 +28,34 @@ async function tell(type){
   cs.forEach(c=>c.postMessage({type}));
 }
 
-/* الكود (html / js / json): من النت الأول دايماً.
-   لو النت مردش خلال ثواني: النسخة المحفوظة، ولو مفيش: نسخة GitHub */
-async function fresh(r,key){
+/* الكود (html / js / json):
+   لو فيه نسخة محفوظة: تفتح على طول، والجديدة تتجاب في الخلفية،
+   ولو طلعت مختلفة بنقول للبرنامج 'upd' عشان يعرض "فيه تحديث".
+   لو مفيش محفوظة: من النت، ولو فشل: نسخة GitHub */
+async function fresh(r,key,ev){
   const nav=r.mode==='navigate';
-  let res=null;
-  const had=await caches.match(key);try{res=await tfetch(r.url,{cache:'no-cache'},had?3000:10000)}catch(e){}
-  if(res){
+  const had=await caches.match(key);
+  const old=had?had.clone():null;
+  const net=tfetch(r.url,{cache:'no-cache'},10000).then(async res=>{
     if(nav&&(res.status===401||res.status===403)){await caches.delete(CACHE);tell('locked');return clean(res)}
     if(res.ok&&res.type==='basic'){
       const out=await clean(res);
-      try{const c=await caches.open(CACHE);await c.put(key,out.clone())}catch(e){}
+      try{
+        const c=await caches.open(CACHE);
+        if(old){
+          const a=await old.text(),b=await out.clone().text();
+          if(a!==b){await c.put(key,out.clone());tell('upd')}
+        }else await c.put(key,out.clone());
+      }catch(x){}
       return out;
     }
-  }
-  const hit=await caches.match(key);if(hit)return hit;
-  if(res)return clean(res);
-  if(nav)return Response.error();
-  try{const m=await mirror(key);caches.open(CACHE).then(c=>c.put(key,m.clone())).catch(()=>{});return m}catch(e){return Response.error()}
+    return res;
+  }).catch(()=>null);
+  if(had){ev.waitUntil(net);return had}
+  const res=await net;
+  if(res&&(res.ok||res.status===401||res.status===403))return res;
+  if(nav)return res||Response.error();
+  try{const m=await mirror(key);caches.open(CACHE).then(c=>c.put(key,m.clone())).catch(()=>{});return m}catch(e){return res||Response.error()}
 }
 
 /* الصور: المحفوظة الأول، والجديدة في الخلفية */
@@ -84,7 +94,7 @@ self.addEventListener('fetch',e=>{
   if(nav&&!root)return;
   const key=nav?ROOT:u.origin+u.pathname;
   e.respondWith((async()=>{
-    if(nav||TXT.test(u.pathname))return fresh(r,key);
+    if(nav||TXT.test(u.pathname))return fresh(r,key,e);
     const hit=await caches.match(key);
     if(hit){e.waitUntil(refresh(r,key));return hit}
     return fromNet(r,key);
