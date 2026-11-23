@@ -20203,6 +20203,47 @@ ${Q} .z65net{display:flex;justify-content:space-between;align-items:center;font-
 })()}catch(e){console.error('fix 2.21.365',e)}
 /* ========== نهاية 2.21.365 ========== */
 
+/* ========== 2.21.366 · الناتج جوه الدايرة + الرئيسية تفتح بحجمها على طول ========== */
+try{XVER2='2.21.366';XVBUILD2='23/11/2026 - 05:15 م'}catch(e){}
+try{(function(){
+try{const st=document.getElementById('z365css');if(st&&st.sheet){const R=st.sheet.cssRules;for(let i=R.length-1;i>=0;i--){if(/zh-ring|zh-rc/.test(R[i].selectorText||''))st.sheet.deleteRule(i)}}}catch(e){console.error('366 css',e)}
+const css=document.createElement('style');css.id='z366css';css.textContent=`
+html body main#view .zh-rc em{display:none!important}
+html body main#view .zh-ring{cursor:pointer}
+`;document.head.appendChild(css);
+
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const T=(f,d)=>{try{const v=f();return v==null?d:v}catch(e){return d}};
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+const LNS=()=>{try{return XLN().filter(l=>l&&!l.del)}catch(e){return []}};
+const A=v=>{try{return amtHidden()?xMk(num(r2(v))):esc(num(r2(v)))}catch(e){return esc(num(r2(v)))}};
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function calc(){const k=ym(cur.y,cur.m);let s={inc:0,exp:0};try{s=xMS(keyTx(k))}catch(e){}
+  let di=0;keyTx(k).forEach(t=>{if(t&&!t.del&&!t.pend&&!t.xpre&&t.type==='inc'&&(t.rmb||t.xlnp))di+=+t.amount||0});
+  const ex=T(()=>zAct352().act,s.exp),inc=r2(s.inc-di);return{inc,ex:r2(ex),net:r2(inc-ex)}}
+function owed(){const AM=amap();let s=0,nl=0,ns=0;
+  LNS().forEach(l=>{let r=0;try{r=Math.max(0,xLnRem(l))}catch(e){}if(r>.009){s+=r;nl++}});
+  S.txs.forEach(t=>{if(t&&!t.del&&!t.pend&&t.type==='exp'&&t.shr){const r=Math.max(0,shOf(t)-(AM[t.id]||0));if(r>.009){s+=r;ns++}}});return{s:r2(s),nl,ns}}
+const setH=(el,h)=>{if(el&&el.innerHTML!==h)el.innerHTML=h};
+const setT=(el,t)=>{if(el&&el.textContent!==t)el.textContent=t};
+function apply(root){const H=$1('.zh-hero',root);if(!H)return false;const c=calc(),neg=c.net<0;
+  const rc=$1('.zh-ring .zh-rc',H);if(rc){setT($1('small',rc),neg?'الناتج الفعلي · عجز':'الناتج الفعلي');setH($1('b',rc),A(Math.abs(c.net)));
+    setT($1('em',rc),'التحصيلات − المصروفات بالفعلي · دوس للتقرير ‹');rc.classList.toggle('z65neg',neg)}
+  $$('.zh-st .zh-sb',H).forEach(b=>{const l=($1('small',b)||{}).textContent||'',bb=$1('span>b',b)||$1('b',b);
+    if(/التحصيلات/.test(l))setH(bb,A(c.inc));else if(/المصروفات/.test(l))setH(bb,A(c.ex));
+    if(!$1('.z65s',b)){const s2=document.createElement('em');s2.className='z65s';s2.textContent='الفعلي';($1('span',b)||b).appendChild(s2)}});
+  $$('.zh-g .zh-t',root).forEach(t=>{const l=(($1('small',t)||{}).textContent||'').trim();
+    if(/تقرير شهري/.test(l))t.style.display='none';
+    else if(/ليك عند الناس|لسه ليك/.test(l)){const o=owed();setT($1('small',t),'لسه ليك برّه');setH($1('b',t),A(o.s));
+      setT($1('em',t),[o.nl?o.nl+' سلفة':'',o.ns?o.ns+' مشاركة':''].filter(Boolean).join(' · ')||'مفيش');t.dataset.z365='owed'}});
+  return true}
+try{const _vh=vHome;vHome=function(){const h=_vh.apply(this,arguments);try{if(typeof h!=='string'||h.indexOf('zh-hero')<0)return h;
+  const tp=document.createElement('template');tp.innerHTML=h;if(apply(tp.content))return tp.innerHTML}catch(e){console.error('366 vHome',e)}return h}}catch(e){console.error('366 wrap',e)}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{if(view==='home'){const vw=document.getElementById('view');if(vw)apply(vw)}}catch(e){}return r}}catch(e){}
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.366',e)}
+/* ========== نهاية 2.21.366 ========== */
+
 /* نهاية fix.js */
 
 
