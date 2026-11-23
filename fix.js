@@ -19340,6 +19340,44 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.352',e)}
 /* ========== نهاية 2.21.352 ========== */
 
+/* ========== 2.21.353 · شيل للعلم + قسط الكريديت أحمر + علامة ↩ في الكل ========== */
+try{XVER2='2.21.353';XVBUILD2='23/11/2026 - 12:20 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const ZI='\u200b',ZR='\u200c';
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+const bad=s=>[s.t,s.n,s.title,s.nm].some(v=>/بدون كريديت/.test(String(v||'')));
+
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  if(view!=='exps'||!B||!B.S)return B;
+  B.S=B.S.filter(s=>!bad(s));
+  const AM=amap(),rb=t=>!!t&&t.type==='exp'&&((t.xlno&&repaid(t)>.009)||(t.shr&&Math.min(shOf(t),AM[t.id]||0)>.009));
+  B.S.forEach(s=>{s.items=(s.items||[]).map(x=>{
+    if(x.zinfo){const n=x.t?nmOf(x.t):String(x.n||'').replace(/\s*·\s*للعلم\s*$/,'');return Object.assign({},x,{n:ZI+n})}
+    if(typeof x.n!=='string'||!x.n||x.n.charAt(0)===ZR)return x;
+    const hit=x.g?x.g.some(e=>rb(e&&e.t)):rb(x.t);
+    return hit?Object.assign({},x,{n:ZR+x.n}):x})})
+}catch(e){console.error('353 zb',e)}return B}}catch(e){console.error('353 wrap',e)}
+
+function paint(){let v='';try{v=view}catch(e){}if(v!=='exps')return;
+  $$('#zx>.zx-s').forEach(s=>{const sh=$1('.zx-sh',s),tt=((sh&&$1('span',sh))||{}).textContent||'';if(/بدون كريديت/.test(tt))s.remove()});
+  const allOn=$$('#view>.zxh3 .zxh-sg button.on').some(b=>/الكل/.test(b.textContent||''));
+  $$('#zx .zx-i').forEach(i=>{const b=$1('.zx-t b',i),a=$1('.zx-a',i);if(!b)return;const n=b.textContent||'';
+    if(n.charAt(0)===ZI){if(i.style.opacity)i.style.opacity='';if(b.style.color!=='rgb(248, 113, 113)'){b.style.color='#f87171';if(a)a.style.color='#f87171'}}
+    const m=a&&$1('.z353rb',a),want=allOn&&n.charAt(0)===ZR;
+    if(want&&!m&&a){const sp=document.createElement('span');sp.className='z353rb';sp.textContent='↩';
+      sp.style.cssText='display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:18px;padding:0 5px;margin-inline-end:6px;border-radius:9px;font-size:11.5px;font-weight:700;color:#5eead4;background:rgba(94,234,212,.14)';
+      a.insertBefore(sp,a.firstChild)}
+    else if(!want&&m)m.remove()})}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{paint()}catch(e){}}).observe(vw,{childList:true,subtree:true,characterData:true});paint()})();
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.353',e)}
+/* ========== نهاية 2.21.353 ========== */
+
 /* نهاية fix.js */
 
 
