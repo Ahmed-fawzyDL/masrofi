@@ -20602,6 +20602,36 @@ try{const _tf=txForm;txForm=function(){if(!L&&!out&&!localStorage.getItem('z381d
 })()}catch(e){console.error('fix 2.21.381',e)}
 /* ========== نهاية 2.21.381 ========== */
 
+/* ========== 2.21.382 · كشف الرعشة: اللي بيحصل بعد ما الفورم يتبني ========== */
+try{XVER2='2.21.382';XVBUILD2='23/11/2026 - 08:15 م'}catch(e){}
+try{(function(){
+if(localStorage.getItem('z382done'))return;
+localStorage.setItem('z381done','1');
+const T=n=>{let t='';try{t=(n.textContent||'').replace(/\s+/g,' ').trim()}catch(e){}return t.slice(0,26)};
+const D=n=>{if(!n||n.nodeType!==1)return '';const c=(n.className&&typeof n.className==='string')?'.'+n.className.trim().split(/\s+/).slice(0,2).join('.'):'';return n.tagName.toLowerCase()+(n.id?'#'+n.id:'')+c};
+let L=null,t0=0,ob=null,out=null,first=-1;
+function start(){L=[];t0=performance.now();first=-1;const sh=document.getElementById('sheet');if(!sh)return;
+  ob=new MutationObserver(R=>{if(!L)return;const ms=Math.round(performance.now()-t0);if(first<0)first=ms;if(ms-first<8)return;
+    R.forEach(r=>{if(L.length>110)return;
+      if(r.type==='childList'){r.addedNodes.forEach(n=>{const t=T(n);if(t&&n.nodeType===1)L.push(ms+' ➕ '+t+' ('+D(n)+')')});
+        r.removedNodes.forEach(n=>{const t=T(n);if(t&&n.nodeType===1)L.push(ms+' ➖ '+t+' ('+D(n)+')')})}
+      else if(r.type==='characterData'){const t=T(r.target);if(t)L.push(ms+' ✎ '+t)}
+      else if(r.type==='attributes'){const el=r.target;
+        if(r.attributeName==='style'){const s=el.getAttribute('style')||'';if(/display|zoom|width/.test(s))L.push(ms+' 👁 '+T(el)+' → '+s.slice(0,30)+' ('+D(el)+')')}
+        else if(r.attributeName==='class')L.push(ms+' 🏷 '+T(el)+' ('+D(el)+')')}})});
+  ob.observe(sh,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style','class']});
+  setTimeout(()=>{if(ob)ob.disconnect();ob=null;out=L||[];L=null},2000)}
+function show(){if(!out)return;const o=out;out=null;localStorage.setItem('z382done','1');
+  const msg='اللي حصل بعد ما الفورم اتبنى (الرقم = ملي ثانية):\n\n'+(o.length?o.join('\n'):'مفيش تغييرات بعد البناء');
+  try{if(window.zDlg){const bg=zDlg({msg,btns:[{t:'تمام',cls:'z3ok'}]});
+    try{bg.style.zIndex='99999';const bx=bg.querySelector('.z3bx'),tx=bg.querySelector('.z3tx');bx.style.maxHeight='85vh';bx.style.overflow='auto';tx.style.textAlign='right';tx.style.fontSize='11px';tx.style.whiteSpace='pre-wrap';tx.style.lineHeight='1.55';tx.style.direction='rtl'}catch(e){}}
+    else alert(msg)}catch(e){alert(msg)}}
+try{const _tf=txForm;txForm=function(){if(!L&&!out&&!localStorage.getItem('z382done'))start();return _tf.apply(this,arguments)}}catch(e){console.error('382',e)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{if(out&&!sh.classList.contains('open'))setTimeout(show,300)}).observe(sh,{attributes:true,attributeFilter:['class']})})();
+})()}catch(e){console.error('fix 2.21.382',e)}
+/* ========== نهاية 2.21.382 ========== */
+
 /* نهاية fix.js */
 
 
