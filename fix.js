@@ -19498,6 +19498,86 @@ function go(){const sh=document.getElementById('sheet');if(!sh)return;
 })()}catch(e){console.error('fix 2.21.356',e)}
 /* ========== نهاية 2.21.356 ========== */
 
+/* ========== 2.21.357 · تفاصيل "رجعولك" و"لسه هترجعلك" و"سداد سلف ومصروفات" ========== */
+try{XVER2='2.21.357';XVBUILD2='23/11/2026 - 01:10 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const N=v=>num(r2(v));
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+const PP=()=>{try{return XPP()}catch(e){return []}};
+const ppN=id=>{const p=PP().find(x=>x.id===id);return p?p.name:'—'};
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+const txOf=id=>S.txs.find(t=>t&&t.id===id);
+const LNS=()=>{try{return XLN().filter(l=>l&&!l.del)}catch(e){return []}};
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+const S2=a=>r2(a.reduce((q,x)=>q+x[1],0));
+const srt=a=>a.sort((x,y)=>y[1]-x[1]);
+function show(o){const msg=o.join('\n');
+  if(window.zDlg){const bg=zDlg({msg,btns:[{t:'تمام',cls:'z3ok'}]});
+    try{const bx=bg.querySelector('.z3bx'),tx=bg.querySelector('.z3tx');bx.style.maxHeight='85vh';bx.style.overflow='auto';tx.style.textAlign='right';tx.style.fontSize='13px';tx.style.whiteSpace='pre-wrap';tx.style.lineHeight='1.8'}catch(e){}}
+  else alert(msg)}
+function blk(o,h,a){if(!a.length)return;srt(a);o.push('');o.push(h+':  '+N(S2(a)));a.forEach(x=>o.push('   • '+x[0]+'  '+N(x[1])))}
+const MK=()=>keyTx(ym(cur.y,cur.m)).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);
+
+function back(){const AM=amap(),ln=[],sh=[],gn=[];
+  MK().forEach(t=>{if(t.type==='exp'){
+      if(t.xlno){const r=Math.min(+t.amount||0,repaid(t));if(r>.009)ln.push([nmOf(t)+' · '+dmy(t.date),r])}
+      else if(t.shr){const r=Math.min(shOf(t),AM[t.id]||0);if(r>.009)sh.push([nmOf(t)+' · '+dmy(t.date)+' · '+t.shr.map(s=>ppN(s.p)).join('، '),r])}}
+    else if(t.type==='inc'&&t.rmb){const al=(t.rmb.L||[]).reduce((a,y)=>a+(+y.a||0),0),g=Math.max(0,(+t.amount||0)-al);
+      if(g>.009)gn.push([nmOf(t)+' · '+ppN(t.rmb.p)+' · '+dmy(t.date),g])}});
+  const o=['اللي رجعلك من مصروفات الشهر ده، ومش محسوب عليك في الفعلي:'];
+  blk(o,'🤝 سلف رجعت',ln);blk(o,'👥 مشاركين دفعوا نصيبهم',sh);blk(o,'💱 فلوس رجعت من غير ما تتربط بمصروف',gn);
+  if(!ln.length&&!sh.length&&!gn.length)o.push('','مفيش حاجة رجعت الشهر ده.');else o.push('','= الإجمالي:  '+N(S2(ln)+S2(sh)+S2(gn)));
+  show(o)}
+
+function owed(){const AM=amap(),ln=[],sh=[];
+  LNS().forEach(l=>{let r=0;try{r=Math.max(0,xLnRem(l))}catch(e){}if(r>.009){const t=txOf(l.tx);ln.push([t?nmOf(t)+' · '+dmy(t.date):'سلفة',r])}});
+  S.txs.forEach(t=>{if(t&&!t.del&&!t.pend&&t.type==='exp'&&t.shr){const r=Math.max(0,shOf(t)-(AM[t.id]||0));
+    if(r>.009)sh.push([nmOf(t)+' · '+dmy(t.date)+' · '+t.shr.map(s=>ppN(s.p)).join('، '),r])}});
+  const o=['فلوس انت دفعتها أو سلّفتها ولسه ما رجعتلكش.','ده من كل الشهور، وللعلم بس، ومش داخل في الحسبة.'];
+  blk(o,'🤝 سلف لسه ما اتسددتش',ln);blk(o,'👥 نصيب مشاركين لسه ما دفعوهوش',sh);
+  if(!ln.length&&!sh.length)o.push('','مفيش فلوس ليك برّه.');else o.push('','= الإجمالي:  '+N(S2(ln)+S2(sh)));
+  show(o)}
+
+function colBack(){const L=MK().filter(t=>t.type==='inc'&&(t.rmb||t.xlnp)),lp=[],rm=[];
+  L.forEach(t=>{if(t.rmb){const ex=(t.rmb.L||[]).map(x=>{const e=txOf(x.t);return e?nmOf(e):''}).filter(Boolean);
+      rm.push([nmOf(t)+' · '+ppN(t.rmb.p)+' · '+dmy(t.date)+(ex.length?' ← '+ex.join('، '):' ← من غير ربط'),+t.amount||0])}
+    else lp.push([nmOf(t)+' · '+dmy(t.date),+t.amount||0])});
+  const o=['تحصيلات الشهر ده اللي هي فلوس راجعالك مش دخل جديد، فمش داخلة في الدخل الفعلي:'];
+  blk(o,'🤝 سداد سلف',lp);blk(o,'💱 سداد مقابل مصروف',rm);
+  if(!L.length)o.push('','مفيش حاجة الشهر ده.');else o.push('','= الإجمالي:  '+N(S2(lp)+S2(rm)));
+  show(o)}
+
+document.addEventListener('click',e=>{const d=e.target&&e.target.closest&&e.target.closest('#view>.zxh3 .zxh-g>div');if(!d)return;
+  const l=($1('small',d)||{}).textContent||'';let v='';try{v=view}catch(x){}
+  try{if(v==='exps'&&/رجع/.test(l))back();else if(v==='exps'&&/عند الناس|هترجعلك/.test(l))owed();else if(v==='col'&&/سداد/.test(l))colBack()}catch(x){console.error('357',x)}},true);
+
+function lab(){const h=$1('#view>.zxh3');if(!h)return;$$('.zxh-g small',h).forEach(s=>{if((s.textContent||'').trim()==='ليك عند الناس')s.textContent='لسه هترجعلك'})}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{lab()}catch(e){}}).observe(vw,{childList:true,subtree:true,characterData:true});lab()})();
+const css=document.createElement('style');css.id='z357css';css.textContent=`
+html body main#view>.zxh3 .zxh-g>div{cursor:pointer;-webkit-tap-highlight-color:transparent}
+html body main#view>.zxh3 .zxh-g>div:active{opacity:.7}
+html body main#view>.zxh3 .zxh-g small::after{content:' ‹';opacity:.7}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.357',e)}
+/* ========== نهاية 2.21.357 ========== */
+
+/* ========== 2.21.358 · "تفاصيل المعاملة" تبقى "المعاملة" ========== */
+try{XVER2='2.21.358';XVBUILD2='23/11/2026 - 01:05 م'}catch(e){}
+try{(function(){
+const css=document.createElement('style');css.id='z358css';css.textContent=`
+html body .z355t{font-size:0!important}
+html body .z355t::after{content:'المعاملة'!important;font-size:14.5px}
+`;document.head.appendChild(css);
+function go(){const sh=document.getElementById('sheet');if(!sh)return;
+  sh.querySelectorAll('.z355l').forEach(l=>{if(l.textContent!=='المعاملة')l.textContent='المعاملة'})}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  let t=0;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(()=>{try{go()}catch(e){}},200)}).observe(sh,{childList:true,subtree:true});go()})();
+})()}catch(e){console.error('fix 2.21.358',e)}
+/* ========== نهاية 2.21.358 ========== */
+
 /* نهاية fix.js */
 
 
