@@ -20333,6 +20333,34 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.369',e)}
 /* ========== نهاية 2.21.369 ========== */
 
+/* ========== 2.21.370 · فورم من غير رعشة + من غير البند + الدفع بالعرض ========== */
+try{XVER2='2.21.370';XVBUILD2='23/11/2026 - 06:40 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const Q='html body #sheet#sheet#sheet';
+const css=document.createElement('style');css.id='z370css';css.textContent=`
+${Q} .sz:not(.z370ok){opacity:0!important}
+${Q} .sz{transition:opacity .12s ease}
+${Q} .z355l{font-size:0!important}
+${Q} .z355l::after{content:'المعاملة';font-size:14.5px}
+${Q}:not(.zoff) .sz #zpay>.zq-hd+.zq-l:has(>:not(.zq-r)){grid-column:1/-1!important;padding-top:0!important}
+${Q} .sz .z370h{display:none!important}
+`;document.head.appendChild(css);
+let tm=0,mx=0;
+function ready(){const sz=$1('#sheet .sz');if(sz&&!sz.classList.contains('z370ok'))sz.classList.add('z370ok')}
+function arm(){const sz=$1('#sheet .sz');if(!sz)return;sz.classList.remove('z370ok');clearTimeout(tm);clearTimeout(mx);tm=setTimeout(ready,260);mx=setTimeout(ready,900)}
+function bnd(){const sz=$1('#sheet:not(.zoff) .sz');if(!sz)return;
+  [...sz.querySelectorAll('label')].forEach(l=>{if(l.closest('#zpay,.zsh,details'))return;
+    if(/البند/.test(l.textContent||'')&&l.querySelector('.xsel')&&!l.classList.contains('z370h')){l.classList.add('z370h');const g=l.parentElement;
+      if(g&&g.classList.contains('zng')&&![...g.children].some(c=>!c.classList.contains('z370h')))g.classList.add('z370h')}})}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);try{arm();bnd()}catch(e){}return r}}catch(e){console.error('370 sheet',e)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  let bt=0;new MutationObserver(()=>{const sz=$1('#sheet .sz');if(sz&&!sz.classList.contains('z370ok')){clearTimeout(tm);tm=setTimeout(ready,220)}
+    clearTimeout(bt);bt=setTimeout(()=>{try{bnd()}catch(e){}},40)}).observe(sh,{childList:true,subtree:true})})();
+setInterval(()=>{const sz=$1('#sheet .sz');if(sz&&!sz.classList.contains('z370ok')&&!tm)ready()},1500);
+})()}catch(e){console.error('fix 2.21.370',e)}
+/* ========== نهاية 2.21.370 ========== */
+
 /* نهاية fix.js */
 
 
