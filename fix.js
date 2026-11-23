@@ -19417,6 +19417,63 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.354',e)}
 /* ========== نهاية 2.21.354 ========== */
 
+/* ========== 2.21.355 · إكرامية واحدة تحت + تفاصيل المعاملة + الإجمالي بالإكرامية ========== */
+try{XVER2='2.21.355';XVBUILD2='23/11/2026 - 12:45 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const FF=()=>{try{return F}catch(e){return null}};
+const pn=s=>{try{return parseNum(s)||0}catch(e){return parseFloat(String(s||'').replace(/[^\d.]/g,''))||0}};
+const PEN='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+const css=document.createElement('style');css.id='z355css';css.textContent=`
+#sheet label:has(#f-tip),#sheet #f-tipt,#sheet .z355h{display:none!important}
+#sheet .z355t{font-size:0!important}
+#sheet .z355t::after{content:attr(data-n);font-size:14.5px}
+#sheet .z355r{display:flex;align-items:center;gap:10px;min-height:46px;padding:4px 0;border-top:1px solid rgba(255,255,255,.05);font-size:14.5px;font-weight:600;color:#e6ebf5}
+#sheet .z355r .z355i{width:30px;height:30px;flex:0 0 30px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:rgba(20,184,166,.18);color:#5eead4}
+#sheet .z355r .z355l{white-space:nowrap}
+#sheet .z355r input#f-n{flex:1;min-width:0;width:auto!important;max-width:62%!important;margin:0!important;margin-inline-start:auto!important;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;color:#e6ebf5!important;font-size:14px!important;font-weight:500!important;text-align:left!important;padding:4px 0!important;min-height:36px!important;height:auto!important;border-radius:0!important}
+#sheet .z355r input#f-n::placeholder{color:#475569!important}
+#sheet .z355sum{text-align:center;font-size:12.5px;color:rgba(255,255,255,.88);font-weight:600;margin:2px 0 4px}
+#sheet .zchip.zch-sh.on::after,#sheet .zchip.zch-tip.on::after{content:'✕';margin-inline-start:4px;font-size:11px;opacity:.75}
+`;document.head.appendChild(css);
+
+const RN=[[/(\d+)\s*عمليات/g,'$1 معاملات'],[/(\d+)\s*عملية/g,'$1 معاملة'],[/حذف العملية/g,'حذف المعاملة']];
+function rename(root){if(!root)return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;return(!p||p.closest('script,style,textarea,.z355t'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}});
+  const L=[];while(w.nextNode())L.push(w.currentNode);
+  L.forEach(n=>{const v=n.nodeValue;if(!v||v.indexOf('عملي')<0)return;
+    if(v.trim()==='اسم العملية'){const s=document.createElement('span');s.className='z355t';s.dataset.n='تفاصيل المعاملة';s.textContent='اسم العملية';n.replaceWith(s);return}
+    let u=v;RN.forEach(([a,b])=>{u=u.replace(a,b)});if(u!==v)n.nodeValue=u})}
+const isExp=()=>{const f=FF();return !!(f&&f.type==='exp'&&!f.isLoan&&f.xtype!=='tip')};
+const tipV=sz=>{const i=$1('#zpay .zq-tip input',sz);return i?pn(i.value):0};
+function moveFn(sz){if(!isExp())return;const fn=$1('#f-n',sz),zp=$1('#zpay',sz);if(!fn||!zp)return;
+  let r=$1('.z355r',sz);
+  if(!r){r=document.createElement('div');r.className='z355r';r.innerHTML='<span class="z355i">'+PEN+'</span><span class="z355l">تفاصيل المعاملة</span>'}
+  if(fn.parentElement!==r){const ol=fn.closest('label');if(ol)ol.classList.add('z355h');$$('input',r).forEach(i=>{if(i!==fn)i.remove()});r.appendChild(fn)}
+  if(r.previousElementSibling!==zp)zp.after(r)}
+function totals(sz){if(!isExp())return;const a=pn(($1('#f-amt',sz)||{}).value),t=tipV(sz);
+  const zf=$1('#zform',sz);if(t>0&&zf&&!zf.classList.contains('zn-tipon')){zf.classList.add('zn-tipon');const b=$1('.zch-tip',sz);if(b)b.classList.add('on')}
+  const host=$1('.zhero',sz)||$1('.zgh',sz);
+  if(host){let s=$1('.z355sum',host);const want=t>0?num(r2(a))+' + '+num(r2(t))+' إكرامية = '+num(r2(a+t))+' ج.م':'';
+    if(!want){if(s)s.remove()}else{if(!s){s=document.createElement('div');s.className='z355sum';const ch=$1('#zchips',host);if(ch)ch.before(s);else host.appendChild(s)}if(s.textContent!==want)s.textContent=want}}
+  const sv=$1('.zsave',sz)||$1('.zgf .zgp',sz);
+  if(sv){const o=(sv.textContent||'').replace(/\s*·\s*[\d,.]+\s*ج\.م\s*$/,'').trim(),w=t>0&&a>0?o+' · '+num(r2(a+t))+' ج.م':o;if(sv.textContent!==w)sv.textContent=w}}
+let bs=false;
+function runS(){const sh=document.getElementById('sheet'),sz=sh&&$1('.sz',sh);if(!sz||bs)return;bs=true;
+  try{rename(sh)}catch(e){}try{moveFn(sz)}catch(e){console.error('355 fn',e)}try{totals(sz)}catch(e){console.error('355 tot',e)}setTimeout(()=>{bs=false},0)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{if(bs)return;clearTimeout(w.t);w.t=setTimeout(runS,150)}).observe(sh,{childList:true,subtree:true,characterData:true});runS()})();
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  let t=0;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(()=>{try{rename(vw)}catch(e){}},150)}).observe(vw,{childList:true,subtree:true,characterData:true});rename(vw)})();
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.matches&&t.matches('#f-amt,#zpay .zq-tip input'))setTimeout(runS,0)},true);
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.zch-tip');if(!b)return;
+  setTimeout(()=>{const i=$1('#sheet #zpay .zq-tip input');if(i&&$1('#sheet #zform.zn-tipon'))i.focus();runS()},90)},true);
+try{const o=window.zDlg;if(o)window.zDlg=function(c){try{const sz=$1('#sheet .sz');if(c&&sz&&isExp()){const a=pn(($1('#f-amt',sz)||{}).value),t=tipV(sz);
+  if(t>0&&a>0){const A=num(r2(a))+' ج.م',T=num(r2(a+t))+' ج.م';['msg','sub','t','title','txt'].forEach(k=>{if(typeof c[k]==='string'&&c[k].indexOf(A)>=0)c[k]=c[k].replace(A,T)})}}}catch(e){}
+  return o.apply(this,arguments)}}catch(e){}
+})()}catch(e){console.error('fix 2.21.355',e)}
+/* ========== نهاية 2.21.355 ========== */
+
 /* نهاية fix.js */
 
 
