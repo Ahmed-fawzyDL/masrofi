@@ -20478,6 +20478,26 @@ try{document.fonts&&document.fonts.ready.then(()=>fit(true))}catch(e){}
 })()}catch(e){console.error('fix 2.21.375',e)}
 /* ========== نهاية 2.21.375 ========== */
 
+/* ========== 2.21.376 · الشاشات اللي بتطلع من تحت تظهر مرة واحدة ========== */
+try{XVER2='2.21.376';XVBUILD2='23/11/2026 - 07:30 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+['z370css','z373css'].forEach(id=>{try{const st=document.getElementById(id);if(st&&st.sheet){const R=st.sheet.cssRules;for(let i=R.length-1;i>=0;i--){if(/z370ok|z373ok/.test(R[i].selectorText||''))st.sheet.deleteRule(i)}}}catch(e){}});
+const css=document.createElement('style');css.id='z376css';css.textContent=`
+html body #sheet#sheet#sheet.z376w .sz{opacity:0!important}
+html body #sheet#sheet#sheet .sz{transition:opacity .12s ease}
+`;document.head.appendChild(css);
+let tm=0,mx=0;
+function ready(){clearTimeout(tm);clearTimeout(mx);tm=0;const sh=document.getElementById('sheet');if(sh)sh.classList.remove('z376w')}
+function arm(){const sh=document.getElementById('sheet');if(!sh)return;sh.classList.add('z376w');clearTimeout(tm);clearTimeout(mx);tm=setTimeout(ready,140);mx=setTimeout(ready,350)}
+try{const _sh=sheet;sheet=function(){const s0=document.getElementById('sheet'),was=!!(s0&&s0.classList.contains('open'));
+  const r=_sh.apply(this,arguments);try{if(!was)arm()}catch(e){}return r}}catch(e){console.error('376 sheet',e)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{if(!sh.classList.contains('z376w'))return;clearTimeout(tm);tm=setTimeout(ready,90)}).observe(sh,{childList:true,subtree:true})})();
+setInterval(()=>{const sh=document.getElementById('sheet');if(sh&&sh.classList.contains('z376w')&&!tm)ready()},1000);
+})()}catch(e){console.error('fix 2.21.376',e)}
+/* ========== نهاية 2.21.376 ========== */
+
 /* نهاية fix.js */
 
 
