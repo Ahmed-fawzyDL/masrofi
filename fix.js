@@ -19474,6 +19474,30 @@ try{const o=window.zDlg;if(o)window.zDlg=function(c){try{const sz=$1('#sheet .sz
 })()}catch(e){console.error('fix 2.21.355',e)}
 /* ========== نهاية 2.21.355 ========== */
 
+/* ========== 2.21.356 · شيل الإكرامية والتفاصيل من فوق + خانة التفاصيل بالعرض ========== */
+try{XVER2='2.21.356';XVBUILD2='23/11/2026 - 01:00 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const Q='html body #sheet#sheet#sheet';
+const css=document.createElement('style');css.id='z356css';css.textContent=`
+${Q} .sz label.z355h,${Q} .sz label:has(#f-tip),${Q} #f-tipt{display:none!important}
+${Q} .z355r{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;padding:10px 0 12px!important;min-height:0!important}
+${Q} .z355r .z355hd{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:#e6ebf5}
+${Q} .z355r input#f-n{display:block!important;width:100%!important;max-width:none!important;flex:none!important;margin:0!important;background:#0f1729!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:12px!important;padding:10px 12px!important;min-height:44px!important;height:auto!important;text-align:right!important;color:#e6ebf5!important;font-size:14.5px!important;font-weight:500!important;box-shadow:none!important;outline:0!important}
+${Q} .z355r input#f-n:focus{border-color:rgba(94,234,212,.45)!important}
+${Q} .z355r input#f-n::placeholder{color:#64748b!important}
+`;document.head.appendChild(css);
+function hide(el){if(el&&el.style.getPropertyValue('display')!=='none')el.style.setProperty('display','none','important')}
+function go(){const sh=document.getElementById('sheet');if(!sh)return;
+  $$('#f-tip',sh).forEach(i=>hide(i.closest('label')||i));hide($1('#f-tipt',sh));
+  $$('label.z355h',sh).forEach(hide);
+  $$('.z355r',sh).forEach(r=>{if($1('.z355hd',r))return;const i=$1('.z355i',r),l=$1('.z355l',r);if(!i||!l)return;
+    const h=document.createElement('div');h.className='z355hd';r.prepend(h);h.append(i,l)})}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  let t=0;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(()=>{try{go()}catch(e){}},180)}).observe(sh,{childList:true,subtree:true});go()})();
+})()}catch(e){console.error('fix 2.21.356',e)}
+/* ========== نهاية 2.21.356 ========== */
+
 /* نهاية fix.js */
 
 
