@@ -20244,6 +20244,48 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.366',e)}
 /* ========== نهاية 2.21.366 ========== */
 
+/* ========== 2.21.367 · الرئيسية من غير سكرول + من غير "من فلوسك" + التقرير مخبي لو الأرقام مخبية ========== */
+try{XVER2='2.21.367';XVBUILD2='23/11/2026 - 06:05 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const V='html body main#view';
+const css=document.createElement('style');css.id='z367css';css.textContent=`
+${V} .zh-cr{display:none!important}
+${V} .zh-hero{padding:12px 14px!important}
+${V} .zh-st{gap:8px!important;margin-top:10px!important}
+${V} .zh-sb{padding:10px!important;gap:8px!important}
+${V} .zh-sb small{font-size:15px!important}
+${V} .zh-sb b{font-size:17px!important;margin-top:1px!important}
+${V} .zh-sb .z65s{font-size:11px!important}
+${V} .zh-qa{margin-top:10px!important;gap:6px!important}
+${V} .zh-q{padding:7px 2px!important;font-size:12px!important;gap:2px!important}
+${V} .zh-q span{font-size:17px!important}
+${V} .zh-g{gap:8px!important;margin-top:10px!important}
+${V} .zh-t{padding:9px 11px!important}
+${V} .zh-t small{font-size:12px!important}
+${V} .zh-t b{font-size:15px!important}
+${V} .zh-t em{font-size:11px!important}
+`;document.head.appendChild(css);
+
+function fit(){let v='';try{v=view}catch(e){}const vw=document.getElementById('view');if(!vw)return;
+  if(v!=='home'){if(vw.style.zoom)vw.style.zoom='';return}
+  vw.style.zoom='';const top=Math.max(0,vw.getBoundingClientRect().top),need=vw.scrollHeight,avail=window.innerHeight-top-6;
+  if(need>avail+2){const z=Math.max(.7,Math.floor(avail/need*1000)/1000);vw.style.zoom=String(z)}}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{fit()}catch(e){}return r}}catch(e){}
+window.addEventListener('resize',()=>{try{fit()}catch(e){}});
+try{document.fonts&&document.fonts.ready.then(()=>{try{fit()}catch(e){}})}catch(e){}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  let tm=0;new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{fit()}catch(e){}},120)}).observe(vw,{childList:true});fit()})();
+
+const MASK='<span class="msk xmk">••••••</span>';
+window.addEventListener('click',e=>{let v='';try{v=view}catch(x){}if(v!=='home'||!e.target||!e.target.closest||!e.target.closest('#view .zh-ring'))return;
+  let hid=false;try{hid=!!amtHidden()}catch(x){}if(!hid)hid=!!document.querySelector('#view .zh-hero .msk');if(!hid)return;
+  setTimeout(()=>{const r=document.querySelector('#sheet .z365');if(!r)return;
+    r.querySelectorAll('.z36h .n span,.z36ch b,.z64r,.z65r b,.z65net b').forEach(b=>{if(b.innerHTML!==MASK)b.innerHTML=MASK})},30)},true);
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.367',e)}
+/* ========== نهاية 2.21.367 ========== */
+
 /* نهاية fix.js */
 
 
