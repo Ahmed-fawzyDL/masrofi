@@ -20498,6 +20498,54 @@ setInterval(()=>{const sh=document.getElementById('sheet');if(sh&&sh.classList.c
 })()}catch(e){console.error('fix 2.21.376',e)}
 /* ========== نهاية 2.21.376 ========== */
 
+/* ========== 2.21.377 · الناتج بنفس بصمة وباسورد زرار 👁 + التقرير ظاهر ========== */
+try{XVER2='2.21.377';XVBUILD2='23/11/2026 - 07:40 م'}catch(e){}
+try{(function(){
+const _r=window.z365Rep;
+const hid=()=>{try{return !!amtHidden()}catch(e){return false}};
+function openNow(){let s,ok=false;try{s=LK;LK=null;ok=true}catch(e){}try{_r()}catch(e){console.error('377 open',e)}finally{if(ok){try{LK=s}catch(e){}}}}
+function rehideOnClose(){const sh=document.getElementById('sheet');if(!sh)return;let seen=false;
+  const ob=new MutationObserver(()=>{const open=sh.classList.contains('open'),rep=!!sh.querySelector('.z365');if(open&&rep)seen=true;
+    if(seen&&(!open||!rep)){ob.disconnect();try{hideAmts()}catch(e){}try{render()}catch(e){}}});
+  ob.observe(sh,{attributes:true,attributeFilter:['class'],childList:true,subtree:true})}
+window.z365Rep=function(){if(!hid())return openNow();
+  try{revealAmts()}catch(e){console.error('377 reveal',e);return}
+  let n=0;const iv=setInterval(()=>{n++;if(!hid()){clearInterval(iv);openNow();rehideOnClose()}else if(n>150)clearInterval(iv)},200)};
+})()}catch(e){console.error('fix 2.21.377',e)}
+/* ========== نهاية 2.21.377 ========== */
+
+/* ========== 2.21.378 · المصروف والتحصيل يفتحوا مترتّبين من غير ما حاجة تظهر وتختفي ========== */
+try{XVER2='2.21.378';XVBUILD2='23/11/2026 - 07:50 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+['z370css','z373css','z376css'].forEach(id=>{try{const st=document.getElementById(id);if(st&&st.sheet){const R=st.sheet.cssRules;for(let i=R.length-1;i>=0;i--){if(/z370ok|z373ok|z376w/.test(R[i].selectorText||''))st.sheet.deleteRule(i)}}}catch(e){}});
+const P='html body #sheet#sheet#sheet';
+const css=document.createElement('style');css.id='z378css';css.textContent=`
+${P}.z378w .sz{opacity:0!important}
+${P} .sz{transition:opacity .12s ease}
+${P} .sz:has(#zpay) .xtpx{display:none!important}
+${P}.z378e .sz label:has(#f-n){display:none!important}
+${P}:not(.zoff) .sz .btn.xrsb:not(.zchip){display:none!important}
+${P} .sz .z378h{display:none!important}
+`;document.head.appendChild(css);
+const isExp=()=>{try{return !!(F&&F.type==='exp'&&!F.isLoan&&F.xtype!=='tip')}catch(e){return false}};
+function pre(){const sh=document.getElementById('sheet');if(!sh)return;sh.classList.toggle('z378e',isExp()&&!!$1('#zpay',sh));
+  const sz=$1('#sheet:not(.zoff) .sz');if(!sz)return;
+  sz.querySelectorAll('label').forEach(l=>{if(l.classList.contains('z378h')||l.closest('#zpay,.zsh,details'))return;
+    if(/البند/.test(l.textContent||'')&&l.querySelector('.xsel'))l.classList.add('z378h')})}
+let tm=0,mx=0;
+function ready(){clearTimeout(tm);clearTimeout(mx);tm=0;const sh=document.getElementById('sheet');if(sh)sh.classList.remove('z378w')}
+function arm(){const sh=document.getElementById('sheet');if(!sh)return;sh.classList.add('z378w');clearTimeout(tm);clearTimeout(mx);tm=setTimeout(ready,160);mx=setTimeout(ready,900)}
+try{const _sh=sheet;sheet=function(){const s0=document.getElementById('sheet'),was=!!(s0&&s0.classList.contains('open'));
+  const r=_sh.apply(this,arguments);try{pre();if(!was)arm()}catch(e){}return r}}catch(e){console.error('378 sheet',e)}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{pre()}catch(e){}return r}}catch(e){}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  let pt=0;new MutationObserver(()=>{clearTimeout(pt);pt=setTimeout(()=>{try{pre()}catch(e){}},0);
+    if(!sh.classList.contains('z378w'))return;clearTimeout(tm);tm=setTimeout(ready,110)}).observe(sh,{childList:true,subtree:true})})();
+setInterval(()=>{const sh=document.getElementById('sheet');if(sh&&sh.classList.contains('z378w')&&!tm)ready()},1200);
+})()}catch(e){console.error('fix 2.21.378',e)}
+/* ========== نهاية 2.21.378 ========== */
+
 /* نهاية fix.js */
 
 
