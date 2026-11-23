@@ -20649,6 +20649,26 @@ setInterval(()=>{const sh=document.getElementById('sheet');if(sh&&sh.classList.c
 })()}catch(e){console.error('fix 2.21.383',e)}
 /* ========== نهاية 2.21.383 ========== */
 
+/* ========== 2.21.384 · الفورم يتبني ويترتّب كله قبل ما يترسم (من غير رعشة) ========== */
+try{XVER2='2.21.384';XVBUILD2='23/11/2026 - 08:30 م'}catch(e){}
+try{(function(){
+const RT=window.setTimeout.bind(window),RC=window.clearTimeout.bind(window);
+let on=0,Q=new Map(),seq=2e9,rounds=0,idle=0;
+function fST(fn,d,...a){d=+d||0;if(on&&typeof fn==='function'&&d<=400){const id=++seq;Q.set(id,{fn,a,d});return id}return RT(fn,d,...a)}
+function fCT(id){if(Q.has(id)){Q.delete(id);return}return RC(id)}
+function end(){on=0;window.setTimeout=RT;window.clearTimeout=RC;const L=[...Q.values()];Q.clear();L.forEach(j=>{try{RT(()=>j.fn(...j.a),j.d)}catch(e){}})}
+function pump(){rounds++;
+  if(rounds>40)return end();
+  if(Q.size){idle=0;const L=[...Q.entries()].sort((x,y)=>x[1].d-y[1].d||x[0]-y[0]);Q.clear();
+    L.forEach(([,j])=>{try{j.fn(...j.a)}catch(e){console.error('384 job',e)}});queueMicrotask(pump);return}
+  if(idle<2){idle++;queueMicrotask(pump);return}
+  end()}
+function begin(){if(on){return}on=1;rounds=0;idle=0;window.setTimeout=fST;window.clearTimeout=fCT;queueMicrotask(pump)}
+try{const _tf=txForm;txForm=function(){begin();return _tf.apply(this,arguments)}}catch(e){console.error('384 tf',e)}
+try{const _sh=sheet;sheet=function(){begin();return _sh.apply(this,arguments)}}catch(e){console.error('384 sh',e)}
+})()}catch(e){console.error('fix 2.21.384',e)}
+/* ========== نهاية 2.21.384 ========== */
+
 /* نهاية fix.js */
 
 
