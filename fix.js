@@ -20669,6 +20669,25 @@ try{const _sh=sheet;sheet=function(){begin();return _sh.apply(this,arguments)}}c
 })()}catch(e){console.error('fix 2.21.384',e)}
 /* ========== نهاية 2.21.384 ========== */
 
+/* ========== 2.21.385 · إخفاء زرار 🧩 (يرجع بـ5 دوسات على الاسم تحت) ========== */
+try{XVER2='2.21.385';XVBUILD2='23/11/2026 - 08:40 م'}catch(e){}
+try{(function(){
+const H=document.documentElement;
+const css=document.createElement('style');css.id='z385css';css.textContent=`html.z385h .z385b{display:none!important}`;document.head.appendChild(css);
+const on=()=>localStorage.getItem('z385show')==='1';
+H.classList.toggle('z385h',!on());
+function mark(){document.querySelectorAll('body>*,body button,body [onclick]').forEach(e=>{
+  if(e.classList.contains('z385b'))return;const t=(e.textContent||'').trim();if(t==='🧩'&&e.childElementCount<=1)e.classList.add('z385b')})}
+mark();
+try{new MutationObserver(()=>{try{mark()}catch(e){}}).observe(document.body,{childList:true})}catch(e){}
+setTimeout(mark,500);setTimeout(mark,2000);
+let n=0,t=0;
+document.addEventListener('click',e=>{if(!e.target||!e.target.closest||!e.target.closest('.brand'))return;
+  const now=Date.now();if(now-t>3000)n=0;t=now;n++;
+  if(n>=5){n=0;const s=!on();localStorage.setItem('z385show',s?'1':'0');H.classList.toggle('z385h',!s);mark();try{toast(s?'🧩 الزرار رجع':'🧩 الزرار اتخفى')}catch(x){}}},true);
+})()}catch(e){console.error('fix 2.21.385',e)}
+/* ========== نهاية 2.21.385 ========== */
+
 /* نهاية fix.js */
 
 
