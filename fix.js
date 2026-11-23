@@ -19281,6 +19281,65 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.351',e)}
 /* ========== نهاية 2.21.351 ========== */
 
+/* ========== 2.21.352 · الفعلي صح + من غير سالب + أقساط الكريديت للعلم ========== */
+try{XVER2='2.21.352';XVBUILD2='23/11/2026 - 11:30 ص'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const N=v=>num(r2(v));
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+const isCov=t=>{try{return !!(window.zCov&&zCov(t))}catch(e){return false}};
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+const sumA=a=>r2(a.reduce((q,t)=>q+(+t.amount||0),0));
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+
+window.zAct352=function(){const k=ym(cur.y,cur.m),L=keyTx(k).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);let s={exp:0,cr:0};try{s=xMS(keyTx(k))}catch(e){}
+  const AM=amap();let sl=0,ss=0,sv=0,gen=0;
+  L.forEach(t=>{if(t.type==='exp'){if(t.xlno)sl+=Math.min(+t.amount||0,repaid(t));else if(t.shr)ss+=Math.min(shOf(t),AM[t.id]||0);if(isCov(t))sv+=(+t.amount||0)}
+    else if(t.type==='inc'&&t.rmb){const al=(t.rmb.L||[]).reduce((a,y)=>a+(+y.a||0),0);gen+=Math.max(0,(+t.amount||0)-al)}});
+  const all=r2(s.exp-sv),back=r2(sl+ss+gen);return{all,back,act:r2(all-back)}};
+
+try{const _zb=window.zwBuild;window.zwBuild=function(){const B=_zb.apply(this,arguments);try{
+  window.zInf352={};if(view!=='exps'||!B||!B.S)return B;
+  const k=ym(cur.y,cur.m);let g='all';try{g=XE.g||'all'}catch(e){}
+  B.S=B.S.filter(s=>!/بدون كريديت/.test(s.t||''));
+  const L=keyTx(k).filter(t=>t&&!t.del&&!t.pend&&!t.xpre&&t.type==='exp');
+  const ids=new Set();B.S.forEach(s=>(s.items||[]).forEach(x=>{if(x.g)x.g.forEach(e=>{if(e&&e.t&&e.t.id)ids.add(e.t.id)});else if(x.t&&x.t.id)ids.add(x.t.id)}));
+  const row=(t,ic,n)=>({n:n||nmOf(t),ic,d:t.date,a:+t.amount||0,st:'paid',t});
+  if(g==='all'&&!B.S.some(s=>s.k==='ccexp')){
+    const cx=L.filter(t=>isCr(t.method)&&!isCov(t)&&!t.ccPay&&!ids.has(t.id)).sort((a,b)=>(+b.amount||0)-(+a.amount||0));
+    if(cx.length){cx.forEach(t=>ids.add(t.id));const ns={k:'ccexp',ic:'💳',t:'مصروفات من الكريديت',items:cx.map(t=>row(t,'💳'))};
+      const at=B.S.findIndex(s=>s.k==='ccpay');if(at>=0)B.S.splice(at+1,0,ns);else B.S.push(ns)}}
+  if(g==='all'){try{const s=xMS(keyTx(k)),tot=r2(s.exp-(window.zCovSum?zCovSum():0));
+    const got=r2(B.S.reduce((a,s)=>a+(s.items||[]).reduce((q,x)=>q+(+x.a||0),0),0)),gap=r2(tot-got);
+    if(gap>0.05){const ms=L.filter(t=>!isCov(t)&&!ids.has(t.id)),mv=sumA(ms);
+      if(ms.length&&Math.abs(mv-gap)<0.06)B.S.push({k:'zmiss',ic:'❔',t:'من غير قسم',items:ms.map(t=>row(t,'❔'))});
+      else console.warn('352 gap',gap,mv,ms)}}catch(e){}}
+  const cv=L.filter(isCov),ins=B.S.find(s=>(s.t||'').trim()==='أقساط');
+  if(ins&&cv.length&&!ins.items.some(x=>x.zinfo)){cv.forEach(t=>ins.items.push(Object.assign(row(t,'💳',nmOf(t)+' · للعلم'),{zinfo:1})));window.zInf352[ins.t.trim()]={a:sumA(cv),n:cv.length}}
+}catch(e){console.error('352 zb',e)}return B}}catch(e){console.error('352 wrap',e)}
+
+let wc=0,wt=0,warned=0;
+function set(el,t){if(!el||el.textContent===t)return;const n=Date.now();if(n-wt>1000){wt=n;wc=0}if(++wc>40){if(!warned){warned=1;console.warn('352 set loop')}return}el.textContent=t}
+function card(v){const h=$1('#view>.zxh3');if(!h)return;
+  $$('.zxh-g b',h).forEach(b=>{const t=b.textContent||'';set(b,t.replace(/^\s*[−\-–]\s*/,''))});
+  if(v!=='exps')return;if(!$$('.zxh-sg button.on',h).some(b=>/الفعلي/.test(b.textContent||'')))return;
+  const r=zAct352();set($1('.zxh-n span',h),N(r.act));
+  $$('.zxh-g>div',h).forEach(d=>{if(/رجع/.test(($1('small',d)||{}).textContent||''))set($1('b',d),N(r.back))})}
+function hdr(){const Z=window.zInf352||{};
+  $$('#zx>.zx-s').forEach(s=>{const sh=$1('.zx-sh',s);if(!sh)return;
+    $$('.zx-i',s).forEach(i=>{const b=$1('.zx-t b',i);if(b&&/· للعلم$/.test((b.textContent||'').trim())&&i.style.opacity!=='0.5')i.style.opacity='0.5'});
+    const z=Z[(($1('span',sh)||{}).textContent||'').trim()];if(!z)return;const b=$1(':scope>b',sh),c=$1('.zx-c',sh);
+    if(b&&b.dataset.z352!==b.textContent){const t=N((parseFloat((b.textContent||'').replace(/[^\d.]/g,''))||0)-z.a);b.textContent=t;b.dataset.z352=t}
+    if(c&&c.dataset.z352!==c.textContent){const t=String(Math.max(0,(parseInt((c.textContent||'').replace(/[^\d]/g,''))||0)-z.n));c.textContent=t;c.dataset.z352=t}})}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  const run=()=>{let v='';try{v=view}catch(e){}if(v!=='exps'&&v!=='col')return;try{card(v)}catch(e){}if(v==='exps')try{hdr()}catch(e){}};
+  new MutationObserver(run).observe(vw,{childList:true,subtree:true,characterData:true});run()})();
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.352',e)}
+/* ========== نهاية 2.21.352 ========== */
+
 /* نهاية fix.js */
 
 
