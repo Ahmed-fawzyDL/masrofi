@@ -20572,6 +20572,36 @@ try{const _tf=txForm;txForm=function(){const sh=document.getElementById('sheet')
 })()}catch(e){console.error('fix 2.21.379',e)}
 /* ========== نهاية 2.21.379 ========== */
 
+/* ========== 2.21.381 · كشف اللي بيظهر ويختفي (الرسالة بعد ما تقفل الشاشة) ========== */
+try{XVER2='2.21.381';XVBUILD2='23/11/2026 - 08:10 م'}catch(e){}
+try{(function(){
+if(localStorage.getItem('z381done'))return;
+localStorage.setItem('z379done','1');localStorage.setItem('z380done','1');
+const T=n=>{let t='';try{t=(n.textContent||'').replace(/\s+/g,' ').trim()}catch(e){}return t.slice(0,28)};
+const D=n=>{if(!n||n.nodeType!==1)return '';const c=(n.className&&typeof n.className==='string')?'.'+n.className.trim().split(/\s+/).slice(0,2).join('.'):'';return n.tagName.toLowerCase()+(n.id?'#'+n.id:'')+c};
+let L=null,t0=0,ob=null,out=null;
+function start(){L=[];t0=performance.now();const sh=document.getElementById('sheet');if(!sh)return;
+  ob=new MutationObserver(R=>{if(!L)return;const ms=Math.round(performance.now()-t0);
+    R.forEach(r=>{if(L.length>70)return;
+      if(r.type==='childList'){r.addedNodes.forEach(n=>{const t=T(n);if(t&&n.nodeType===1)L.push(ms+' ➕ '+t+'  ('+D(n)+')')});
+        r.removedNodes.forEach(n=>{const t=T(n);if(t&&n.nodeType===1)L.push(ms+' ➖ '+t+'  ('+D(n)+')')})}
+      else if(r.type==='characterData'){const t=T(r.target);if(t)L.push(ms+' ✎ '+t)}
+      else if(r.type==='attributes'){const el=r.target;
+        if(r.attributeName==='style'){const s=el.getAttribute('style')||'';if(/display/.test(s))L.push(ms+' 👁 '+T(el)+' → '+(/none/.test(s)?'اختفى':'ظهر')+'  ('+D(el)+')')}
+        else if(/z37\dh|z355h|z378h/.test(el.className||''))L.push(ms+' 🙈 '+T(el)+'  ('+D(el)+')')}})});
+  ob.observe(sh,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style','class']});
+  setTimeout(()=>{if(ob)ob.disconnect();ob=null;out=L||[];L=null},1500)}
+function show(){if(!out)return;const o=out;out=null;localStorage.setItem('z381done','1');
+  const msg='اللي حصل في أول ثانية ونص من فتح المصروف:\n\n'+(o.length?o.join('\n'):'مفيش تغييرات');
+  try{if(window.zDlg){const bg=zDlg({msg,btns:[{t:'تمام',cls:'z3ok'}]});
+    try{bg.style.zIndex='99999';const bx=bg.querySelector('.z3bx'),tx=bg.querySelector('.z3tx');bx.style.maxHeight='85vh';bx.style.overflow='auto';tx.style.textAlign='right';tx.style.fontSize='11.5px';tx.style.whiteSpace='pre-wrap';tx.style.lineHeight='1.6';tx.style.direction='rtl'}catch(e){}}
+    else alert(msg)}catch(e){alert(msg)}}
+try{const _tf=txForm;txForm=function(){if(!L&&!out&&!localStorage.getItem('z381done'))start();return _tf.apply(this,arguments)}}catch(e){console.error('381',e)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{if(out&&!sh.classList.contains('open'))setTimeout(show,300)}).observe(sh,{attributes:true,attributeFilter:['class']})})();
+})()}catch(e){console.error('fix 2.21.381',e)}
+/* ========== نهاية 2.21.381 ========== */
+
 /* نهاية fix.js */
 
 
