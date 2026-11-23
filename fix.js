@@ -20286,6 +20286,34 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.367',e)}
 /* ========== نهاية 2.21.367 ========== */
 
+/* ========== 2.21.368 · الناتج بالبصمة ويفتح التقرير ظاهر + الرئيسية من غير أي سكرول ========== */
+try{XVER2='2.21.368';XVBUILD2='23/11/2026 - 06:15 م'}catch(e){}
+try{(function(){
+const _rep=window.z365Rep;
+async function auth(){try{
+  if(typeof LK!=='undefined'&&LK&&LK.bio){try{await bioVerify();return true}catch(e){toast('البصمة ما اتعرفتش');return false}}
+  if(typeof LK!=='undefined'&&LK&&LK.pin){const x=await ask('الرقم السري','',{input:'',num:true,pw:true,icon:'🔒',ok:'فتح'});if(x==null)return false;
+    if(await hash(x)!==LK.pin){toast('الرقم السري غلط');return false}return true}
+  return true}catch(e){console.error('368 auth',e);return false}}
+function openShown(){const o=window.amtHidden;try{window.amtHidden=function(){return false};_rep()}catch(e){console.error('368 rep',e)}finally{window.amtHidden=o}}
+window.z365Rep=function(){auth().then(ok=>{if(ok)setTimeout(openShown,80)})};
+
+function fit(){let v='';try{v=view}catch(e){}const vw=document.getElementById('view');if(!vw)return;
+  if(v!=='home'){if(vw.style.zoom)vw.style.zoom='';return}
+  vw.style.zoom='';
+  for(let i=0;i<5;i++){const over=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight)-window.innerHeight;if(over<=0)break;
+    const z=parseFloat(vw.style.zoom||'1')||1,h=vw.getBoundingClientRect().height;if(!h)break;
+    const nz=Math.max(.62,z*(h-over-4)/h);vw.style.zoom=String(Math.floor(nz*1000)/1000);if(nz<=.62)break}}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{fit()}catch(e){}return r}}catch(e){}
+window.addEventListener('resize',()=>{try{fit()}catch(e){}});
+try{document.fonts&&document.fonts.ready.then(()=>{try{fit()}catch(e){}})}catch(e){}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  let tm=0;new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{fit()}catch(e){}},200)}).observe(vw,{childList:true});fit()})();
+const css=document.createElement('style');css.id='z368css';css.textContent=`html body main#view .zh-ring{cursor:pointer}`;document.head.appendChild(css);
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.368',e)}
+/* ========== نهاية 2.21.368 ========== */
+
 /* نهاية fix.js */
 
 
