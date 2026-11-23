@@ -20361,6 +20361,40 @@ setInterval(()=>{const sz=$1('#sheet .sz');if(sz&&!sz.classList.contains('z370ok
 })()}catch(e){console.error('fix 2.21.370',e)}
 /* ========== نهاية 2.21.370 ========== */
 
+/* ========== 2.21.371 · إنستاباي يتملي لوحده من الشير + شكل جزء الدفع ========== */
+try{XVER2='2.21.371';XVBUILD2='23/11/2026 - 06:55 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+function viaOf(id,pref){const m=M(id);if(!m)return '';if(m.type==='cash')return 'cash';if(isCr(id))return 'card';if(m.type==='wallet')return 'wallet';
+  return ['instapay','transfer','card'].includes(pref)?pref:'instapay'}
+try{const _tf=txForm;txForm=function(){try{
+  if(F&&F.zp&&F._bk&&!F._zbk&&F.method&&M(F.method)&&F.zp.lines&&F.zp.lines[0]){const L=F.zp.lines[0];
+    if(L.m!==F.method||L.via!==viaOf(F.method,F.via||'instapay')){L.m=F.method;L.via=viaOf(F.method,F.via||'instapay');L.feeMan=0}F._zbk=1}
+}catch(e){console.error('371 bank',e)}return _tf.apply(this,arguments)}}catch(e){console.error('371 wrap',e)}
+
+const P='html body #sheet#sheet#sheet:not(.zoff) .sz';
+const css=document.createElement('style');css.id='z371css';css.textContent=`
+${P} #zpay>.zq-hd+.zq-l{display:contents!important}
+${P} #zpay>.zq-hd+.zq-l>.zq-r{grid-column:2!important;min-height:46px}
+${P} #zpay>.zq-hd+.zq-l>:not(.zq-r){grid-column:1/-1!important}
+${P} #zpay>.zq-l:not(.zq-hd+.zq-l){display:block!important;background:#18223a!important;border:1px solid rgba(255,255,255,.07)!important;border-radius:14px!important;padding:8px 10px!important;margin:6px 0!important}
+${P} #zpay .zq-m{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:0!important;margin:0!important;padding:2px 0 6px!important;border-top:1px solid rgba(255,255,255,.05)}
+${P} #zpay .zq-m::before{content:'طريقة الدفع';flex:0 0 100%;font-size:12px;color:#94a3b8;margin:8px 2px 6px}
+${P} #zpay .zq-sg{flex:0 0 100%!important;display:flex!important;background:#0f1729!important;border-radius:12px!important;padding:3px!important;gap:3px!important;margin:0!important}
+${P} #zpay .zq-sg button{flex:1!important;border-radius:9px!important;padding:8px 4px!important;font-size:13px!important;font-weight:700!important;color:#94a3b8!important;background:transparent!important;opacity:1!important;border:0!important;min-height:0!important;box-shadow:none!important}
+${P} #zpay .zq-sg button.on{background:#0d9488!important;color:#fff!important}
+${P} #zpay .zq-fee{flex:0 0 100%!important;display:flex!important;align-items:center!important;gap:8px!important;min-height:46px;margin-top:8px!important;border-top:1px solid rgba(255,255,255,.05);font-size:0!important;white-space:nowrap}
+${P} #zpay .zq-fee::before{content:'مصاريف إنستاباي';font-size:14.5px;font-weight:600;color:#e6ebf5}
+${P} #zpay .zq-fee input{margin-inline-start:auto!important;width:78px!important;font-size:14px!important;font-weight:700!important;text-align:center!important;background:#0f1729!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:10px!important;padding:6px!important;min-height:34px!important;color:#e6ebf5!important}
+${P} #zpay .zq-fee .zq-rd{font-size:11.5px!important;font-weight:700!important;color:#5eead4!important;background:rgba(20,184,166,.12)!important;border:0!important;border-radius:999px!important;padding:3px 10px!important;min-height:0!important;width:auto!important;margin:0!important}
+`;document.head.appendChild(css);
+function mv(){const z=$1('#sheet #zpay.zq');if(!z)return;const rd=$1('.zq-hd .zq-rd',z),fe=$1('.zq-l .zq-fee',z);if(rd&&fe&&rd.parentElement!==fe)fe.appendChild(rd)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  let t=0;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(()=>{try{mv()}catch(e){}},20)}).observe(sh,{childList:true,subtree:true})})();
+})()}catch(e){console.error('fix 2.21.371',e)}
+/* ========== نهاية 2.21.371 ========== */
+
 /* نهاية fix.js */
 
 
