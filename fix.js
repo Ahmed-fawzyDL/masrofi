@@ -20632,6 +20632,23 @@ try{const _tf=txForm;txForm=function(){if(!L&&!out&&!localStorage.getItem('z382d
 })()}catch(e){console.error('fix 2.21.382',e)}
 /* ========== نهاية 2.21.382 ========== */
 
+/* ========== 2.21.383 · الفورم مايظهرش غير بعد ما يترتّب (حتى بعد "اختر نوع العملية") ========== */
+try{XVER2='2.21.383';XVBUILD2='23/11/2026 - 08:20 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const css=document.createElement('style');css.id='z383css';css.textContent=`
+html body #sheet#sheet#sheet.z383w .sz{opacity:0!important}
+`;document.head.appendChild(css);
+let tm=0,mx=0;
+function ready(){clearTimeout(tm);clearTimeout(mx);tm=0;const sh=document.getElementById('sheet');if(sh)sh.classList.remove('z383w')}
+function arm(){const sh=document.getElementById('sheet');if(!sh)return;sh.classList.add('z383w');clearTimeout(tm);clearTimeout(mx);tm=setTimeout(ready,160);mx=setTimeout(ready,900)}
+try{const _tf=txForm;txForm=function(){const had=!!$1('#sheet #f-amt');if(!had)arm();const r=_tf.apply(this,arguments);if(!had){clearTimeout(tm);tm=setTimeout(ready,160)}return r}}catch(e){console.error('383 tf',e)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{if(!sh.classList.contains('z383w'))return;clearTimeout(tm);tm=setTimeout(ready,110)}).observe(sh,{childList:true,subtree:true})})();
+setInterval(()=>{const sh=document.getElementById('sheet');if(sh&&sh.classList.contains('z383w')&&!tm)ready()},1200);
+})()}catch(e){console.error('fix 2.21.383',e)}
+/* ========== نهاية 2.21.383 ========== */
+
 /* نهاية fix.js */
 
 
