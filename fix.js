@@ -19820,6 +19820,55 @@ ${Q} .z36lk{display:block;text-align:center;margin-top:10px;font-size:13px;font-
 })()}catch(e){console.error('fix 2.21.361',e)}
 /* ========== نهاية 2.21.361 ========== */
 
+/* ========== 2.21.362 · تسجيل نصيب المشارك جوه المعاملة نفسها ========== */
+try{XVER2='2.21.362';XVBUILD2='23/11/2026 - 04:15 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const N=v=>num(r2(v));
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+const PP=()=>{try{return XPP()}catch(e){return []}};
+const ppN=id=>{const p=PP().find(x=>x.id===id);return p?p.name:''};
+const txOf=id=>S.txs.find(t=>t&&t.id===id&&!t.del);
+const isCr=id=>{try{return !!id&&xIsCr(id)}catch(e){return false}};
+const accs=()=>(S.methods||[]).filter(m=>m&&!m.del&&!m.arch&&!isCr(m.id));
+function paidBy(t,p){let s=0;S.txs.forEach(x=>{if(!x||x.del||x.pend||x.type!=='inc'||!x.rmb||x.rmb.p!==p)return;(x.rmb.L||[]).forEach(y=>{if(y.t===t.id)s+=+y.a||0})});return r2(s)}
+var P62=null;
+window.z361Pay=function(tid,p){const t=txOf(tid);if(!t)return;
+  const sh=r2((t.shr||[]).filter(x=>x.p===p).reduce((a,x)=>a+(+x.a||0),0)),rem=r2(Math.max(0,sh-paidBy(t,p))),all=r2((t.shr||[]).reduce((a,x)=>a+(+x.a||0),0));
+  let back=null;try{back=z361Here()}catch(e){}
+  const A=accs(),def=t.method&&A.some(m=>m.id===t.method)?t.method:((A.find(m=>m.type==='cash')||A[0]||{}).id||'');
+  P62={tid,p,rem,back};const n=ppN(p)||'—';
+  sheet(`<div class="z360 z362"><div class="z36bk" onclick="z362Back()">→ رجوع</div><div class="z36tt">تسجيل نصيب ${esc(n)}</div>
+  <div class="z36h"><div class="z36hd"><b>نصيب ${esc(n)} رجعلك</b><span class="z36pill">${esc(nmOf(t))} · ${N(t.amount)}</span></div>
+  <div class="z62a"><input id="z62amt" inputmode="decimal" dir="ltr" value="${esc(String(rem))}"><em>ج.م</em></div>
+  <small>النصيب ${N(sh)} · فاضل ${N(rem)}</small></div>
+  <div class="z36kv z62f"><div><span>استلمتها في</span><select id="z62m">${A.map(m=>`<option value="${m.id}" ${m.id===def?'selected':''}>${esc(m.name)}</option>`).join('')}</select></div>
+  <div><span>التاريخ</span><input id="z62d" type="date" value="${today()}"></div></div>
+  <div class="z62n">دي مش دخل جديد. هتتسجل إنها رجعتلك من «${esc(nmOf(t))}»، ومش هتتحسب في الدخل الفعلي. لما كل المشاركين يدفعوا، المصروف الفعلي عليك من المعاملة دي هيبقى ${N(r2((+t.amount||0)-all))}.</div>
+  <div class="z36pri" onclick="z362Save()">سجّل</div></div><i class="zgh" style="display:none"></i>`)};
+window.z362Back=function(){const b=P62&&P62.back;P62=null;if(b)b()};
+window.z362Save=function(){const P=P62;if(!P)return;const t=txOf(P.tid);if(!t)return;
+  const raw=($1('#z62amt')||{}).value||'';let a=0;try{a=parseNum(raw)}catch(e){a=parseFloat(String(raw).replace(/[^\d.]/g,''))}a=r2(a||0);
+  if(!(a>0))return toast('اكتب المبلغ');if(a>P.rem+.009)return toast('المبلغ أكتر من الفاضل ('+N(P.rem)+')');
+  const m=($1('#z62m')||{}).value,d=($1('#z62d')||{}).value||today();if(!m)return toast('اختار الحساب');
+  const tpl=S.txs.find(x=>x&&!x.del&&x.type==='inc'&&x.rmb&&x.rmb.p===P.p&&x.cat)||S.txs.find(x=>x&&!x.del&&x.type==='inc'&&x.rmb&&x.cat);
+  const nx={id:uid(),type:'inc',amount:a,date:d,method:m,note:'نصيب '+ppN(P.p)+' في '+nmOf(t),rmb:{p:P.p,L:[{t:t.id,a}]}};
+  if(tpl&&tpl.cat)nx.cat=tpl.cat;
+  if(tpl)['ts','at','created','cr','ct','ca'].forEach(k=>{if(typeof tpl[k]==='number')nx[k]=Date.now();else if(typeof tpl[k]==='string'&&/^\d{4}-/.test(tpl[k]))nx[k]=new Date().toISOString()});
+  S.txs.push(nx);try{save()}catch(e){console.error('362 save',e)}try{render()}catch(e){}try{toast('✓ اتسجل نصيب '+ppN(P.p))}catch(e){}
+  const b=P.back;P62=null;if(b)setTimeout(b,80)};
+const Q='html body #sheet#sheet#sheet .z362';
+const css=document.createElement('style');css.id='z362css';css.textContent=`
+${Q} .z36h small{text-align:center}
+${Q} .z62a{display:flex;align-items:baseline;justify-content:center;gap:6px;direction:ltr;margin:8px 0 4px}
+${Q} .z62a input{width:60%!important;max-width:220px!important;background:transparent!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.3)!important;border-radius:0!important;color:#fff!important;font-size:34px!important;font-weight:800!important;text-align:center!important;padding:0!important;margin:0!important;height:50px!important;min-height:50px!important;box-shadow:none!important;outline:0!important}
+${Q} .z62a em{font-style:normal;color:rgba(255,255,255,.75);font-size:14px}
+${Q} .z62f select,${Q} .z62f input{background:transparent!important;border:0!important;color:#e6ebf5!important;font:inherit!important;font-size:14px!important;text-align:left!important;text-align-last:left!important;padding:4px 0!important;margin:0!important;min-height:36px!important;height:auto!important;box-shadow:none!important;width:auto!important;max-width:60%!important;color-scheme:dark;border-radius:0!important}
+${Q} .z62n{font-size:12.5px;color:#94a3b8;line-height:1.8;margin:12px 2px 0;background:rgba(94,234,212,.06);border:1px solid rgba(94,234,212,.18);border-radius:14px;padding:10px 12px}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.362',e)}
+/* ========== نهاية 2.21.362 ========== */
+
 /* نهاية fix.js */
 
 
