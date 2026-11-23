@@ -20452,6 +20452,32 @@ setTimeout(()=>{if(H.classList.contains('z374w')&&!tm)ready()},1500);
 })()}catch(e){console.error('fix 2.21.374',e)}
 /* ========== نهاية 2.21.374 ========== */
 
+/* ========== 2.21.375 · الرئيسية: حساب حجم واحد بس ========== */
+try{XVER2='2.21.375';XVBUILD2='23/11/2026 - 07:20 م'}catch(e){}
+try{(function(){
+const H=document.documentElement;
+const css=document.createElement('style');css.id='z375css';css.textContent=`
+html.z375h body main#view#view#view{zoom:1!important}
+html.z375h body main#view#view#view>*{zoom:var(--z375,1)!important}
+html.z375h,html.z375h body{overflow:hidden!important;overscroll-behavior:none!important}
+`;document.head.appendChild(css);
+let key='';
+function over(){const se=document.scrollingElement||H;return Math.max(0,se.scrollHeight-innerHeight)}
+function fit(force){let v='';try{v=view}catch(e){}const on=v==='home';H.classList.toggle('z375h',on);if(!on){key='';return}
+  const vw=document.getElementById('view');if(!vw)return;
+  const k=innerWidth+'x'+innerHeight+'|'+vw.innerHTML.length;if(!force&&k===key)return;key=k;
+  H.style.setProperty('--z375','1');let z=1;
+  for(let i=0;i<3;i++){const o=over();if(o<=0)break;const h=vw.scrollHeight;if(!h)break;
+    z=Math.max(.6,Math.floor(z*(h-o-4)/h*1000)/1000);H.style.setProperty('--z375',String(z));if(z<=.6)break}
+  if(window.scrollY)window.scrollTo(0,0)}
+fit(true);
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{fit(false)}catch(e){}return r}}catch(e){}
+try{const _go=go;go=function(){const r=_go.apply(this,arguments);try{fit(false)}catch(e){}return r}}catch(e){}
+let rt=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>fit(true),150)});
+try{document.fonts&&document.fonts.ready.then(()=>fit(true))}catch(e){}
+})()}catch(e){console.error('fix 2.21.375',e)}
+/* ========== نهاية 2.21.375 ========== */
+
 /* نهاية fix.js */
 
 
