@@ -19378,6 +19378,45 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.353',e)}
 /* ========== نهاية 2.21.353 ========== */
 
+/* ========== 2.21.354 · شاشة المصروفات والتحصيلات: بوكسات + خط أوضح ========== */
+try{XVER2='2.21.354';XVBUILD2='23/11/2026 - 12:35 م'}catch(e){}
+try{(function(){
+const css=`
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+#view #zx{display:flex!important;flex-direction:column;gap:12px}
+#view #zx>.zx-s{background:#121a2b!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:18px!important;padding:12px!important;margin:0!important;box-shadow:none!important}
+#view #zx .zx-sh{display:flex;align-items:center;gap:10px;min-height:38px;padding:0!important;border:0!important;background:none!important;font-family:Cairo,sans-serif}
+#view #zx .zx-sh>span:first-child{flex:1;font-size:15.5px!important;font-weight:800!important;color:#f1f5f9!important;display:flex;align-items:center;gap:10px}
+#view #zx .zx-sh .zx-c{font-size:12px!important;font-weight:700;background:rgba(255,255,255,.07)!important;color:#cbd5e1!important;border-radius:8px!important;padding:1px 8px!important}
+#view #zx .zx-sh>b{font-size:16px!important;font-weight:800!important;color:#f8fafc!important;font-variant-numeric:tabular-nums}
+#view #zx .zx-sh>i{color:#64748b;font-style:normal}
+#view #zx .zx-l{display:flex!important;flex-direction:column;gap:8px;margin-top:10px!important;padding:0!important;border:0!important;background:none!important}
+#view #zx .zx-i{display:flex!important;align-items:center;gap:12px;background:#18223a!important;border:1px solid rgba(255,255,255,.07)!important;border-radius:14px!important;padding:11px 12px!important;margin:0!important;min-height:60px;box-shadow:none!important}
+#view #zx .zx-i:active{background:#1e2a45!important}
+#view #zx .zx-ic{width:38px!important;height:38px!important;min-width:38px;border-radius:12px!important;font-size:15px!important;font-weight:800!important;display:flex!important;align-items:center;justify-content:center;flex:none}
+#view #zx .zx-t{flex:1;min-width:0}
+#view #zx .zx-t b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal!important;font-size:14.5px!important;font-weight:700!important;color:#f1f5f9;line-height:1.35}
+#view #zx .zx-t small{display:block;font-size:12px!important;color:#94a3b8!important;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#view #zx .zx-a{display:flex!important;align-items:center;gap:6px;font-size:15.5px!important;font-weight:800!important;font-variant-numeric:tabular-nums;white-space:nowrap}
+#view #zx .zx-a .zdot{width:7px!important;height:7px!important}
+#view #zx .zx-t b[style*="248, 113, 113"]{color:#f1f5f9!important}
+#view #zx .zx-a[style*="248, 113, 113"]{color:#f8fafc!important}
+#view #zx .zx-add{display:block;width:100%;margin-top:10px!important;padding:10px!important;font-size:13.5px!important;font-weight:700!important;color:#5eead4!important;background:transparent!important;border:1px dashed rgba(94,234,212,.25)!important;border-radius:14px!important}
+#view>.zxh3 .zxh-n span{font-size:34px!important;font-weight:800!important;font-variant-numeric:tabular-nums}
+#view>.zxh3 .zxh-g b{font-size:15px!important;font-weight:800!important;font-variant-numeric:tabular-nums}
+#view>.zxh3 .zxh-g small{font-size:11.5px!important;color:#ccfbf1!important}
+`;
+if(!document.getElementById('z354css')){const st=document.createElement('style');st.id='z354css';st.textContent=css;document.head.appendChild(st)}
+const ZI='\u200b';
+function mark(){const vw=document.getElementById('view');if(!vw)return;
+  vw.querySelectorAll('#zx .zx-i').forEach(i=>{const b=i.querySelector('.zx-t b'),sm=i.querySelector('.zx-t small');
+    if(!b||!sm||(b.textContent||'').charAt(0)!==ZI)return;if(!/على الكارت/.test(sm.textContent||''))sm.textContent=(sm.textContent||'')+' · على الكارت'})}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{mark()}catch(e){}}).observe(vw,{childList:true,subtree:true,characterData:true});mark()})();
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.354',e)}
+/* ========== نهاية 2.21.354 ========== */
+
 /* نهاية fix.js */
 
 
