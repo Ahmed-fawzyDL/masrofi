@@ -20314,6 +20314,25 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.368',e)}
 /* ========== نهاية 2.21.368 ========== */
 
+/* ========== 2.21.369 · الرئيسية من غير سكرول (تصغير المحتوى نفسه) ========== */
+try{XVER2='2.21.369';XVBUILD2='23/11/2026 - 06:25 م'}catch(e){}
+try{(function(){
+function over(vw){const d=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight)-window.innerHeight;
+  let o=Math.max(0,d),el=vw;for(let i=0;i<4&&el;i++){const cs=getComputedStyle(el);if(/auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1)o=Math.max(o,el.scrollHeight-el.clientHeight);el=el.parentElement}return o}
+function fit(){let v='';try{v=view}catch(e){}const vw=document.getElementById('view');if(!vw)return;const K=[...vw.children];
+  if(v!=='home'){K.forEach(c=>{if(c.style.zoom)c.style.zoom=''});return}
+  vw.style.zoom='';K.forEach(c=>{c.style.zoom=''});
+  let z=1;for(let i=0;i<6;i++){const o=over(vw);if(o<=0)break;const h=vw.scrollHeight;if(!h)break;
+    z=Math.max(.6,Math.floor(z*(h-o-6)/h*1000)/1000);K.forEach(c=>{c.style.zoom=String(z)});if(z<=.6)break}}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{fit()}catch(e){}return r}}catch(e){}
+window.addEventListener('resize',()=>{try{fit()}catch(e){}});
+try{document.fonts&&document.fonts.ready.then(()=>{try{fit()}catch(e){}})}catch(e){}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  let tm=0;new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{fit()}catch(e){}},280)}).observe(vw,{childList:true});fit()})();
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.369',e)}
+/* ========== نهاية 2.21.369 ========== */
+
 /* نهاية fix.js */
 
 
