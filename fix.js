@@ -20395,6 +20395,41 @@ function mv(){const z=$1('#sheet #zpay.zq');if(!z)return;const rd=$1('.zq-hd .zq
 })()}catch(e){console.error('fix 2.21.371',e)}
 /* ========== نهاية 2.21.371 ========== */
 
+/* ========== 2.21.372 · الرئيسية تفتح ثابتة من غير ما تطلع وتنزل ========== */
+try{XVER2='2.21.372';XVBUILD2='23/11/2026 - 07:00 م'}catch(e){}
+try{(function(){
+const css=document.createElement('style');css.id='z372css';css.textContent=`
+html.z372h body main#view{zoom:1!important}
+html.z372h,html.z372h body{overflow:hidden!important;overscroll-behavior:none!important}
+`;document.head.appendChild(css);
+const H=document.documentElement;
+function mark(){let v='';try{v=view}catch(e){}const on=v==='home';H.classList.toggle('z372h',on);if(on&&(window.scrollY||document.documentElement.scrollTop))window.scrollTo(0,0)}
+mark();
+try{const _rn=render;render=function(){mark();const r=_rn.apply(this,arguments);mark();return r}}catch(e){}
+try{const _go=go;go=function(){const r=_go.apply(this,arguments);mark();return r}}catch(e){}
+})()}catch(e){console.error('fix 2.21.372',e)}
+/* ========== نهاية 2.21.372 ========== */
+
+/* ========== 2.21.373 · الشاشة تفتح على طول من غير سواد ========== */
+try{XVER2='2.21.373';XVBUILD2='23/11/2026 - 07:05 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+try{const st=document.getElementById('z370css');if(st&&st.sheet){const R=st.sheet.cssRules;for(let i=R.length-1;i>=0;i--){if(/z370ok/.test(R[i].selectorText||''))st.sheet.deleteRule(i)}}}catch(e){console.error('373 css',e)}
+const css=document.createElement('style');css.id='z373css';css.textContent=`
+html body #sheet#sheet#sheet .sz:not(.z373ok){opacity:0!important}
+html body #sheet#sheet#sheet .sz{transition:opacity .1s ease}
+`;document.head.appendChild(css);
+let tm=0,mx=0;
+function ready(){clearTimeout(tm);clearTimeout(mx);tm=0;const sz=$1('#sheet .sz');if(sz&&!sz.classList.contains('z373ok'))sz.classList.add('z373ok')}
+function arm(){const sz=$1('#sheet .sz');if(!sz)return;sz.classList.remove('z373ok');clearTimeout(tm);clearTimeout(mx);tm=setTimeout(ready,120);mx=setTimeout(ready,380)}
+try{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);try{arm()}catch(e){}return r}}catch(e){console.error('373 sheet',e)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{const sz=$1('#sheet .sz');if(sz&&!sz.classList.contains('z373ok')){clearTimeout(tm);tm=setTimeout(ready,80)}}).observe(sh,{childList:true,subtree:true})})();
+setInterval(()=>{const sz=$1('#sheet .sz');if(sz&&!sz.classList.contains('z373ok')&&!tm)ready()},1000);
+ready();
+})()}catch(e){console.error('fix 2.21.373',e)}
+/* ========== نهاية 2.21.373 ========== */
+
 /* نهاية fix.js */
 
 
