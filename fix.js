@@ -20430,6 +20430,28 @@ ready();
 })()}catch(e){console.error('fix 2.21.373',e)}
 /* ========== نهاية 2.21.373 ========== */
 
+/* ========== 2.21.374 · الرئيسية تظهر بعد ما تثبت ========== */
+try{XVER2='2.21.374';XVBUILD2='23/11/2026 - 07:10 م'}catch(e){}
+try{(function(){
+const H=document.documentElement;
+const css=document.createElement('style');css.id='z374css';css.textContent=`
+html.z374w body main#view{opacity:0!important}
+html body main#view{transition:opacity .12s ease}
+`;document.head.appendChild(css);
+let tm=0,mx=0,last='';
+function ready(){clearTimeout(tm);clearTimeout(mx);tm=0;H.classList.remove('z374w')}
+function arm(){H.classList.add('z374w');clearTimeout(tm);clearTimeout(mx);tm=setTimeout(ready,180);mx=setTimeout(ready,700)}
+function chk(){let v='';try{v=view}catch(e){}if(v==='home'&&last!=='home')arm();last=v}
+chk();
+try{const _rn=render;render=function(){chk();return _rn.apply(this,arguments)}}catch(e){}
+try{const _go=go;go=function(){const r=_go.apply(this,arguments);chk();return r}}catch(e){}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,300);
+  new MutationObserver(()=>{if(!H.classList.contains('z374w'))return;clearTimeout(tm);tm=setTimeout(ready,150)})
+    .observe(vw,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style','class']})})();
+setTimeout(()=>{if(H.classList.contains('z374w')&&!tm)ready()},1500);
+})()}catch(e){console.error('fix 2.21.374',e)}
+/* ========== نهاية 2.21.374 ========== */
+
 /* نهاية fix.js */
 
 
