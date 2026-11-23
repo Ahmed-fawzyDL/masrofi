@@ -19578,6 +19578,135 @@ function go(){const sh=document.getElementById('sheet');if(!sh)return;
 })()}catch(e){console.error('fix 2.21.358',e)}
 /* ========== نهاية 2.21.358 ========== */
 
+/* ========== 2.21.359 · "لسه ليك برّه" برقمها الصح ========== */
+try{XVER2='2.21.359';XVBUILD2='23/11/2026 - 03:20 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function owedV(){const AM=amap();let s=0;try{XLN().forEach(l=>{if(l&&!l.del)s+=Math.max(0,xLnRem(l))})}catch(e){}
+  S.txs.forEach(t=>{if(t&&!t.del&&!t.pend&&t.type==='exp'&&t.shr)s+=Math.max(0,shOf(t)-(AM[t.id]||0))});return r2(s)}
+const OW=['ليك عند الناس','لسه هترجعلك','لسه ليك برّه'];
+function fix(){let v='';try{v=view}catch(e){}if(v!=='exps')return;const h=$1('#view>.zxh3');if(!h)return;
+  $$('.zxh-g>div',h).forEach(d=>{const s=$1('small',d),b=$1('b',d);if(!s||!b)return;const t=(s.textContent||'').trim();
+    if(OW.includes(t)){if(t!=='لسه ليك برّه')s.textContent='لسه ليك برّه';const w=num(owedV());if(b.textContent!==w)b.textContent=w}})}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{fix()}catch(e){}}).observe(vw,{childList:true,subtree:true,characterData:true});fix()})();
+})()}catch(e){console.error('fix 2.21.359',e)}
+/* ========== نهاية 2.21.359 ========== */
+
+/* ========== 2.21.360 · شاشة "رجعولك" و"لسه ليك برّه" و"سداد سلف ومصروفات" ========== */
+try{XVER2='2.21.360';XVBUILD2='23/11/2026 - 03:40 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const N=v=>num(r2(v));
+const nmOf=t=>{try{return xTxNm(t)}catch(e){return (C(t.cat)||{}).name||'—'}};
+const PP=()=>{try{return XPP()}catch(e){return []}};
+const ppN=id=>{const p=PP().find(x=>x.id===id);return p?p.name:''};
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+const txOf=id=>S.txs.find(t=>t&&t.id===id);
+const LNS=()=>{try{return XLN().filter(l=>l&&!l.del)}catch(e){return []}};
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+const lnPaid=l=>r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0));
+const lnOf=t=>LNS().find(l=>l.tx===t.id);
+const lnWho=l=>{const p=l&&l.pp?PP().find(x=>x.id===l.pp):null;return (p&&p.name)||(l&&l.who)||''};
+const MK=()=>keyTx(ym(cur.y,cur.m)).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);
+const mName=()=>{const b=$1('#view #xdayb .mbar b');return b?(b.textContent||'').trim():''};
+const ini=s=>{const m=String(s||'').replace(/[^\p{L}\p{N}]/gu,'');return m?m.charAt(0).toUpperCase():'•'};
+const pers=t=>(t.shr||[]).map(x=>ppN(x.p)).filter(Boolean).join('، ');
+const CL={ln:['#fcd34d','rgba(252,211,77,.16)'],sh:['#a78bfa','rgba(139,92,246,.18)'],gn:['#5eead4','rgba(20,184,166,.16)'],rm:['#93c5fd','rgba(59,130,246,.16)']};
+
+function dBack(){const AM=amap(),ln=[],sh=[],gn=[];
+  MK().forEach(t=>{if(t.type==='exp'){
+      if(t.xlno){const l=lnOf(t),all=+t.amount||0,r=Math.min(all,l?lnPaid(l):0);
+        if(r>.009)ln.push({n:nmOf(t),sub:dmy(t.date)+' · '+(r>=all-.009?'رجعت كلها':'رجع '+N(r)+' من '+N(all)),a:r,pct:all?r/all:1,o:l?['l',l.id,t.id]:['t',t.id]})}
+      else if(t.shr){const s=shOf(t),c=Math.min(s,AM[t.id]||0);
+        if(c>.009)sh.push({n:nmOf(t),sub:dmy(t.date)+(pers(t)?' · '+pers(t):''),note:c<s-.009?'اتدفع '+N(c)+' من '+N(s):'',a:c,pct:s?c/s:1,o:['t',t.id]})}}
+    else if(t.type==='inc'&&t.rmb){const al=(t.rmb.L||[]).reduce((a,y)=>a+(+y.a||0),0),g=Math.max(0,(+t.amount||0)-al);
+      if(g>.009)gn.push({n:nmOf(t),sub:dmy(t.date)+(ppN(t.rmb.p)?' · '+ppN(t.rmb.p):''),a:g,o:['t',t.id]})}});
+  return{tt:'فلوس راجعالك',lab:'رجعلك '+(mName()||'الشهر ده')+' · مش محسوب عليك في الفعلي',
+    G:[{k:'ln',t:'سلف رجعت',c:'سلف',items:ln},{k:'sh',t:'مشاركين دفعوا نصيبهم',c:'مشاركين',items:sh},{k:'gn',t:'فلوس رجعت من غير ما تتربط بمصروف',c:'من غير ربط',items:gn}],
+    empty:'مفيش فلوس رجعتلك الشهر ده.'}}
+function dOwed(){const AM=amap(),ln=[],sh=[];
+  LNS().forEach(l=>{let r=0;try{r=Math.max(0,xLnRem(l))}catch(e){}if(!(r>.009))return;const t=txOf(l.tx),tot=+l.amt||(t?+t.amount||0:0)||r,pd=Math.max(0,r2(tot-r)),w=lnWho(l),nm=t?nmOf(t):'سلفة';
+    ln.push({n:nm+(w&&nm.indexOf(w)<0?' · '+w:''),sub:(t?dmy(t.date)+' · ':'')+'اتدفع '+N(pd)+' من '+N(tot),a:r,pct:tot?pd/tot:0,o:['l',l.id,t&&t.id]})});
+  S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='exp'||!t.shr)return;const s=shOf(t),c=Math.min(s,AM[t.id]||0),r=Math.max(0,s-(AM[t.id]||0));
+    if(r>.009)sh.push({n:nmOf(t),sub:dmy(t.date)+(pers(t)?' · '+pers(t):''),note:'اتدفع '+N(c)+' من '+N(s)+' · فاضل '+N(r),a:r,pct:s?c/s:0,o:['t',t.id]})});
+  return{tt:'لسه ليك برّه',lab:'فلوس دفعتها أو سلّفتها ولسه ما رجعتلكش · من كل الشهور، وللعلم بس',
+    G:[{k:'ln',t:'سلف لسه ما اتسددتش',c:'سلف',items:ln},{k:'sh',t:'نصيب مشاركين لسه ما اتدفعش',c:'مشاركين',items:sh}],empty:'مفيش فلوس ليك برّه.'}}
+function dCol(){const lp=[],rm=[];
+  MK().forEach(t=>{if(t.type!=='inc')return;
+    if(t.rmb){const ex=(t.rmb.L||[]).map(x=>{const e=txOf(x.t);return e?nmOf(e):''}).filter(Boolean);
+      rm.push({n:nmOf(t),sub:dmy(t.date)+(ppN(t.rmb.p)?' · '+ppN(t.rmb.p):''),note:ex.length?'مربوط بـ: '+ex.join('، '):'مش مربوط بمصروف',a:+t.amount||0,o:['t',t.id]})}
+    else if(t.xlnp)lp.push({n:nmOf(t),sub:dmy(t.date),a:+t.amount||0,o:['t',t.id]})});
+  return{tt:'سداد سلف ومصروفات',lab:'فلوس راجعالك مش دخل جديد · '+(mName()||'الشهر ده'),
+    G:[{k:'ln',t:'سداد سلف',c:'سلف',items:lp},{k:'rm',t:'سداد مقابل مصروف',c:'مقابل مصروف',items:rm}],empty:'مفيش حاجة الشهر ده.'}}
+
+var Z3={m:'back',O:[],ret:null};
+const sum=a=>r2(a.reduce((q,x)=>q+(+x.a||0),0));
+function html(){const D=Z3.m==='owed'?dOwed():Z3.m==='col'?dCol():dBack();Z3.O=[];
+  const G=D.G.filter(g=>g.items.length),tot=r2(G.reduce((a,g)=>a+sum(g.items),0));
+  let h=`<div class="z36tt">${esc(D.tt)}</div>`;
+  if(Z3.m!=='col')h+=`<div class="z36tb"><div class="${Z3.m==='back'?'on':''}" onclick="z360Tab('back')">رجعولك</div><div class="${Z3.m==='owed'?'on':''}" onclick="z360Tab('owed')">لسه ليك برّه</div></div>`;
+  h+=`<div class="z36h"><small>${esc(D.lab)}</small><div class="n"><span dir="ltr">${N(tot)}</span> <em>ج.م</em></div>`+
+    (G.length>1?`<div class="z36ch">${G.map(g=>`<div>${esc(g.c)}<b dir="ltr">${N(sum(g.items))}</b></div>`).join('')}</div>`:'')+`</div>`;
+  if(!G.length)return h+`<div class="z36e">${esc(D.empty)}</div>`;
+  h+=`<div class="z36hint">دوس على أي معاملة عشان تفتحها</div>`;
+  G.forEach(g=>{const c=CL[g.k]||CL.gn;g.items.sort((a,b)=>b.a-a.a);
+    h+=`<div class="z36s"><div class="z36sh"><span class="z36si" style="color:${c[0]};background:${c[1]}">${ini(g.c)}</span><span class="z36st">${esc(g.t)}</span><span class="z36cnt">${g.items.length}</span><span dir="ltr">${N(sum(g.items))}</span></div>`+
+      g.items.map(x=>{const i=Z3.O.push(x.o)-1,p=x.pct!=null?Math.max(0,Math.min(100,Math.round(x.pct*100))):null;
+        return `<div class="z36b" onclick="z360Go(${i})"><span class="z36i" style="color:${c[0]};background:${c[1]}">${esc(ini(x.n))}</span><div class="z36t"><b>${esc(x.n)}</b><small>${esc(x.sub||'')}</small>${x.note?`<em>${esc(x.note)}</em>`:''}${p!=null?`<div class="z36p"><i style="width:${p}%"></i></div>`:''}</div><div class="z36a${Z3.m==='col'?' in':''}" dir="ltr">${N(x.a)}</div><span class="z36c">‹</span></div>`}).join('')+`</div>`});
+  return h}
+function openS(){sheet('<div class="z360">'+html()+'</div><i class="zgh" style="display:none"></i>')}
+window.z360Open=function(m){Z3.m=m||'back';Z3.ret=null;try{openS()}catch(e){console.error('360 open',e)}};
+window.z360Tab=function(m){Z3.m=m;const r=$1('#sheet .z360');if(r)r.innerHTML=html()};
+window.z360Go=function(i){const o=Z3.O[i];if(!o)return;let v='';try{v=view}catch(e){}Z3.ret={m:Z3.m,v};
+  try{if(o[0]==='l'&&typeof xLnOpen==='function')xLnOpen(o[1]);else editTx(o[0]==='l'?(o[2]||o[1]):o[1])}catch(e){console.error('360 go',e);try{if(o[2])editTx(o[2])}catch(x){}}};
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{if(!Z3.ret)return;clearTimeout(w.t);w.t=setTimeout(()=>{const s=document.getElementById('sheet');if(!Z3.ret||!s||s.classList.contains('open'))return;
+    let v='';try{v=view}catch(e){}const r=Z3.ret;Z3.ret=null;if(v!==r.v)return;Z3.m=r.m;try{openS()}catch(e){}},350)}).observe(sh,{attributes:true,attributeFilter:['class']})})();
+window.addEventListener('click',e=>{const d=e.target&&e.target.closest&&e.target.closest('#view>.zxh3 .zxh-g>div');if(!d)return;
+  const l=(($1('small',d)||{}).textContent||'').trim();let v='';try{v=view}catch(x){}
+  const m=v==='exps'&&/رجعوا/.test(l)?'back':v==='exps'&&/برّه|عند الناس|هترجعلك/.test(l)?'owed':v==='col'&&/سداد/.test(l)?'col':null;
+  if(!m)return;e.stopPropagation();e.preventDefault();z360Open(m)},true);
+
+const Q='html body #sheet .z360';
+const css=document.createElement('style');css.id='z360css';css.textContent=`
+${Q}{font-family:Cairo,sans-serif;color:#e8edf5;padding:2px 0 18px;direction:rtl}
+${Q} .z36tt{font-size:17px;font-weight:800;margin:2px 4px 12px;color:#f1f5f9}
+${Q} .z36tb{display:flex;background:#151e31;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:3px;margin:0 0 12px}
+${Q} .z36tb>div{flex:1;text-align:center;padding:8px;border-radius:9px;font-size:13px;font-weight:700;color:#94a3b8;cursor:pointer}
+${Q} .z36tb>div.on{background:#0d9488;color:#fff}
+${Q} .z36h{background:linear-gradient(135deg,#0f766e,#3730a3);border-radius:22px;padding:14px 16px;color:#fff}
+${Q} .z36h small{display:block;font-size:12px;color:#ccfbf1;font-weight:600;line-height:1.6}
+${Q} .z36h .n{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.35;margin-top:2px}
+${Q} .z36h .n em{font-style:normal;font-size:14px;opacity:.8;font-weight:600}
+${Q} .z36ch{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;margin-top:8px}
+${Q} .z36ch>div{background:rgba(0,0,0,.2);border-radius:12px;padding:7px 10px;font-size:11.5px;color:#ccfbf1;min-width:0}
+${Q} .z36ch b{display:block;font-size:15px;font-weight:800;color:#fff;text-align:right}
+${Q} .z36hint{font-size:11.5px;color:#64748b;text-align:center;margin:10px 0 0}
+${Q} .z36e{text-align:center;color:#64748b;font-size:13px;padding:28px 0}
+${Q} .z36s{background:#121a2b;border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:12px;margin-top:12px}
+${Q} .z36sh{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:#f1f5f9}
+${Q} .z36si{width:32px;height:32px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px}
+${Q} .z36st{flex:1;min-width:0}
+${Q} .z36cnt{font-size:12px;background:rgba(255,255,255,.07);border-radius:8px;padding:1px 8px;color:#cbd5e1;font-weight:700}
+${Q} .z36b{display:flex;align-items:center;gap:12px;background:#18223a;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:11px 12px;margin-top:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+${Q} .z36b:active{background:#1e2a45}
+${Q} .z36i{width:38px;height:38px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+${Q} .z36t{flex:1;min-width:0}
+${Q} .z36t b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:700;color:#f1f5f9;line-height:1.35}
+${Q} .z36t small{display:block;font-size:12px;color:#94a3b8;margin-top:2px}
+${Q} .z36t em{display:block;font-style:normal;font-size:11.5px;color:#5eead4;margin-top:2px}
+${Q} .z36p{height:5px;border-radius:3px;background:rgba(255,255,255,.08);margin-top:7px;overflow:hidden}
+${Q} .z36p i{display:block;height:100%;background:#5eead4;border-radius:3px}
+${Q} .z36a{font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;color:#f8fafc}
+${Q} .z36a.in{color:#6ee7b7}
+${Q} .z36c{color:#64748b;font-size:18px;flex:none}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.360',e)}
+/* ========== نهاية 2.21.360 ========== */
+
 /* نهاية fix.js */
 
 
