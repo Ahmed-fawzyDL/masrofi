@@ -21082,6 +21082,65 @@ try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{arr
 })()}catch(e){console.error('fix 2.21.391',e)}
 /* ========== نهاية 2.21.391 ========== */
 
+/* ========== 2.21.392 · زرار "اربط" بيشتغل + الرسايل تبان ========== */
+try{XVER2='2.21.392';XVBUILD2='24/11/2026 - 02:15 م'}catch(e){}
+try{(function(){
+const ovOn=()=>{const o=document.getElementById('zlkov');return o&&o.classList.contains('on')?o:null};
+/* الرسايل جوه شاشة الربط */
+let mt=0;
+try{const _t=toast;toast=function(m){const o=ovOn();if(!o)return _t.apply(this,arguments);
+  let b=document.getElementById('zl-msg');if(!b){b=document.createElement('div');b.id='zl-msg';o.appendChild(b)}
+  b.textContent=m;b.classList.add('on');clearTimeout(mt);mt=setTimeout(()=>b.classList.remove('on'),2800)}}catch(e){console.error('392 toast',e)}
+/* "اربط" من غير اختيار: لو فيه نتيجة واحدة تتختار لوحدها */
+try{const _ok=window.zlkOk;if(_ok)window.zlkOk=function(){const o=ovOn();
+  if(o&&!o.querySelector('.zl-bx.on')){const L=[...o.querySelectorAll('.zl-bx')];if(L.length===1)L[0].click()}
+  return _ok.apply(this,arguments)}}catch(e){console.error('392 ok',e)}
+/* تنبيه: الربط بيتحفظ مع "سجّل" */
+let mv=0,mvt=0;const mvOk=()=>{const n=Date.now();if(n-mvt>1000){mvt=n;mv=0}return ++mv<=30};
+function note(){const zl=document.getElementById('zlk');let n=document.getElementById('z392n');
+  if(!zl||!F||!F.zlkDirty){if(n)n.remove();return}
+  if(!n){n=document.createElement('div');n.id='z392n';n.textContent='💾 الربط هيتحفظ لما تدوس «سجّل»'}
+  if(zl.nextElementSibling!==n&&mvOk())zl.after(n)}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{try{note()}catch(e){}}).observe(sh,{childList:true,subtree:true})})();
+const css=document.createElement('style');css.id='z392css';css.textContent=`
+html body #zlkov #zl-msg{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);z-index:2147483001;background:#111827;color:#fff;border:1px solid rgba(94,234,212,.35);padding:10px 16px;border-radius:14px;font-weight:700;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s;direction:rtl;max-width:86%;text-align:center}
+html body #zlkov #zl-msg.on{opacity:1}
+html body #sheet#sheet#sheet #z392n{margin:-6px 4px 12px;font-size:12.5px;font-weight:700;color:#fcd34d;text-align:center}
+`;document.head.appendChild(css);
+})()}catch(e){console.error('fix 2.21.392',e)}
+/* ========== نهاية 2.21.392 ========== */
+
+/* ========== 2.21.393 · ترتيب شاشة التعديل بإخفاء أقوى (important) ========== */
+try{XVER2='2.21.393';XVBUILD2='24/11/2026 - 02:20 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const show=(el,on)=>{if(!el)return;const st=el.style;
+  if(on){if(st.getPropertyValue('display')==='none')st.removeProperty('display')}
+  else if(st.getPropertyValue('display')!=='none'||st.getPropertyPriority('display')!=='important')st.setProperty('display','none','important')};
+let mv=0,mt=0;const mvOk=()=>{const n=Date.now();if(n-mt>1000){mt=n;mv=0}return ++mv<=30};
+function arrange(){const sz=$1('#sheet.open .sz');if(!sz||!$1('#f-amt',sz)||!F||(F.type!=='inc'&&F.type!=='exp'))return;
+  const linked=!!(F.zlk&&F.zlk.length),zgh=$1(':scope>.zgh',sz);
+  const n=document.getElementById('f-n'),nl=n&&(n.closest('label.xnote')||n.closest('label'));
+  let nc=document.getElementById('z391n');
+  if(zgh&&nl){if(!nc){nc=document.createElement('div');nc.id='z391n';nc.className='zc'}
+    if(zgh.nextElementSibling!==nc&&mvOk())zgh.after(nc);if(nl.parentElement!==nc&&mvOk())nc.appendChild(nl)}
+  const zl=document.getElementById('zlk');
+  if(zl&&nc&&nc.parentElement===sz&&nc.nextElementSibling!==zl&&mvOk())nc.after(zl);
+  const cat=F.cat&&C(F.cat),sub=!!(cat&&cat.par),xoa=document.getElementById('xoa');
+  const bl=[...sz.querySelectorAll('label.zch2')].find(l=>(l.textContent||'').slice(0,20).indexOf('البند')>-1);
+  show(bl,!linked&&(!xoa||sub));
+  const zgc=bl&&bl.closest('.zgc');if(zgc&&zgc.parentElement===sz)show(zgc,!!bl&&!linked&&(!xoa||sub)||[...zgc.children].some(c=>c!==bl&&c.style.getPropertyValue('display')!=='none'));
+  show(document.getElementById('xukn'),!linked);
+  show($1('.zc-acc',sz),!linked);
+  show([...sz.querySelectorAll('.zch.zsec2')].find(h=>/الحساب/.test(h.textContent||'')),!linked);
+  const mo=$1('details.zc-more',sz);if(mo)show(mo,[...mo.children].some(c=>c.tagName!=='SUMMARY'))}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{arrange()}catch(e){console.error('393',e)}return r}}catch(e){}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{try{arrange()}catch(e){}}).observe(sh,{childList:true,subtree:true})})();
+})()}catch(e){console.error('fix 2.21.393',e)}
+/* ========== نهاية 2.21.393 ========== */
+
 /* نهاية fix.js */
 
 
