@@ -20953,6 +20953,74 @@ try{render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.387',e)}
 /* ========== نهاية 2.21.387 ========== */
 
+/* ========== 2.21.388 · قايمة المصروفات بالفعلي مع الربط ========== */
+try{XVER2='2.21.388';XVBUILD2='24/11/2026 - 01:55 م'}catch(e){}
+try{(function(){
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+let AMc=null,AMt=0;const am=f=>{const n=Date.now();if(f||!AMc||n-AMt>500){AMc=amap();AMt=n}return AMc};
+
+/* وضع الفعلي: بنتابع الزرار نفسه */
+const ACT={};
+const dom=()=>[...document.querySelectorAll('#view .zxh-sg button.on,#zact .zt button.on')].some(b=>/الفعلي/.test(b.textContent||''));
+const isAct=()=>{let v='';try{v=view}catch(e){}return v in ACT?ACT[v]:dom()};
+try{const _t=window.zActT;if(_t)window.zActT=function(v){try{ACT[view]=!!v}catch(e){}return _t.apply(this,arguments)}}catch(e){}
+
+/* المبلغ الفعلي لكل مصروف = المبلغ − اللي رجع فعلاً */
+function fix(t,a,AM){if(!t||t.type!=='exp'||t.xlno)return a;const amt=+t.amount||0,s=shOf(t);let base=a;
+  if(t.shr&&s>0&&Math.abs(a+s-amt)<.01)base=amt;const got=AM[t.id]||0;if(!got&&base===a)return a;
+  return r2(Math.max(0,base-Math.min(amt,got)))}
+
+try{const _zb=window.zwBuild;if(_zb)window.zwBuild=function(){const B=_zb.apply(this,arguments);try{let v='';try{v=view}catch(e){}
+  if(v!=='exps'||!B||!B.S||!isAct())return B;const AM=am(1);
+  B.S.forEach(s=>{if(!s.items)return;s.items=s.items.map(x=>{if(!x||x.zinfo)return x;
+    if(x.g){const g=x.g.map(e=>({t:e.t,a:fix(e.t,+e.a||0,AM)})).filter(e=>e.a>.009);if(!g.length)return null;return Object.assign({},x,{g,a:r2(g.reduce((q,e)=>q+e.a,0))})}
+    if(x.t&&x.st==='paid'){const a=fix(x.t,+x.a||0,AM);if(a<=.009)return null;return a===x.a?x:Object.assign({},x,{a})}
+    return x}).filter(Boolean)});
+}catch(e){console.error('388 zb',e)}return B}}catch(e){console.error('388 wrap',e)}
+
+/* علامة "↩ رجعلك" تحت المصروف المربوط */
+try{const _zr=window.zwRow;if(_zr)window.zwRow=function(x){let h=_zr.apply(this,arguments);try{const t=x&&x.t;
+  if(t&&t.type==='exp'&&!t.shr&&!t.xlno){const g=am()[t.id]||0;if(g>.009)h=String(h).replace('</small>',' · ↩ رجعلك '+num(r2(g))+'</small>')}}catch(e){}return h}}catch(e){}
+
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.388',e)}
+/* ========== نهاية 2.21.388 ========== */
+
+/* ========== 2.21.389 · التحصيل المربوط بمصروف مش تحصيل ثابت ========== */
+try{XVER2='2.21.389';XVBUILD2='24/11/2026 - 02:10 م'}catch(e){}
+try{(function(){
+/* فك أي تحصيل مربوط بمصروف من الميعاد الثابت */
+function heal(){let ch=false;S.txs.forEach(t=>{if(!t||t.type!=='inc'||!t.rmb||!t.src||t.src.k!=='r')return;
+  const c=C(t.src.id);if(c&&c.st&&c.st[t.src.p]&&c.st[t.src.p].txId===t.id)delete c.st[t.src.p];
+  const xl=S.settings&&S.settings.xlink;if(xl)Object.keys(xl).forEach(k=>{if(xl[k]===t.id)delete xl[k]});
+  delete t.src;delete t.xinc;ch=true});return ch}
+try{if(heal())save()}catch(e){console.error('389 heal',e)}
+try{const _rn=render;render=function(){try{if(heal())save()}catch(e){}return _rn.apply(this,arguments)}}catch(e){}
+
+/* الربط التلقائي بالميعاد (199) ما يلمسش التحصيل المربوط بمصروف */
+try{const _sv=save;save=function(){try{if(typeof XKN!=='undefined'&&XKN){
+  const fm=!!document.getElementById('f-amt')&&F&&F.type==='inc'&&((F.zlk&&F.zlk.length)||(F.zrm&&F.zrm.on));
+  S.txs.forEach(t=>{if(!t||t.type!=='inc'||XKN.has(t.id))return;if(t.rmb||fm)XKN.add(t.id)})}}catch(e){}
+  return _sv.apply(this,arguments)}}catch(e){console.error('389 save',e)}
+
+/* تحصيل مربوط من غير بند: يتحط على "استرداد مصروفات" */
+function rbCat(){const NM='استرداد مصروفات';let c=(S.cats||[]).find(x=>x&&x.kind==='inc'&&!x.del&&x.name===NM);
+  if(!c&&typeof ensureCat==='function')c=ensureCat(NM,'inc');if(c){c.active=true;return c.id}return ''}
+try{const _st=saveTx;saveTx=async function(){try{
+  if(F&&F.type==='inc'&&F.zlk&&F.zlk.length){const sel=document.getElementById('f-cat'),cur=sel?sel.value:F.cat;
+    if(!cur||cur==='__new'&&!(F.newCat||'').trim()){const id=rbCat();if(id){F.cat=id;
+      if(sel){if(![...sel.options].some(o=>o.value===id)){const op=document.createElement('option');op.value=id;op.textContent='استرداد مصروفات';sel.appendChild(op)}sel.value=id}}}}
+}catch(e){console.error('389 cat',e)}return _st.apply(this,arguments)}}catch(e){}
+
+/* فورم التعديل: من غير حاجات التحصيل الثابت للتحصيل المربوط */
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{
+  const o=F&&F.id&&S.txs.find(t=>t&&t.id===F.id);
+  if(F&&F.type==='inc'&&((F.zlk&&F.zlk.length)||(o&&o.rmb))){delete F.src;['xfx-b','xdue','xinc'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove()})}
+}catch(e){}return r}}catch(e){}
+})()}catch(e){console.error('fix 2.21.389',e)}
+/* ========== نهاية 2.21.389 ========== */
+
 /* نهاية fix.js */
 
 
