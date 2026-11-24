@@ -21513,6 +21513,37 @@ try{if(view==='settings')render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.399',e)}
 /* ========== نهاية 2.21.399 ========== */
 
+/* ========== 2.21.400 · الإعدادات: الشكل الجديد بيتبني من الشاشة نفسها ========== */
+try{XVER2='2.21.400';XVBUILD2='24/11/2026 - 04:35 م'}catch(e){}
+try{(function(){
+const COL=[['rgba(139,92,246,.18)','#c4b5fd'],['rgba(59,130,246,.16)','#93c5fd'],['rgba(20,184,166,.16)','#5eead4'],['rgba(249,115,22,.16)','#fdba74'],['rgba(245,158,11,.16)','#fcd34d'],['rgba(236,72,153,.16)','#f9a8d4'],['rgba(52,211,153,.14)','#6ee7b7'],['rgba(239,68,68,.16)','#fca5a5']];
+const GR=[['الشكل',/الثيم|الخط|الشاشة الرئيسية|أزرار|المسميات/],['التسجيل والبيانات',/التسجيل|الموقوف|الريسيت|النسخ|Drive|البنود/],['الإشعارات والأمان',/الإشعارات|الأمان|الخصوصية/]];
+function build(){let v='';try{v=view}catch(e){}if(v!=='settings')return;const vw=document.getElementById('view');if(!vw)return;
+  const ex=vw.querySelector('.zns');
+  if(ex){const sb=document.getElementById('xsh-btn'),sl=ex.querySelector('#znsShare');if(sb&&sl&&sb.parentElement!==sl){sl.appendChild(sb);sb.classList.add('zns-shb')}return}
+  let st='';try{st=stab}catch(e){}if(st)return;
+  const grid=vw.querySelector('.rgrid');if(!grid)return;const B=[...grid.querySelectorAll('.rbtn')];if(!B.length)return;
+  const it=B.map((b,i)=>{const sp=b.querySelector('span'),ic=sp?sp.textContent.trim():'',l=(b.textContent||'').replace(ic,'').replace(/\s+/g,' ').trim();return{i,ic,l}});
+  const G=GR.map(([t])=>({t,L:[]})),other={t:'عن البرنامج',L:[]};
+  it.forEach(x=>{const k=GR.findIndex(([,rx])=>rx.test(x.l));(k>=0?G[k]:other).L.push(x)});G.push(other);
+  let ci=0;const row=x=>{const c=COL[ci++%COL.length];return `<button type="button" class="zns-r" onclick="zNsGo(${x.i})"><span class="ic" style="background:${c[0]};color:${c[1]}">${esc(x.ic)}</span><span class="t">${esc(x.l)}</span>${/الشاشة الرئيسية/.test(x.l)?'<small>الكروت والتنبيهات</small>':''}<i class="ch">‹</i></button>`};
+  const nm=((S.settings.znh||{}).nm)||'أحمد',ver=typeof XVER2!=='undefined'?XVER2:'';
+  const w=document.createElement('div');w.className='zns';
+  w.innerHTML=`<div class="zns-hd"><button type="button" class="zns-bk" onclick="go('more')">→</button><b>الإعدادات</b></div>
+  <div class="zns-pr"><span class="av">${esc(nm.charAt(0))}</span><div class="tx"><b>${esc(nm)}</b><small>Centric · الإصدار ${esc(ver)}</small></div><span id="znsShare"></span></div>
+  ${G.filter(g=>g.L.length).map(g=>`<div class="zns-sec">${g.t}</div><div class="zns-cd">${g.L.map(row).join('')}</div>`).join('')}`;
+  const hid=document.createElement('div');hid.id='znsHid';hid.style.setProperty('display','none','important');
+  const ph=vw.querySelector(':scope>.phead');vw.insertBefore(w,ph||grid);
+  if(ph)hid.appendChild(ph);hid.appendChild(grid);w.appendChild(hid);
+  const sb=document.getElementById('xsh-btn');if(sb){w.querySelector('#znsShare').appendChild(sb);sb.classList.add('zns-shb')}}
+window.zNsGo=function(i){const b=document.querySelectorAll('#znsHid .rbtn')[i];if(b)b.click()};
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{build()}catch(e){console.error('400',e)}return r}}catch(e){}
+(function w(){const vw=document.getElementById('view');if(!vw)return setTimeout(w,400);
+  new MutationObserver(()=>{try{build()}catch(e){}}).observe(vw,{childList:true})})();
+try{build()}catch(e){}
+})()}catch(e){console.error('fix 2.21.400',e)}
+/* ========== نهاية 2.21.400 ========== */
+
 /* نهاية fix.js */
 
 
