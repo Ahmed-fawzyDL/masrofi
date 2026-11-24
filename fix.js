@@ -21430,6 +21430,89 @@ try{if(view==='home')render()}catch(e){}
 })()}catch(e){console.error('fix 2.21.398',e)}
 /* ========== نهاية 2.21.398 ========== */
 
+/* ========== 2.21.399 · الإعدادات بالتصميم الجديد ========== */
+try{XVER2='2.21.399';XVBUILD2='24/11/2026 - 04:40 م'}catch(e){}
+try{(function(){
+const COL=[['rgba(139,92,246,.18)','#c4b5fd'],['rgba(59,130,246,.16)','#93c5fd'],['rgba(20,184,166,.16)','#5eead4'],['rgba(249,115,22,.16)','#fdba74'],['rgba(245,158,11,.16)','#fcd34d'],['rgba(236,72,153,.16)','#f9a8d4'],['rgba(52,211,153,.14)','#6ee7b7'],['rgba(239,68,68,.16)','#fca5a5']];
+const GR=[['الشكل',/الثيم|الخط|الشاشة الرئيسية|أزرار|المسميات/],['التسجيل والبيانات',/التسجيل|الموقوف|الريسيت|النسخ|Drive|البنود/],['الإشعارات والأمان',/الإشعارات|الأمان|الخصوصية/]];
+function build(h){const B=[],re=/<button[^>]*class="rbtn"[^>]*onclick="([^"]*)"[^>]*>\s*<span>([\s\S]*?)<\/span>([\s\S]*?)<\/button>/g;let m;
+  while((m=re.exec(h)))B.push({js:m[1],ic:m[2],l:m[3].replace(/<[^>]*>/g,'').trim()});
+  if(!B.length)return null;
+  const sh=(h.match(/<button[^>]*id="xsh-btn"[\s\S]*?<\/button>/)||[])[0]||'';
+  const G=GR.map(([t])=>({t,L:[]})),other={t:'عن البرنامج',L:[]};
+  B.forEach(b=>{const i=GR.findIndex(([,rx])=>rx.test(b.l));(i>=0?G[i]:other).L.push(b)});G.push(other);
+  let ci=0;const row=b=>{const c=COL[ci++%COL.length];return `<button type="button" class="zns-r" onclick="${b.js}"><span class="ic" style="background:${c[0]};color:${c[1]}">${b.ic}</span><span class="t">${b.l}</span>${/الشاشة الرئيسية/.test(b.l)?'<small>الكروت والتنبيهات</small>':''}<i class="ch">‹</i></button>`};
+  const nm=((S.settings.znh||{}).nm)||'أحمد',ver=typeof XVER2!=='undefined'?XVER2:'';
+  return `<div class="zns"><div class="zns-hd"><button type="button" class="zns-bk" onclick="go('more')">→</button><b>الإعدادات</b></div>
+  <div class="zns-pr"><span class="av">${esc(nm.charAt(0))}</span><div class="tx"><b>${esc(nm)}</b><small>Centric · الإصدار ${esc(ver)}</small></div><span id="znsShare">${sh}</span></div>
+  ${G.filter(g=>g.L.length).map(g=>`<div class="zns-sec">${g.t}</div><div class="zns-cd">${g.L.map(row).join('')}</div>`).join('')}</div>`}
+try{const _vs=vSettings;vSettings=function(){const h=_vs.apply(this,arguments);try{if(!stab&&typeof h==='string'){const n=build(h);if(n)return n}}catch(e){console.error('399 set',e)}return h}}catch(e){console.error('399 wrap',e)}
+function post(){let v0='';try{v0=view}catch(e){}if(v0!=='settings')return;const v=document.getElementById('view');if(!v)return;
+  const sl=document.getElementById('znsShare'),sb=document.getElementById('xsh-btn');if(sl&&sb&&sb.parentElement!==sl)sl.appendChild(sb);if(sb)sb.classList.add('zns-shb');
+  if(stab==='home'){const zs=v.querySelector('.znh-set'),n=zs&&zs.nextElementSibling;if(n&&n.classList.contains('list')&&n.style.getPropertyValue('display')!=='none')n.style.setProperty('display','none','important')}}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{post()}catch(e){console.error('399 post',e)}return r}}catch(e){}
+
+const S='html body.znhs main#view#view';
+const css=document.createElement('style');css.id='z399css';css.textContent=`
+${S} .zns{direction:rtl;color:#f1f5f9}
+${S} .zns-hd{display:flex;align-items:center;gap:10px;margin:2px 2px 14px}
+${S} .zns-hd b{font-size:19px;font-weight:800}
+${S} .zns-bk,${S} .phead>button.mini:first-child{width:40px!important;height:40px!important;min-height:40px!important;border-radius:13px!important;background:#121a2b!important;border:1px solid rgba(255,255,255,.06)!important;color:#cbd5e1!important;font-size:16px!important;padding:0!important;display:flex!important;align-items:center;justify-content:center;box-shadow:none!important;flex:none}
+${S} .zns-pr{display:flex;align-items:center;gap:12px;border-radius:22px;padding:14px;background:linear-gradient(135deg,#0f766e,#3730a3);margin-bottom:16px;box-shadow:0 12px 26px -14px rgba(55,48,163,.7)}
+${S} .zns-pr .av{width:48px;height:48px;flex:none;border-radius:16px;background:rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff}
+${S} .zns-pr .tx{flex:1;min-width:0}
+${S} .zns-pr .tx b{display:block;font-size:16px;font-weight:700;color:#fff}
+${S} .zns-pr .tx small{display:block;font-size:11.5px;color:#ccfbf1}
+${S} .zns-shb{display:inline-flex!important;width:auto!important;min-height:0!important;margin:0!important;padding:6px 12px!important;border-radius:999px!important;background:rgba(0,0,0,.22)!important;border:0!important;color:#fff!important;font-size:12px!important;font-weight:600!important;box-shadow:none!important;white-space:nowrap}
+${S} .zns-sec{font-size:12px;color:#64748b;margin:0 6px 6px}
+${S} .zns-cd{background:#151e31;border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:0 12px;margin-bottom:14px}
+${S} .zns-r{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;border:0;border-bottom:1px solid rgba(255,255,255,.05);background:transparent;color:#e6ebf5;font:inherit;font-size:14.5px;font-weight:600;text-align:right;cursor:pointer;padding:0;box-shadow:none;border-radius:0}
+${S} .zns-r:last-child{border-bottom:0}
+${S} .zns-r .ic{width:34px;height:34px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px}
+${S} .zns-r .t{flex:1;min-width:0}
+${S} .zns-r small{font-size:12px;color:#64748b;font-weight:500}
+${S} .zns-r .ch{font-style:normal;color:#475569;font-size:18px}
+${S}>.phead{display:flex!important;align-items:center!important;gap:10px!important;margin:2px 2px 14px!important;background:none!important;border:0!important;padding:0!important}
+${S}>.phead h3{font-size:18px!important;font-weight:800!important;margin:0!important;color:#f1f5f9!important}
+${S} .list{background:transparent!important;border:0!important;padding:0!important;margin:0!important;box-shadow:none!important}
+${S}>details.grp,${S}>.box,${S}>.list{background:#151e31!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:18px!important;padding:0 12px!important;margin:0 0 12px!important;box-shadow:none!important;overflow:hidden}
+${S}>.box{padding:12px!important}
+${S}>details.grp>summary{display:flex!important;align-items:center!important;min-height:52px!important;list-style:none!important;font-size:14.5px!important;font-weight:700!important;color:#e6ebf5!important;background:none!important;border:0!important;margin:0!important;padding:0!important;cursor:pointer;box-shadow:none!important}
+${S}>details.grp>summary::-webkit-details-marker{display:none}
+${S}>details.grp>summary::after{content:'‹';margin-inline-start:auto;color:#475569;font-size:18px;transition:transform .2s}
+${S}>details.grp[open]>summary::after{transform:rotate(-90deg)}
+${S}>details.grp[open]>summary{border-bottom:1px solid rgba(255,255,255,.05)!important}
+${S}>details.grp>div{padding:10px 0 12px!important}
+${S} details .box{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important;margin:0!important}
+${S} label{display:block;font-size:12.5px!important;color:#94a3b8!important;margin:0 0 10px!important}
+${S} label input:not([type=checkbox]):not([type=radio]),${S} label select,${S} label .xsel{display:flex;width:100%!important;margin-top:5px!important;background:#0f1729!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:12px!important;min-height:44px!important;color:#e6ebf5!important;font:inherit!important;font-size:14px!important;padding:8px 12px!important;box-shadow:none!important}
+${S} .btn{display:block;width:100%;min-height:46px!important;border-radius:14px!important;font-size:14px!important;font-weight:700!important;margin:0 0 8px!important;border:0!important;background:linear-gradient(135deg,#14b8a6,#4f46e5)!important;color:#fff!important;box-shadow:none!important}
+${S} .btn.ghost{background:#18223a!important;border:1px solid rgba(255,255,255,.07)!important;color:#e6ebf5!important}
+${S} .btn.danger,${S} .btn.ghost.danger{background:rgba(239,68,68,.1)!important;border:1px solid rgba(239,68,68,.3)!important;color:#f87171!important}
+${S} .ncard{display:flex!important;align-items:center;gap:10px;background:#18223a!important;border:1px solid rgba(255,255,255,.07)!important;border-radius:14px!important;padding:10px 12px!important;margin:0 0 10px!important;box-shadow:none!important}
+${S} .ncard.ok{border-color:rgba(52,211,153,.3)!important;background:rgba(52,211,153,.07)!important}
+${S} .ncard b{color:#f1f5f9!important;font-size:14px!important}
+${S} .ncard small{color:#94a3b8!important;font-size:12px!important}
+${S} .list .row{display:flex!important;align-items:center!important;gap:10px!important;min-height:50px!important;background:transparent!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.05)!important;border-radius:0!important;margin:0!important;padding:6px 0!important;box-shadow:none!important}
+${S} .list .row:last-child{border-bottom:0!important}
+${S} .row .grow b{font-size:14.5px!important;color:#e6ebf5!important;font-weight:600!important}
+${S} .row .grow small{color:#94a3b8!important;font-size:12px!important}
+${S} .row .ic{width:34px!important;height:34px!important;border-radius:11px!important;background:rgba(20,184,166,.14)!important;display:flex!important;align-items:center;justify-content:center}
+${S} .mini{border-radius:10px!important;background:#18223a!important;border:1px solid rgba(255,255,255,.08)!important;color:#5eead4!important;min-height:32px!important;font-size:12.5px!important;box-shadow:none!important}
+${S} .mini.danger{color:#f87171!important;border-color:rgba(239,68,68,.3)!important}
+${S} .sseg,${S} .seg{display:flex!important;background:#0f1729!important;border-radius:11px!important;padding:3px!important;gap:2px!important;border:0!important;box-shadow:none!important}
+${S} .sseg button,${S} .seg button{border:0!important;background:transparent!important;color:#94a3b8!important;font-size:12px!important;padding:6px 9px!important;border-radius:8px!important;min-height:0!important;box-shadow:none!important}
+${S} .sseg button.on,${S} .seg button.on{background:#0d9488!important;color:#fff!important}
+${S}>h3{display:flex!important;align-items:center;justify-content:space-between;font-size:12px!important;color:#64748b!important;font-weight:600!important;margin:6px 6px!important}
+${S} .muted{color:#64748b!important;font-size:12px!important;line-height:1.7}
+${S} details.gen{background:#18223a!important;border-radius:14px!important;padding:8px 12px!important;margin:6px 0!important;border:0!important}
+${S} .kv{display:flex!important;justify-content:space-between;align-items:center;min-height:42px;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;color:#e6ebf5;background:transparent!important}
+${S} .brand .pill{background:#121a2b!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:16px!important}
+`;document.head.appendChild(css);
+try{if(view==='settings')render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.399',e)}
+/* ========== نهاية 2.21.399 ========== */
+
 /* نهاية fix.js */
 
 
