@@ -20688,6 +20688,51 @@ document.addEventListener('click',e=>{if(!e.target||!e.target.closest||!e.target
 })()}catch(e){console.error('fix 2.21.385',e)}
 /* ========== نهاية 2.21.385 ========== */
 
+/* ========== 2.21.386 · كشف تحصيل 320 ========== */
+XVER2='2.21.386';XVBUILD2='24/11/2026 - 01:15 م';
+(function(){
+  if(localStorage.getItem('z386done'))return;
+  function run(){
+    try{
+      if(typeof S==='undefined'||!S||!S.txs){return setTimeout(run,800);}
+      var out={incs:[],links:[],ezzat:{},act:null};
+      out.incs=S.txs.filter(function(t){return t&&!t.del&&t.type==='inc'&&Math.abs(+t.amount-320)<0.01;});
+      out.incs.forEach(function(t){
+        var L=(t.rmb&&t.rmb.L)||[];
+        L.forEach(function(r){var e=S.txs.find(function(x){return x&&x.id===r.t;});if(e)out.links.push(e);});
+      });
+      Object.keys(S).forEach(function(k){
+        var v=S[k];if(!Array.isArray(v))return;
+        var m=v.filter(function(x){try{return /ezzat/i.test(JSON.stringify(x));}catch(e){return false;}});
+        if(m.length)out.ezzat[k]=m.slice(-6);
+      });
+      try{
+        if(typeof zAct352==='function'){var a=zAct352();out.act={};
+          if(a&&typeof a==='object'){Object.keys(a).forEach(function(k){if(typeof a[k]!=='object')out.act[k]=a[k];});}else out.act=a;}
+      }catch(e){out.act='ERR '+e.message;}
+      var s=JSON.stringify(out,function(k,v){if(k==='files')return Array.isArray(v)?('['+v.length+' files]'):v;return v;},1);
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.85);display:flex;flex-direction:column;gap:10px;padding:20px;direction:rtl;font-family:Cairo,sans-serif';
+      d.innerHTML='<div style="color:#f1f5f9;font-weight:700">كشف 386 · دوس نسخ وابعته في الشات</div>'+
+        '<textarea readonly style="flex:1;background:#121a2b;color:#cbd5e1;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;font-size:11px;direction:ltr"></textarea>'+
+        '<div style="display:flex;gap:10px"><button data-a="c" style="flex:1;padding:12px;border:0;border-radius:14px;background:linear-gradient(135deg,#14b8a6,#4f46e5);color:#fff;font-weight:700">نسخ</button>'+
+        '<button data-a="x" style="flex:1;padding:12px;border:1px solid rgba(255,255,255,.15);border-radius:14px;background:#18223a;color:#f1f5f9">قفل</button></div>';
+      var ta=d.querySelector('textarea');ta.value=s;
+      d.addEventListener('click',function(ev){
+        var b=ev.target.closest('button');if(!b)return;
+        if(b.dataset.a==='c'){
+          var ok=function(){b.textContent='اتنسخ ✓';};
+          if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(ok).catch(function(){ta.select();document.execCommand('copy');ok();});}
+          else{ta.select();document.execCommand('copy');ok();}
+        }else{localStorage.setItem('z386done','1');d.remove();}
+      });
+      document.body.appendChild(d);
+    }catch(e){alert('386: '+e.message);}
+  }
+  setTimeout(run,1500);
+})();
+/* ========== نهاية 2.21.386 ========== */
+
 /* نهاية fix.js */
 
 
