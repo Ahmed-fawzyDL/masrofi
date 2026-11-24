@@ -20733,6 +20733,226 @@ XVER2='2.21.386';XVBUILD2='24/11/2026 - 01:15 م';
 })();
 /* ========== نهاية 2.21.386 ========== */
 
+/* ========== 2.21.387 · 🔗 ربط مصروف بتحصيل من الناحيتين ========== */
+try{XVER2='2.21.387';XVBUILD2='24/11/2026 - 01:45 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const N=v=>num(r2(v));
+const cln=s=>String(s||'').replace(/[\u200b\u200c]/g,'').replace(/^[\p{Extended_Pictographic}\u200d\ufe0f\s]+/u,'').trim();
+const nm=t=>{let n='';try{n=xTxNm(t)}catch(e){n=(C(t.cat)||{}).name||''}return cln(n)||'—'};
+const isKid=t=>!!(t&&(t.splOf||t.feeOf||t.tipOf||t.ztipOf||t.payFeeOf));
+const tx=id=>S.txs.find(t=>t&&t.id===id&&!t.del);
+const ok=t=>t&&!t.del&&!t.pend&&!t.xpre&&!isKid(t);
+const sumL=L=>r2((L||[]).reduce((a,x)=>a+(+x.a||0),0));
+const fAmt=()=>{const e=document.getElementById('f-amt');let v=0;try{v=parseNum(e?e.value:F.amount)}catch(x){}return r2(v||0)};
+const acc=t=>((M(t.method)||{}).name||'');
+const shP=id=>{const e=tx(id);return e&&e.shr&&e.shr.length===1?e.shr[0].p:''};
+const COL=[['#2e1065','#a78bfa'],['#134e4a','#5eead4'],['#172554','#93c5fd'],['#431407','#fdba74'],['#500724','#f9a8d4'],['#422006','#fcd34d']];
+const ic=n=>{const ch=(String(n||'?')[0]||'?').toUpperCase(),c=COL[(ch.charCodeAt(0)||0)%COL.length];return `<i class="zl-ic" style="background:${c[0]};color:${c[1]}">${esc(ch)}</i>`};
+
+/* ---------- كام اتربط من كل تحصيل، وكام رجع لكل مصروف ---------- */
+function maps(skipInc,skipExp){const I={},E={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb||t.id===skipInc)return;
+  (t.rmb.L||[]).forEach(x=>{if(x.t===skipExp)return;I[t.id]=(I[t.id]||0)+(+x.a||0);E[x.t]=(E[x.t]||0)+(+x.a||0)})});return{I,E}}
+
+/* ---------- الشاشة: اختيار التحصيل أو المصروف ---------- */
+var PK=null;
+function cands(){const ex=PK.mode==='exp',mp=ex?maps(null,F.id):maps(F.id,null),out=[];
+  S.txs.forEach(t=>{if(!ok(t)||t.id===F.id)return;
+    if(ex){if(t.type!=='inc'||t.xlnp||t.rf)return}else{if(t.type!=='exp'||t.xlno)return}
+    const used=r2(ex?(mp.I[t.id]||0):(mp.E[t.id]||0)),rem=r2((+t.amount||0)-used);
+    if(rem<=.009&&!F.zlk.some(x=>x.id===t.id))return;out.push({t,rem,used})});
+  return out.sort((a,b)=>(b.t.date||'').localeCompare(a.t.date||''))}
+function pkOpen(){try{grab()}catch(e){}if(!F)return;PK={mode:F.type,sel:null,a:'',f:'m',q:''};PK.C=cands();
+  const ym0=(F.date||today()).slice(0,7);if(!PK.C.some(o=>(o.t.date||'').slice(0,7)===ym0))PK.f='a';
+  let ov=document.getElementById('zlkov');if(!ov){ov=document.createElement('div');ov.id='zlkov';document.body.appendChild(ov)}
+  const E=PK.mode==='exp',me=fAmt(),ttl=(F.note||'').trim()||((C(F.cat)||{}).name)||(E?'المصروف':'التحصيل');
+  ov.innerHTML=`<div class="zl-pg${E?'':' zl-e'}"><div class="zl-top"><b>🔗 ${E?'ربط بتحصيل':'ربط بمصروف'}</b><button type="button" class="zl-bk" onclick="zlkClose()">→ رجوع</button></div>
+  <div class="zl-cd"><small>${E?'المصروف':'التحصيل'}</small><div><span>${esc(cln(ttl))}</span><b style="color:${E?'#fca5a5':'#6ee7b7'}">${N(me)}</b></div></div>
+  <div class="zl-sr"><span>🔍</span><input id="zl-q" placeholder="دوّر بالاسم أو المبلغ" oninput="zlkQ(this.value)"></div>
+  <div class="zl-ch">${[['m','الشهر ده'],['p','الشهر اللي فات'],['a','الكل']].map(([k,l])=>`<button type="button" data-f="${k}" class="${PK.f===k?'on':''}" onclick="zlkF('${k}')">${l}</button>`).join('')}</div>
+  <div id="zl-list"></div>
+  <div class="zl-foot"><div class="zl-sum"><div id="zl-ain"></div><div id="zl-rows"></div></div><button type="button" class="zl-go" onclick="zlkOk()">اربط</button></div></div>`;
+  ov.classList.add('on');pkList();pkSum()}
+function pkList(){const box=document.getElementById('zl-list');if(!box||!PK)return;
+  const ym0=(F.date||today()).slice(0,7),d=new Date(ym0+'-01T00:00:00');d.setMonth(d.getMonth()-1);
+  const ymP=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),q=(PK.q||'').trim().toLowerCase();
+  const L=PK.C.filter(o=>{const m=(o.t.date||'').slice(0,7);if(PK.f==='m'&&m!==ym0)return false;if(PK.f==='p'&&m!==ymP)return false;
+    if(!q)return true;return (nm(o.t)+' '+(o.t.note||'')+' '+acc(o.t)+' '+(o.t.amount||'')).toLowerCase().indexOf(q)>-1});
+  box.innerHTML=L.length?L.map(o=>{const t=o.t,n=nm(t),on=PK.sel===t.id,ln=F.zlk.some(x=>x.id===t.id);
+    const sub=[dmy(t.date),acc(t),o.used>.009?'فاضل منه '+N(o.rem):'',ln?'مربوط ✓':''].filter(Boolean).join(' · ');
+    return `<div class="zl-bx${on?' on':''}" onclick="zlkSel('${t.id}')">${ic(n)}<span><b>${esc(n)}</b><small>${esc(sub)}</small></span><em>${N(t.amount)}</em></div>`}).join('')
+    :`<div class="zl-mt">${q?'مفيش نتايج':'مفيش '+(PK.mode==='exp'?'تحصيلات':'مصروفات')+' هنا. جرّب «الكل».'}</div>`}
+function pkRows(){const el=document.getElementById('zl-rows');if(!el||!PK)return;const E=PK.mode==='exp',me=fAmt();
+  const other=sumL(F.zlk.filter(x=>x.id!==PK.sel)),a=PK.sel?r2(parseNum(PK.a)||0):0,tot=r2(other+a),left=r2(me-tot);
+  el.innerHTML=`<div class="zl-rw"><span>${E?'المصروف':'التحصيل'}</span><b>${N(me)}</b></div>
+  <div class="zl-rw"><span>${E?'رجعلك':'مربوط بمصروفات'}</span><b style="color:#5eead4">↩ ${N(tot)}</b></div>
+  <div class="zl-rw zl-t"><span>${E?'نصيبك الفعلي':'الباقي تحصيل فعلي'}</span><b${left<-.009?' style="color:#f87171"':''}>${left<-.009?'أكتر من المبلغ بـ '+N(-left):N(left)}</b></div>`}
+function pkSum(){const ai=document.getElementById('zl-ain');if(ai)ai.innerHTML=PK&&PK.sel?`<div class="zl-rw zl-in"><span>المبلغ اللي هيتربط</span><input id="zl-a" inputmode="decimal" dir="ltr" value="${esc(PK.a)}" oninput="zlkA(this.value)"></div>`:'';pkRows()}
+window.zlkSel=function(id){if(!PK)return;const o=PK.C.find(x=>x.t.id===id);if(!o)return;PK.sel=id;
+  const room=r2(Math.max(0,fAmt()-sumL(F.zlk.filter(x=>x.id!==id))));PK.a=amtStr(r2(room>.009?Math.min(o.rem,room):o.rem));pkList();pkSum()};
+window.zlkA=function(v){if(PK){PK.a=v;pkRows()}};
+window.zlkQ=function(v){if(PK){PK.q=v;pkList()}};
+window.zlkF=function(k){if(!PK)return;PK.f=k;document.querySelectorAll('#zlkov .zl-ch button').forEach(b=>b.classList.toggle('on',b.dataset.f===k));pkList()};
+window.zlkClose=function(){const ov=document.getElementById('zlkov');if(ov){ov.classList.remove('on');ov.innerHTML=''}PK=null};
+window.zlkOk=function(){if(!PK)return;if(!PK.sel)return toast(PK.mode==='exp'?'اختار التحصيل':'اختار المصروف');
+  const a=r2(parseNum(PK.a)||0);if(!(a>0))return toast('اكتب المبلغ');
+  const o=PK.C.find(x=>x.t.id===PK.sel);if(o&&a>o.rem+.009)return toast('أكتر من الفاضل ('+N(o.rem)+')');
+  const id=PK.sel;F.zlk=F.zlk.filter(x=>x.id!==id);F.zlk.push({id,a});F.zlkDirty=1;zlkClose();draw()};
+
+/* ---------- السطر جوه فورم المعاملة ---------- */
+function blk(){const E=F.type==='exp',me=fAmt(),s=sumL(F.zlk),left=r2(me-s);
+  const it=F.zlk.map((x,i)=>{const t=tx(x.id);return `<div class="zl-li">${t?ic(nm(t)):''}<span><b>${esc(t?nm(t):'معاملة اتمسحت')}</b><small>${t?esc(dmy(t.date)+' · '+N(t.amount)):''}</small></span><em>↩ ${N(x.a)}</em><button type="button" onclick="zlkDel(${i})">✕</button></div>`}).join('');
+  return `<div class="zl-hd" onclick="zlkOpen()"><span>🔗 ${E?'ربط بتحصيل':'ربط بمصروف'}</span><small>${F.zlk.length?'➕ ضيف كمان':(E?'لو حد رجعلك فلوس من المصروف ده':'لو الفلوس دي راجعالك من مصروف')}</small><i>‹</i></div>`+
+    (F.zlk.length?it+`<div class="zl-fs">${E?`المصروف ${N(me)} · رجعلك ${N(s)} · <b>نصيبك ${N(Math.max(0,left))}</b>`:`التحصيل ${N(me)} · مربوط ${N(s)} · <b>تحصيل فعلي ${N(Math.max(0,left))}</b>`}${left<-.009?' <span class="zl-bad">⚠️ المربوط أكتر من المبلغ</span>':''}</div>`:'')}
+function draw(){const b=document.getElementById('zlk');if(b&&F&&F.zlk){const h=blk();if(b.innerHTML!==h)b.innerHTML=h}}
+window.zlkOpen=function(){pkOpen()};
+window.zlkDel=function(i){F.zlk.splice(i,1);F.zlkDirty=1;draw()};
+function want(){if(!F||(F.type!=='exp'&&F.type!=='inc')||F.isLoan||F.xtype==='tip')return false;
+  const o=F.id&&S.txs.find(t=>t&&t.id===F.id);return !(o&&(isKid(o)||o.xlno||o.xlnp))}
+function init(){if(F.zlk&&F.zlkT===F.type)return;F.zlkT=F.type;F.zlkDirty=0;F.zlkR=null;const o=F.id&&S.txs.find(t=>t&&t.id===F.id);
+  if(F.type==='exp'){F.zlk=[];if(F.id)S.txs.forEach(t=>{if(!t||t.del||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{if(x.t===F.id)F.zlk.push({id:t.id,a:+x.a||0})})})}
+  else{F.zlk=o&&o.rmb?(o.rmb.L||[]).map(x=>({id:x.t,a:+x.a||0})):[];F.zlkR=o&&o.rmb?JSON.parse(JSON.stringify(o.rmb)):null}}
+function ensure(){const sz=$1('#sheet.open .sz'),a=document.getElementById('f-amt');if(!sz||!a||!want())return;init();
+  const zr=F.type==='inc'?document.getElementById('zrm'):null;let b=document.getElementById('zlk');
+  if(!b){b=document.createElement('div');b.id='zlk';b.className='zlk';
+    if(zr)zr.before(b);else{const zs=document.getElementById('zsh');if(zs)zs.after(b);
+      else{let at=$1('#zpay')||a;while(at.parentElement&&at.parentElement!==sz)at=at.parentElement;if(at.parentElement===sz)at.after(b);else sz.appendChild(b)}}}
+  if(zr){if(F.zrm)F.zrm.on=false;zr.remove()}
+  F.zlkOn=true;draw()}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{ensure()}catch(e){console.error('387 form',e)}return r}}catch(e){}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{if(!PK)try{ensure()}catch(e){}}).observe(sh,{childList:true,subtree:true})})();
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='f-amt'&&document.getElementById('zlk'))draw()},true);
+
+/* ---------- الحفظ ---------- */
+try{const _st=saveTx;saveTx=async function(){
+  if(!F||!F.zlkOn||!document.getElementById('zlk'))return _st.apply(this,arguments);
+  const k=F.type,L=(F.zlk||[]).map(x=>({id:x.id,a:r2(+x.a||0)})).filter(x=>x.a>0),dirty=!!F.zlkDirty,fid=F.id,R=F.zlkR||null;
+  const o=fid&&S.txs.find(t=>t&&t.id===fid),pp=(o&&o.pp)||'';
+  if(dirty&&sumL(L)>fAmt()+.009)return toast('🔗 المربوط أكتر من مبلغ المعاملة');
+  const before=new Set(S.txs.map(t=>t&&t.id));
+  const r=await _st.apply(this,arguments);
+  try{const sh=document.getElementById('sheet');if(sh&&sh.classList.contains('open')&&document.getElementById('f-amt'))return r;
+    const me=fid?S.txs.find(x=>x&&x.id===fid):S.txs.filter(x=>x&&!before.has(x.id)&&x.type===k&&!isKid(x)).pop();if(!me)return r;
+    if(k==='exp'){if(!dirty)return r;
+      S.txs.forEach(t=>{if(!t||t.type!=='inc'||!t.rmb||!t.rmb.L||!t.rmb.L.some(x=>x.t===me.id))return;t.rmb.L=t.rmb.L.filter(x=>x.t!==me.id);if(!t.rmb.L.length&&t.rmb.z387)delete t.rmb});
+      L.forEach(x=>{const t=tx(x.id);if(!t)return;if(!t.rmb)t.rmb={p:t.pp||shP(me.id)||'',L:[],z387:1};t.rmb.L=(t.rmb.L||[]).filter(y=>y.t!==me.id);t.rmb.L.push({t:me.id,a:x.a})})}
+    else{if(!dirty){if(R)me.rmb=R;else delete me.rmb}
+      else if(L.length)me.rmb={p:(R&&R.p)||pp||shP(L[0].id)||'',L:L.map(x=>({t:x.id,a:x.a})),z387:1};
+      else delete me.rmb}
+    save();render()}catch(e){console.error('387 save',e)}
+  return r}}catch(e){console.error('387 wrap save',e)}
+
+/* ---------- تسجيل نصيب المشارك (362): بند خاص بدل ما يقع على بند تاني ---------- */
+function rbCat(){const NM='استرداد مصروفات';let c=(S.cats||[]).find(x=>x&&x.kind==='inc'&&!x.del&&x.name===NM);
+  if(!c&&typeof ensureCat==='function')c=ensureCat(NM,'inc');if(c){c.active=true;return c.id}return ''}
+try{const _62=window.z362Save;if(_62)window.z362Save=function(){const before=new Set(S.txs.map(t=>t&&t.id));const r=_62.apply(this,arguments);
+  try{const nx=S.txs.filter(t=>t&&!before.has(t.id)&&t.type==='inc'&&t.rmb).pop(),c=nx&&rbCat();if(nx&&c&&nx.cat!==c){nx.cat=c;save();render()}}catch(e){console.error('387 362',e)}return r}}catch(e){}
+
+/* ---------- علامة في القايمة ---------- */
+try{const _zr=window.zwRow;if(_zr)window.zwRow=function(){let h=_zr.apply(this,arguments);try{h=String(h).replace('💱 سداد من —','🔗 مربوط بمصروف')}catch(e){}return h}}catch(e){}
+
+/* ---------- الحسبة: الربط شغال مع أي مصروف ---------- */
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function repaid(t){try{const l=XLN().find(x=>x&&!x.del&&x.tx===t.id);return l?r2((l.pays||[]).filter(q=>!q.ex&&!q.wo).reduce((a,q)=>a+(+q.a||0),0)):0}catch(e){return 0}}
+const isCov=t=>{try{return !!(window.zCov&&zCov(t))}catch(e){return false}};
+const alOf=t=>(t.rmb.L||[]).reduce((a,y)=>a+(tx(y.t)?(+y.a||0):0),0);
+window.zAct352=function(){const k=ym(cur.y,cur.m),L=keyTx(k).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);let s={exp:0};try{s=xMS(keyTx(k))}catch(e){}
+  const AM=amap();let sl=0,ss=0,sv=0,gen=0;
+  L.forEach(t=>{if(t.type==='exp'){if(t.xlno)sl+=Math.min(+t.amount||0,repaid(t));else if(AM[t.id])ss+=Math.min(+t.amount||0,AM[t.id]);if(isCov(t))sv+=(+t.amount||0)}
+    else if(t.type==='inc'&&t.rmb)gen+=Math.max(0,(+t.amount||0)-alOf(t))});
+  const all=r2(s.exp-sv),back=r2(sl+ss+gen);return{all,back,act:r2(all-back)}};
+
+/* تقرير الناتج البسيط بنفس الحسبة */
+const T=(f,d)=>{try{const v=f();return v==null?d:v}catch(e){return d}};
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+const A=v=>{try{return amtHidden()?xMk(num(r2(v))):esc(num(r2(v)))}catch(e){return esc(num(r2(v)))}};
+const MK=()=>keyTx(ym(cur.y,cur.m)).filter(x=>x&&!x.del&&!x.pend&&!x.xpre);
+const mon=()=>{const c=$1('#view .zh-top .zh-chip');return c?cln(c.textContent):''};
+function calc(){const k=ym(cur.y,cur.m);let s={inc:0,exp:0};try{s=xMS(keyTx(k))}catch(e){}
+  let di=0;MK().forEach(t=>{if(t.type==='inc'&&(t.rmb||t.xlnp))di+=+t.amount||0});
+  const ex=T(()=>zAct352().act,s.exp),inc=r2(s.inc-di);return{inc,ex:r2(ex),net:r2(inc-ex)}}
+function rep(){const k=ym(cur.y,cur.m),L=MK(),AM=amap(),c=calc(),P={};S.txs.forEach(t=>{if(t)P[t.id]=t});
+  const root=t=>{let r=t,g=0;while(g<5){const p=r.splOf||r.tipOf||r.ztipOf||r.feeOf;if(!p||!P[p])break;r=P[p];g++}return r};
+  const key=t=>{const cc=T(()=>xTopC(t.cat),null)||C(t.cat);return cc&&cc.name?cln(cc.name):nm(t)};
+  const E={},I={};let gen=0,rf=0;const add=(B,n,a)=>{if(!B[n])B[n]={n,a:0,c:0};B[n].a=r2(B[n].a+a);B[n].c++};
+  L.forEach(t=>{if(t.type==='exp'){const r=root(t);if(isCov(r)||isCov(t))return;let a=+t.amount||0;
+      if(r===t){const cut=t.xlno?Math.min(a,repaid(t)):Math.min(a,AM[t.id]||0);a=r2(a-cut)}if(a>.009)add(E,key(r),a)}
+    else if(t.type==='inc'){if(t.rmb){gen+=Math.max(0,(+t.amount||0)-alOf(t));return}
+      if(t.xlnp)return;if(t.rf){rf+=+t.amount||0;return}add(I,key(root(t)),+t.amount||0)}});
+  S.txs.forEach(p=>{if(p&&!p.del&&!p.pend&&p.type==='tr'&&p.ccPay&&(p.date||'').startsWith(k))add(E,'سداد الكريديت · '+((M(p.to)||{}).name||''),+p.amount||0)});
+  const EL=Object.values(E).sort((a,b)=>b.a-a.a),IL=Object.values(I).sort((a,b)=>b.a-a.a);
+  const eD=r2(c.ex-(EL.reduce((q,x)=>q+x.a,0)-gen-rf)),iD=r2(c.inc-IL.reduce((q,x)=>q+x.a,0));
+  const ER=[];if(gen>.009)ER.push({n:'فلوس رجعت من غير ربط بمصروف',a:gen,red:1});if(rf>.009)ER.push({n:'مرتجعات',a:rf,red:1});
+  if(Math.abs(eD)>.05)ER.push({n:'فرق حسبة',a:Math.abs(eD),red:eD<0?1:0});
+  const IR=[];if(Math.abs(iD)>.05)IR.push({n:'فرق حسبة',a:Math.abs(iD),red:iD<0?1:0});
+  const rw=x=>`<div class="z65r${x.red?' red':''}"><span>${x.red?'↩ ':''}${esc(x.n)}${x.c>1?` <small>${x.c} معاملات</small>`:''}</span><b dir="ltr">${A(x.a)}</b></div>`;
+  const sec=(kk,t,col,tot,rows)=>`<div class="z36s z64s" data-k="${kk}"><div class="z36sh z64h" onclick="z364T('${kk}')"><span class="z36st">${t}</span><span class="z36cnt">${rows.filter(x=>!x.red).length}</span><span class="z64r" dir="ltr" style="color:${col}">${A(tot)}</span><i class="z64ch"></i></div><div class="z64b">${rows.map(rw).join('')||'<div class="z36mut">مفيش</div>'}</div></div>`;
+  const neg=c.net<0;
+  return `<div class="z36tt">تقرير ${esc(mon()||'الشهر')} · الفعلي</div>
+  <div class="z36h" style="text-align:center"><small>${neg?'الناتج الفعلي · عجز':'الناتج الفعلي'}</small><div class="n"><span dir="ltr">${A(Math.abs(c.net))}</span> <em>ج.م</em></div>
+  <div class="z36ch"><div>التحصيلات<b dir="ltr">${A(c.inc)}</b></div><div>المصروفات<b dir="ltr">${A(c.ex)}</b></div></div></div>
+  ${sec('R:inc','التحصيلات','#6ee7b7',c.inc,IL.concat(IR))}${sec('R:exp','المصروفات','#fca5a5',c.ex,EL.concat(ER))}
+  <div class="z36s z65net"><span>${neg?'الناتج · عجز':'الناتج'}</span><b dir="ltr" style="color:${neg?'#fca5a5':'#6ee7b7'}">${A(Math.abs(c.net))}</b></div>`}
+try{const _sh=sheet;sheet=function(html){try{if(typeof html==='string'&&html.indexOf('<div class="z360 z361 z365">')===0)arguments[0]='<div class="z360 z361 z365">'+rep()+'</div><i class="zgh" style="display:none"></i>'}catch(e){console.error('387 rep',e)}return _sh.apply(this,arguments)}}catch(e){}
+
+/* ---------- الشكل ---------- */
+const Q='html body #sheet#sheet#sheet',O='html body #zlkov';
+const css=document.createElement('style');css.id='z387css';css.textContent=`
+.zl-ic{font-style:normal;width:38px;height:38px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+${Q} .zlk{background:#121a2b;border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:12px;margin:6px 0 12px}
+${Q} .zl-hd{display:flex;align-items:center;gap:8px;cursor:pointer}
+${Q} .zl-hd span{font-size:14.5px;font-weight:700;color:#5eead4;white-space:nowrap}
+${Q} .zl-hd small{flex:1;min-width:0;font-size:12px;color:#94a3b8;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${Q} .zl-hd i{font-style:normal;color:#94a3b8}
+${Q} .zl-li{display:flex;align-items:center;gap:10px;background:#18223a;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:11px 12px;margin-top:8px}
+${Q} .zl-li span{flex:1;min-width:0}
+${Q} .zl-li span b{display:block;font-size:14.5px;font-weight:700;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${Q} .zl-li span small{display:block;font-size:12px;color:#94a3b8}
+${Q} .zl-li em{font-style:normal;font-size:15.5px;font-weight:800;color:#5eead4;font-variant-numeric:tabular-nums;white-space:nowrap}
+${Q} .zl-li button{width:30px;height:30px;flex:0 0 30px;border-radius:50%;border:0;background:rgba(239,68,68,.15);color:#f87171;cursor:pointer}
+${Q} .zl-fs{font-size:12.5px;color:#cbd5e1;margin-top:8px}
+${Q} .zl-fs b{color:#f1f5f9}
+${Q} .zl-bad{color:#f87171;font-weight:700}
+${O}{display:none}
+${O}.on{display:block;position:fixed;inset:0;z-index:2147483000;background:#0b111e;overflow-y:auto;direction:rtl;font-family:Cairo,sans-serif;color:#f1f5f9;-webkit-overflow-scrolling:touch}
+${O} .zl-pg{max-width:560px;margin:0 auto;padding:14px 14px 0}
+${O} .zl-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+${O} .zl-top b{font-size:16px;font-weight:800}
+${O} .zl-bk{background:#121a2b;border:1px solid rgba(94,234,212,.35);color:#f1f5f9;border-radius:14px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+${O} .zl-cd{background:#121a2b;border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:12px;margin-bottom:10px}
+${O} .zl-cd small{font-size:12px;color:#94a3b8}
+${O} .zl-cd div{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+${O} .zl-cd span{font-size:14.5px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${O} .zl-cd b{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+${O} .zl-sr{display:flex;align-items:center;gap:8px;background:#18223a;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:0 12px;margin-bottom:8px}
+${O} .zl-sr input{flex:1;min-width:0;background:transparent!important;border:0!important;color:#f1f5f9!important;height:44px!important;min-height:44px!important;font:inherit!important;font-size:14px!important;margin:0!important;padding:0!important;box-shadow:none!important;outline:0}
+${O} .zl-ch{display:flex;gap:6px;margin-bottom:10px}
+${O} .zl-ch button{font:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;background:#18223a;color:#94a3b8;border:1px solid rgba(255,255,255,.07);cursor:pointer}
+${O} .zl-ch button.on{background:#134e4a;color:#5eead4;border-color:#134e4a}
+${O} .zl-bx{display:flex;align-items:center;gap:10px;background:#18223a;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:11px 12px;margin-bottom:8px;cursor:pointer}
+${O} .zl-bx.on{border-color:#5eead4;background:#15303a}
+${O} .zl-bx span{flex:1;min-width:0}
+${O} .zl-bx span b{display:block;font-size:14.5px;font-weight:700;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${O} .zl-bx span small{display:block;font-size:12px;color:#94a3b8}
+${O} .zl-bx em{font-style:normal;font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;color:#5eead4;white-space:nowrap}
+${O} .zl-e .zl-bx em{color:#fca5a5}
+${O} .zl-mt{text-align:center;color:#94a3b8;font-size:13px;padding:20px 0}
+${O} .zl-foot{position:sticky;bottom:0;background:#0b111e;padding:8px 0 16px}
+${O} .zl-sum{background:#121a2b;border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:12px}
+${O} .zl-rw{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;padding:4px 0}
+${O} .zl-rw span{color:#94a3b8}
+${O} .zl-rw b{font-weight:800;font-variant-numeric:tabular-nums}
+${O} .zl-t{border-top:1px solid rgba(255,255,255,.08);margin-top:4px;padding-top:8px}
+${O} .zl-t span{color:#f1f5f9;font-weight:700}
+${O} .zl-t b{font-size:16px}
+${O} .zl-in input{width:120px!important;background:#18223a!important;border:1px solid rgba(94,234,212,.35)!important;color:#fff!important;border-radius:12px!important;text-align:center!important;font:inherit!important;font-weight:800!important;font-size:15px!important;height:40px!important;min-height:40px!important;margin:0!important;padding:0 8px!important}
+${O} .zl-go{display:block;width:100%;margin-top:10px;border:0;border-radius:16px;background:linear-gradient(135deg,#14b8a6,#4f46e5);color:#fff;font:inherit;font-size:15px;font-weight:800;padding:14px;cursor:pointer}
+`;document.head.appendChild(css);
+try{render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.387',e)}
+/* ========== نهاية 2.21.387 ========== */
+
 /* نهاية fix.js */
 
 
