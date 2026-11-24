@@ -21221,163 +21221,7 @@ ${Q} .z395e{font-size:12.5px;color:#64748b;padding:8px}
 })()}catch(e){console.error('fix 2.21.395',e)}
 /* ========== نهاية 2.21.395 ========== */
 
-/* ========== 2.21.396 · الرئيسية الجديدة: دايرة الفعلي + كروت تلقائية وثابتة ========== */
-try{XVER2='2.21.396';XVBUILD2='24/11/2026 - 04:10 م'}catch(e){}
-try{(function(){
-const T=(f,d)=>{try{const v=f();return v==null?d:v}catch(e){return d}};
-const hidAm=()=>T(()=>!!amtHidden(),false);
-const A=v=>hidAm()?xMk(num(r2(v))):esc(num(r2(v)));
-const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
-const CF=()=>{const s=S.settings.znh=S.settings.znh||{};if(!s.cards)s.cards={cc:1,cash:1,top:1,owed:1};if(!s.auto)s.auto={inst:1,ren:1,cc:1,fix:1,ln:1,cash:0};if(s.lead==null)s.lead=3;return s};
-function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
-function calc(){const k=ym(cur.y,cur.m);let s={inc:0,exp:0};try{s=xMS(keyTx(k))}catch(e){}
-  let di=0;keyTx(k).forEach(t=>{if(t&&!t.del&&!t.pend&&!t.xpre&&t.type==='inc'&&(t.rmb||t.xlnp))di+=+t.amount||0});
-  const a=T(()=>zAct352(),null);return{inc:r2(s.inc-di),ex:r2(a?a.act:s.exp),back:a?+a.back||0:0}}
-function owed(){const AM=amap();let s=0,nl=0,ns=0;
-  T(()=>XLN(),[]).forEach(l=>{if(!l||l.del)return;let r=0;try{r=Math.max(0,xLnRem(l))}catch(e){}if(r>.009){s+=r;nl++}});
-  S.txs.forEach(t=>{if(t&&!t.del&&!t.pend&&t.type==='exp'&&t.shr){const r=Math.max(0,shOf(t)-(AM[t.id]||0));if(r>.009){s+=r;ns++}}});return{s:r2(s),nl,ns}}
-const P={card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',cash:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
-fire:'<path d="M12 22c4.4 0 7-3 7-7 0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-3 3-5 5-5 8 0 4 3 7 7 7z"/>',back:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/>',
-hour:'<path d="M6 2h12M6 22h12"/><path d="M7 2v3a5 5 0 0 0 10 0V2M7 22v-3a5 5 0 0 1 10 0v3"/>',cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
-wallet:'<path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16" cy="14" r="1.3"/>',rot:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
-users:'<circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M22 21v-2a4 4 0 0 0-3-3.9"/>',
-down:'<path d="M12 5v14M5 12l7 7 7-7"/>',up:'<path d="M12 19V5M5 12l7-7 7 7"/>',cam:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
-chart:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',pin:'<path d="M12 17v5"/><path d="M9 3h6l-1 7 4 3v2H6v-2l4-3z"/>'};
-const ic=(k,s)=>'<svg viewBox="0 0 24 24" width="'+(s||17)+'" height="'+(s||17)+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[k]||P.pin)+'</svg>';
-const CL={v:['rgba(139,92,246,.18)','#c4b5fd'],t:['rgba(20,184,166,.16)','#5eead4'],b:['rgba(59,130,246,.16)','#93c5fd'],o:['rgba(249,115,22,.16)','#fdba74'],p:['rgba(236,72,153,.16)','#f9a8d4'],y:['rgba(245,158,11,.16)','#fcd34d'],g:['rgba(52,211,153,.14)','#6ee7b7'],r:['rgba(239,68,68,.16)','#fca5a5']};
-const when=l=>l<0?'متأخر '+(-l)+' يوم':l===0?'النهارده':l===1?'بكرة':'بعد '+l+' أيام';
 
-/* ⚡ الكروت التلقائية */
-function autoL(){const c=CF(),lead=+c.lead||0,td=today(),L=[];
-  const add=(k,ik,lab,name,amt,left,js)=>{if(!c.auto[k]||!(left<=lead))return;L.push({ik,lab,name,amt,left,js})};
-  T(()=>instDue(),[]).forEach(o=>T(()=>add('inst','cal','قسط',o.p.name,+o.it.amount||0,o.left,`payStart('${o.p.id}','${o.it.id}')`)));
-  T(()=>renDue(),[]).forEach(x=>T(()=>add('ren','rot','تجديد',x.r.name,+(x.r.amount||0),x.left,"wtab='ren';go('wallet')")));
-  T(()=>xCcList(),[]).forEach(x=>T(()=>{const g=xCcCfg(x.m.id);let d=NKM+'-'+pad(g.due);if(d<td)d=addMonths(d,1);add('cc','card','سداد كريديت',x.m.name,+x.due||0,daysBetween(d,td),`xCcPay('${x.m.id}')`)}));
-  T(()=>pendAll(),[]).forEach(x=>T(()=>{const o=x.o,t=x.t;if(t&&t.type!=='inc')return;if(o&&o.r&&o.r.kind&&o.r.kind!=='inc')return;
-    const d=o?o.date:t.date,l=daysBetween(d,td);add('fix','hour',l<0?'تحصيل متأخر':'تحصيل جاي',o?o.r.name:xTxNm(t),o?+o.amt||0:+t.amount||0,l,o?`occSheet('${o.r.id}',${o.k})`:`xColSheet('${t.id}')`)}));
-  T(()=>XLN(),[]).forEach(l=>T(()=>{if(!l||l.del)return;const nx=xLnNext(l);if(!nx)return;add('ln','users','سداد سلفة',l.who||'سلفة',+(nx.rem||xLnRem(l))||0,daysBetween(nx.d,td),`xLnOpen('${l.id}')`)}));
-  if(c.auto.cash)T(()=>{const ca=xCashAcct(),th=S.settings.cashLow==null?200:+S.settings.cashLow;if(ca&&th>=0){const b=xBal(ca);if(b<=th)L.push({ik:'cash',lab:'رصيد الكاش قليل',name:(M(ca)||{}).name||'الكاش',amt:b,left:-1,js:"go('pmv')"})}});
-  return L.sort((a,b)=>a.left-b.left)}
-
-/* الكروت الثابتة */
-function cardsL(){const c=CF().cards,TL=keyTx(NKM),L=[],add=(ik,cl,t,v,s,js)=>L.push({ik,cl,t,v,s,js});
-  if(c.cc)T(()=>{const l=xCcList()||[];if(l.length)add('card','v','سداد الكريديت',A(l.reduce((a,x)=>a+(+x.due||0),0)),l.length>1?l.length+' كروت':l[0].m.name,l.length===1?`xCcPay('${l[0].m.id}')`:"go('xcc')")});
-  if(c.cash)T(()=>{const l=cashOf(NKM)||[];if(l.length)add('cash','y','سحب كاش',A(l.reduce((a,x)=>a+(+x.amount||0),0)),l.length+' مرة','cashSheet()')});
-  if(c.top)T(()=>{const l=catItems(TL,'exp')||[];if(l.length)add('fire','o','أكبر مصروف',A(l[0].value),l[0].label,'topSheet()')});
-  if(c.owed){const o=owed();add('back','t','لسه ليك برّه',A(o.s),[o.nl?o.nl+' سلفة':'',o.ns?o.ns+' مشاركة':''].filter(Boolean).join(' · ')||'مفيش',"z360Open('owed')")}
-  if(c.pend)T(()=>{const l=pendAll()||[];if(l.length)add('hour','y','غير محصّل',A(l.reduce((a,x)=>a+(x.o?+x.o.amt||0:+x.t.amount||0),0)),l.length+' تحصيل','pendingSheet()')});
-  if(c.inst)T(()=>{const l=(instDue()||[]).filter(o=>o.left>=0).sort((a,b)=>a.left-b.left);if(l[0])add('cal','o','قسط جاي',A(+l[0].it.amount||0),l[0].p.name+' · '+when(l[0].left),'instSheet()')});
-  if(c.cashbal)T(()=>{const ca=xCashAcct();if(ca)add('wallet','g','رصيد الكاش',A(xBal(ca)),'معاك دلوقتي',"go('pmv')")});
-  if(c.back){const b=calc().back;if(b>.009)add('rot','b','فلوس راجعالك',A(b),'الشهر ده',"z360Open('back')")}
-  T(()=>(S.settings.pins||[]).forEach(p=>{if(p.mode==='hide')return;const t=pinTile(p);if(t&&(p.mode==='show'||t.rel))L.push({emo:t.ic,cl:'p',t:t.label,v:hidAm()&&/\d/.test(String(t.val))?xMk(t.val):t.val,s:t.sub||'',js:t.go})}));
-  return L}
-
-/* الرئيسية */
-var ZL={};const CC=502.65;
-vHome=function(){const hid=hidAm(),c=calc(),net=r2(c.inc-c.ex),neg=net<0,pct=c.inc>0?c.ex/c.inc:0;
-  const offA=String(r2(CC-CC*Math.min(1,pct))),offO=String(pct>1?r2(CC-CC*Math.min(1,Math.max(.03,pct-1))):CC);
-  const NUM=(k,v)=>{if(hid)return xMk(num(r2(v)));const to=r2(v),pv=ZL[k];return `<span data-k="${k}" data-to="${to}">${esc(num(pv==null?0:pv))}</span>`};
-  const msg=c.inc>0?(pct>1?`صرفت أكتر من دخلك بـ <b style="color:#fecaca">${hid?'••':((pct-1)*100).toFixed(1)+'%'}</b>`:`وفّرت <b style="color:#a7f3d0">${hid?'••':((1-pct)*100).toFixed(1)+'%'}</b> من دخلك`):(c.ex>0?'مفيش تحصيل الشهر ده':'لسه مفيش معاملات');
-  const hr=new Date().getHours(),cf=CF();
-  let h=`<div class="znh"><div class="znh-top"><div><small>${hr<12?'صباح الخير':'مساء الخير'}</small><b>${esc(cf.nm||'أحمد')} 👋</b></div>
-  <div class="znh-tr"><button type="button" class="znh-chip" onclick="go('months')">${esc(MONTHS[cur.m-1]+' '+cur.y)}</button>${S.settings.mask!==false?`<button type="button" class="znh-ib" onclick="${hid?'revealAmts()':'hideAmts()'}">${hid?'👁️':'🙈'}</button>`:''}</div></div>
-  <div class="znh-hero"><i class="znh-glow"></i>
-  <div class="znh-ring" onclick="zNhRep()"><svg viewBox="0 0 184 184"><circle cx="92" cy="92" r="80" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="12"/>
-  <circle class="a" data-k="rA" data-off="${offA}" cx="92" cy="92" r="80" fill="none" stroke="#5eead4" stroke-width="12" stroke-linecap="round" transform="rotate(-90 92 92)" stroke-dasharray="${CC}" style="stroke-dashoffset:${ZL.rA!=null?ZL.rA:CC}"/>
-  <circle class="o" data-k="rO" data-off="${offO}" cx="92" cy="92" r="80" fill="none" stroke="#fca5a5" stroke-width="12" stroke-linecap="round" transform="rotate(-90 92 92)" stroke-dasharray="${CC}" style="stroke-dashoffset:${ZL.rO!=null?ZL.rO:CC}"/></svg>
-  <div class="znh-rc"><small>الناتج الفعلي · <b style="color:${neg?'#fecaca':'#a7f3d0'}">${neg?'عجز':'فايض'}</b></small><span class="n" style="color:${neg?'#fecaca':'#a7f3d0'}">${NUM('net',Math.abs(net))}</span><em>${msg}</em></div></div>
-  <div class="znh-ps"><button type="button" class="znh-p" onclick="openFlow('inc')"><small>التحصيلات الفعلي</small><b>${NUM('inc',c.inc)}</b></button><button type="button" class="znh-p" onclick="openFlow('exp')"><small>المصروفات الفعلي</small><b>${NUM('ex',c.ex)}</b></button></div></div>
-  <div class="znh-qa">${[["newTx('inc')",'down','تحصيل',CL.g],["newTx('exp')",'up','مصروف',CL.r],['scanReceipt()','cam','ريسيت',CL.v],['xLnNew()','users','سلفة',CL.y],["rtab='';go('reports')",'chart','التقارير',CL.b]]
-    .map(([js,k,t,cl])=>`<button type="button" class="znh-q" onclick="${js}"><i style="background:${cl[0]};color:${cl[1]}">${ic(k,21)}</i>${t}</button>`).join('')}</div>`;
-  const AL=autoL();
-  if(AL.length){h+=`<div class="znh-lb"><span>⚡ قرب ميعادها</span></div>`+AL.slice(0,2).map(x=>{const r=x.left<=1,cl=r?CL.r:CL.y;
-    return `<div class="znh-au ${r?'r':'y'}" onclick="${x.js}"><span class="ic" style="background:${cl[0]};color:${cl[1]}">${ic(x.ik)}<i class="znh-pu" style="background:${cl[1]};color:${cl[1]}"></i></span><div><small style="color:${cl[1]}">${esc(x.lab)} · ${when(x.left)}</small><b>${esc(x.name||'')}</b></div>${x.amt?`<em>${A(x.amt)}</em>`:''}</div>`}).join('')
-    +(AL.length>2?`<div class="znh-more" onclick="openNotifs()">+${AL.length-2} كمان ‹</div>`:'')}
-  const K=cardsL();
-  if(K.length)h+=`<div class="znh-lb"><span>نظرة سريعة</span></div><div class="znh-g">${K.map((x,i)=>{const cl=CL[x.cl]||CL.t;
-    return `<div class="znh-c${K.length%2&&i===K.length-1?' w':''}" onclick="${x.js}"><span class="ic" style="background:${cl[0]};color:${cl[1]}">${x.emo?esc(x.emo):ic(x.ik)}</span><div><small>${esc(x.t)}</small><b>${x.v}</b><em style="color:${cl[1]}">${esc(x.s||'')}</em></div></div>`}).join('')}</div>`;
-  return h+'</div>'};
-function anim(){const v=document.getElementById('view');if(!v||!v.querySelector('.znh'))return;
-  v.querySelectorAll('.znh [data-off]').forEach(el=>{const k=el.dataset.k,to=el.dataset.off;if(ZL[k]===to){el.style.strokeDashoffset=to;return}ZL[k]=to;requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.strokeDashoffset=to}))});
-  v.querySelectorAll('.znh [data-to]').forEach(el=>{const k=el.dataset.k,to=+el.dataset.to,fr=ZL[k]==null?0:ZL[k];ZL[k]=to;if(Math.abs(fr-to)<.005){el.textContent=num(to);return}
-    const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=num(r2(fr+(to-fr)*e));if(p<1)requestAnimationFrame(f)})(t0)})}
-try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{if(view==='home')anim()}catch(e){console.error('396 anim',e)}return r}}catch(e){}
-window.zNhRep=function(){try{z365Rep()}catch(e){return}if(!hidAm())return;setTimeout(()=>{const r=document.querySelector('#sheet .z365');if(!r)return;
-  r.querySelectorAll('.z36h .n span,.z36ch b,.z64r,.z65r b,.z65net b').forEach(b=>{b.innerHTML='<span class="msk xmk">••••••</span>'})},30)};
-
-/* الإعدادات ← الشاشة الرئيسية */
-function setHTML(){const c=CF(),sw=(on,js)=>`<span class="znh-sw${on?' on':''}" onclick="${js}"></span>`;
-  const A1=[['inst','الأقساط'],['ren','التجديدات (رخص، اشتراكات…)'],['cc','سداد الكريديت'],['fix','تحصيلات متأخرة أو قربت'],['ln','مواعيد سداد السلف'],['cash','رصيد الكاش لما يقل']];
-  const C1=[['cc','سداد الكريديت'],['cash','سحب كاش'],['top','أكبر مصروف'],['owed','لسه ليك برّه'],['pend','غير محصّل'],['inst','قسط جاي'],['cashbal','رصيد الكاش'],['back','فلوس راجعالك']];
-  return `<div class="znh-set"><div class="znh-sec">اسمك في الترحيب</div><div class="znh-cd"><div class="znh-tg"><input value="${esc(c.nm||'')}" placeholder="أحمد" onchange="zNhSet('nm',this.value)"></div></div>
-  <div class="znh-sec">⚡ كروت تلقائية (بتظهر لما حاجة تقرب)</div><div class="znh-cd">${A1.map(([k,l])=>`<div class="znh-tg"><span>${l}</span>${sw(c.auto[k],`zNhTg('auto','${k}')`)}</div>`).join('')}
-  <div class="znh-tg"><span>تظهر قبل الميعاد بـ</span><div class="znh-st"><button type="button" onclick="zNhLead(-1)">−</button><b>${c.lead} ${c.lead===1?'يوم':'أيام'}</b><button type="button" onclick="zNhLead(1)">+</button></div></div></div>
-  <div class="znh-sec">كروت الرئيسية (ثابتة)</div><div class="znh-cd">${C1.map(([k,l])=>`<div class="znh-tg"><span>${l}</span>${sw(c.cards[k],`zNhTg('cards','${k}')`)}</div>`).join('')}</div></div>`}
-window.zNhTg=function(g,k){const c=CF();c[g][k]=c[g][k]?0:1;save();render()};
-window.zNhLead=function(d){const c=CF();c.lead=Math.max(0,Math.min(30,(+c.lead||0)+d));save();render()};
-window.zNhSet=function(k,v){CF()[k]=String(v||'').trim();save();render()};
-try{const _vs=vSettings;vSettings=function(){let h=_vs.apply(this,arguments);try{if(stab==='home'&&typeof h==='string'){const i=h.indexOf('</div>');if(i>-1)h=h.slice(0,i+6)+setHTML()+h.slice(i+6)}}catch(e){}return h}}catch(e){console.error('396 set',e)}
-
-const V='html body main#view';
-const css=document.createElement('style');css.id='z396css';css.textContent=`
-${V} .znh{direction:rtl;color:#f1f5f9}
-${V} .znh-top{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 10px}
-${V} .znh-top small{display:block;font-size:12px;color:#94a3b8}
-${V} .znh-top b{font-size:17px;font-weight:700;color:#f1f5f9}
-${V} .znh-tr{display:flex;gap:8px;align-items:center}
-${V} .znh-chip{font:inherit;font-size:12px;background:#121a2b;border:1px solid rgba(255,255,255,.06);border-radius:999px;padding:6px 12px;color:#5eead4;cursor:pointer}
-${V} .znh-ib{width:36px;height:36px;border-radius:12px;background:#121a2b;border:1px solid rgba(255,255,255,.06);color:#cbd5e1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:16px}
-${V} .znh-hero{border-radius:24px;padding:14px;background:linear-gradient(135deg,#0f766e,#3730a3);position:relative;overflow:hidden;box-shadow:0 12px 26px -14px rgba(55,48,163,.7)}
-${V} .znh-glow{position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(94,234,212,.18);filter:blur(34px);top:-70px;left:50%;transform:translateX(-50%);pointer-events:none}
-${V} .znh-ring{position:relative;width:184px;height:184px;margin:0 auto;cursor:pointer}
-${V} .znh-ring svg{position:absolute;inset:0;width:100%;height:100%}
-${V} .znh-ring circle.a{transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
-${V} .znh-ring circle.o{transition:stroke-dashoffset .6s 1s ease-out}
-${V} .znh-rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px}
-${V} .znh-rc small{font-size:12px;color:#ccfbf1}
-${V} .znh-rc .n{font-size:30px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums;direction:ltr}
-${V} .znh-rc em{font-style:normal;font-size:11px;color:#ccfbf1;line-height:1.5}
-${V} .znh-ps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;position:relative}
-${V} .znh-p{font:inherit;text-align:right;background:rgba(0,0,0,.22);border:0;border-radius:14px;padding:9px 11px;color:#fff;cursor:pointer;min-width:0}
-${V} .znh-p small{display:block;font-size:11px;color:#ccfbf1}
-${V} .znh-p b{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
-${V} .znh-qa{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:12px}
-${V} .znh-q{font:inherit;background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11.5px;color:#cbd5e1;cursor:pointer;box-shadow:none}
-${V} .znh-q i{width:50px;height:50px;border-radius:17px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.07)}
-${V} .znh-lb{display:flex;justify-content:space-between;font-size:11.5px;color:#64748b;margin:12px 4px 6px}
-${V} .znh-au{display:flex;align-items:center;gap:10px;border-radius:16px;padding:9px 12px;margin-bottom:6px;border:1px solid;cursor:pointer}
-${V} .znh-au.r{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.35)}
-${V} .znh-au.y{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3)}
-${V} .znh-au .ic,${V} .znh-c .ic{width:34px;height:34px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative}
-${V} .znh-pu{position:absolute;top:-2px;left:-2px;width:9px;height:9px;border-radius:50%;animation:znhp 1.4s infinite}
-@keyframes znhp{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
-${V} .znh-au>div,${V} .znh-c>div{flex:1;min-width:0}
-${V} .znh-au small{display:block;font-size:11px}
-${V} .znh-au b{display:block;font-size:14px;font-weight:700;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-${V} .znh-au em{font-style:normal;font-size:15px;font-weight:700;white-space:nowrap;color:#f1f5f9}
-${V} .znh-more{text-align:center;font-size:12px;color:#5eead4;padding:2px 4px 4px;cursor:pointer}
-${V} .znh-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-${V} .znh-c{background:#18223a;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;min-width:0}
-${V} .znh-c.w{grid-column:1/-1}
-${V} .znh-c small{display:block;font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-${V} .znh-c b{display:block;font-size:15px;font-weight:700;color:#f1f5f9;font-variant-numeric:tabular-nums}
-${V} .znh-c em{display:block;font-style:normal;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-${V} .znh-set{margin:0 0 14px}
-${V} .znh-sec{font-size:11.5px;color:#64748b;margin:10px 6px 6px}
-${V} .znh-cd{background:#151e31;border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:0 12px}
-${V} .znh-tg{display:flex;align-items:center;gap:10px;min-height:48px;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;color:#e6ebf5}
-${V} .znh-tg:last-child{border-bottom:0}
-${V} .znh-tg input{flex:1;background:transparent!important;border:0!important;color:#e6ebf5!important;font:inherit!important;margin:0!important;box-shadow:none!important;min-height:40px}
-${V} .znh-sw{margin-inline-start:auto;width:42px;height:24px;border-radius:999px;background:#2b3a52;position:relative;flex:none;cursor:pointer;transition:background .2s}
-${V} .znh-sw::after{content:'';position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:right .2s}
-${V} .znh-sw.on{background:#14b8a6}
-${V} .znh-sw.on::after{right:21px}
-${V} .znh-st{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
-${V} .znh-st button{width:30px;height:30px;border-radius:9px;background:#0f1729;border:1px solid rgba(255,255,255,.08);color:#5eead4;font:inherit;font-size:16px;padding:0;cursor:pointer}
-`;document.head.appendChild(css);
-try{if(view==='home')render()}catch(e){}
-})()}catch(e){console.error('fix 2.21.396',e)}
-/* ========== نهاية 2.21.396 ========== */
 
 /* ========== 2.21.397 · زرار ➕ بالتصميم الجديد: سجّل / روح لـ ========== */
 try{XVER2='2.21.397';XVBUILD2='24/11/2026 - 04:20 م'}catch(e){}
@@ -21409,6 +21253,182 @@ html body #zfp button span{width:50px!important;height:50px!important;border-rad
 `;document.head.appendChild(css);
 })()}catch(e){console.error('fix 2.21.397',e)}
 /* ========== نهاية 2.21.397 ========== */
+
+/* ========== 2.21.398 · الرئيسية الجديدة (بديل 396): الإشعارات فوق + قرب ميعادها جوه الإشعارات ========== */
+try{XVER2='2.21.398';XVBUILD2='24/11/2026 - 04:30 م'}catch(e){}
+try{(function(){
+const T=(f,d)=>{try{const v=f();return v==null?d:v}catch(e){return d}};
+const hidAm=()=>T(()=>!!amtHidden(),false);
+const A=v=>hidAm()?xMk(num(r2(v))):esc(num(r2(v)));
+const shOf=t=>(t.shr||[]).reduce((a,x)=>a+(+x.a||0),0);
+const CF=()=>{const s=S.settings.znh=S.settings.znh||{};if(!s.cards)s.cards={cc:1,cash:1,top:1,owed:1};if(!s.auto)s.auto={inst:1,ren:1,cc:1,fix:1,ln:1,cash:0};if(s.lead==null)s.lead=3;return s};
+function amap(){const m={};S.txs.forEach(t=>{if(!t||t.del||t.pend||t.type!=='inc'||!t.rmb)return;(t.rmb.L||[]).forEach(x=>{m[x.t]=(m[x.t]||0)+(+x.a||0)})});return m}
+function calc(){const k=ym(cur.y,cur.m);let s={inc:0,exp:0};try{s=xMS(keyTx(k))}catch(e){}
+  let di=0;keyTx(k).forEach(t=>{if(t&&!t.del&&!t.pend&&!t.xpre&&t.type==='inc'&&(t.rmb||t.xlnp))di+=+t.amount||0});
+  const a=T(()=>zAct352(),null);return{inc:r2(s.inc-di),ex:r2(a?a.act:s.exp),back:a?+a.back||0:0}}
+function owed(){const AM=amap();let s=0,nl=0,ns=0;
+  T(()=>XLN(),[]).forEach(l=>{if(!l||l.del)return;let r=0;try{r=Math.max(0,xLnRem(l))}catch(e){}if(r>.009){s+=r;nl++}});
+  S.txs.forEach(t=>{if(t&&!t.del&&!t.pend&&t.type==='exp'&&t.shr){const r=Math.max(0,shOf(t)-(AM[t.id]||0));if(r>.009){s+=r;ns++}}});return{s:r2(s),nl,ns}}
+const P={card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',cash:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
+fire:'<path d="M12 22c4.4 0 7-3 7-7 0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-3 3-5 5-5 8 0 4 3 7 7 7z"/>',back:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/>',
+hour:'<path d="M6 2h12M6 22h12"/><path d="M7 2v3a5 5 0 0 0 10 0V2M7 22v-3a5 5 0 0 1 10 0v3"/>',cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+wallet:'<path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16" cy="14" r="1.3"/>',rot:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+users:'<circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M22 21v-2a4 4 0 0 0-3-3.9"/>',
+down:'<path d="M12 5v14M5 12l7 7 7-7"/>',up:'<path d="M12 19V5M5 12l7-7 7 7"/>',cam:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+chart:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',pin:'<path d="M12 17v5"/><path d="M9 3h6l-1 7 4 3v2H6v-2l4-3z"/>',
+bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>'};
+const ic=(k,s)=>'<svg viewBox="0 0 24 24" width="'+(s||17)+'" height="'+(s||17)+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[k]||P.pin)+'</svg>';
+const CL={v:['rgba(139,92,246,.18)','#c4b5fd'],t:['rgba(20,184,166,.16)','#5eead4'],b:['rgba(59,130,246,.16)','#93c5fd'],o:['rgba(249,115,22,.16)','#fdba74'],p:['rgba(236,72,153,.16)','#f9a8d4'],y:['rgba(245,158,11,.16)','#fcd34d'],g:['rgba(52,211,153,.14)','#6ee7b7'],r:['rgba(239,68,68,.16)','#fca5a5']};
+const when=l=>l<0?'متأخر '+(-l)+' يوم':l===0?'النهارده':l===1?'بكرة':'بعد '+l+' أيام';
+
+/* ⚡ قرب ميعادها (بيظهر جوه الإشعارات) */
+function autoL(){const c=CF(),lead=+c.lead||0,td=today(),L=[];
+  const add=(k,ik,lab,name,amt,left,js)=>{if(!c.auto[k]||!(left<=lead))return;L.push({ik,lab,name,amt,left,js})};
+  T(()=>instDue(),[]).forEach(o=>T(()=>add('inst','cal','قسط',o.p.name,+o.it.amount||0,o.left,`payStart('${o.p.id}','${o.it.id}')`)));
+  T(()=>renDue(),[]).forEach(x=>T(()=>add('ren','rot','تجديد',x.r.name,+(x.r.amount||0),x.left,"wtab='ren';go('wallet')")));
+  T(()=>xCcList(),[]).forEach(x=>T(()=>{const g=xCcCfg(x.m.id);let d=NKM+'-'+pad(g.due);if(d<td)d=addMonths(d,1);add('cc','card','سداد كريديت',x.m.name,+x.due||0,daysBetween(d,td),`xCcPay('${x.m.id}')`)}));
+  T(()=>pendAll(),[]).forEach(x=>T(()=>{const o=x.o,t=x.t;if(t&&t.type!=='inc')return;if(o&&o.r&&o.r.kind&&o.r.kind!=='inc')return;
+    const d=o?o.date:t.date,l=daysBetween(d,td);add('fix','hour',l<0?'تحصيل متأخر':'تحصيل جاي',o?o.r.name:xTxNm(t),o?+o.amt||0:+t.amount||0,l,o?`occSheet('${o.r.id}',${o.k})`:`xColSheet('${t.id}')`)}));
+  T(()=>XLN(),[]).forEach(l=>T(()=>{if(!l||l.del)return;const nx=xLnNext(l);if(!nx)return;add('ln','users','سداد سلفة',l.who||'سلفة',+(nx.rem||xLnRem(l))||0,daysBetween(nx.d,td),`xLnOpen('${l.id}')`)}));
+  if(c.auto.cash)T(()=>{const ca=xCashAcct(),th=S.settings.cashLow==null?200:+S.settings.cashLow;if(ca&&th>=0){const b=xBal(ca);if(b<=th)L.push({ik:'cash',lab:'رصيد الكاش قليل',name:(M(ca)||{}).name||'الكاش',amt:b,left:-1,js:"go('pmv')"})}});
+  return L.sort((a,b)=>a.left-b.left)}
+const auBox=x=>{const r=x.left<=1,cl=r?CL.r:CL.y;
+  return `<div class="znh-au ${r?'r':'y'}" onclick="closeSheet();${x.js}"><span class="ic" style="background:${cl[0]};color:${cl[1]}">${ic(x.ik)}<i class="znh-pu" style="background:${cl[1]};color:${cl[1]}"></i></span><div><small style="color:${cl[1]}">${esc(x.lab)} · ${when(x.left)}</small><b>${esc(x.name||'')}</b></div>${x.amt?`<em>${A(x.amt)}</em>`:''}</div>`};
+try{const _on=openNotifs;openNotifs=function(){const r=_on.apply(this,arguments);try{const L=autoL(),sz=document.querySelector('#sheet .sz');
+  if(L.length&&sz&&!sz.querySelector('.znh-ns')){const h=`<div class="znh-ns"><div class="znh-lb">⚡ قرب ميعادها</div>${L.map(auBox).join('')}</div>`,ph=sz.querySelector('.phead');
+    if(ph)ph.insertAdjacentHTML('afterend',h);else sz.insertAdjacentHTML('afterbegin',h)}}catch(e){console.error('398 notif',e)}return r}}catch(e){}
+
+/* 🔔 زرار الإشعارات */
+function bellInfo(){const un=T(()=>alerts().filter(a=>!READ[a.id]),[]);const imp=un.some(a=>a.urgent||a.lv==='late')||autoL().some(x=>x.left<=1);return{n:un.length,imp}}
+const bellHTML=()=>{const b=bellInfo();return `<button type="button" id="znhbell" class="znh-ib znh-bell${b.imp?' r':''}" onclick="openNotifs()">${ic('bell',18)}${b.n?`<b>${b.n}</b>`:''}${b.imp?'<i class="znh-pu" style="background:#f87171;color:#f87171"></i>':''}</button>`};
+try{const _ub=updateBell;updateBell=function(){const r=_ub.apply(this,arguments);try{const e=document.getElementById('znhbell');if(e)e.outerHTML=bellHTML()}catch(x){}return r}}catch(e){}
+
+/* الكروت الثابتة */
+function cardsL(){const c=CF().cards,TL=keyTx(NKM),L=[],add=(ik,cl,t,v,s,js)=>L.push({ik,cl,t,v,s,js});
+  if(c.cc)T(()=>{const l=xCcList()||[];if(l.length)add('card','v','سداد الكريديت',A(l.reduce((a,x)=>a+(+x.due||0),0)),l.length>1?l.length+' كروت':l[0].m.name,l.length===1?`xCcPay('${l[0].m.id}')`:"go('xcc')")});
+  if(c.cash)T(()=>{const l=cashOf(NKM)||[];if(l.length)add('cash','y','سحب كاش',A(l.reduce((a,x)=>a+(+x.amount||0),0)),l.length+' مرة','cashSheet()')});
+  if(c.top)T(()=>{const l=catItems(TL,'exp')||[];if(l.length)add('fire','o','أكبر مصروف',A(l[0].value),l[0].label,'topSheet()')});
+  if(c.owed){const o=owed();add('back','t','لسه ليك برّه',A(o.s),[o.nl?o.nl+' سلفة':'',o.ns?o.ns+' مشاركة':''].filter(Boolean).join(' · ')||'مفيش',"z360Open('owed')")}
+  if(c.pend)T(()=>{const l=pendAll()||[];if(l.length)add('hour','y','غير محصّل',A(l.reduce((a,x)=>a+(x.o?+x.o.amt||0:+x.t.amount||0),0)),l.length+' تحصيل','pendingSheet()')});
+  if(c.inst)T(()=>{const l=(instDue()||[]).filter(o=>o.left>=0).sort((a,b)=>a.left-b.left);if(l[0])add('cal','o','قسط جاي',A(+l[0].it.amount||0),l[0].p.name+' · '+when(l[0].left),'instSheet()')});
+  if(c.cashbal)T(()=>{const ca=xCashAcct();if(ca)add('wallet','g','رصيد الكاش',A(xBal(ca)),'معاك دلوقتي',"go('pmv')")});
+  if(c.back){const b=calc().back;if(b>.009)add('rot','b','فلوس راجعالك',A(b),'الشهر ده',"z360Open('back')")}
+  T(()=>(S.settings.pins||[]).forEach(p=>{if(p.mode==='hide')return;const t=pinTile(p);if(!t||/تقرير شهري/.test(t.label||''))return;
+    if(p.mode==='show'||t.rel)L.push({emo:t.ic,cl:'p',t:t.label,v:hidAm()&&/\d/.test(String(t.val))?xMk(t.val):t.val,s:t.sub||'',js:t.go})}));
+  return L}
+
+/* الرئيسية */
+var ZL={};const CC=502.65;
+vHome=function(){const hid=hidAm(),c=calc(),net=r2(c.inc-c.ex),neg=net<0,pct=c.inc>0?c.ex/c.inc:0;
+  const offA=String(r2(CC-CC*Math.min(1,pct))),offO=String(pct>1?r2(CC-CC*Math.min(1,Math.max(.03,pct-1))):CC);
+  const NUM=(k,v)=>{if(hid)return xMk(num(r2(v)));const to=r2(v),pv=ZL[k];return `<span data-k="${k}" data-to="${to}">${esc(num(pv==null?0:pv))}</span>`};
+  const msg=c.inc>0?(pct>1?`صرفت أكتر من دخلك بـ <b style="color:#fecaca">${hid?'••':((pct-1)*100).toFixed(1)+'%'}</b>`:`وفّرت <b style="color:#a7f3d0">${hid?'••':((1-pct)*100).toFixed(1)+'%'}</b> من دخلك`):(c.ex>0?'مفيش تحصيل الشهر ده':'لسه مفيش معاملات');
+  const hr=new Date().getHours(),cf=CF();
+  let h=`<div class="znh"><div class="znh-top"><div><small>${hr<12?'صباح الخير':'مساء الخير'}</small><b>${esc(cf.nm||'أحمد')} 👋</b></div>
+  <div class="znh-tr"><button type="button" class="znh-chip" onclick="go('months')">${esc(MONTHS[cur.m-1]+' '+cur.y)}</button>${S.settings.mask!==false?`<button type="button" class="znh-ib" onclick="${hid?'revealAmts()':'hideAmts()'}">${hid?'👁️':'🙈'}</button>`:''}${bellHTML()}</div></div>
+  <div class="znh-hero"><i class="znh-glow"></i>
+  <div class="znh-ring" onclick="zNhRep()"><svg viewBox="0 0 184 184"><circle cx="92" cy="92" r="80" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="12"/>
+  <circle class="a" data-k="rA" data-off="${offA}" cx="92" cy="92" r="80" fill="none" stroke="#5eead4" stroke-width="12" stroke-linecap="round" transform="rotate(-90 92 92)" stroke-dasharray="${CC}" style="stroke-dashoffset:${ZL.rA!=null?ZL.rA:CC}"/>
+  <circle class="o" data-k="rO" data-off="${offO}" cx="92" cy="92" r="80" fill="none" stroke="#fca5a5" stroke-width="12" stroke-linecap="round" transform="rotate(-90 92 92)" stroke-dasharray="${CC}" style="stroke-dashoffset:${ZL.rO!=null?ZL.rO:CC}"/></svg>
+  <div class="znh-rc"><small>الناتج الفعلي · <b style="color:${neg?'#fecaca':'#a7f3d0'}">${neg?'عجز':'فايض'}</b></small><span class="n" style="color:${neg?'#fecaca':'#a7f3d0'}">${NUM('net',Math.abs(net))}</span><em>${msg}</em></div></div>
+  <div class="znh-ps"><button type="button" class="znh-p" onclick="openFlow('inc')"><small>التحصيلات الفعلي</small><b>${NUM('inc',c.inc)}</b></button><button type="button" class="znh-p" onclick="openFlow('exp')"><small>المصروفات الفعلي</small><b>${NUM('ex',c.ex)}</b></button></div></div>
+  <div class="znh-qa">${[["newTx('inc')",'down','تحصيل',CL.g],["newTx('exp')",'up','مصروف',CL.r],['scanReceipt()','cam','ريسيت',CL.v],['xLnNew()','users','سلفة',CL.y],["rtab='';go('reports')",'chart','التقارير',CL.b]]
+    .map(([js,k,t,cl])=>`<button type="button" class="znh-q" onclick="${js}"><i style="background:${cl[0]};color:${cl[1]}">${ic(k,22)}</i>${t}</button>`).join('')}</div>`;
+  const K=cardsL();
+  if(K.length)h+=`<div class="znh-lb">نظرة سريعة</div><div class="znh-g">${K.map((x,i)=>{const cl=CL[x.cl]||CL.t;
+    return `<div class="znh-c${K.length%2&&i===K.length-1?' w':''}" onclick="${x.js}"><span class="ic" style="background:${cl[0]};color:${cl[1]}">${x.emo?esc(x.emo):ic(x.ik)}</span><div><small>${esc(x.t)}</small><b>${x.v}</b><em style="color:${cl[1]}">${esc(x.s||'')}</em></div></div>`}).join('')}</div>`;
+  return h+'</div>'};
+function anim(){const v=document.getElementById('view');if(!v||!v.querySelector('.znh'))return;
+  v.querySelectorAll('.znh [data-off]').forEach(el=>{const k=el.dataset.k,to=el.dataset.off;if(ZL[k]===to){el.style.strokeDashoffset=to;return}ZL[k]=to;requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.strokeDashoffset=to}))});
+  v.querySelectorAll('.znh [data-to]').forEach(el=>{const k=el.dataset.k,to=+el.dataset.to,fr=ZL[k]==null?0:ZL[k];ZL[k]=to;if(Math.abs(fr-to)<.005){el.textContent=num(to);return}
+    const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=num(r2(fr+(to-fr)*e));if(p<1)requestAnimationFrame(f)})(t0)})}
+try{const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{let v='';try{v=view}catch(x){}
+  document.body.classList.toggle('znhh',v==='home');document.body.classList.toggle('znhs',v==='settings');
+  if(v==='home'){try{document.documentElement.style.setProperty('--z375','1','important')}catch(x){}anim()}}catch(e){console.error('398 render',e)}return r}}catch(e){}
+window.zNhRep=function(){try{z365Rep()}catch(e){return}if(!hidAm())return;setTimeout(()=>{const r=document.querySelector('#sheet .z365');if(!r)return;
+  r.querySelectorAll('.z36h .n span,.z36ch b,.z64r,.z65r b,.z65net b').forEach(b=>{b.innerHTML='<span class="msk xmk">••••••</span>'})},30)};
+
+/* الإعدادات ← الشاشة الرئيسية */
+function setHTML(){const c=CF(),sw=(on,js)=>`<span class="znh-sw${on?' on':''}" onclick="${js}"></span>`;
+  const A1=[['inst','الأقساط'],['ren','التجديدات (رخص، اشتراكات…)'],['cc','سداد الكريديت'],['fix','تحصيلات متأخرة أو قربت'],['ln','مواعيد سداد السلف'],['cash','رصيد الكاش لما يقل']];
+  const C1=[['cc','سداد الكريديت'],['cash','سحب كاش'],['top','أكبر مصروف'],['owed','لسه ليك برّه'],['pend','غير محصّل'],['inst','قسط جاي'],['cashbal','رصيد الكاش'],['back','فلوس راجعالك']];
+  return `<div class="znh-set"><div class="znh-sec">اسمك في الترحيب</div><div class="znh-cd"><div class="znh-tg"><input value="${esc(c.nm||'')}" placeholder="أحمد" onchange="zNhSet('nm',this.value)"></div></div>
+  <div class="znh-sec">⚡ قرب ميعادها (بيظهر في 🔔 الإشعارات، والزرار بيحمر لو فيه حاجة مهمة)</div><div class="znh-cd">${A1.map(([k,l])=>`<div class="znh-tg"><span>${l}</span>${sw(c.auto[k],`zNhTg('auto','${k}')`)}</div>`).join('')}
+  <div class="znh-tg"><span>يظهر قبل الميعاد بـ</span><div class="znh-st"><button type="button" onclick="zNhLead(-1)">−</button><b>${c.lead} ${c.lead===1?'يوم':'أيام'}</b><button type="button" onclick="zNhLead(1)">+</button></div></div></div>
+  <div class="znh-sec">كروت الرئيسية</div><div class="znh-cd">${C1.map(([k,l])=>`<div class="znh-tg"><span>${l}</span>${sw(c.cards[k],`zNhTg('cards','${k}')`)}</div>`).join('')}</div></div>`}
+window.zNhTg=function(g,k){const c=CF();c[g][k]=c[g][k]?0:1;save();render()};
+window.zNhLead=function(d){const c=CF();c.lead=Math.max(0,Math.min(30,(+c.lead||0)+d));save();render()};
+window.zNhSet=function(k,v){CF()[k]=String(v||'').trim();save();render()};
+try{const _vs=vSettings;vSettings=function(){let h=_vs.apply(this,arguments);try{if(stab==='home'&&typeof h==='string'){const i=h.indexOf('</div>');if(i>-1)h=h.slice(0,i+6)+setHTML()+h.slice(i+6)}}catch(e){}return h}}catch(e){console.error('398 set',e)}
+
+const V='html body main#view',SH='html body #sheet';
+const css=document.createElement('style');css.id='z398css';css.textContent=`
+html body.znhh header{display:none!important}
+html body.znhh main#view#view#view{zoom:1!important}
+html body:not(.znhs) main#view>.brand{display:none!important}
+${V} .znh{direction:rtl;color:#f1f5f9;padding-top:4px}
+${V} .znh-top{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 12px}
+${V} .znh-top small{display:block;font-size:12.5px;color:#94a3b8}
+${V} .znh-top b{font-size:18px;font-weight:700;color:#f1f5f9}
+${V} .znh-tr{display:flex;gap:8px;align-items:center}
+${V} .znh-chip{font:inherit;font-size:12.5px;background:#121a2b;border:1px solid rgba(255,255,255,.06);border-radius:999px;padding:7px 12px;color:#5eead4;cursor:pointer}
+${V} .znh-ib{width:40px;height:40px;border-radius:13px;background:#121a2b;border:1px solid rgba(255,255,255,.06);color:#cbd5e1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:16px;position:relative}
+${V} .znh-bell b{position:absolute;top:-5px;left:-5px;min-width:18px;height:18px;border-radius:9px;background:#334155;color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px}
+${V} .znh-bell.r{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.45);color:#fca5a5}
+${V} .znh-bell.r b{background:#ef4444}
+${V} .znh-bell .znh-pu{top:-3px;right:-3px;left:auto}
+${V} .znh-hero{border-radius:24px;padding:16px 14px 14px;background:linear-gradient(135deg,#0f766e,#3730a3);position:relative;overflow:hidden;box-shadow:0 12px 26px -14px rgba(55,48,163,.7)}
+${V} .znh-glow{position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(94,234,212,.18);filter:blur(34px);top:-80px;left:50%;transform:translateX(-50%);pointer-events:none}
+${V} .znh-ring{position:relative;width:200px;height:200px;margin:0 auto;cursor:pointer}
+${V} .znh-ring svg{position:absolute;inset:0;width:100%;height:100%}
+${V} .znh-ring circle.a{transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
+${V} .znh-ring circle.o{transition:stroke-dashoffset .6s 1s ease-out}
+${V} .znh-rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 26px}
+${V} .znh-rc small{font-size:13px;color:#ccfbf1}
+${V} .znh-rc .n{font-size:32px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums;direction:ltr}
+${V} .znh-rc em{font-style:normal;font-size:12px;color:#ccfbf1;line-height:1.5}
+${V} .znh-ps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;position:relative}
+${V} .znh-p{font:inherit;text-align:right;background:rgba(0,0,0,.22);border:0;border-radius:14px;padding:10px 12px;color:#fff;cursor:pointer;min-width:0}
+${V} .znh-p small{display:block;font-size:12px;color:#ccfbf1}
+${V} .znh-p b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+${V} .znh-qa{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:14px}
+${V} .znh-q{font:inherit;background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12.5px;color:#cbd5e1;cursor:pointer;box-shadow:none}
+${V} .znh-q i{width:54px;height:54px;border-radius:18px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.07)}
+${V} .znh-lb,${SH} .znh-lb{font-size:12px;color:#64748b;margin:14px 4px 8px}
+${SH} .znh-ns{margin:0 0 6px}
+${SH} .znh-ns .znh-lb{margin-top:2px}
+${V} .znh-au,${SH} .znh-au{display:flex;align-items:center;gap:10px;border-radius:16px;padding:10px 12px;margin-bottom:6px;border:1px solid;cursor:pointer}
+${SH} .znh-au.r{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.35)}
+${SH} .znh-au.y{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3)}
+${SH} .znh-au .ic,${V} .znh-c .ic{width:36px;height:36px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative}
+.znh-pu{position:absolute;top:-2px;left:-2px;width:9px;height:9px;border-radius:50%;animation:znhp 1.4s infinite}
+@keyframes znhp{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+${SH} .znh-au>div,${V} .znh-c>div{flex:1;min-width:0}
+${SH} .znh-au small{display:block;font-size:11.5px}
+${SH} .znh-au b{display:block;font-size:14px;font-weight:700;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${SH} .znh-au em{font-style:normal;font-size:15px;font-weight:700;white-space:nowrap;color:#f1f5f9}
+${V} .znh-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+${V} .znh-c{background:#18223a;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;min-width:0}
+${V} .znh-c.w{grid-column:1/-1}
+${V} .znh-c small{display:block;font-size:12px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${V} .znh-c b{display:block;font-size:16px;font-weight:700;color:#f1f5f9;font-variant-numeric:tabular-nums}
+${V} .znh-c em{display:block;font-style:normal;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${V} .znh-set{margin:0 0 14px}
+${V} .znh-sec{font-size:11.5px;color:#64748b;margin:10px 6px 6px;line-height:1.6}
+${V} .znh-cd{background:#151e31;border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:0 12px}
+${V} .znh-tg{display:flex;align-items:center;gap:10px;min-height:48px;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;color:#e6ebf5}
+${V} .znh-tg:last-child{border-bottom:0}
+${V} .znh-tg input{flex:1;background:transparent!important;border:0!important;color:#e6ebf5!important;font:inherit!important;margin:0!important;box-shadow:none!important;min-height:40px}
+${V} .znh-sw{margin-inline-start:auto;width:42px;height:24px;border-radius:999px;background:#2b3a52;position:relative;flex:none;cursor:pointer;transition:background .2s}
+${V} .znh-sw::after{content:'';position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:right .2s}
+${V} .znh-sw.on{background:#14b8a6}
+${V} .znh-sw.on::after{right:21px}
+${V} .znh-st{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
+${V} .znh-st button{width:30px;height:30px;border-radius:9px;background:#0f1729;border:1px solid rgba(255,255,255,.08);color:#5eead4;font:inherit;font-size:16px;padding:0;cursor:pointer}
+`;document.head.appendChild(css);
+try{if(view==='home')render()}catch(e){}
+})()}catch(e){console.error('fix 2.21.398',e)}
+/* ========== نهاية 2.21.398 ========== */
 
 /* نهاية fix.js */
 
