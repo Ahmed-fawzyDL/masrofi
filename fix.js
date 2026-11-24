@@ -21021,6 +21021,67 @@ try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{
 })()}catch(e){console.error('fix 2.21.389',e)}
 /* ========== نهاية 2.21.389 ========== */
 
+/* ========== 2.21.390 · شاشة الربط: الحساب اللي تحت مظبوط ومن غير ما الكيبورد يغطي ========== */
+try{XVER2='2.21.390';XVBUILD2='24/11/2026 - 02:30 م'}catch(e){}
+try{(function(){
+const O='html body #zlkov#zlkov';
+const css=document.createElement('style');css.id='z390css';css.textContent=`
+${O} .zl-foot{display:block!important;position:sticky!important;bottom:0!important;background:#0b111e!important;padding:8px 0 14px!important;margin:0!important;border:0!important;width:auto!important}
+${O} .zl-sum{display:block!important;background:#121a2b!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:16px!important;padding:8px 12px!important;margin:0!important;width:auto!important;grid-template-columns:none!important}
+${O} #zl-ain,${O} #zl-rows{display:block!important;border:0!important;background:transparent!important;padding:0!important;margin:0!important;width:auto!important;min-height:0!important;box-shadow:none!important;border-radius:0!important}
+${O} #zl-ain:empty{display:none!important}
+${O} .zl-rw{display:flex!important;flex-direction:row!important;justify-content:space-between!important;align-items:center!important;gap:10px!important;width:100%!important;padding:3px 0!important;margin:0!important;border:0!important;background:transparent!important;font-size:13.5px!important}
+${O} .zl-rw span{white-space:nowrap!important;color:#94a3b8!important}
+${O} .zl-rw b{white-space:nowrap!important;font-weight:800!important}
+${O} .zl-t{border-top:1px solid rgba(255,255,255,.08)!important;margin-top:4px!important;padding-top:6px!important}
+${O} .zl-t span{color:#f1f5f9!important;font-weight:700!important}
+${O} .zl-go{margin-top:8px!important;padding:12px!important}
+${O}.zl-typing .zl-foot{display:none!important}
+`;document.head.appendChild(css);
+const ov=()=>document.getElementById('zlkov');
+document.addEventListener('focusin',e=>{if(e.target&&e.target.id==='zl-q'){const o=ov();if(o)o.classList.add('zl-typing')}},true);
+document.addEventListener('focusout',e=>{if(e.target&&e.target.id==='zl-q'){const o=ov();if(o)o.classList.remove('zl-typing')}},true);
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#zlkov .zl-bx');if(b){const q=document.getElementById('zl-q');if(q&&document.activeElement===q)q.blur()}},true);
+})()}catch(e){console.error('fix 2.21.390',e)}
+/* ========== نهاية 2.21.390 ========== */
+
+/* ========== 2.21.391 · شاشة التعديل مترتبة: الاسم والربط فوق، ومن غير البند المكرر ========== */
+try{XVER2='2.21.391';XVBUILD2='24/11/2026 - 02:45 م'}catch(e){}
+try{(function(){
+const $1=(s,r)=>(r||document).querySelector(s);
+const show=(el,on)=>{if(!el)return;const v=on?'':'none';if(el.style.display!==v)el.style.display=v};
+let mv=0,mt=0;const mvOk=()=>{const n=Date.now();if(n-mt>1000){mt=n;mv=0}return ++mv<=30};
+let wc=0,wt=0;const setT=(el,t)=>{if(!el||el.textContent===t)return;const n=Date.now();if(n-wt>1000){wt=n;wc=0}if(++wc>20)return;el.textContent=t};
+function arrange(){const sz=$1('#sheet.open .sz');if(!sz||!$1('#f-amt',sz)||!F||(F.type!=='inc'&&F.type!=='exp'))return;
+  const linked=!!(F.zlk&&F.zlk.length),zgh=$1(':scope>.zgh',sz);
+  /* المعاملة (الاسم) في كارت تحت المبلغ */
+  const n=document.getElementById('f-n'),nl=n&&(n.closest('label.xnote')||n.closest('label'));
+  let nc=document.getElementById('z391n');
+  if(zgh&&nl){if(!nc){nc=document.createElement('div');nc.id='z391n';nc.className='zc'}
+    if(zgh.nextElementSibling!==nc&&mvOk())zgh.after(nc);if(nl.parentElement!==nc&&mvOk())nc.appendChild(nl)}
+  /* الربط كارت ظاهر تحت الاسم */
+  const zl=document.getElementById('zlk');
+  if(zl&&nc&&nc.parentElement===sz&&nc.nextElementSibling!==zl&&mvOk())nc.after(zl);
+  /* البند والحساب */
+  const cat=F.cat&&C(F.cat),sub=!!(cat&&cat.par),xoa=document.getElementById('xoa');
+  const bl=[...sz.querySelectorAll('label.zch2')].find(l=>(l.textContent||'').slice(0,20).indexOf('البند')>-1);
+  show(bl,!linked&&(!xoa||sub));
+  const zgc=bl&&bl.closest('.zgc');if(zgc&&zgc.parentElement===sz)show(zgc,[...zgc.children].some(c=>c.style.display!=='none'));
+  show(document.getElementById('xukn'),!linked);
+  show($1('.zc-acc',sz),!linked);
+  show([...sz.querySelectorAll('.zch.zsec2')].find(h=>/الحساب/.test(h.textContent||'')),!linked);
+  /* خيارات إضافية: تستخبى لو فاضية */
+  const mo=$1('details.zc-more',sz);if(mo){show(mo,[...mo.children].some(c=>c.tagName!=='SUMMARY'));
+    const bd=$1('.zbds',mo);if(bd&&/سداد/.test(bd.textContent||''))bd.innerHTML=''}
+  /* العلامة اللي فوق */
+  const pill=$1('.zgpill',sz);if(pill&&F.type==='inc'){if(pill.dataset.z391o==null)pill.dataset.z391o=pill.textContent;
+    setT(pill,linked?'🔗 مربوط بمصروف':pill.dataset.z391o)}}
+try{const _tf=txForm;txForm=function(){const r=_tf.apply(this,arguments);try{arrange()}catch(e){console.error('391',e)}return r}}catch(e){}
+(function w(){const sh=document.getElementById('sheet');if(!sh)return setTimeout(w,400);
+  new MutationObserver(()=>{try{arrange()}catch(e){}}).observe(sh,{childList:true,subtree:true})})();
+})()}catch(e){console.error('fix 2.21.391',e)}
+/* ========== نهاية 2.21.391 ========== */
+
 /* نهاية fix.js */
 
 
